@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import { CourseCard } from '../../components/learning/CourseCard';
+
+const courses = [
+  {
+    href: '/courses/linear-algebra',
+    title: 'Linear Algebra',
+    description:
+      'Vectors as arrows, matrices as transformations. Build geometric intuition before symbol manipulation.',
+    symbol: 'λ',
+    lessonCount: 24,
+    estimatedHours: 18,
+    progressPct: 35,
+    difficulty: 'Beginner' as const,
+  },
+  {
+    href: '/courses/calculus',
+    title: 'Calculus',
+    description:
+      'Limits, derivatives, integrals — every concept rendered as a moving picture you can pause and inspect.',
+    symbol: '∫',
+    lessonCount: 32,
+    estimatedHours: 26,
+    difficulty: 'Beginner' as const,
+  },
+  {
+    href: '/courses/probability',
+    title: 'Probability',
+    description:
+      'From coin flips to continuous distributions. Sampling animations make the abstract feel concrete.',
+    symbol: 'P',
+    lessonCount: 19,
+    estimatedHours: 14,
+    difficulty: 'Intermediate' as const,
+  },
+];
+---
+
+<BaseLayout title="Courses">
+  <main class="mx-auto max-w-7xl px-6 py-20">
+    <div class="max-w-2xl">
+      <p class="font-mono text-xs uppercase tracking-wider text-ink-faint">Courses</p>
+      <h1 class="mt-2 font-serif text-h1 text-ink m-0">Three courses, one approach.</h1>
+      <p class="mt-4 font-serif text-body-lg text-ink-muted leading-relaxed">
+        Each course pairs short Manim narrative clips with hands-on
+        interactive widgets. Pick whichever calls to you — they do not need
+        to be taken in order.
+      </p>
+    </div>
+
+    <div class="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {courses.map((course) => (
+        <CourseCard {...course} client:load />
+      ))}
+    </div>
+  </main>
+</BaseLayout>

@@ -1,0 +1,18 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 border-t border-rule">
+  <div class="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-12 text-sm text-ink-faint md:flex-row md:items-center md:justify-between">
+    <p>
+      <span class="font-serif text-ink">MathViz</span> · learn math through animation
+    </p>
+    <nav class="flex gap-6">
+      <a href="/about" class="text-ink-muted hover:text-ink no-underline">About</a>
+      <a href="/courses" class="text-ink-muted hover:text-ink no-underline">Courses</a>
+      <a href="https://github.com" class="text-ink-muted hover:text-ink no-underline">GitHub</a>
+      <a href="/rss.xml" class="text-ink-muted hover:text-ink no-underline">RSS</a>
+    </nav>
+    <p class="font-mono text-xs">© {year} · MIT</p>
+  </div>
+</footer>

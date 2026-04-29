@@ -1,0 +1,139 @@
+---
+title: 'Vectors as Arrows'
+description: 'Build geometric intuition for vectors before any coordinates.'
+course: 'linear-algebra'
+module: 'Vector Spaces'
+moduleOrder: 1
+lessonOrder: 1
+duration: 14
+difficulty: 'Beginner'
+prerequisites:
+  - title: 'Coordinate plane basics'
+    slug: 'precalc/coordinate-plane'
+publishedAt: 2026-01-15
+---
+
+import { ManimVideo } from '../../../components/animation/ManimVideo';
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { PrerequisiteList } from '../../../components/learning/PrerequisiteList';
+import { LessonProgress } from '../../../components/learning/LessonProgress';
+
+<LessonProgress current={1} total={6} moduleTitle="Vector Spaces" />
+
+# Vectors as Arrows
+
+Before a vector is a list of numbers, it is an **arrow** — pointing from
+somewhere, in some direction, with some length. Almost every theorem you'll
+meet later has a geometric shadow you can see, if you train yourself to look
+for it. This lesson is about training that eye.
+
+<PrerequisiteList
+  items={[
+    { title: 'Coordinate plane basics', href: '/courses/precalc/coordinate-plane', met: true },
+  ]}
+/>
+
+## What an arrow knows
+
+An arrow on the page captures two pieces of information at once: a
+**direction** and a **magnitude**. That's it. It does not remember where
+its tail starts — and this freedom is what gives vectors their power.
+
+<ManimVideo
+  src="https://cdn.mathviz.example/linear-algebra/01-arrow-intro.webm"
+  srcMp4="https://cdn.mathviz.example/linear-algebra/01-arrow-intro.mp4"
+  poster="https://cdn.mathviz.example/linear-algebra/01-arrow-intro-poster.jpg"
+  caption="Three arrows of the same vector, drawn from different starting points. They are equal — vectors don't remember their tails."
+/>
+
+The picture above is doing real work. Watch what happens if you try to
+phrase that observation in symbols only — *“the ordered pair $(2, 1)$
+equals the ordered pair $(2, 1)$, regardless of where it is drawn”* — and
+notice how unsatisfying the symbolic version is. The geometry is the point.
+
+## Drag it yourself
+
+Below is the same idea, but interactive. Grab any of the three arrows
+and slide it around. Their starting points change; the vector they
+represent does not.
+
+<InteractiveCanvas
+  title="Free vectors"
+  caption="All three arrows represent the same vector. Translation does not change a vector."
+  aspectRatio="16/9"
+>
+  {/* Real implementation goes here — Three.js / D3 / SVG */}
+  <div className="absolute inset-0 grid place-items-center text-ink-faint font-sans text-sm">
+    [InteractiveCanvas slot · Three.js scene mounts here]
+  </div>
+</InteractiveCanvas>
+
+<KeyInsight>
+  A vector is the **equivalence class** of all arrows with the same
+  direction and length. The coordinates we will introduce later are
+  one specific representative — convenient, but never the whole story.
+</KeyInsight>
+
+## When coordinates enter the picture
+
+Coordinates appear only when we *choose* a starting point — by convention,
+the origin. With that choice fixed, the arrow's tip lands somewhere, and
+those landing coordinates become the vector's components:
+
+$$
+\vec{v} = \begin{bmatrix} 2 \\ 1 \end{bmatrix}
+$$
+
+Notice the order of operations: **the geometry came first, the numbers
+came second**. Almost every confusion in linear algebra traces back to
+people inheriting the numbers and forgetting they were ever arrows.
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt={
+    <>
+      Two arrows are drawn on the plane. The first goes from <code>(0, 0)</code>
+      {' '}to <code>(3, 1)</code>. The second goes from <code>(2, 4)</code>
+      {' '}to <code>(5, 5)</code>. Do they represent the same vector?
+    </>
+  }
+  hint={
+    <>
+      A vector is determined by how far it travels in <em>x</em> and how
+      far it travels in <em>y</em>, regardless of where it starts. Compute
+      $\Delta x$ and $\Delta y$ for each arrow.
+    </>
+  }
+  answer={
+    <>
+      Yes. Both arrows have $\Delta x = 3$ and $\Delta y = 1$. Different
+      tails, same vector.
+    </>
+  }
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt={
+    <>
+      Sketch three different arrows that all represent the vector
+      $\begin{bmatrix} -1 \\ 2 \end{bmatrix}$. What is the same about
+      them? What is different?
+    </>
+  }
+  answer={
+    <>
+      Each arrow moves left 1 and up 2 from its tail to its head. The
+      direction and length are identical; only the location of the tail
+      differs.
+    </>
+  }
+/>
+
+---
+
+**Up next:** [Vector addition, geometrically →](/courses/linear-algebra/vector-spaces/vector-addition)

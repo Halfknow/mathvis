@@ -1,0 +1,141 @@
+/* ===================================================================
+ * MathViz · Design Tokens
+ * -------------------------------------------------------------------
+ * The single source of truth for the design system. All component
+ * styles and Tailwind utilities reference these variables.
+ *
+ * Naming convention:
+ *   --color-{role}        semantic role, not raw hue
+ *   --space-{n}           multiples of 4px
+ *   --text-{role}         named type roles, not generic xs/sm/md/lg
+ *   --shadow-{intensity}
+ * =================================================================== */
+
+:root {
+  /* ---------- Surface colors ("paper") ---------- */
+  --color-paper:           #faf7f2;  /* warm off-white background */
+  --color-paper-elevated:  #ffffff;  /* cards on the paper */
+  --color-surface-1:       #f4f0e8;  /* subtle inset (sidebars) */
+  --color-surface-2:       #ebe6dc;  /* deeper inset (code blocks) */
+
+  /* ---------- Ink (text) ---------- */
+  --color-ink:             #1a1f36;  /* deep ink navy — body */
+  --color-ink-muted:       #4a5170;  /* secondary text */
+  --color-ink-faint:       #8b91a7;  /* tertiary, metadata */
+  --color-rule:            #e8e3d8;  /* dividers, borders */
+
+  /* ---------- Accent (single brand color) ---------- */
+  --color-accent:          #c8693d;  /* terracotta — CTAs, focus, links */
+  --color-accent-hover:    #b5582e;
+  --color-accent-soft:     #f4e4d3;  /* accent-tinted background */
+
+  /* ---------- "Chalk" colors for math diagrams ---------- *
+   * Used INSIDE diagrams, not for general UI.
+   * Inspired by the 3Blue1Brown chalk palette.
+   */
+  --color-vector-blue:     #3b6cb7;
+  --color-vector-green:    #4f8a5b;
+  --color-vector-red:      #b54a4a;
+  --color-vector-yellow:   #d4a02a;
+
+  /* ---------- Typography stacks ---------- */
+  --font-serif: 'Source Serif 4', 'Source Serif Pro', 'Charter', Georgia, serif;
+  --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono:  'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  --font-math:  'STIX Two Math', 'Latin Modern Math', 'Cambria Math', serif;
+
+  /* ---------- Type scale ---------- */
+  --text-display:   3.5rem;     /* 56px — hero only */
+  --text-h1:        2.5rem;     /* 40px */
+  --text-h2:        1.875rem;   /* 30px */
+  --text-h3:        1.375rem;   /* 22px */
+  --text-body-lg:   1.125rem;   /* 18px — default lesson body */
+  --text-body:      1rem;       /* 16px — UI body */
+  --text-sm:        0.875rem;   /* 14px — captions */
+  --text-xs:        0.75rem;    /* 12px — fine print */
+
+  /* ---------- Spacing scale (4px base) ---------- */
+  --space-1:  0.25rem;   /*  4px */
+  --space-2:  0.5rem;    /*  8px */
+  --space-3:  0.75rem;   /* 12px */
+  --space-4:  1rem;      /* 16px */
+  --space-5:  1.25rem;   /* 20px */
+  --space-6:  1.5rem;    /* 24px */
+  --space-8:  2rem;      /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+  --space-24: 6rem;      /* 96px */
+  --space-32: 8rem;      /* 128px */
+
+  /* ---------- Radii ---------- */
+  --radius-sm:    4px;
+  --radius-md:    8px;
+  --radius-lg:    16px;
+  --radius-pill:  999px;
+
+  /* ---------- Elevation (soft, paper-like) ---------- */
+  --shadow-sm: 0 1px 2px rgba(26, 31, 54, 0.04);
+  --shadow-md: 0 4px 12px rgba(26, 31, 54, 0.06);
+  --shadow-lg: 0 12px 32px rgba(26, 31, 54, 0.08);
+
+  /* ---------- Motion ---------- */
+  --duration-fast:  150ms;
+  --duration-base:  250ms;
+  --duration-slow:  400ms;
+  --ease-smooth:    cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ---------- Layout ---------- */
+  --content-prose-width:    680px;   /* lesson body column */
+  --content-gutter-width:   220px;   /* right gutter for sidenotes */
+  --content-sidebar-width:  260px;   /* lesson nav left rail */
+}
+
+/* ===================================================================
+ * Dark mode ("blackboard")
+ * =================================================================== */
+
+[data-theme='dark'] {
+  --color-paper:           #0e1117;  /* deep blackboard navy */
+  --color-paper-elevated:  #161b25;
+  --color-surface-1:       #161b25;
+  --color-surface-2:       #1e2330;
+
+  --color-ink:             #e6e9f0;  /* soft chalk white */
+  --color-ink-muted:       #a4abc0;
+  --color-ink-faint:       #6a708a;
+  --color-rule:            #252b3a;
+
+  --color-accent:          #e8a87c;
+  --color-accent-hover:    #f0bb95;
+  --color-accent-soft:     #2a1f18;
+
+  --color-vector-blue:     #6c9ae8;
+  --color-vector-green:    #7fc090;
+  --color-vector-red:      #e08585;
+  --color-vector-yellow:   #f0c855;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-paper:           #0e1117;
+    --color-paper-elevated:  #161b25;
+    --color-surface-1:       #161b25;
+    --color-surface-2:       #1e2330;
+    --color-ink:             #e6e9f0;
+    --color-ink-muted:       #a4abc0;
+    --color-ink-faint:       #6a708a;
+    --color-rule:            #252b3a;
+    --color-accent:          #e8a87c;
+    --color-accent-hover:    #f0bb95;
+    --color-accent-soft:     #2a1f18;
+    --color-vector-blue:     #6c9ae8;
+    --color-vector-green:    #7fc090;
+    --color-vector-red:      #e08585;
+    --color-vector-yellow:   #f0c855;
+  }
+}

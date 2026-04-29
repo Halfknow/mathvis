@@ -1,0 +1,131 @@
+@import './tokens.css';
+@import 'katex/dist/katex.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===================================================================
+ * Base
+ * =================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  transition: background var(--duration-base) var(--ease-smooth),
+              color var(--duration-base) var(--ease-smooth);
+}
+
+/* Lesson prose uses serif body */
+.prose-lesson {
+  font-family: var(--font-serif);
+  font-size: var(--text-body-lg);
+  line-height: 1.7;
+  color: var(--color-ink);
+  max-width: var(--content-prose-width);
+}
+
+/* ===================================================================
+ * Headings — serif, restrained weight
+ * =================================================================== */
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+h1 { font-size: var(--text-h1); line-height: 1.15; margin: 0 0 var(--space-6); }
+h2 { font-size: var(--text-h2); line-height: 1.25; margin: var(--space-12) 0 var(--space-4); }
+h3 { font-size: var(--text-h3); line-height: 1.3;  margin: var(--space-8) 0 var(--space-3); }
+
+/* ===================================================================
+ * Links
+ * =================================================================== */
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--duration-fast) var(--ease-smooth);
+}
+a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+}
+
+/* ===================================================================
+ * Code
+ * =================================================================== */
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--color-surface-2);
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius-sm);
+}
+
+pre {
+  font-family: var(--font-mono);
+  background: var(--color-surface-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* ===================================================================
+ * Selection
+ * =================================================================== */
+
+::selection {
+  background: var(--color-accent-soft);
+  color: var(--color-ink);
+}
+
+/* ===================================================================
+ * KaTeX adjustments — bring math into our type rhythm
+ * =================================================================== */
+
+.katex {
+  font-size: 1.05em;
+}
+
+.katex-display {
+  margin: var(--space-6) 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* ===================================================================
+ * Focus ring — accent, soft, visible on both surfaces
+ * =================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}

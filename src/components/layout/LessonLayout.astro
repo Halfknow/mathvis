@@ -1,0 +1,47 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import SidebarNav from './SidebarNav.astro';
+
+interface Lesson {
+  slug: string;
+  title: string;
+  duration?: number;
+  completed?: boolean;
+}
+interface Module {
+  title: string;
+  lessons: Lesson[];
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  courseTitle: string;
+  modules: Module[];
+  currentSlug: string;
+}
+
+const { title, description, courseTitle, modules, currentSlug } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="mx-auto flex max-w-7xl">
+    <SidebarNav courseTitle={courseTitle} modules={modules} currentSlug={currentSlug} />
+
+    <!-- Center column: prose + sidenote gutter -->
+    <main class="flex-1 px-6 py-12 lg:px-12">
+      <div class="grid gap-x-12 lg:grid-cols-[var(--content-prose-width)_1fr]">
+        <article class="prose-lesson">
+          <slot />
+        </article>
+
+        <!-- Right gutter for sidenotes & figure callouts -->
+        <aside class="hidden lg:block">
+          <div class="sticky top-24">
+            <slot name="gutter" />
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+</BaseLayout>

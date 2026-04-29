@@ -1,0 +1,72 @@
+---
+interface Lesson {
+  slug: string;
+  title: string;
+  duration?: number; // minutes
+  completed?: boolean;
+}
+
+interface Module {
+  title: string;
+  lessons: Lesson[];
+}
+
+interface Props {
+  courseTitle: string;
+  modules: Module[];
+  currentSlug: string;
+}
+
+const { courseTitle, modules, currentSlug } = Astro.props;
+---
+
+<aside class="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-[var(--content-sidebar-width)] shrink-0 overflow-y-auto border-r border-rule bg-surface-1 lg:block">
+  <div class="px-6 py-8">
+    <p class="font-mono text-xs uppercase tracking-wider text-ink-faint">
+      Course
+    </p>
+    <h2 class="mt-1 font-serif text-h3 text-ink">{courseTitle}</h2>
+  </div>
+
+  <nav class="px-3 pb-16">
+    {modules.map((mod, mIdx) => (
+      <div class="mb-6">
+        <p class="px-3 py-2 font-sans text-xs font-semibold uppercase tracking-wider text-ink-faint">
+          {mIdx + 1}. {mod.title}
+        </p>
+        <ul class="space-y-0.5">
+          {mod.lessons.map((lesson) => {
+            const isActive = lesson.slug === currentSlug;
+            return (
+              <li>
+                <a
+                  href={`/courses/${lesson.slug}`}
+                  class:list={[
+                    'flex items-center justify-between gap-2 rounded-md px-3 py-1.5 font-sans text-sm transition-colors duration-fast ease-smooth no-underline',
+                    isActive
+                      ? 'bg-accent-soft text-ink font-medium'
+                      : 'text-ink-muted hover:bg-surface-2 hover:text-ink',
+                  ]}
+                >
+                  <span class="flex items-center gap-2 truncate">
+                    {lesson.completed && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="shrink-0 text-vector-green">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    )}
+                    <span class="truncate">{lesson.title}</span>
+                  </span>
+                  {lesson.duration && (
+                    <span class="shrink-0 font-mono text-xs text-ink-faint">
+                      {lesson.duration}m
+                    </span>
+                  )}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    ))}
+  </nav>
+</aside>

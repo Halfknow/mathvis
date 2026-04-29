@@ -1,0 +1,21 @@
+---
+import katex from 'katex';
+
+interface Props {
+  expression: string;
+  label?: string;     // equation number, e.g. "(1)"
+}
+
+const { expression, label } = Astro.props;
+const html = katex.renderToString(expression, {
+  displayMode: true,
+  throwOnError: false,
+});
+---
+
+<div class="my-6 flex items-center justify-center gap-6">
+  <div class="overflow-x-auto" set:html={html} />
+  {label && (
+    <span class="font-mono text-sm text-ink-faint shrink-0">{label}</span>
+  )}
+</div>

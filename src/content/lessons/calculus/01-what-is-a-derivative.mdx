@@ -1,0 +1,45 @@
+---
+title: "What is a Derivative?"
+titleZh: "什么是导数？"
+description: "The derivative measures how fast a function changes — the slope of its graph at each point."
+descriptionZh: "导数衡量函数变化的快慢——即函数图像在每个点的斜率。"
+course: "calculus"
+module: "Foundations of Differentiation"
+moduleZh: "微分基础"
+moduleOrder: 1
+lessonOrder: 1
+duration: 12
+difficulty: "Beginner"
+---
+
+Imagine you're driving along a winding road. At every instant, your speedometer tells you exactly how fast you're going. That reading — your instantaneous rate of change — is what a **derivative** captures for any function.
+
+## The geometric picture
+
+Given a function $f(x)$, the derivative $f'(x)$ at a point tells you the **slope of the tangent line** to the graph at that point.
+
+- If the tangent line tilts upward, $f'(x) > 0$ — the function is increasing.
+- If it tilts downward, $f'(x) < 0$ — the function is decreasing.
+- If it's perfectly flat, $f'(x) = 0$ — you've found a local maximum or minimum.
+
+Try dragging the point along the curve below to see the tangent line and the derivative value change in real time:
+
+## From secant to tangent
+
+The formal definition builds on a simple idea: measure the **average** rate of change over a shrinking interval.
+
+$$f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$
+
+The fraction $\frac{f(x+h) - f(x)}{h}$ is the slope of a **secant line** — a line connecting two points on the curve. As $h$ shrinks to zero, the secant line converges to the tangent line.
+
+## Why derivatives matter
+
+Derivatives appear everywhere in science and engineering:
+
+- **Physics**: velocity is the derivative of position; acceleration is the derivative of velocity.
+- **Optimization**: finding the minimum of a cost function means finding where its derivative is zero.
+- **Machine learning**: gradient descent follows the negative derivative to minimize loss.
+
+## Key insight
+
+> The derivative converts a function into a **slope-at-each-point** machine — it tells you not *where* you are, but *which direction and how fast* you're moving.

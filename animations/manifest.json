@@ -1,0 +1,13 @@
+{
+  "animations": [
+    {
+      "id": "la-01-vectors-intro",
+      "script": "linear-algebra/01_vectors_intro.py",
+      "course": "linear-algebra",
+      "module": "Vector Spaces",
+      "lesson": "01-vectors-as-arrows",
+      "outputs": ["webm", "mp4"],
+      "duration": "2:14"
+    }
+  ]
+}

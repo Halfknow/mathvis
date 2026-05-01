@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--color-paper); padding: 20px 24px; }
+  .section { margin-bottom: 18px; }
+  .section-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--color-ink-faint); margin-bottom: 10px; }
+  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    font-family: var(--font-sans); font-weight: 500; border: none; cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: background var(--duration-fast) var(--ease-smooth),
+                color var(--duration-fast) var(--ease-smooth),
+                border-color var(--duration-fast) var(--ease-smooth);
+  }
+  .btn-sm { height: 32px; padding: 0 12px; font-size: var(--text-sm); }
+  .btn-md { height: 40px; padding: 0 16px; font-size: var(--text-body); }
+  .btn-lg { height: 48px; padding: 0 24px; font-size: var(--text-body-lg); }
+
+  .primary { background: var(--color-accent); color: var(--color-paper-elevated); }
+  .primary:hover { background: var(--color-accent-hover); }
+  .secondary { background: transparent; color: var(--color-ink); border: 1.5px solid var(--color-rule); }
+  .secondary:hover { background: var(--color-surface-1); border-color: var(--color-ink-faint); }
+  .ghost { background: transparent; color: var(--color-ink); }
+  .ghost:hover { background: var(--color-surface-1); }
+  .disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+</head>
+<body>
+  <div class="section">
+    <div class="section-label">Primary</div>
+    <div class="row">
+      <button class="primary btn-sm">Small</button>
+      <button class="primary btn-md">Start with Linear Algebra</button>
+      <button class="primary btn-lg">Choose a course</button>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-label">Secondary</div>
+    <div class="row">
+      <button class="secondary btn-sm">Small</button>
+      <button class="secondary btn-md">Browse all courses</button>
+      <button class="secondary btn-lg">View curriculum</button>
+    </div>
+  </div>
+  <div class="section" style="margin-bottom:0;">
+    <div class="section-label">Ghost · Disabled</div>
+    <div class="row">
+      <button class="ghost btn-md">Browse all courses →</button>
+      <button class="primary btn-md disabled" disabled>Disabled</button>
+    </div>
+  </div>
+</body>
+</html>

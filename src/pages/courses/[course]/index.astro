@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../../../components/layout/BaseLayout.astro';
+import { ProgressBar } from '../../../components/ui/ProgressBar';
+import { Badge } from '../../../components/ui/Badge';
+import { getCollection } from 'astro:content';
+import { courseMeta } from '../../../i18n/utils';
+import type { Lang } from '../../../i18n/ui';
+
+export async function getStaticPaths() {
+  const lessons = await getCollection('lessons');
+  const courses = [...new Set(lessons.map((l) => l.data.course))];
+  return courses.map((course) => ({ params: { course } }));
+}
+
+const lang: Lang = 'en';
+const { course } = Astro.params;
+const allLessons = await getCollection('lessons');
+const courseLessons = allLessons
+  .filter((l) => l.data.course === course)
+  .sort((a, b) => a.data.moduleOrder - b.data.moduleOrder || a.data.lessonOrder - b.data.lessonOrder);
+
+const meta = courseMeta[course!] ?? { en: { title: course!, symbol: '?', description: '' }, zh: { title: course!, symbol: '?', description: '' } };
+const title = meta[lang].title;
+const totalLessons = courseLessons.length;
+const totalDuration = courseLessons.reduce((sum, l) => sum + l.data.duration, 0);
+const estimatedHours = Math.round(totalDuration / 60);
+
+const moduleMap = new Map<string, typeof courseLessons>();
+for (const lesson of courseLessons) {
+  const key = `${lesson.data.moduleOrder}:${lesson.data.module}`;
+  if (!moduleMap.has(key)) moduleMap.set(key, []);
+  moduleMap.get(key)!.push(lesson);
+}
+const modules = [...moduleMap.entries()].sort(([a], [b]) => a.localeCompare(b));
+const lessonSlug = (l: { slug: string }) => l.slug.split('/').slice(1).join('/') || l.slug;
+---
+
+<BaseLayout title={title} lang={lang}>
+  <main class="mx-auto max-w-5xl px-6 py-16">
+    <header class="grid gap-10 md:grid-cols-[160px_1fr] md:items-start">
+      <div class="grid h-40 w-40 place-items-center rounded-md border border-rule bg-surface-1">
+        <span class="font-serif text-[120px] leading-none text-ink">{meta[lang].symbol}</span>
+      </div>
+      <div>
+        <p class="font-mono text-xs uppercase tracking-wider text-ink-faint">Course</p>
+        <h1 class="mt-2 font-serif text-h1 text-ink m-0">{title}</h1>
+        <p class="mt-4 font-serif text-body-lg text-ink-muted leading-relaxed max-w-2xl">
+          {meta[lang].description}
+        </p>
+        <div class="mt-6 flex items-center gap-3">
+          <Badge variant="neutral" client:load>Beginner</Badge>
+          <span class="font-mono text-sm text-ink-faint">
+            {totalLessons} lessons · ~{estimatedHours}h
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <section class="mt-16 space-y-12">
+      {modules.map(([, modLessons], mIdx) => {
+        const modTitle = modLessons[0].data.module;
+        return (
+          <div>
+            <header class="flex items-baseline justify-between border-b border-rule pb-3">
+              <div>
+                <p class="font-mono text-xs uppercase tracking-wider text-ink-faint">
+                  Module {mIdx + 1}
+                </p>
+                <h2 class="mt-1 font-serif text-h2 text-ink m-0">{modTitle}</h2>
+              </div>
+              <span class="font-mono text-xs text-ink-faint">
+                {modLessons.length} lessons
+              </span>
+            </header>
+
+            <ol class="mt-4 divide-y divide-rule">
+              {modLessons.map((lesson, lIdx) => (
+                <li>
+                  <a
+                    href={`/courses/${course}/${lessonSlug(lesson)}`}
+                    class="group flex items-center gap-5 py-4 no-underline transition-colors duration-fast ease-smooth hover:bg-surface-1 -mx-2 px-2 rounded-md"
+                  >
+                    <span class="grid h-7 w-7 shrink-0 place-items-center rounded-pill border border-rule font-mono text-xs text-ink-faint">
+                      {lIdx + 1}
+                    </span>
+                    <span class="flex-1 font-serif text-body-lg text-ink group-hover:text-accent transition-colors duration-fast">
+                      {lesson.data.title}
+                    </span>
+                    <span class="font-mono text-xs text-ink-faint">{lesson.data.duration} min</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </div>
+        );
+      })}
+    </section>
+  </main>
+</BaseLayout>

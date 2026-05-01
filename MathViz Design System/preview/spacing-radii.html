@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--color-paper); padding: 20px 24px; }
+  .row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .item { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .box { width: 64px; height: 48px; background: var(--color-surface-2); border: 1.5px solid var(--color-rule); }
+  .token { font-family: var(--font-mono); font-size: 10px; color: var(--color-ink-faint); text-align: center; }
+  .val { font-family: var(--font-mono); font-size: 10px; color: var(--color-accent); text-align: center; }
+  .use { font-family: var(--font-sans); font-size: 9px; color: var(--color-ink-faint); text-align: center; }
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="item">
+    <div class="box" style="border-radius:var(--radius-sm);"></div>
+    <div class="token">--radius-sm</div><div class="val">4px</div><div class="use">Code spans</div>
+  </div>
+  <div class="item">
+    <div class="box" style="border-radius:var(--radius-md);"></div>
+    <div class="token">--radius-md</div><div class="val">8px</div><div class="use">Cards, buttons</div>
+  </div>
+  <div class="item">
+    <div class="box" style="border-radius:var(--radius-lg);"></div>
+    <div class="token">--radius-lg</div><div class="val">16px</div><div class="use">Max — used rarely</div>
+  </div>
+  <div class="item">
+    <div class="box" style="border-radius:var(--radius-pill); width:80px; height:32px;"></div>
+    <div class="token">--radius-pill</div><div class="val">999px</div><div class="use">Badges, progress</div>
+  </div>
+</div>
+</body>
+</html>

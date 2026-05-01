@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(export PATH=\"/c/Users/Halfknow/AppData/Roaming/fnm/node-versions/v22.14.0/installation:$PATH\")",
+      "Bash(npx astro *)",
+      "Bash(npm run *)",
+      "Bash(git config *)"
+    ]
+  }
+}

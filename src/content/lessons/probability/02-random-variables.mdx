@@ -1,0 +1,59 @@
+---
+title: "Random Variables"
+titleZh: "随机变量"
+description: "A random variable assigns a number to each outcome — the bridge between events and functions."
+descriptionZh: "随机变量为每个结果赋予一个数值——连接事件与函数的桥梁。"
+course: "probability"
+module: "Foundations of Probability"
+moduleZh: "概率基础"
+moduleOrder: 1
+lessonOrder: 2
+duration: 16
+difficulty: "Beginner"
+---
+
+A **random variable** is not really "random" and not really a "variable" in the algebra sense. It's a **function** that maps each outcome of an experiment to a number.
+
+## Discrete random variables
+
+A discrete random variable takes on a countable set of values. Its behavior is fully described by its **probability mass function** (PMF):
+
+$$P(X = x_i) = p_i$$
+
+where each $p_i \geq 0$ and $\sum_i p_i = 1$.
+
+**Example**: Let $X$ be the number of heads in 3 fair coin flips.
+
+| $x$ | 0 | 1 | 2 | 3 |
+|-----|---|---|---|---|
+| $P(X=x)$ | 1/8 | 3/8 | 3/8 | 1/8 |
+
+## Expected value
+
+The **expected value** (or mean) of a random variable is its probability-weighted average:
+
+$$E[X] = \sum_i x_i \cdot P(X = x_i)$$
+
+For the coin flip example: $E[X] = 0 \cdot \frac{1}{8} + 1 \cdot \frac{3}{8} + 2 \cdot \frac{3}{8} + 3 \cdot \frac{1}{8} = 1.5$
+
+The expected value is not necessarily a value the variable can actually take — you can't get 1.5 heads. It's the long-run average if you repeated the experiment many times.
+
+## Variance
+
+The **variance** measures how spread out the values are:
+
+$$\text{Var}(X) = E[(X - E[X])^2] = E[X^2] - (E[X])^2$$
+
+High variance means outcomes are spread far from the mean. Low variance means they cluster tightly.
+
+## Continuous random variables
+
+When a variable can take any value in an interval, we use a **probability density function** (PDF) instead of a PMF:
+
+$$P(a \leq X \leq b) = \int_a^b f(x)\,dx$$
+
+The density $f(x)$ is not a probability — it can be greater than 1. Only the *area under the curve* between two points gives a probability.
+
+## Key insight
+
+> A random variable turns random outcomes into numbers we can compute with — expected values, variances, and ultimately, predictions.

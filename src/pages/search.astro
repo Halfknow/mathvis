@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../components/layout/BaseLayout.astro';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('en');
+---
+
+<BaseLayout title={t('search.title')} lang="en">
+  <main class="mx-auto max-w-2xl px-6 py-16">
+    <h1 class="font-serif text-h1 text-ink m-0">{t('search.title')}</h1>
+    <p class="mt-4 font-sans text-body text-ink-muted">{t('search.subtitle')}</p>
+    <div id="search" class="mt-8"></div>
+  </main>
+</BaseLayout>
+
+<script define:vars={{}}>
+  function initSearch() {
+    const container = document.getElementById('search');
+    if (!container) return;
+
+    // Load pagefind via script tag to avoid Vite build resolution
+    const script = document.createElement('script');
+    script.src = '/pagefind/pagefind.js';
+    script.onload = () => {
+      // @ts-ignore
+      const pf = window.pagefind;
+      if (!pf) {
+        container.innerHTML = '<p class="font-sans text-sm text-ink-faint">Search not available.</p>';
+        return;
+      }
+      pf.init();
+
+      const input = document.createElement('input');
+      input.type = 'search';
+      input.placeholder = 'Search lessons...';
+      input.className = 'w-full rounded-md border border-rule bg-paper-elevated px-4 py-3 font-sans text-body text-ink outline-none focus:border-accent transition-colors duration-fast';
+      container.appendChild(input);
+
+      const results = document.createElement('div');
+      results.className = 'mt-6 space-y-4';
+      container.appendChild(results);
+
+      input.addEventListener('input', async () => {
+        const query = input.value;
+        if (!query.trim()) {
+          results.innerHTML = '';
+          return;
+        }
+        const search = await pf.search(query);
+        results.innerHTML = '';
+        for (const result of search.results.slice(0, 10)) {
+          const data = await result.data();
+          const el = document.createElement('a');
+          el.href = data.url;
+          el.className = 'block rounded-md border border-rule bg-paper-elevated p-4 no-underline hover:shadow-md transition-shadow duration-base';
+          el.innerHTML =
+            '<h3 class="font-serif text-body-lg text-ink m-0">' + (data.meta?.title ?? '') + '</h3>' +
+            '<p class="mt-1 font-sans text-sm text-ink-muted line-clamp-2">' + (data.excerpt ?? '') + '</p>';
+          results.appendChild(el);
+        }
+      });
+    };
+    script.onerror = () => {
+      container.innerHTML = '<p class="font-sans text-sm text-ink-faint">Search index not yet generated. Run <code>npm run build</code> first.</p>';
+    };
+    document.head.appendChild(script);
+  }
+
+  initSearch();
+</script>

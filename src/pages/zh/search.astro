@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+---
+
+<BaseLayout title="搜索" lang="zh">
+  <main class="mx-auto max-w-2xl px-6 py-16">
+    <h1 class="font-serif text-h1 text-ink m-0">搜索</h1>
+    <p class="mt-4 font-sans text-body text-ink-muted">在所有课程中查找课程、概念和主题。</p>
+    <div id="search" class="mt-8"></div>
+  </main>
+</BaseLayout>
+
+<script define:vars={{}}>
+  function initSearch() {
+    const container = document.getElementById('search');
+    if (!container) return;
+
+    const script = document.createElement('script');
+    script.src = '/pagefind/pagefind.js';
+    script.onload = () => {
+      const pf = window.pagefind;
+      if (!pf) {
+        container.innerHTML = '<p class="font-sans text-sm text-ink-faint">搜索不可用。</p>';
+        return;
+      }
+      pf.init();
+
+      const input = document.createElement('input');
+      input.type = 'search';
+      input.placeholder = '搜索课程...';
+      input.className = 'w-full rounded-md border border-rule bg-paper-elevated px-4 py-3 font-sans text-body text-ink outline-none focus:border-accent transition-colors duration-fast';
+      container.appendChild(input);
+
+      const results = document.createElement('div');
+      results.className = 'mt-6 space-y-4';
+      container.appendChild(results);
+
+      input.addEventListener('input', async () => {
+        const query = input.value;
+        if (!query.trim()) {
+          results.innerHTML = '';
+          return;
+        }
+        const search = await pf.search(query);
+        results.innerHTML = '';
+        for (const result of search.results.slice(0, 10)) {
+          const data = await result.data();
+          const el = document.createElement('a');
+          el.href = data.url;
+          el.className = 'block rounded-md border border-rule bg-paper-elevated p-4 no-underline hover:shadow-md transition-shadow duration-base';
+          el.innerHTML =
+            '<h3 class="font-serif text-body-lg text-ink m-0">' + (data.meta?.title ?? '') + '</h3>' +
+            '<p class="mt-1 font-sans text-sm text-ink-muted line-clamp-2">' + (data.excerpt ?? '') + '</p>';
+          results.appendChild(el);
+        }
+      });
+    };
+    script.onerror = () => {
+      container.innerHTML = '<p class="font-sans text-sm text-ink-faint">搜索索引尚未生成，请先运行 <code>npm run build</code>。</p>';
+    };
+    document.head.appendChild(script);
+  }
+
+  initSearch();
+</script>

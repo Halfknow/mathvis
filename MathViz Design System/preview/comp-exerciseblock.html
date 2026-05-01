@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--color-paper); padding: 20px 24px; max-width: 680px; }
+  .exercise { border: 1px solid var(--color-rule); border-radius: var(--radius-md);
+    background: var(--color-paper-elevated); padding: 20px 24px; }
+  .ex-label { font-family: var(--font-mono); font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--color-accent); margin-bottom: 10px; }
+  .ex-prompt { font-family: var(--font-serif); font-size: var(--text-body-lg); line-height: 1.7;
+    color: var(--color-ink); margin: 0 0 14px; }
+  .ex-actions { display: flex; gap: 20px; margin-bottom: 14px; }
+  .ex-btn { font-family: var(--font-sans); font-size: 13px; background: none; border: none;
+    padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .ex-btn-hint { color: var(--color-ink-muted); text-decoration-color: var(--color-rule); }
+  .ex-btn-answer { color: var(--color-accent); text-decoration-color: color-mix(in srgb, var(--color-accent) 40%, transparent); }
+  .ex-hint { background: var(--color-surface-1); border-radius: var(--radius-md); padding: 14px 16px;
+    margin-bottom: 10px; }
+  .ex-hint-label { font-family: var(--font-sans); font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--color-ink-faint); margin-bottom: 6px; }
+  .ex-hint-text { font-family: var(--font-serif); font-size: 15px; line-height: 1.6; color: var(--color-ink-muted); margin: 0; }
+  .ex-answer { background: var(--color-accent-soft); border-radius: var(--radius-md); padding: 14px 16px; }
+  .ex-answer-label { font-family: var(--font-sans); font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--color-accent); margin-bottom: 6px; }
+  .ex-answer-text { font-family: var(--font-serif); font-size: 15px; line-height: 1.6; color: var(--color-ink); margin: 0; }
+</style>
+</head>
+<body>
+  <div class="exercise">
+    <div class="ex-label">Exercise 1</div>
+    <p class="ex-prompt">Two arrows are drawn on the plane. The first goes from <code>(0, 0)</code> to <code>(3, 1)</code>. The second goes from <code>(2, 4)</code> to <code>(5, 5)</code>. Do they represent the same vector?</p>
+    <div class="ex-actions">
+      <button class="ex-btn ex-btn-hint">Show hint</button>
+      <button class="ex-btn ex-btn-answer">Show answer</button>
+    </div>
+    <div class="ex-hint">
+      <div class="ex-hint-label">Hint</div>
+      <p class="ex-hint-text">A vector is determined by how far it travels in <em>x</em> and <em>y</em>, regardless of where it starts. Compute Δx and Δy for each arrow.</p>
+    </div>
+    <div class="ex-answer">
+      <div class="ex-answer-label">Answer</div>
+      <p class="ex-answer-text">Yes. Both arrows have Δx = 3 and Δy = 1. Different tails, same vector.</p>
+    </div>
+  </div>
+</body>
+</html>

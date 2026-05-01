@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--color-paper); padding: 20px 24px; }
+  .block { padding: 14px 0; border-bottom: 1px solid var(--color-rule); display: flex; gap: 16px; align-items: flex-start; }
+  .block:last-child { border-bottom: none; }
+  .label { width: 120px; flex-shrink: 0; font-family: var(--font-mono); font-size: 10px; color: var(--color-ink-faint); padding-top: 4px; line-height: 1.5; }
+  .label b { display: block; color: var(--color-accent); font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="block">
+    <div class="label"><b>--font-serif</b>Source Serif 4<br>Lesson prose</div>
+    <div style="font-family:var(--font-serif); font-size:22px; line-height:1.4; color:var(--color-ink); max-width:480px;">
+      A vector is the <em>equivalence class</em> of all arrows with the same direction and length.
+    </div>
+  </div>
+  <div class="block">
+    <div class="label"><b>--font-sans</b>Inter<br>UI chrome</div>
+    <div style="font-family:var(--font-sans); font-size:15px; line-height:1.6; color:var(--color-ink-muted); max-width:480px;">
+      Start with Linear Algebra · Browse all courses · 24 lessons · ~18h · Beginner
+    </div>
+  </div>
+  <div class="block">
+    <div class="label"><b>--font-mono</b>JetBrains Mono<br>Code, labels</div>
+    <div style="font-family:var(--font-mono); font-size:13px; line-height:1.5; color:var(--color-ink-muted);">
+      <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--color-ink-faint);">MODULE 1</span><br>
+      --color-accent: #c8693d;<br>
+      const v = [2, 1];
+    </div>
+  </div>
+</body>
+</html>

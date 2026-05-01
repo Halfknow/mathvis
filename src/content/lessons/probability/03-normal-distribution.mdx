@@ -1,0 +1,53 @@
+---
+title: "The Normal Distribution"
+titleZh: "正态分布"
+description: "The bell curve — the most important distribution in statistics, and why it appears everywhere."
+descriptionZh: "钟形曲线——统计学中最重要的分布，以及它为何无处不在。"
+course: "probability"
+module: "Foundations of Probability"
+moduleZh: "概率基础"
+moduleOrder: 1
+lessonOrder: 3
+duration: 20
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "normal-dist"
+    type: "normal-dist"
+    title: "Normal Distribution Explorer"
+---
+
+The **normal distribution** (also called the Gaussian distribution) is the most famous probability distribution in statistics. Its bell-shaped curve describes everything from heights to measurement errors to test scores.
+
+## The density function
+
+A normal distribution is fully described by two parameters:
+
+- **$\mu$** (mu) — the **mean**, which controls where the peak is centered
+- **$\sigma$** (sigma) — the **standard deviation**, which controls how wide the bell is
+
+$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$$
+
+The formula looks intimidating, but the geometry is simple: a symmetric bell, peaked at $\mu$, with width controlled by $\sigma$.
+
+## The 68-95-99.7 rule
+
+For any normal distribution:
+
+- **68%** of values fall within $\mu \pm 1\sigma$
+- **95%** of values fall within $\mu \pm 2\sigma$
+- **99.7%** of values fall within $\mu \pm 3\sigma$
+
+This rule lets you quickly estimate probabilities without computing integrals.
+
+## Why is it everywhere?
+
+The **Central Limit Theorem** explains why the normal distribution shows up so often: when you average many independent random variables, the result tends toward a normal distribution — regardless of the original distribution.
+
+This is why:
+- Sample means are approximately normal
+- Measurement errors cluster symmetrically
+- Heights, weights, and blood pressures are bell-shaped
+
+## Key insight
+
+> The normal distribution is not just one curve — it's a *family* of curves parameterized by $\mu$ and $\sigma$. The Central Limit Theorem ensures that this family appears naturally whenever many small independent effects combine.

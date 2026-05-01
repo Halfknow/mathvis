@@ -1,8 +1,11 @@
 ---
 title: 'Vectors as Arrows'
+titleZh: '向量即箭头'
 description: 'Build geometric intuition for vectors before any coordinates.'
+descriptionZh: '在引入坐标之前，先建立向量的几何直觉。'
 course: 'linear-algebra'
 module: 'Vector Spaces'
+moduleZh: '向量空间'
 moduleOrder: 1
 lessonOrder: 1
 duration: 14
@@ -19,6 +22,8 @@ import { KeyInsight } from '../../../components/learning/KeyInsight';
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
 import { PrerequisiteList } from '../../../components/learning/PrerequisiteList';
 import { LessonProgress } from '../../../components/learning/LessonProgress';
+import { VectorCanvas } from '../../../components/interactive/linear-algebra/VectorCanvas';
+import { MathBlock, MathInline } from '../../../components/math/Math';
 
 <LessonProgress current={1} total={6} moduleTitle="Vector Spaces" />
 
@@ -45,95 +50,48 @@ its tail starts — and this freedom is what gives vectors their power.
   src="https://cdn.mathviz.example/linear-algebra/01-arrow-intro.webm"
   srcMp4="https://cdn.mathviz.example/linear-algebra/01-arrow-intro.mp4"
   poster="https://cdn.mathviz.example/linear-algebra/01-arrow-intro-poster.jpg"
-  caption="Three arrows of the same vector, drawn from different starting points. They are equal — vectors don't remember their tails."
+  caption="Three arrows of the same vector, drawn from different starting points."
 />
-
-The picture above is doing real work. Watch what happens if you try to
-phrase that observation in symbols only — *“the ordered pair $(2, 1)$
-equals the ordered pair $(2, 1)$, regardless of where it is drawn”* — and
-notice how unsatisfying the symbolic version is. The geometry is the point.
 
 ## Drag it yourself
 
-Below is the same idea, but interactive. Grab any of the three arrows
-and slide it around. Their starting points change; the vector they
-represent does not.
+Below is the same idea, but interactive. Grab any of the arrows and slide it around.
 
 <InteractiveCanvas
   title="Free vectors"
-  caption="All three arrows represent the same vector. Translation does not change a vector."
+  caption="Drag the arrow tips to explore. Translation does not change a vector."
   aspectRatio="16/9"
 >
-  {/* Real implementation goes here — Three.js / D3 / SVG */}
-  <div className="absolute inset-0 grid place-items-center text-ink-faint font-sans text-sm">
-    [InteractiveCanvas slot · Three.js scene mounts here]
-  </div>
+  <VectorCanvas
+    initialVectors={[
+      { x: 3, y: 2, color: 'var(--color-vector-blue)', label: 'v', originX: -3, originY: -1 },
+      { x: 3, y: 2, color: 'var(--color-vector-green)', label: 'v', originX: -1, originY: 0 },
+      { x: 3, y: 2, color: 'var(--color-accent)', label: 'v', originX: 1, originY: -2 },
+    ]}
+  />
 </InteractiveCanvas>
 
 <KeyInsight>
-  A vector is the **equivalence class** of all arrows with the same
-  direction and length. The coordinates we will introduce later are
-  one specific representative — convenient, but never the whole story.
+  A vector is the **equivalence class** of all arrows with the same direction and length.
 </KeyInsight>
 
-## When coordinates enter the picture
+## When coordinates enter
 
-Coordinates appear only when we *choose* a starting point — by convention,
-the origin. With that choice fixed, the arrow's tip lands somewhere, and
-those landing coordinates become the vector's components:
+With a starting point fixed at the origin, the arrow's tip lands at its components:
 
-$$
-\vec{v} = \begin{bmatrix} 2 \\ 1 \end{bmatrix}
-$$
+<MathBlock expression={'\\vec{v} = \\begin{bmatrix} 2 \\\\ 1 \\end{bmatrix}'} />
 
-Notice the order of operations: **the geometry came first, the numbers
-came second**. Almost every confusion in linear algebra traces back to
-people inheriting the numbers and forgetting they were ever arrows.
+Notice the order: **geometry first, numbers second**.
 
 ## Practice
 
 <ExerciseBlock
   number={1}
-  prompt={
-    <>
-      Two arrows are drawn on the plane. The first goes from <code>(0, 0)</code>
-      {' '}to <code>(3, 1)</code>. The second goes from <code>(2, 4)</code>
-      {' '}to <code>(5, 5)</code>. Do they represent the same vector?
-    </>
-  }
-  hint={
-    <>
-      A vector is determined by how far it travels in <em>x</em> and how
-      far it travels in <em>y</em>, regardless of where it starts. Compute
-      $\Delta x$ and $\Delta y$ for each arrow.
-    </>
-  }
-  answer={
-    <>
-      Yes. Both arrows have $\Delta x = 3$ and $\Delta y = 1$. Different
-      tails, same vector.
-    </>
-  }
-/>
-
-<ExerciseBlock
-  number={2}
-  prompt={
-    <>
-      Sketch three different arrows that all represent the vector
-      $\begin{bmatrix} -1 \\ 2 \end{bmatrix}$. What is the same about
-      them? What is different?
-    </>
-  }
-  answer={
-    <>
-      Each arrow moves left 1 and up 2 from its tail to its head. The
-      direction and length are identical; only the location of the tail
-      differs.
-    </>
-  }
+  prompt="Two arrows: first from (0,0) to (3,1), second from (2,4) to (5,5). Same vector?"
+  hint="Compute Δx and Δy for each."
+  answer="Yes. Both have Δx=3 and Δy=1."
 />
 
 ---
 
-**Up next:** [Vector addition, geometrically →](/courses/linear-algebra/vector-spaces/vector-addition)
+**Up next:** [Vector addition →](/courses/linear-algebra/vector-spaces/vector-addition)

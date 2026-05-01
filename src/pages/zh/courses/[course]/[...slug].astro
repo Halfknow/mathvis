@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../../../../components/layout/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { courseMeta } from '../../../../i18n/utils';
+import type { Lang } from '../../../../i18n/ui';
+
+export async function getStaticPaths() {
+  const lessons = await getCollection('lessons');
+  return lessons.map((lesson) => {
+    const lessonSlug = lesson.slug.split('/').slice(1).join('/') || lesson.slug;
+    return {
+      params: { course: lesson.data.course, slug: lessonSlug },
+      props: { lesson },
+    };
+  });
+}
+
+const lang: Lang = 'zh';
+const { course, slug } = Astro.params;
+const { lesson } = Astro.props;
+const { Content } = await lesson.render();
+
+const allLessons = await getCollection('lessons');
+const courseLessons = allLessons
+  .filter((l) => l.data.course === course)
+  .sort((a, b) => a.data.moduleOrder - b.data.moduleOrder || a.data.lessonOrder - b.data.lessonOrder);
+
+const lessonSlug = (l: { slug: string }) => l.slug.split('/').slice(1).join('/') || l.slug;
+const currentIndex = courseLessons.findIndex((l) => lessonSlug(l) === slug);
+const prevLesson = currentIndex > 0 ? courseLessons[currentIndex - 1] : null;
+const nextLesson = currentIndex < courseLessons.length - 1 ? courseLessons[currentIndex + 1] : null;
+
+const meta = courseMeta[course!] ?? { en: { title: course!, symbol: '?' }, zh: { title: course!, symbol: '?' } };
+const courseTitle = meta[lang].title;
+
+const uniqueModules = [...new Set(courseLessons.map((l) => l.data.module))];
+const lessonTitle = lesson.data.titleZh ?? lesson.data.title;
+---
+
+<BaseLayout title={lessonTitle} lang={lang}>
+  <div class="mx-auto flex max-w-7xl">
+    <aside class="hidden w-[260px] shrink-0 border-r border-rule bg-surface-1 lg:sticky lg:top-14 lg:block lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto">
+      <div class="px-6 pt-8 pb-4">
+        <p class="font-mono text-[10px] uppercase tracking-widest text-ink-faint">课程</p>
+        <a href={`/zh/courses/${course}`} class="font-serif text-h3 font-semibold text-ink no-underline hover:text-accent">
+          {courseTitle}
+        </a>
+      </div>
+      <nav class="px-3 pb-16">
+        {uniqueModules.map((modTitle, modIdx) => {
+          const modLessons = courseLessons.filter((l) => l.data.module === modTitle);
+          return (
+            <div class="mb-5">
+              <p class="px-3 font-sans text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+                {modIdx + 1}. {modLessons[0].data.moduleZh ?? modTitle}
+              </p>
+              <ul class="mt-1 space-y-0.5">
+                {modLessons.map((l) => (
+                  <li>
+                    <a
+                      href={`/zh/courses/${course}/${lessonSlug(l)}`}
+                      class:list={[
+                        'flex items-center justify-between gap-2 rounded-md px-3 py-1.5 font-sans text-[13px] no-underline transition-colors duration-fast',
+                        lessonSlug(l) === slug
+                          ? 'bg-accent-soft text-ink font-medium'
+                          : 'text-ink-muted hover:text-ink',
+                      ]}
+                    >
+                      <span class="truncate">{l.data.titleZh ?? l.data.title}</span>
+                      <span class="font-mono text-[10px] text-ink-faint shrink-0">{l.data.duration}分钟</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </nav>
+    </aside>
+
+    <div class="fixed bottom-0 left-0 right-0 z-30 border-t border-rule bg-paper/95 backdrop-blur lg:hidden">
+      <div class="flex items-center justify-between px-4 py-3">
+        {prevLesson ? (
+          <a href={`/zh/courses/${course}/${lessonSlug(prevLesson)}`} class="font-serif text-sm text-ink-muted no-underline">
+            ←
+          </a>
+        ) : <span class="w-6" />}
+        <span class="font-mono text-[10px] text-ink-faint">
+          {currentIndex + 1} / {courseLessons.length}
+        </span>
+        {nextLesson ? (
+          <a href={`/zh/courses/${course}/${lessonSlug(nextLesson)}`} class="font-serif text-sm text-accent no-underline">
+            →
+          </a>
+        ) : <span class="w-6" />}
+      </div>
+    </div>
+
+    <main class="flex-1 px-4 py-8 pb-20 lg:px-12 lg:py-12 lg:pb-12">
+      <div class="mx-auto max-w-prose prose-lesson">
+        <Content />
+      </div>
+
+      <div class="mx-auto mt-16 hidden max-w-prose items-center justify-between border-t border-rule pt-6 lg:flex">
+        {prevLesson ? (
+          <a href={`/zh/courses/${course}/${lessonSlug(prevLesson)}`} class="font-serif text-sm text-ink-muted no-underline hover:text-accent transition-colors duration-fast">
+            ← {prevLesson.data.titleZh ?? prevLesson.data.title}
+          </a>
+        ) : <span />}
+        {nextLesson ? (
+          <a href={`/zh/courses/${course}/${lessonSlug(nextLesson)}`} class="font-serif text-sm text-accent no-underline hover:text-accent-hover transition-colors duration-fast">
+            {nextLesson.data.titleZh ?? nextLesson.data.title} →
+          </a>
+        ) : <span />}
+      </div>
+    </main>
+  </div>
+</BaseLayout>

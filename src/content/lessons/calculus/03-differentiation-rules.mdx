@@ -1,0 +1,62 @@
+---
+title: "Differentiation Rules"
+titleZh: "求导法则"
+description: "Power rule, product rule, chain rule — the shortcuts that make differentiation practical."
+descriptionZh: "幂法则、乘积法则、链式法则——让求导变得实用的捷径。"
+course: "calculus"
+module: "Foundations of Differentiation"
+moduleZh: "微分基础"
+moduleOrder: 1
+lessonOrder: 3
+duration: 18
+difficulty: "Beginner"
+---
+
+Computing every derivative from the limit definition is tedious. Fortunately, a small set of rules lets us differentiate almost any function you'll encounter.
+
+## The power rule
+
+If $f(x) = x^n$, then:
+
+$$f'(x) = n \cdot x^{n-1}$$
+
+This works for any real exponent — positive, negative, or fractional. The power rule is the workhorse of differentiation.
+
+**Examples:**
+- $(x^3)' = 3x^2$
+- $(x^{-2})' = -2x^{-3}$
+- $(\sqrt{x})' = (x^{1/2})' = \frac{1}{2}x^{-1/2}$
+
+## The sum and constant rules
+
+$$[cf(x)]' = c \cdot f'(x)$$
+$$[f(x) + g(x)]' = f'(x) + g'(x)$$
+
+Constants multiply through, and derivatives distribute over addition. These two rules mean you can differentiate any polynomial term-by-term.
+
+## The product rule
+
+$$[f(x) \cdot g(x)]' = f'(x)g(x) + f(x)g'(x)$$
+
+"First times derivative of second, plus second times derivative of first." This is essential whenever two functions are multiplied together — like $x^2 \sin(x)$.
+
+## The chain rule
+
+$$[f(g(x))]' = f'(g(x)) \cdot g'(x)$$
+
+The chain rule handles **composed functions** — functions nested inside other functions. You differentiate the outer function, then multiply by the derivative of the inner function.
+
+**Example:** To differentiate $\sin(x^2)$:
+- Outer: $\sin(u)$, whose derivative is $\cos(u)$
+- Inner: $u = x^2$, whose derivative is $2x$
+- Result: $\cos(x^2) \cdot 2x$
+
+## The quotient rule
+
+$$\left[\frac{f(x)}{g(x)}\right]' = \frac{f'(x)g(x) - f(x)g'(x)}{[g(x)]^2}$$
+
+While useful, the quotient rule is just the product rule applied to $f(x) \cdot [g(x)]^{-1}$ combined with the chain rule. Many people prefer to rewrite quotients as products to avoid memorizing this formula.
+
+## Key insight
+
+> The five rules — power, sum, product, quotient, and chain — compose. Any function built from these operations can be differentiated mechanically by applying the right rule at each step.

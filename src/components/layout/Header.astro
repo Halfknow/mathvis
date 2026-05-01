@@ -1,17 +1,32 @@
 ---
+import { useTranslations, getLocalizedPath, getAlternateLocaleUrl } from '../../i18n/utils';
+import { languages } from '../../i18n/ui';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang } = Astro.props;
+const locale = lang ?? 'en';
+const t = useTranslations(locale);
+
 const navItems = [
-  { href: '/courses/linear-algebra', label: 'Linear Algebra' },
-  { href: '/courses/calculus', label: 'Calculus' },
-  { href: '/courses/probability', label: 'Probability' },
+  { href: getLocalizedPath('/courses/linear-algebra', locale), label: t('nav.linearAlgebra') },
+  { href: getLocalizedPath('/courses/calculus', locale), label: t('nav.calculus') },
+  { href: getLocalizedPath('/courses/probability', locale), label: t('nav.probability') },
 ];
 
 const currentPath = Astro.url.pathname;
+const alt = getAlternateLocaleUrl(Astro.url);
+const altLabel = languages[alt.lang];
+const searchHref = getLocalizedPath('/search', locale);
 ---
 
 <header class="sticky top-0 z-40 border-b border-rule bg-paper/85 backdrop-blur">
-  <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
+  <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 md:px-6">
     <!-- Logo / wordmark -->
-    <a href="/" class="group flex items-center gap-2 no-underline">
+    <a href={getLocalizedPath('/', locale)} class="group flex items-center gap-2 no-underline">
       <span class="grid h-7 w-7 place-items-center rounded-md bg-ink text-paper-elevated transition-colors duration-base ease-smooth group-hover:bg-accent">
         <span class="font-serif text-base font-semibold leading-none">∫</span>
       </span>
@@ -20,7 +35,7 @@ const currentPath = Astro.url.pathname;
       </span>
     </a>
 
-    <!-- Primary nav -->
+    <!-- Desktop nav -->
     <nav class="hidden items-center gap-1 md:flex">
       {navItems.map((item) => (
         <a
@@ -38,29 +53,77 @@ const currentPath = Astro.url.pathname;
     </nav>
 
     <!-- Right actions -->
-    <div class="flex items-center gap-2">
-      <button
-        type="button"
-        aria-label="Search"
+    <div class="flex items-center gap-1">
+      <a
+        href={searchHref}
+        aria-label={t('nav.search')}
         class="grid h-9 w-9 place-items-center rounded-md text-ink-muted transition-colors duration-fast ease-smooth hover:bg-surface-1 hover:text-ink"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="7"></circle>
           <path d="m21 21-4.35-4.35"></path>
         </svg>
-      </button>
+      </a>
+      <!-- Language toggle -->
+      <a
+        href={alt.path}
+        class="flex h-9 items-center gap-1 rounded-md px-2 font-sans text-xs font-medium text-ink-muted transition-colors duration-fast ease-smooth hover:bg-surface-1 hover:text-ink no-underline"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        <span>{altLabel}</span>
+      </a>
       <button
         type="button"
         id="theme-toggle"
-        aria-label="Toggle theme"
+        aria-label={t('nav.theme')}
         class="grid h-9 w-9 place-items-center rounded-md text-ink-muted transition-colors duration-fast ease-smooth hover:bg-surface-1 hover:text-ink"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
+      <!-- Mobile menu toggle -->
+      <button
+        type="button"
+        id="mobile-menu-toggle"
+        aria-label={t('nav.menu')}
+        class="grid h-9 w-9 place-items-center rounded-md text-ink-muted transition-colors duration-fast ease-smooth hover:bg-surface-1 hover:text-ink md:hidden"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="6" x2="20" y2="6"></line>
+          <line x1="4" y1="12" x2="20" y2="12"></line>
+          <line x1="4" y1="18" x2="20" y2="18"></line>
+        </svg>
+      </button>
     </div>
   </div>
+
+  <!-- Mobile nav dropdown -->
+  <nav id="mobile-menu" class="hidden border-t border-rule bg-paper px-4 pb-4 pt-2 md:hidden">
+    {navItems.map((item) => (
+      <a
+        href={item.href}
+        class:list={[
+          'block rounded-md px-3 py-2 font-sans text-sm no-underline transition-colors duration-fast',
+          currentPath.startsWith(item.href)
+            ? 'text-ink bg-surface-1'
+            : 'text-ink-muted hover:text-ink hover:bg-surface-1',
+        ]}
+      >
+        {item.label}
+      </a>
+    ))}
+    <a href={searchHref} class="block rounded-md px-3 py-2 font-sans text-sm text-ink-muted no-underline hover:text-ink hover:bg-surface-1">
+      {t('nav.search')}
+    </a>
+    <a href={alt.path} class="block rounded-md px-3 py-2 font-sans text-sm text-ink-muted no-underline hover:text-ink hover:bg-surface-1">
+      {altLabel}
+    </a>
+  </nav>
 </header>
 
 <script>
@@ -72,6 +135,9 @@ const currentPath = Astro.url.pathname;
     localStorage.setItem('theme', next);
   });
 
-  const stored = localStorage.getItem('theme');
-  if (stored) document.documentElement.setAttribute('data-theme', stored);
+  const menuToggle = document.getElementById('mobile-menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  menuToggle?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+  });
 </script>

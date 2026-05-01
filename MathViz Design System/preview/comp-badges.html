@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--color-paper); padding: 20px 24px; }
+  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    border-radius: var(--radius-pill); font-family: var(--font-sans);
+    font-weight: 500; font-size: 12px; padding: 2px 10px; line-height: 1.6;
+  }
+  .neutral { background: var(--color-surface-1); color: var(--color-ink-muted); }
+  .accent  { background: var(--color-accent-soft); color: var(--color-accent); }
+  .success { background: color-mix(in srgb, #4f8a5b 15%, transparent); color: #4f8a5b; }
+  .warning { background: color-mix(in srgb, #d4a02a 15%, transparent); color: #a07520; }
+  .section-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--color-ink-faint); margin-bottom: 8px; }
+</style>
+</head>
+<body>
+  <div class="section-label">All variants</div>
+  <div class="row">
+    <span class="badge neutral">Beginner</span>
+    <span class="badge neutral">Intermediate</span>
+    <span class="badge neutral">Advanced</span>
+    <span class="badge accent">New</span>
+    <span class="badge success">Completed</span>
+    <span class="badge warning">In progress</span>
+  </div>
+  <div class="section-label">In context</div>
+  <div class="row">
+    <span style="font-family:var(--font-serif);font-size:16px;color:var(--color-ink);">Linear Algebra</span>
+    <span class="badge neutral">Beginner</span>
+    <span style="font-family:var(--font-mono);font-size:12px;color:var(--color-ink-faint);">24 lessons · ~18h</span>
+  </div>
+</body>
+</html>

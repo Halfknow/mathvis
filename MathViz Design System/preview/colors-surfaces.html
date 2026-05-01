@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--color-paper); padding: 20px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .swatch { border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+  .swatch-color { height: 72px; border-bottom: 1px solid var(--color-rule); }
+  .swatch-info { background: var(--color-paper-elevated); padding: 10px 12px; }
+  .swatch-name { font-family: var(--font-mono); font-size: 11px; color: var(--color-ink-muted); }
+  .swatch-value { font-family: var(--font-mono); font-size: 10px; color: var(--color-ink-faint); margin-top: 2px; }
+  .swatch-use { font-family: var(--font-sans); font-size: 10px; color: var(--color-ink-faint); margin-top: 4px; line-height: 1.3; }
+</style>
+</head>
+<body>
+<div class="grid">
+  <div class="swatch">
+    <div class="swatch-color" style="background:#faf7f2;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">--color-paper</div>
+      <div class="swatch-value">#faf7f2</div>
+      <div class="swatch-use">Page background</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#ffffff; border:1px solid #e8e3d8;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">--color-paper-elevated</div>
+      <div class="swatch-value">#ffffff</div>
+      <div class="swatch-use">Cards on paper</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#f4f0e8;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">--color-surface-1</div>
+      <div class="swatch-value">#f4f0e8</div>
+      <div class="swatch-use">Sidebars, inset strips</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#ebe6dc;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">--color-surface-2</div>
+      <div class="swatch-value">#ebe6dc</div>
+      <div class="swatch-use">Code blocks, deep inset</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+---
+title: "Limits and Continuity"
+titleZh: "极限与连续性"
+description: "Before we can differentiate, we need to understand limits — the foundation of all calculus."
+descriptionZh: "在微分之前，我们需要理解极限——微积分的基石。"
+course: "calculus"
+module: "Foundations of Differentiation"
+moduleZh: "微分基础"
+moduleOrder: 1
+lessonOrder: 2
+duration: 15
+difficulty: "Beginner"
+---
+
+The derivative is defined as a **limit**. Before we can use that definition, we need to understand what limits are and when they exist.
+
+## What is a limit?
+
+When we write:
+
+$$\lim_{x \to a} f(x) = L$$
+
+we mean: as $x$ gets arbitrarily close to $a$ (but never equals $a$), the values of $f(x)$ get arbitrarily close to $L$.
+
+The key word is **arbitrarily close** — not *equal to*, but *approaching*. The function doesn't even need to be defined at $a$.
+
+## When does a limit exist?
+
+A limit exists when the function approaches the same value from **both sides**:
+
+$$\lim_{x \to a^-} f(x) = \lim_{x \to a^+} f(x) = L$$
+
+If the left-hand limit and right-hand limit disagree, the (two-sided) limit does not exist.
+
+Common situations where limits fail:
+
+1. **Jump discontinuity** — the function jumps to a different value.
+2. **Infinite oscillation** — the function oscillates faster and faster near the point.
+3. **Vertical asymptote** — the function shoots off to infinity.
+
+## Continuity
+
+A function is **continuous** at $x = a$ if three conditions hold:
+
+1. $f(a)$ is defined
+2. $\lim_{x \to a} f(x)$ exists
+3. $\lim_{x \to a} f(x) = f(a)$
+
+Informally: you can draw the graph without lifting your pen. Polynomials, exponentials, and trigonometric functions are continuous everywhere on their domains.
+
+## Why limits matter for derivatives
+
+The derivative is defined as:
+
+$$f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$
+
+This limit only makes sense if the function is continuous at $x$. In fact, **differentiability implies continuity** — if $f'(a)$ exists, then $f$ is continuous at $a$. The converse is not true: $|x|$ is continuous at $0$ but not differentiable there.
+
+## Key insight
+
+> Limits let us talk about behavior "at the boundary" — what happens as we approach a point, even if the point itself is undefined or discontinuous.

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--color-paper); padding: 24px; display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; }
+  .item { display: flex; flex-direction: column; gap: 10px; }
+  .item-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--color-ink-faint); }
+  .logo-combo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .logo-mark { width: 28px; height: 28px; border-radius: 6px; background: var(--color-ink);
+    display: grid; place-items: center; flex-shrink: 0;
+    transition: background var(--duration-base) var(--ease-smooth); }
+  .logo-mark:hover, .logo-combo:hover .logo-mark { background: var(--color-accent); }
+  .logo-glyph { font-family: var(--font-serif); font-size: 18px; font-weight: 600; color: var(--color-paper); line-height: 1; }
+  .logo-word { font-family: var(--font-serif); font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-ink); }
+  .favicon { width: 32px; height: 32px; }
+  .dark-strip { background: var(--color-ink); border-radius: var(--radius-md); padding: 16px 20px;
+    display: flex; align-items: center; gap: 8px; }
+  .dark-mark { width: 28px; height: 28px; border-radius: 6px; background: var(--color-accent);
+    display: grid; place-items: center; }
+  .dark-glyph { font-family: var(--font-serif); font-size: 18px; font-weight: 600; color: var(--color-paper); line-height: 1; }
+  .dark-word { font-family: var(--font-serif); font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-paper); }
+</style>
+</head>
+<body>
+  <div class="item">
+    <div class="item-label">Wordmark + mark</div>
+    <a class="logo-combo" href="#">
+      <div class="logo-mark"><span class="logo-glyph">∫</span></div>
+      <span class="logo-word">MathViz</span>
+    </a>
+  </div>
+  <div class="item">
+    <div class="item-label">Mark only</div>
+    <div class="logo-mark"><span class="logo-glyph">∫</span></div>
+  </div>
+  <div class="item">
+    <div class="item-label">On dark</div>
+    <div class="dark-strip">
+      <div class="dark-mark"><span class="dark-glyph">∫</span></div>
+      <span class="dark-word">MathViz</span>
+    </div>
+  </div>
+  <div class="item">
+    <div class="item-label">Course glyphs</div>
+    <div style="display:flex;gap:12px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div style="width:40px;height:40px;border-radius:var(--radius-md);background:var(--color-surface-1);border:1px solid var(--color-rule);display:grid;place-items:center;">
+          <span style="font-family:var(--font-serif);font-size:22px;color:var(--color-ink);">λ</span>
+        </div>
+        <span style="font-family:var(--font-mono);font-size:9px;color:var(--color-ink-faint);">linalg</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div style="width:40px;height:40px;border-radius:var(--radius-md);background:var(--color-surface-1);border:1px solid var(--color-rule);display:grid;place-items:center;">
+          <span style="font-family:var(--font-serif);font-size:22px;color:var(--color-ink);">∫</span>
+        </div>
+        <span style="font-family:var(--font-mono);font-size:9px;color:var(--color-ink-faint);">calculus</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div style="width:40px;height:40px;border-radius:var(--radius-md);background:var(--color-surface-1);border:1px solid var(--color-rule);display:grid;place-items:center;">
+          <span style="font-family:var(--font-serif);font-size:22px;color:var(--color-ink);">P</span>
+        </div>
+        <span style="font-family:var(--font-mono);font-size:9px;color:var(--color-ink-faint);">prob</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

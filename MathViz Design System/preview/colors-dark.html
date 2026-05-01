@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--color-paper); padding: 20px; }
+  .label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--color-ink-faint); margin-bottom: 10px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .swatch { border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--color-rule); }
+  .swatch-color { height: 52px; }
+  .swatch-info { background: var(--color-paper-elevated); padding: 8px 10px; }
+  .swatch-name { font-family: var(--font-mono); font-size: 10px; color: var(--color-ink-muted); }
+  .swatch-value { font-family: var(--font-mono); font-size: 9px; color: var(--color-ink-faint); margin-top: 2px; }
+  .row2 { margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="label">Dark mode · "Blackboard"</div>
+<div class="grid">
+  <div class="swatch">
+    <div class="swatch-color" style="background:#0e1117;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">paper</div>
+      <div class="swatch-value">#0e1117</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#161b25;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">paper-elevated</div>
+      <div class="swatch-value">#161b25</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#1e2330;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">surface-2</div>
+      <div class="swatch-value">#1e2330</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#252b3a;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">rule</div>
+      <div class="swatch-value">#252b3a</div>
+    </div>
+  </div>
+</div>
+<div class="grid row2">
+  <div class="swatch">
+    <div class="swatch-color" style="background:#e6e9f0;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">ink</div>
+      <div class="swatch-value">#e6e9f0</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#a4abc0;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">ink-muted</div>
+      <div class="swatch-value">#a4abc0</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#e8a87c;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">accent</div>
+      <div class="swatch-value">#e8a87c</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#2a1f18;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">accent-soft</div>
+      <div class="swatch-value">#2a1f18</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

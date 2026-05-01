@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--color-surface-1); padding: 20px 24px; }
+  .row { display: flex; gap: 16px; align-items: flex-start; }
+  .card {
+    background: var(--color-paper-elevated); border: 1px solid var(--color-rule);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--duration-base) var(--ease-smooth);
+  }
+  .card-pad { padding: 20px 24px; }
+  .card.interactive { cursor: pointer; }
+  .card.interactive:hover { box-shadow: var(--shadow-md); }
+  .label-row { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--color-ink-faint); margin-bottom: 10px; }
+  h4 { font-family: var(--font-serif); font-size: 16px; font-weight: 600; color: var(--color-ink); margin: 0 0 6px; }
+  p { font-family: var(--font-sans); font-size: 13px; color: var(--color-ink-muted); margin: 0; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="row">
+  <div style="flex:1;">
+    <div class="label-row">Default card</div>
+    <div class="card card-pad">
+      <h4>Vectors as Arrows</h4>
+      <p>Build geometric intuition for vectors before any coordinates.</p>
+    </div>
+  </div>
+  <div style="flex:1;">
+    <div class="label-row">Interactive card (hover)</div>
+    <div class="card card-pad interactive">
+      <h4>Linear Combinations</h4>
+      <p>Span, basis, and dimension — the language of vector spaces.</p>
+    </div>
+  </div>
+  <div style="flex:1;">
+    <div class="label-row">Card · padding none</div>
+    <div class="card" style="overflow:hidden;">
+      <div style="height:56px;background:var(--color-surface-1);display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--color-rule);">
+        <span style="font-family:var(--font-serif);font-size:36px;color:var(--color-ink);">λ</span>
+      </div>
+      <div class="card-pad" style="padding:14px 16px;">
+        <h4 style="font-size:14px;">Linear Algebra</h4>
+        <p style="font-size:12px;">24 lessons · ~18h</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

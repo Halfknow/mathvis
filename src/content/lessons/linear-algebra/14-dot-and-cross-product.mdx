@@ -1,0 +1,91 @@
+---
+title: 'Dot Product and Cross Product'
+titleZh: '点积与叉积'
+description: 'The dot product measures alignment — how much two arrows point in the same direction. The cross product builds a perpendicular arrow.'
+descriptionZh: '点积衡量对齐程度——两根箭头有多少指向同一个方向。叉积则构建一根垂直的箭头。'
+course: 'linear-algebra'
+module: 'Deep Structure'
+moduleZh: '深入结构'
+moduleOrder: 4
+lessonOrder: 14
+duration: 20
+difficulty: 'Intermediate'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { DotProductVis } from '../../../components/interactive/linear-algebra/DotProductVis';
+
+# Dot Product and Cross Product
+
+We've been transforming space. Now let's measure relationships *between* vectors. Two operations: the dot product asks "how aligned are these arrows?" and the cross product asks "what's perpendicular to both?"
+
+## The dot product — measuring alignment
+
+Take two arrows. The **dot product** is:
+
+<MathBlock expression={'\\vec{a} \\cdot \\vec{b} = a_1 b_1 + a_2 b_2 = |\\vec{a}| \\, |\\vec{b}| \\cos\\theta'} />
+
+where θ is the angle between them.
+
+The geometric picture:
+- **Positive** (θ < 90°): arrows point roughly the same way — they're somewhat aligned
+- **Zero** (θ = 90°): arrows are perpendicular — completely unaligned
+- **Negative** (θ > 90°): arrows point away from each other — anti-aligned
+
+## See the alignment
+
+Drag the vectors below and watch the dot product change. Toggle the projection to see how much of b lies along a. When the dot product hits zero, the arrows are perpendicular.
+
+<DotProductVis client:visible />
+
+## Projection — the geometric meaning
+
+The dot product equals |**a**| times the projection of **b** onto **a**. Think of shining a light perpendicular to **a**: the shadow **b** casts onto **a**'s line is its projection. The dot product scales that shadow by |**a**|.
+
+This means: **a** · **b** answers "how much of **b** lies in the direction of **a**?" — weighted by **a**'s length.
+
+## The cross product — building perpendicularity (3D)
+
+In 3D, the **cross product** of two vectors produces a third vector perpendicular to both:
+
+<MathBlock expression={'\\vec{a} \\times \\vec{b} = |\\vec{a}| \\, |\\vec{b}| \\sin\\theta \\, \\hat{n}'} />
+
+The magnitude |**a** × **b**| equals the area of the parallelogram formed by **a** and **b**. The direction n̂ is perpendicular to both (given by the right-hand rule).
+
+Key properties:
+- **a** × **a** = **0** (parallel vectors span no area)
+- **a** × **b** = -(**b** × **a**) (order flips the direction)
+- |**a** × **b**| = 0 when **a** and **b** are parallel
+
+<KeyInsight>
+The dot product measures how much two arrows agree in direction — positive means aligned, zero means perpendicular, negative means opposed. The cross product builds a perpendicular arrow whose length equals the parallelogram area.
+</KeyInsight>
+
+## The connection to everything else
+
+- **Dot product → projection**: decomposing vectors into components (used everywhere in physics and ML)
+- **Dot product → angles**: cos θ = (**a** · **b**) / (|**a**||**b**|) — the universal angle formula
+- **Cross product → area**: the area of the parallelogram (and triangle) formed by two vectors
+- **Cross product → torque, angular momentum**: physics runs on the cross product
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Compute (3,1) · (1,4). Are these vectors more aligned or more perpendicular?"
+  hint="3·1 + 1·4 = 7. Both vectors have length ≈ 3.2 and ≈ 4.1."
+  answer="Dot product = 7. The cosine of the angle is 7/(√10 · √17) ≈ 0.54, so θ ≈ 57°. More aligned than perpendicular — they're somewhat pointing the same way."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="If **a** = (1,2,3) and **b** = (4,5,6), are they perpendicular? If not, what vector would be perpendicular to both?"
+  hint="Check the dot product. For perpendicularity, use the cross product."
+  answer="Dot product = 1*4 + 2*5 + 3*6 = 32, not zero, so not perpendicular. The cross product **a** x **b** = (2*6-3*5, 3*4-1*6, 1*5-2*4) = (-3, 6, -3) is perpendicular to both."
+/>
+
+---
+
+**Up next:** [Applications and connections →](/courses/linear-algebra/15-applications)

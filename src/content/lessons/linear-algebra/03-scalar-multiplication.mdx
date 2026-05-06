@@ -1,0 +1,70 @@
+---
+title: 'Scalar Multiplication'
+titleZh: '标量乘法'
+description: 'Scaling a vector stretches or flips it — the direction stays the same (or reverses).'
+descriptionZh: '缩放一个向量就是拉长或翻转它——方向保持不变（或完全反转）。'
+course: 'linear-algebra'
+module: 'Vector Basics'
+moduleZh: '向量基础'
+moduleOrder: 1
+lessonOrder: 3
+duration: 12
+difficulty: 'Beginner'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { ScalarMult } from '../../../components/interactive/linear-algebra/ScalarMult';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+# Scalar Multiplication
+
+If a vector is an arrow, then **multiplying by a number (a scalar)** does exactly one thing: it stretches or shrinks the arrow. The direction either stays the same or flips — it never rotates.
+
+Think of it like this: the scalar is a **stretch factor**. A factor of 2 doubles the length. A factor of 0.5 halves it. A factor of -1 flips the arrow to point the opposite way.
+
+## Stretch, shrink, flip
+
+Drag the scalar slider below — watch the scaled vector stretch, shrink, and flip. The dashed line shows the direction is always preserved.
+
+<ScalarMult client:visible />
+
+Notice what happens when the scalar goes negative: the arrow flips to the exact opposite direction. When it hits zero, everything collapses to the origin. **Scalar multiplication never rotates.**
+
+## In coordinates
+
+When we write it in components, each coordinate gets multiplied:
+
+<MathBlock expression={'c \\cdot \\vec{v} = c \\cdot \\begin{bmatrix} v_1 \\\\ v_2 \\end{bmatrix} = \\begin{bmatrix} c \\cdot v_1 \\\\ c \\cdot v_2 \\end{bmatrix}'} />
+
+The scalar hits every component equally — that's why the direction is preserved. All components stretch by the same factor, so the slope (the ratio of components) doesn't change.
+
+<KeyInsight>
+Scalar multiplication is a uniform stretch. It scales length without rotating — or flips direction if the scalar is negative.
+</KeyInsight>
+
+## Three special scalars
+
+- **c = 0**: Everything collapses to the origin. The zero vector — no direction, no length.
+- **c = 1**: The vector is unchanged. The identity of scaling.
+- **c = -1**: The mirror image through the origin. Same length, opposite direction.
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="A vector **v** points northeast at 45 degrees. What does **-3v** look like?"
+  hint="-1 flips direction, 3 stretches length."
+  answer="It points southwest (opposite of northeast) and is 3 times as long as **v**. The angle flips by exactly 180 degrees."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="If 0.5 times vector **v** has length 2, what is the length of **v**? And what about **3v**?"
+  hint="Scalar multiplication scales the length by |c|."
+  answer="**v** has length 4 (halving gave 2, so original is 4). Then **3v** has length 12."
+/>
+
+---
+
+**Up next:** [Linear combinations →](/courses/linear-algebra/04-linear-combinations)

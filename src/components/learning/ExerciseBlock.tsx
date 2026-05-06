@@ -8,14 +8,41 @@ interface ExerciseBlockProps {
   answer: ReactNode;
 }
 
-/**
- * ExerciseBlock — collapsible exercise. Prompt is always visible.
- * Hint and answer reveal on click, separately.
- *
- * Design intent: exercises shouldn't dominate the page. The prompt
- * is plain prose; the affordances (hint / show answer) are quiet
- * underlined buttons.
- */
+function renderInlineMarkdown(text: string): ReactNode[] {
+  const parts: ReactNode[] = [];
+  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    if (match[2]) {
+      parts.push(<strong key={key++}>{match[2]}</strong>);
+    } else if (match[3]) {
+      parts.push(<em key={key++}>{match[3]}</em>);
+    } else if (match[4]) {
+      parts.push(<code key={key++} className="font-mono text-sm bg-surface-1 px-1 rounded">{match[4]}</code>);
+    }
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : [text];
+}
+
+function renderContent(content: ReactNode): ReactNode {
+  if (typeof content === 'string') {
+    return renderInlineMarkdown(content);
+  }
+  return content;
+}
+
 export function ExerciseBlock({ number, prompt, hint, answer }: ExerciseBlockProps) {
   const [showHint, setShowHint] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
@@ -29,7 +56,7 @@ export function ExerciseBlock({ number, prompt, hint, answer }: ExerciseBlockPro
       </header>
 
       <div className="mt-3 font-serif text-body-lg leading-relaxed text-ink">
-        {prompt}
+        {renderContent(prompt)}
       </div>
 
       <div className="mt-5 flex items-center gap-5">
@@ -56,7 +83,7 @@ export function ExerciseBlock({ number, prompt, hint, answer }: ExerciseBlockPro
           <p className="font-sans text-xs font-semibold uppercase tracking-wider text-ink-faint mb-2">
             Hint
           </p>
-          {hint}
+          {renderContent(hint)}
         </div>
       )}
 
@@ -65,7 +92,7 @@ export function ExerciseBlock({ number, prompt, hint, answer }: ExerciseBlockPro
           <p className="font-sans text-xs font-semibold uppercase tracking-wider text-accent mb-2">
             Answer
           </p>
-          {answer}
+          {renderContent(answer)}
         </div>
       )}
     </section>

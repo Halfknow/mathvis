@@ -1,0 +1,85 @@
+---
+title: 'The Determinant'
+titleZh: '行列式'
+description: 'The determinant measures how much a transformation stretches or shrinks area — and whether space gets flipped inside-out.'
+descriptionZh: '行列式衡量变换把面积拉伸或压缩了多少——以及空间是否被翻转了里外。'
+course: 'linear-algebra'
+module: 'Matrix Transformations'
+moduleZh: '矩阵变换'
+moduleOrder: 3
+lessonOrder: 10
+duration: 18
+difficulty: 'Intermediate'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { MatrixTransform2D } from '../../../components/interactive/linear-algebra/MatrixTransform2D';
+
+# The Determinant
+
+When a matrix transforms space, it changes areas. The unit square stretches into a parallelogram — maybe bigger, maybe smaller, maybe collapsed flat. The **determinant** measures exactly how much the area changed.
+
+This is the geometric meaning: det(A) is the **area scaling factor** of the transformation A.
+
+## See the area change
+
+Watch the orange unit square. As you change the matrix, the parallelogram's area equals the absolute value of the determinant. When the determinant hits zero, the parallelogram collapses flat — the whole plane has been squashed onto a line.
+
+<MatrixTransform2D client:visible />
+
+## The three cases
+
+- **det > 1**: Space expands. A unit square becomes a bigger parallelogram.
+- **0 < det < 1**: Space contracts. A unit square shrinks.
+- **det = 0**: Space collapses. The entire plane squashes onto a line (or a point). The transformation loses a dimension — it's **not invertible**.
+- **det < 0**: The area scaling is |det|, but the space has been **flipped** (like a mirror). The orientation reversed — what was clockwise is now counterclockwise.
+
+## The formula
+
+For a 2x2 matrix:
+
+<MathBlock expression={'\\det \\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix} = ad - bc'} />
+
+Where does this come from? It's the area of the parallelogram formed by the two column vectors (a,c) and (b,d). The cross-product formula for parallelogram area gives exactly ad - bc.
+
+For a 3x3 matrix, the determinant measures **volume** scaling — how much the unit cube stretches or compresses.
+
+## The zero determinant is special
+
+det(A) = 0 means the transformation **squashes space flat**. A 2D plane collapses to a line (or a point). Information is lost — different input vectors end up at the same output. You can't undo this collapse, which is why:
+
+> A matrix is invertible if and only if det(A) ≠ 0.
+
+<KeyInsight>
+The determinant is the area scaling factor. If it's zero, the transformation collapsed space flat — and information was lost forever.
+</KeyInsight>
+
+## The product rule
+
+Here's a beautiful property:
+
+<MathBlock expression={'\\det(AB) = \\det(A) \\cdot \\det(B)'} />
+
+Geometrically: if A scales areas by 3 and B scales areas by 2, then doing A then B scales areas by 6. Area scalings multiply when you compose transformations. This fact — which takes work to prove algebraically — is almost obvious from the geometric picture.
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Compute the determinant of [[3,0],[0,2]]. What does this tell you geometrically?"
+  hint="det = 3·2 - 0·0 = 6."
+  answer="det = 6. The transformation stretches x by 3 and y by 2, so areas grow by 6. The unit square becomes a 3×2 rectangle with area 6."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="The matrix [[1,2],[2,4]] has determinant 0. What does the plane look like after this transformation?"
+  hint="Column 2 is exactly 2 times column 1."
+  answer="Both columns point in the same direction (1,2). The entire plane collapses onto the line through (1,2). Every point ends up on this single line — all areas become zero."
+/>
+
+---
+
+**Up next:** [Inverse matrices →](/courses/linear-algebra/11-inverse-matrices)

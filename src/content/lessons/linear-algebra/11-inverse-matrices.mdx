@@ -1,0 +1,88 @@
+---
+title: 'Inverse Matrices'
+titleZh: '逆矩阵'
+description: "The inverse undoes a transformation — if the transformation didn't collapse space, you can always reverse it."
+descriptionZh: '逆矩阵撤销一个变换——只要变换没有把空间压扁，你总能把它变回来。'
+course: 'linear-algebra'
+module: 'Matrix Transformations'
+moduleZh: '矩阵变换'
+moduleOrder: 3
+lessonOrder: 11
+duration: 16
+difficulty: 'Intermediate'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { MatrixTransform2D } from '../../../components/interactive/linear-algebra/MatrixTransform2D';
+
+# Inverse Matrices
+
+If A is a transformation that warps space, then the **inverse** A⁻¹ is the transformation that warps it back. Apply A, then apply A⁻¹, and you're exactly where you started.
+
+<MathBlock expression={'A^{-1} A = A A^{-1} = I'} />
+
+The identity matrix I is the "do nothing" transformation — every vector stays put. So A⁻¹ is the undo button for A.
+
+## When does an inverse exist?
+
+If det(A) ≠ 0, the inverse exists. If det(A) = 0, it doesn't.
+
+Geometrically: if A squashed space flat (det = 0), then multiple points got merged into the same point. You can't un-merge them — the information about which point came from where is gone. There's no way to undo a collapse.
+
+But if A just stretched, rotated, or sheared the space without collapsing it (det ≠ 0), then every point went to a unique destination, and you can trace backwards. The inverse is that backward map.
+
+## See invertibility
+
+Use the widget below to try different transformations. When det ≠ 0, the transformation is invertible — space was bent, not broken. When det = 0, the plane collapses flat and there's no going back. Try the "Collapse" preset to see what happens.
+
+<MatrixTransform2D client:visible />
+
+## Computing the inverse (2x2)
+
+For a 2x2 matrix:
+
+<MathBlock expression={'\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}^{-1} = \\frac{1}{ad - bc} \\begin{bmatrix} d & -b \\\\ -c & a \\end{bmatrix}'} />
+
+The pattern: swap the diagonal entries, negate the off-diagonal entries, divide by the determinant. The division by det explains why det = 0 kills the inverse — you'd be dividing by zero.
+
+## What the inverse looks like geometrically
+
+- If A rotates by θ, then A⁻¹ rotates by -θ (rotate back).
+- If A scales by 2, then A⁻¹ scales by 1/2 (shrink back).
+- If A shears right by 1, then A⁻¹ shears left by 1 (undo the tilt).
+
+Each inverse is the spatial opposite of the original transformation.
+
+<KeyInsight>
+The inverse undoes a transformation. It exists precisely when the transformation didn't collapse space — when det ≠ 0. Division by zero isn't just algebraically forbidden; it's geometrically impossible.
+</KeyInsight>
+
+## Solving equations
+
+The equation Ax = b asks: "What input x, after transformation A, lands on b?" The answer:
+
+<MathBlock expression={'\\vec{x} = A^{-1} \\vec{b}'} />
+
+If A⁻¹ exists, there's exactly one answer — undo the transformation on b. If A⁻¹ doesn't exist (det = 0), then either there's no solution (b is unreachable) or infinitely many (everything on a collapsed line maps to b).
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Find the inverse of [[2,0],[0,3]]. Verify that A⁻¹A = I."
+  hint="Swap diagonal: (2,3) → (3,2). Negate off-diagonal: (0,0) → (0,0). Divide by det = 6."
+  answer="A⁻¹ = (1/6)[[3,0],[0,2]] = [[1.5,0],[0,1]]. Check: [[2,0],[0,3]]·[[1/2,0],[0,1/3]] = [[1,0],[0,1]] = I ✓. Geometrically: A scales x by 2, y by 3. The inverse scales x by 1/2, y by 1/3."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Solve [[1,2],[3,4]]x = (1,0). First check that the matrix is invertible, then find x."
+  hint="det = 1·4 - 2·3 = -2 ≠ 0, so invertible. Use the 2x2 inverse formula."
+  answer="det = -2 ≠ 0. A⁻¹ = (1/-2)[[4,-2],[-3,1]] = [[-2,1],[3/2,-1/2]]. x = A⁻¹(1,0) = (-2, 3/2). Check: [[1,2],[3,4]](-2,3/2) = (1·(-2)+2·(3/2), 3·(-2)+4·(3/2)) = (1, 0) ✓."
+/>
+
+---
+
+**Up next:** [Column space and null space →](/courses/linear-algebra/12-column-space-and-null-space)

@@ -40,10 +40,10 @@
 | 框架 | **Astro 5** | 群岛架构：95% 静态内容零 JS，5% 交互组件按需 hydrate |
 | 内容格式 | **MDX** | Markdown 写正文 + 嵌入 React 组件 |
 | 数学排版 | **KaTeX**（服务端 + 客户端） | remark-math + rehype-katex build 时编译；MathBlock/MathInline 处理复杂 LaTeX |
-| 交互组件 | **React 19** | Astro 官方支持，Three.js / SVG 均有 React 封装 |
-| 2D 可视化 | **SVG + React** | VectorCanvas, DerivativeSlope, NormalDistribution — 纯 SVG + Pointer Events |
-| 3D 可视化 | **React Three Fiber + Drei v10** | 线性代数 3D 可视化（MatrixTransform3D 等） |
-| 预渲染叙事 | **Manim Community** | 高质量讲解片段，本地渲染管线 |
+| 交互组件 | **React 19** | Astro 官方支持，D3.js / Three.js 均有 React 封装 |
+| 2D 可视化 | **D3.js**（主力） + SVG + React（轻量） | D3.js 是 2D 数学可视化的事实标准；简单交互用纯 SVG+React |
+| 3D 可视化 | **React Three Fiber + Drei v10** | 线性代数 3D 可视化（向量空间、矩阵变换、特征向量等） |
+| 预渲染叙事 | **Manim Community**（可选） | 仅用于特殊叙事场景，不再是主力 |
 | 样式 | **Tailwind CSS 4** + CSS Variables | `@tailwindcss/vite` 插件，`@import "tailwindcss"` 语法 |
 | 国际化 | **Astro i18n** | URL 路由 (`/` + `/zh/`)，`src/i18n/ui.ts` 翻译 |
 | 搜索 | **Pagefind** | Build 时生成索引，支持中英文 |
@@ -60,9 +60,13 @@
 │  ┌───────────┐  ┌──────────┐  ┌───────────────────────┐ │
 │  │ 静态 HTML  │  │ KaTeX    │  │ React Islands         │ │
 │  │ (MDX 渲染) │  │ (预编译)  │  │ ┌─────┐ ┌─────┐     │ │
-│  └───────────┘  └──────────┘  │ │SVG  │ │R3F  │     │ │
+│  └───────────┘  └──────────┘  │ │D3.js│ │R3F  │     │ │
 │                                │ │2D   │ │3D   │     │ │
 │                                │ └─────┘ └─────┘     │ │
+│                                │ ┌───────────────┐   │ │
+│                                │ │SVG + React    │   │ │
+│                                │ │(轻量 2D)      │   │ │
+│                                │ └───────────────┘   │ │
 │                                └───────────────────────┘ │
 └──────────────────────────┬──────────────────────────────┘
                            │ HTTPS
@@ -71,12 +75,6 @@
 │  Astro 静态构建产物 (HTML + CSS + JS bundles)            │
 │  /zh/ 路由 → 中文版页面                                  │
 │  /pagefind/ → 搜索索引                                   │
-└──────────────────────────┬──────────────────────────────┘
-                           │
-┌──────────────────────────▼──────────────────────────────┐
-│              Manim 渲染管线 (本地 / CI)                   │
-│  Python 脚本 → WebM VP9 + MP4 H.264                     │
-│  → public/videos/{course}/{lesson}/                      │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -152,15 +150,29 @@ mathviz/
 
 ### 模块 2：更多交互组件
 
-- **MatrixTransform3D** — 3D 矩阵变换可视化 (React Three Fiber)
-- **EigenvectorExplorer** — 特征向量探索器
-- **RiemannSum** — 黎曼和近似
-- **IntegralArea** — 积分面积可视化
-- **CoinFlipSim** — 抛硬币模拟器
+**2D 组件（D3.js）：**
+- **RiemannSum** — 黎曼和近似（矩形逼近曲线下面积，可调分割数）
+- **IntegralArea** — 积分面积可视化（填充区域动画）
+- **SlopeField** — 斜率场（微分方程解的走势）
+- **TaylorSeries** — 泰勒级数逼近（逐步增加项数）
+- **OptimizationVis** — 最优化（极值点探索）
+- **SamplingAnimation** — 中心极限定理采样演示
+- **DiscreteDist** — 离散分布（伯努利、二项、泊松）
+- **ConditionalProb** — 条件概率可视化
+- **BayesVisualizer** — 贝叶斯定理可视化
 
-### 模块 3：Manim 动画实际渲染
+**2D 组件（SVG + React，轻量级）：**
+- **VectorAddition** — 向量加法（首尾相接拖拽）
+- **DotProductVis** — 点积与投影
 
-当前有脚本和管线骨架，需要安装 Manim (Python) 并实际渲染 WebM/MP4 文件。
+**3D 组件（React Three Fiber）：**
+- **SpanExplorer** — 3D 向量空间 span 可视化
+- **MatrixTransform3D** — 3D 矩阵变换（空间变形）
+- **EigenvectorExplorer** — 特征向量 / 特征值 3D 探索器
+
+### 模块 3：Manim 动画（可选）
+
+Manim 降级为可选工具，仅用于特殊叙事场景。当前有脚本和管线骨架，如需要可安装 Manim (Python) 渲染 WebM/MP4 文件。大部分可视化需求由 D3.js 和 React Three Fiber 覆盖。
 
 ### 模块 4：测试
 

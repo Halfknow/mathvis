@@ -4,12 +4,60 @@
 
 ## What this is
 
-**MathViz** — a static-first educational website for learning probability,
-linear algebra, and calculus through animations. Astro 5 + MDX + React 19 +
-KaTeX + Three.js + Tailwind CSS 4, with Manim used in a separate pipeline for
-pre-rendered narrative video clips.
+**MathViz** — 一个为重建数学空间直觉而造的交互式学习工具。不是产品，是一个人的学习旅程，恰好开源给了所有人。
 
-Supports English and Chinese via URL-based i18n routing (`/` = English, `/zh/` = Chinese).
+技术栈：Astro 5 + MDX + React 19 + KaTeX + Tailwind CSS 4。
+动画技术：**D3.js** 做 2D 数学动画，**React Three Fiber** 做 3D 可视化。
+支持中英文（`/` English, `/zh/` 中文）。
+
+## 核心理念
+
+**先看见，再形式化。** 每课的目标是建立一个空间直觉——让学习者能"看见"符号背后的几何含义。如果一课的内容没有帮助建立直觉，那就是失败的内容。
+
+## Interactive visualization technology
+
+MathViz uses two core libraries for interactive math visualizations. Choose based on the dimensionality:
+
+### D3.js — 2D mathematical animations
+
+The de facto standard for 2D math visualization in the browser. Used by Seeing Theory (Brown University), 3Blue1Brown's interactive exercises, and Observable.
+
+**When to use D3:**
+- Function curves, tangent lines, derivatives
+- Probability distributions, sampling animations, histograms
+- Riemann sums, integral area visualization
+- Slope fields, vector fields
+- Any 2D geometric construction
+
+**How to integrate with React:** Use `useEffect` + `useRef` pattern — D3 manages the SVG/Canvas, React manages state. Import only needed D3 modules (`d3-scale`, `d3-axis`, `d3-selection`, etc.), never the full `d3` bundle.
+
+**References:** `src/components/interactive/calculus/DerivativeSlope.tsx` (current SVG implementation can be upgraded to D3), `src/components/interactive/probability/NormalDistribution.tsx`
+
+### React Three Fiber + Drei — 3D mathematical visualization
+
+The standard for 3D math in the browser. Used by math3d.org and various linear algebra visualization projects.
+
+**When to use R3F:**
+- Vector spaces, span visualization in 3D
+- Matrix transformations of 3D objects
+- Eigenvector / eigenvalue exploration
+- Surface plots, parametric surfaces
+- Any concept requiring depth perception
+
+**Loading strategy:** Always use `client:visible` so Three.js (~200KB gzipped) only loads when the component enters the viewport. On mobile, consider falling back to a 2D D3 visualization or static image.
+
+### SVG + React — lightweight 2D (current approach)
+
+For simpler interactions (dragging vectors, basic plots), pure SVG + React pointer events is sufficient and lighter than D3. The current VectorCanvas uses this approach. Gradually upgrade to D3 when the animation complexity warrants it.
+
+### Decision guide
+
+```
+Is it 3D? → React Three Fiber
+Is it complex 2D animation? → D3.js + React
+Is it simple 2D interaction? → SVG + React (keep it simple)
+Is it a narrative video? → Manim (optional, for special cases only)
+```
 
 ## When generating designs or new pages
 
@@ -24,19 +72,23 @@ Supports English and Chinese via URL-based i18n routing (`/` = English, `/zh/` =
 
 ## When generating new lessons (MDX)
 
-A lesson follows this rough rhythm:
+Use the `/mathviz-new-lesson` skill. It handles all technical plumbing so you can focus on the math content and intuition building.
 
-1. `LessonProgress` at the top
-2. `# Title`
-3. Short prose orienting the reader (1–2 paragraphs)
-4. `PrerequisiteList` if the lesson assumes prior concepts
-5. The animation/explanation arc:
-   - `ManimVideo` — narrative clip
-   - Prose explanation
-   - `InteractiveCanvas` — hands-on widget
-   - `KeyInsight` — the single sentence that captures the idea (max one per lesson)
-6. `## Practice` section with two or three `ExerciseBlock`s
-7. Inline link to the next lesson
+A lesson follows this rhythm — every element serves the goal of building spatial intuition:
+
+1. **Orienting prose** (1-2 paragraphs) — what are we trying to "see" in this lesson?
+2. **Animation or interactive** — the visual bridge that makes the concept click
+3. **Prose explanation** — connect what you just saw to the formal definition
+4. **Interactive widget** — let the learner explore and internalize
+5. **KeyInsight** — one sentence that captures the spatial intuition
+6. **Practice** — 2-3 exercises to verify the intuition stuck
+
+### Writing style for lessons
+
+Write like you're explaining to yourself — someone who can follow the math but needs the geometric picture. Use concrete spatial language:
+- "the arrow points northeast" not "the vector has positive components"
+- "the curve flattens out" not "the derivative approaches zero"
+- "the bell widens" not "sigma increases"
 
 ### i18n for lessons
 
@@ -45,7 +97,7 @@ Every MDX lesson should include Chinese frontmatter fields:
 - `descriptionZh` — Chinese description
 - `moduleZh` — Chinese module name
 
-The Chinese pages (`/zh/courses/...`) use these fields for display. If `titleZh` is missing, the English title is used as fallback.
+If `titleZh` is missing, the English title is used as fallback.
 
 ### MDX + LaTeX
 
@@ -66,11 +118,9 @@ MDX parser interprets `{...}` as JSX before remark-math processes math blocks. F
 
 ## Style commitments
 
-- Tone of prose: like a thoughtful teacher, not a marketing copywriter.
-  Use first-person plural ("we") sparingly. Prefer concrete imagery
-  ("the arrow points northeast") over abstract metaphor.
-- Sentence length: vary, but lean shorter. The math is already complex;
-  the prose around it should not be.
+- Tone: like a thoughtful teacher, not a marketing copywriter.
+- Use concrete spatial imagery over abstract metaphor.
+- Sentence length: vary, but lean shorter. The math is already complex; the prose around it should not be.
 - Links: never "click here." Link the noun.
 
 ## i18n system

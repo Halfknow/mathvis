@@ -1,0 +1,119 @@
+---
+title: 'Linear Algebra Notation Reference'
+titleZh: '线性代数符号速查'
+description: 'A visual reference for every symbol used in this course — vectors, matrices, transformations, and spaces.'
+descriptionZh: '本课程所有符号的视觉参考——向量、矩阵、变换与空间。'
+course: 'linear-algebra'
+module: 'Notation'
+moduleZh: '符号速查'
+moduleOrder: 0
+lessonOrder: 0
+duration: 20
+difficulty: 'Beginner'
+---
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+# Linear Algebra Notation Reference
+
+This page is your compass. Every symbol you'll meet in this course is collected here, organized by when you'll need it. Come back whenever a symbol feels unfamiliar — that's what this page is for.
+
+Notation is just a compact way of writing geometric ideas. Don't memorize it — learn to *see* what each symbol stands for.
+
+---
+
+## Vectors
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $\vec{v}$ | Vector | An arrow with direction and magnitude | $\vec{v} = (3, 2)$ |
+| $v$ or $\mathbf{v}$ | Vector (alternative) | Bold or arrow — same thing | $\mathbf{v} = (1, 0)$ |
+| $(a, b)$ or $\begin{pmatrix}a\\b\end{pmatrix}$ | Vector components | The coordinates of the arrow tip | $(3, 1)$ means 3 right, 1 up |
+| $v_1, v_2$ | Components | The individual numbers in a vector | If $\vec{v} = (3, 1)$ then $v_1 = 3, v_2 = 1$ |
+| $\lVert\vec{v}\rVert$ or $\lvert\vec{v}\rvert$ | Magnitude / Norm | The length of the arrow | $\lVert(3, 4)\rVert = 5$ |
+| $\hat{v}$ | Unit vector | A vector of length 1 in the same direction | $\hat{v} = \vec{v}/\lVert\vec{v}\rVert$ |
+| $\vec{0}$ | Zero vector | The vector with no direction, no length | $(0, 0)$ in 2D |
+| $\hat{e}_1, \hat{e}_2$ or $\hat{i}, \hat{j}$ | Standard basis vectors | The unit arrows along the axes | $\hat{e}_1 = (1, 0)$, $\hat{e}_2 = (0, 1)$ |
+| $\mathbb{R}^2, \mathbb{R}^3, \mathbb{R}^n$ | Real vector space | All possible arrows in 2D, 3D, or n-dimensional space | $(3, 2) \in \mathbb{R}^2$ |
+
+---
+
+## Vector Operations
+
+| Symbol | Name | Geometric meaning | Formula |
+|--------|------|-------------------|---------|
+| $\vec{a} + \vec{b}$ | Vector addition | Head-to-tail: walk along one arrow, then the other | $(a_1+b_1, a_2+b_2)$ |
+| $c\vec{v}$ or $c \cdot \vec{v}$ | Scalar multiplication | Stretch the arrow by factor $c$; flip if $c < 0$ | $(cv_1, cv_2)$ |
+| $\vec{a} \cdot \vec{b}$ | Dot product | Measures alignment: positive = same direction, zero = perpendicular | $a_1 b_1 + a_2 b_2$ |
+| $\vec{a} \times \vec{b}$ | Cross product (3D) | Produces a vector perpendicular to both; its length = area of parallelogram | See lesson 14 |
+| $\vec{a} \cdot \vec{b} = \lVert\vec{a}\rVert\lVert\vec{b}\rVert\cos\theta$ | Dot product (angle form) | Dot product = product of lengths times cosine of the angle between them | — |
+| $\text{proj}_{\vec{a}} \vec{b}$ | Projection | The shadow of $\vec{b}$ onto $\vec{a}$'s line | $\frac{\vec{a} \cdot \vec{b}}{\vec{a} \cdot \vec{a}} \vec{a}$ |
+
+---
+
+## Matrices
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $A$ | Matrix (uppercase) | A rectangular array of numbers — a transformation of space | $A = \begin{pmatrix}a&b\\c&d\end{pmatrix}$ |
+| $A_{ij}$ or $a_{ij}$ | Matrix entry | The number in row $i$, column $j$ | $A_{12}$ is row 1, column 2 |
+| $A\vec{x}$ | Matrix-vector product | Apply transformation $A$ to vector $\vec{x}$ | — |
+| $AB$ | Matrix multiplication | Compose transformations: apply $B$, then $A$ | $(AB)_{ij} = \sum_k a_{ik}b_{kj}$ |
+| $I$ or $I_n$ | Identity matrix | The "do nothing" transformation | $I_2 = \begin{pmatrix}1&0\\0&1\end{pmatrix}$ |
+| $A^{-1}$ | Inverse matrix | The transformation that undoes $A$ | $A^{-1}A = I$ |
+| $A^T$ | Transpose | Flip rows and columns | $\begin{pmatrix}1&2\\3&4\end{pmatrix}^T = \begin{pmatrix}1&3\\2&4\end{pmatrix}$ |
+| $\det(A)$ or $\lvert A\rvert$ | Determinant | Area scaling factor of the transformation | $\det\begin{pmatrix}a&b\\c&d\end{pmatrix} = ad - bc$ |
+| $\text{tr}(A)$ | Trace | Sum of diagonal entries | $\text{tr}\begin{pmatrix}a&b\\c&d\end{pmatrix} = a + d$ |
+
+---
+
+## Spaces and Subspaces
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $\text{span}(\vec{v}_1, \vec{v}_2)$ | Span | All points reachable by linear combinations | $\text{span}((1,0),(0,1)) = \mathbb{R}^2$ |
+| $\text{Col}(A)$ | Column space | All possible outputs of the transformation $A$ | Range of $A$ |
+| $\text{Null}(A)$ or $\text{ker}(A)$ | Null space / Kernel | All inputs that $A$ maps to zero | $\text{Null}(A) = \{\vec{x} : A\vec{x} = \vec{0}\}$ |
+| $\text{Row}(A)$ | Row space | Span of the rows of $A$ | — |
+| $\dim(V)$ | Dimension | Number of independent directions in a space | $\dim(\mathbb{R}^3) = 3$ |
+| $\text{rank}(A)$ | Rank | Dimension of the column space | Number of independent columns |
+| $\text{nullity}(A)$ | Nullity | Dimension of the null space | — |
+
+---
+
+## Eigen-things
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $\lambda$ (lambda) | Eigenvalue | The stretch factor along an eigenvector | $A\vec{v} = \lambda\vec{v}$ |
+| $\vec{v}$ (in eigen-context) | Eigenvector | A direction that doesn't rotate under transformation $A$ | Only stretches by $\lambda$ |
+| $p(\lambda)$ | Characteristic polynomial | Its roots are the eigenvalues | $p(\lambda) = \det(A - \lambda I)$ |
+| $D$ | Diagonal matrix | A matrix with eigenvalues on the diagonal | $D = \begin{pmatrix}\lambda_1&0\\0&\lambda_2\end{pmatrix}$ |
+| $P$ | Eigenvector matrix | Columns are eigenvectors; used to diagonalize | $A = PDP^{-1}$ |
+
+---
+
+## Common Greek Letters
+
+| Letter | Symbol | Typical use in linear algebra |
+|--------|--------|------------------------------|
+| alpha | $\alpha$ | Angle or scalar |
+| beta | $\beta$ | Angle or scalar |
+| lambda | $\lambda$ | **Eigenvalue** (this is the big one) |
+| theta | $\theta$ | **Angle** between vectors |
+| sigma | $\sigma$ | Singular value (in SVD) |
+| Sigma | $\Sigma$ | Diagonal matrix of singular values |
+
+---
+
+## Quick reference: the one formula to rule them all
+
+The central equation of linear algebra connects everything:
+
+<MathBlock expression={'A\\vec{x} = \\vec{b}'} />
+
+Read this as: "Transformation $A$ sends input $\vec{x}$ to output $\vec{b}$." Everything — span, rank, null space, eigenvalues, determinants — is a different way of understanding this one equation.
+
+---
+
+> This reference covers every symbol used in the 15 lessons of this course. Bookmark it and come back whenever you need to look something up.

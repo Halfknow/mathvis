@@ -1,0 +1,90 @@
+---
+title: 'Matrices as Transformations'
+titleZh: '矩阵即变换'
+description: 'A matrix is a rule for warping space — every point goes somewhere new, and the grid bends accordingly.'
+descriptionZh: '矩阵是一套扭曲空间的规则——每个点都被送到新的位置，网格随之弯曲变形。'
+course: 'linear-algebra'
+module: 'Matrix Transformations'
+moduleZh: '矩阵变换'
+moduleOrder: 3
+lessonOrder: 8
+duration: 20
+difficulty: 'Intermediate'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { MatrixTransform2D } from '../../../components/interactive/linear-algebra/MatrixTransform2D';
+
+# Matrices as Transformations
+
+Forget "rows and columns of numbers" for a moment. A matrix is a **machine that moves points**. Feed it a vector, and it spits out a new vector. Every point in space gets relocated according to the same rule — and the result is that the entire grid of space gets warped, stretched, rotated, or sheared.
+
+This is the single most important perspective shift in linear algebra: **a matrix is a transformation of space**.
+
+## How a matrix moves space
+
+A 2x2 matrix tells you where two special vectors land: where **e₁ = (1,0)** goes and where **e₂ = (0,1)** goes. The first column is the new home of e₁, the second column is the new home of e₂.
+
+<MathBlock expression={'\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = x \\begin{bmatrix} a \\\\ c \\end{bmatrix} + y \\begin{bmatrix} b \\\\ d \\end{bmatrix} = \\begin{bmatrix} ax + by \\\\ cx + dy \\end{bmatrix}'} />
+
+Read this geometrically: the output is x times "where e₁ went" plus y times "where e₂ went." The entire transformation is determined by what happens to just two vectors.
+
+## See it for yourself
+
+Drag the sliders below to change the matrix entries, or click a preset. Watch how the entire grid warps in response. The orange parallelogram shows what happens to the unit square — its area changes by exactly the determinant.
+
+<MatrixTransform2D client:visible />
+
+## Visual catalogue
+
+Every 2x2 matrix produces one of these spatial effects:
+
+- **Rotation**: The grid turns but keeps its shape. Distances and angles preserved.
+  Example: rotation by 90° is the matrix with columns (0, 1) and (-1, 0).
+
+- **Scaling**: The grid stretches or compresses along the axes.
+  Example: 2I doubles everything — columns are (2, 0) and (0, 2).
+
+- **Shear**: The grid slides sideways, turning squares into parallelograms.
+  Example: columns (1, 0) and (1, 1) — the y-axis tilts to the right.
+
+- **Reflection**: The grid flips across a line.
+  Example: columns (1, 0) and (0, -1) — mirror across the x-axis.
+
+- **Projection**: The grid collapses — the whole plane squashes onto a line (or a point).
+
+<KeyInsight>
+A matrix is a transformation of space. Its columns tell you where the basis vectors land — and every other vector follows the same linear rule.
+</KeyInsight>
+
+## The key property: linearity
+
+Matrix transformations are **linear**: they preserve the structure of vector arithmetic. In geometric terms:
+
+- **Lines remain lines** (they don't curve)
+- **The origin stays fixed** (it doesn't shift)
+- **Grid lines remain evenly spaced** (they don't bunch up or spread out unevenly)
+
+This is why the entire transformation is captured by just two column vectors. If you know where the grid's anchor points go, you know where everything goes.
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="What does the matrix with columns (2, 0) and (0, 2) do to the plane? What about columns (1, 0) and (0, 0)?"
+  hint="The first doubles both axes. The second crushes the y-axis."
+  answer="First: scales everything by 2 — the plane expands uniformly. Second: projects everything onto the x-axis — the entire plane collapses to a horizontal line. The y-coordinate of every vector becomes 0."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="A matrix sends (1,0) to (0,1) and (0,1) to (-1,0). What transformation is this? Where does (1,1) go?"
+  hint="The basis vectors have rotated 90° counterclockwise."
+  answer="It's a 90° counterclockwise rotation. (1,1) goes to (0·1 + (-1)·1, 1·1 + 0·1) = (-1, 1). The arrow that pointed northeast now points northwest."
+/>
+
+---
+
+**Up next:** [Matrix multiplication →](/courses/linear-algebra/09-matrix-multiplication)

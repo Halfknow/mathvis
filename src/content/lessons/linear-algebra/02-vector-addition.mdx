@@ -1,0 +1,68 @@
+---
+title: 'Vector Addition'
+titleZh: '向量加法'
+description: 'See vector addition as head-to-tail displacement — one arrow walks, then the other continues.'
+descriptionZh: '把向量加法看作"首尾相接"的位移——先走一段，再接着走另一段。'
+course: 'linear-algebra'
+module: 'Vector Basics'
+moduleZh: '向量基础'
+moduleOrder: 1
+lessonOrder: 2
+duration: 15
+difficulty: 'Beginner'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { VectorAddition } from '../../../components/interactive/linear-algebra/VectorAddition';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+# Vector Addition
+
+Forget the formula for a moment. Imagine you're standing at the origin. You walk 3 blocks east and 1 block north — that's one vector. Then from *where you ended up*, you walk another 1 block east and 2 blocks north — that's a second vector. Where are you now?
+
+You're at **4 east, 3 north**. That's the sum. Vector addition is nothing more mysterious than **doing one displacement, then doing another**. The result is the single arrow that takes you from your start to your final position.
+
+## Head-to-tail
+
+The geometric picture is called **head-to-tail** addition: slide the second arrow so its tail sits on the first arrow's tip. The sum is the arrow from the first tail to the second head. Drag the blue and green dots below to explore — toggle the parallelogram to see commutativity.
+
+<VectorAddition client:visible />
+
+Notice: the result doesn't depend on which vector you walk first. Walk green then blue, and you land at the same spot. This is the **commutative property** — not a theorem to memorize, but something you can *see*.
+
+## The parallelogram rule
+
+Draw both vectors starting from the origin. Complete the parallelogram. The diagonal — from the origin to the opposite corner — is the sum. This is the same head-to-tail picture, just drawn twice (once in each order), making the commutativity visible.
+
+<KeyInsight>
+Vector addition is stacking displacements: walk along one arrow, then along the other. The sum is the shortcut from start to finish.
+</KeyInsight>
+
+## When coordinates arrive
+
+In components, addition is coordinate-wise:
+
+<MathBlock expression={'\\vec{a} + \\vec{b} = \\begin{bmatrix} a_1 + b_1 \\\\ a_2 + b_2 \\end{bmatrix}'} />
+
+This formula is just the head-to-tail picture written in numbers. **The geometry came first.**
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="You walk 2 east, 3 north. Then 4 east, -1 north (south one block). Where do you end up? Draw the head-to-tail picture."
+  hint="Add the components: (2+4, 3+(-1))."
+  answer="You end up at (6, 2). The sum vector points mostly east with a slight upward tilt."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="If vector **a** + vector **b** points straight up (no horizontal component), what does that tell you about **a** and **b**?"
+  hint="The x-components must cancel."
+  answer="The x-components of **a** and **b** are equal in magnitude but opposite in sign: a₁ = -b₁. Their horizontal displacements cancel out."
+/>
+
+---
+
+**Up next:** [Scalar multiplication →](/courses/linear-algebra/03-scalar-multiplication)

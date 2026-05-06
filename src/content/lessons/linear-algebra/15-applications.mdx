@@ -1,0 +1,104 @@
+---
+title: 'Applications and Connections'
+titleZh: '应用与联系'
+description: 'Where linear algebra lives in the real world — from data science to computer graphics to quantum mechanics.'
+descriptionZh: '线性代数在真实世界中的栖身之处——从数据科学到计算机图形学到量子力学。'
+course: 'linear-algebra'
+module: 'Deep Structure'
+moduleZh: '深入结构'
+moduleOrder: 4
+lessonOrder: 15
+duration: 20
+difficulty: 'Intermediate'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { EigenvectorVis } from '../../../components/interactive/linear-algebra/EigenvectorVis';
+import { DotProductVis } from '../../../components/interactive/linear-algebra/DotProductVis';
+
+# Applications and Connections
+
+You've built the geometric intuition. Now let's see where it lives in the wild. Every concept we studied — vectors, transformations, eigenvectors, dot products — shows up in the real world doing real work. The spatial pictures you've built are not metaphors; they're the actual mechanism.
+
+## Data science — PCA
+
+**Principal Component Analysis** is just eigenvectors in disguise. Given a cloud of data points in high dimensions:
+
+1. Compute the **covariance matrix** (measures how variables co-vary)
+2. Find its **eigenvectors** — these are the principal components, the directions of maximum variation in the data
+3. The **eigenvalues** tell you how much variation each component captures
+
+Geometrically: PCA rotates the coordinate system so the new axes align with the natural "spread" of the data. The eigenvectors are the skeleton of the data cloud. Dimensionality reduction is just projecting onto the most important eigen-directions.
+
+Recall the eigenvector visualizer — those special directions that don't rotate under a transformation? In PCA, those directions are the "principal components" of your data.
+
+<EigenvectorVis client:visible />
+
+## Computer graphics — transformations
+
+Every 3D object on your screen is a collection of vectors (vertices). Every frame, matrices act on them:
+
+- **Model matrix**: positions the object in the world (translate, rotate, scale)
+- **View matrix**: positions the camera (another transformation)
+- **Projection matrix**: flattens 3D onto 2D (the screen)
+
+Three matrix multiplications compose into one. The GPU does millions of these per frame. And the determinant of the projection matrix determines whether the object is visible at all (frustum culling).
+
+## Machine learning — the dot product everywhere
+
+Neural networks are chains of matrix multiplications interspersed with nonlinearities. At their core:
+
+- **Linear layers**: y = Wx + b — a matrix transformation followed by a shift
+- **Attention**: queries and keys are vectors; attention weights are **softmax of dot products** — "how aligned is this query with that key?"
+- **Word embeddings**: words live in a vector space; similar words are nearby. "King - Man + Woman ≈ Queen" works because the vector arithmetic preserves semantic relationships.
+
+The dot product, which you now see as a measure of alignment, is the fundamental operation underlying modern AI.
+
+The dot product visualizer below shows exactly what "alignment" means geometrically — the same operation that powers attention mechanisms in transformers.
+
+<DotProductVis client:visible />
+
+## Quantum mechanics — eigenvalues as observables
+
+In quantum mechanics:
+
+- States are **vectors** in a complex vector space (Hilbert space)
+- Observables (energy, momentum, spin) are **Hermitian matrices** — transformations with special symmetry
+- The possible measurement outcomes are the **eigenvalues** of these matrices
+- After measurement, the state **collapses to an eigenvector**
+
+The eigenvector equation Av = λv isn't just abstract algebra — it's the equation that connects the mathematical formalism to physical reality. The eigenvalues are the only numbers you can actually measure.
+
+## Differential equations — eigenvectors as solutions
+
+A system dx/dt = Ax (where A is a matrix) has solutions built from eigenvectors:
+
+<MathBlock expression={'\\vec{x}(t) = c_1 e^{\\lambda_1 t} \\vec{v}_1 + c_2 e^{\\lambda_2 t} \\vec{v}_2'} />
+
+Each eigenvector evolves independently, growing or decaying exponentially at a rate determined by its eigenvalue. The geometric picture: the system stretches or shrinks along the eigen-directions, and these directions don't mix.
+
+<KeyInsight>
+Linear algebra is the language of high-dimensional space. Wherever data, transformations, or linear relationships appear — and they appear everywhere — the geometric intuition you've built is the real mechanism at work.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="In PCA, if the top eigenvalue is 10 and the second is 1, what fraction of total variance does the first principal component capture?"
+  hint="Total variance = sum of all eigenvalues."
+  answer="10/(10+1) ≈ 91%. The first principal component captures 91% of the variation — projecting onto just this one direction preserves almost all the structure of the data."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="A 2x2 matrix has eigenvalues 2 and 0.5. What happens if you apply this transformation 100 times to a vector? Which direction dominates?"
+  hint="Repeated application multiplies eigenvalues: λⁿ. 2¹⁰⁰ is enormous; 0.5¹⁰⁰ is essentially zero."
+  answer="The component along the eigenvalue-2 eigenvector grows exponentially (2¹⁰⁰ ≈ 10³⁰). The component along eigenvalue-0.5 shrinks to essentially zero (0.5¹⁰⁰ ≈ 10⁻³⁰). After many applications, only the dominant eigen-direction survives."
+/>
+
+---
+
+**Congratulations!** You've completed the linear algebra course. You now have spatial intuition for vectors, transformations, and the deep structure of linear systems. Every theorem and formula in linear algebra has a geometric shadow — and you've learned to see them.

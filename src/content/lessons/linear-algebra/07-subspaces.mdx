@@ -1,0 +1,88 @@
+---
+title: 'Subspaces'
+titleZh: '子空间'
+description: 'Flat worlds living inside bigger spaces — lines and planes through the origin that play by the rules of vector arithmetic.'
+descriptionZh: '生活在更大空间中的平坦世界——穿过原点的直线和平面，遵循向量运算的规则。'
+course: 'linear-algebra'
+module: 'Vector Spaces'
+moduleZh: '向量空间'
+moduleOrder: 2
+lessonOrder: 7
+duration: 16
+difficulty: 'Intermediate'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { SpanExplorer } from '../../../components/interactive/linear-algebra/SpanExplorer';
+
+# Subspaces
+
+Imagine you're in 3D space. Now imagine a flat plane cutting through the origin — like an infinite sheet of glass. Every arrow that lies flat on that glass stays on it when you stretch it or add it to another arrow on the glass. That plane is a **subspace**.
+
+A subspace is a region inside a vector space that is self-contained: you can do all your vector arithmetic *inside it* and never leave. It's a vector space within a vector space.
+
+## See the span — it's always a subspace
+
+The span of any set of vectors is automatically a subspace. Drag the vectors below and observe: when they're independent, the span fills the whole plane (a 2D subspace). When they align, the span collapses to a line (a 1D subspace). Both pass through the origin.
+
+<SpanExplorer client:visible />
+
+## The three rules
+
+A set S is a subspace if:
+
+1. **Contains zero** — the origin is in S
+2. **Closed under addition** — if **u** and **v** are in S, then **u** + **v** is in S
+3. **Closed under scaling** — if **v** is in S and c is any scalar, then c**v** is in S
+
+Rules 2 and 3 together mean: *any linear combination of vectors in S stays in S*. The subspace is closed under the two operations we've been studying.
+
+## Visual gallery
+
+In 2D, there are exactly two kinds of subspaces:
+- The **zero subspace** — just the origin (dimension 0)
+- Any **line through the origin** (dimension 1)
+- The **whole plane** itself (dimension 2)
+
+In 3D, we get one more level:
+- The **zero subspace** — just the origin (dimension 0)
+- Lines through the origin (dimension 1)
+- **Planes through the origin** (dimension 2)
+- All of 3D space (dimension 3)
+
+Notice: a subspace must pass through the origin. The line y = 1 (shifted up by one unit) is *not* a subspace — it doesn't contain zero, and adding two vectors on it gives a vector on y = 2, which has left the line.
+
+<KeyInsight>
+A subspace is a flat region through the origin that absorbs all linear combinations — stretch, add, and you never leave.
+</KeyInsight>
+
+## The two most important subspaces
+
+We'll revisit these later, but preview them now:
+
+- The **null space** of a matrix: all vectors that the matrix crushes to zero. It's a subspace (if Ax = 0 and Ay = 0, then A(x+y) = 0 too).
+- The **column space** of a matrix: all vectors you can reach by linear combinations of the columns. Also a subspace (the span of the columns is always a subspace).
+
+These two subspaces hold the key to understanding what matrices *do* — which is the subject of our next module.
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Is the upper half-plane {(x, y) : y ≥ 0} a subspace of the plane?"
+  hint="Check if it's closed under scaling. What happens with c = -1?"
+  answer="No. The vector (1, 2) is in the set, but -1·(1, 2) = (-1, -2) has y < 0, so it's not. Not closed under scaling."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Is the set of all vectors of the form (x, y, x+y) a subspace of 3D? Check the three rules."
+  hint="Is (0,0,0) in the set? Is the sum of two such vectors still of that form? Is a scalar multiple?"
+  answer="Yes. (0,0,0) = (0,0,0+0) ✓. Sum: (x₁,y₁,x₁+y₁)+(x₂,y₂,x₂+y₂) = (x₁+x₂, y₁+y₂, (x₁+x₂)+(y₁+y₂)) ✓. Scale: c(x,y,x+y) = (cx, cy, c(x+y)) = (cx, cy, cx+cy) ✓. It's a 2D subspace — a plane through the origin."
+/>
+
+---
+
+**Up next:** [Matrices as transformations →](/courses/linear-algebra/08-matrices-as-transformations)

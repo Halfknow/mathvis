@@ -1,0 +1,82 @@
+---
+title: 'Basis and Dimension'
+titleZh: '基与维数'
+description: 'A basis is the minimal set of arrows that can build the whole space. Dimension counts how many you need.'
+descriptionZh: '基是能构建整个空间的最少箭头集合。维数是你需要多少根这样的箭头。'
+course: 'linear-algebra'
+module: 'Vector Spaces'
+moduleZh: '向量空间'
+moduleOrder: 2
+lessonOrder: 6
+duration: 15
+difficulty: 'Beginner'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { MatrixTransform2D } from '../../../components/interactive/linear-algebra/MatrixTransform2D';
+
+# Basis and Dimension
+
+You've seen that some sets of vectors fill more space than others. A **basis** is the sweet spot: just enough arrows to reach everywhere, with no redundancy. Not too few (you'd be stuck), not too many (you'd have echoes).
+
+## What is a basis?
+
+A **basis** for a space is a set of vectors that is:
+
+1. **Linearly independent** — every arrow contributes a genuinely new direction (no redundancy)
+2. **Spans the space** — together they can reach every point
+
+Think of it as the *most efficient coordinate system* for that space. Every point can be written as a linear combination of the basis in exactly one way. No ambiguity, no waste.
+
+## See the grid under a different basis
+
+The widget below shows how a matrix transforms the standard grid. Think of the two column vectors as a *new basis* — the grid lines show how space looks in that coordinate system. Try "Shear" to see a non-standard basis.
+
+<MatrixTransform2D client:visible initialA={2} initialB={1} initialC={1} initialD={2} />
+
+## The standard basis
+
+In 2D, the most familiar basis is:
+
+<MathBlock expression={'\\hat{e}_1 = \\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix}, \\quad \\hat{e}_2 = \\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}'} />
+
+One arrow points east, one points north. They're independent (different directions) and they span the plane (any point is some east + some north). This is the standard basis — the coordinate axes you've used since grade school.
+
+But it's not the *only* basis. Any two independent vectors form a basis for 2D. (1, 2) and (3, 1) work just as well — they're a different "ruler" for the same space. Every point can still be reached, but the coordinates change depending on which basis you choose.
+
+## Dimension
+
+The **dimension** of a space is the number of vectors in any basis for it. It's the answer to: *how many independent directions does this space have?*
+
+- A line through the origin has dimension **1** (one basis vector)
+- The plane has dimension **2** (two basis vectors)
+- 3D space has dimension **3** (three basis vectors)
+- A single point (the origin) has dimension **0**
+
+The remarkable fact: **every basis for the same space has the same number of vectors**. You can't find a basis with 2 vectors for the plane and another with 3 — independence + spanning always gives exactly the same count. This is why dimension is well-defined: it doesn't depend on which basis you pick.
+
+<KeyInsight>
+A basis is the minimal spanning set — enough arrows to reach everywhere, with none to spare. Dimension is how many arrows you need.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Is {(2, 0), (0, 3)} a basis for the plane? What about {(1, 1), (2, 2)}?"
+  hint="Check independence and spanning for each set."
+  answer="(2,0) and (0,3) are independent and span the plane — yes, it's a basis (a stretched version of the standard basis). (1,1) and (2,2) are dependent (second is 2x the first) — no, not a basis."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="A subspace contains all vectors of the form (a, a, 0). What is its dimension? Give a basis."
+  hint="All vectors here lie on a line in 3D space."
+  answer="Dimension 1. A basis is just {(1, 1, 0)}. Every vector in the subspace is a scalar multiple of this one."
+/>
+
+---
+
+**Up next:** [Subspaces →](/courses/linear-algebra/07-subspaces)

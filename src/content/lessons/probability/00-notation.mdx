@@ -1,0 +1,144 @@
+---
+title: 'Probability Notation Reference'
+titleZh: '概率论符号速查'
+description: 'Every symbol used in this course — events, random variables, distributions, and expectations.'
+descriptionZh: '本课程所有符号的视觉参考——事件、随机变量、分布与期望。'
+course: 'probability'
+module: 'Notation'
+moduleZh: '符号速查'
+moduleOrder: 0
+lessonOrder: 0
+duration: 20
+difficulty: 'Beginner'
+---
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+# Probability Notation Reference
+
+This page collects every symbol used in the probability course. Probability has its own language — it borrows from set theory, calculus, and combinatorics. Here's your translation guide.
+
+Don't memorize. Come back when you need to look something up.
+
+---
+
+## Events and Sets
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $\Omega$ (omega) | Sample space | The set of all possible outcomes | Coin flip: $\Omega = \{H, T\}$ |
+| $\omega$ (lowercase omega) | Outcome | A single element of the sample space | $\omega = H$ (heads) |
+| $A, B, C$ | Events | Subsets of the sample space — things that might happen | $A$ = "roll an even number" |
+| $A \cup B$ | Union | "$A$ or $B$ (or both) happens" | $\{1,2\} \cup \{2,3\} = \{1,2,3\}$ |
+| $A \cap B$ | Intersection | "Both $A$ and $B$ happen" | $\{1,2\} \cap \{2,3\} = \{2\}$ |
+| $A^c$ or $\bar{A}$ or $A'$ | Complement | "$A$ does not happen" | If $A$ = "even", then $A^c$ = "odd" |
+| $A \subset B$ | Subset | Every outcome in $A$ is also in $B$ | — |
+| $\emptyset$ | Empty set | The event "nothing happens" — impossible | — |
+| $\lvert A\rvert$ or $\#A$ | Cardinality | The number of elements in set $A$ | $\lvert\{1,2,3\}\rvert = 3$ |
+| $P(A)$ | Probability | The chance that event $A$ occurs — always between 0 and 1 | $P(\text{heads}) = 0.5$ |
+
+---
+
+## Probability Rules
+
+| Symbol / Expression | Name | Meaning |
+|---------------------|------|---------|
+| $0 \leq P(A) \leq 1$ | Probability bounds | Probabilities are always between 0 and 1 |
+| $P(\Omega) = 1$ | Total probability | Something must happen |
+| $P(\emptyset) = 0$ | Impossible event | Nothing happening has probability zero |
+| $P(A^c) = 1 - P(A)$ | Complement rule | The chance of NOT $A$ |
+| $P(A \cup B) = P(A) + P(B) - P(A \cap B)$ | Addition rule | Corrects for double-counting the overlap |
+| $P(A \cap B) = P(A) \cdot P(B)$ | Independent events | If $A$ and $B$ don't influence each other |
+
+---
+
+## Conditional Probability
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $P(A \mid B)$ | Conditional probability | Probability of $A$ given that $B$ has occurred | $P(\text{rain} \mid \text{clouds})$ |
+| $P(A \cap B) = P(A \mid B) \cdot P(B)$ | Chain rule | Joint probability via conditioning | — |
+| $P(A \mid B) = \frac{P(B \mid A) \cdot P(A)}{P(B)}$ | Bayes' theorem | Reverse the conditioning — update beliefs with evidence | — |
+
+---
+
+## Random Variables
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $X, Y, Z$ | Random variable (uppercase) | A variable whose value is determined by chance | $X$ = number of heads in 3 flips |
+| $x, y$ | Realized value (lowercase) | The actual number that $X$ takes on | $X = 2$ means "$x$ turned out to be 2" |
+| $P(X = x)$ | PMF (discrete) | Probability that $X$ equals a specific value $x$ | $P(X = 2) = 3/8$ for 3 fair flips |
+| $f_X(x)$ or $f(x)$ | PDF (continuous) | Probability density function — height of the curve at $x$ | Normal: $f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$ |
+| $F_X(x)$ or $F(x)$ | CDF | Cumulative distribution: $P(X \leq x)$ — area under the curve up to $x$ | $F(0) = 0.5$ for standard normal |
+| $\sim$ | "Distributed as" | "$X$ follows this distribution" | $X \sim N(0, 1)$ |
+
+---
+
+## Expectation and Moments
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $E[X]$ or $\mu$ | Expected value (mean) | The long-run average — the "center of mass" of the distribution | $E[\text{die roll}] = 3.5$ |
+| $\text{Var}(X)$ or $\sigma^2$ | Variance | How spread out the values are — average squared distance from the mean | $\text{Var}(X) = E[(X-\mu)^2]$ |
+| $\sigma$ | Standard deviation | Square root of variance — spread in the same units as $X$ | $\sigma = \sqrt{\text{Var}(X)}$ |
+| $E[X^n]$ | n-th moment | Expected value of $X^n$ | $E[X^2]$ is the second moment |
+| $\text{Cov}(X, Y)$ | Covariance | How $X$ and $Y$ move together | Positive = same direction, negative = opposite |
+| $\rho_{X,Y}$ or $\text{Corr}(X,Y)$ | Correlation | Normalized covariance: between $-1$ and $1$ | $\rho = \frac{\text{Cov}(X,Y)}{\sigma_X \sigma_Y}$ |
+
+---
+
+## Common Distributions
+
+| Symbol | Name | Parameters | What it models |
+|--------|------|------------|----------------|
+| $\text{Bernoulli}(p)$ | Bernoulli | $p$ = success probability | One trial: success or failure |
+| $\text{Bin}(n, p)$ | Binomial | $n$ = trials, $p$ = success prob | Number of successes in $n$ independent trials |
+| $\text{Poisson}(\lambda)$ | Poisson | $\lambda$ = average rate | Number of events in a fixed interval |
+| $\text{Geo}(p)$ | Geometric | $p$ = success probability | Number of trials until first success |
+| $U(a, b)$ | Uniform | $a, b$ = endpoints | All values in $[a,b]$ equally likely |
+| $N(\mu, \sigma^2)$ or $\mathcal{N}(\mu, \sigma^2)$ | Normal (Gaussian) | $\mu$ = mean, $\sigma^2$ = variance | The bell curve — ubiquitous in nature |
+| $N(0, 1)$ | Standard normal | Mean 0, variance 1 | The canonical bell curve |
+| $\text{Exp}(\lambda)$ | Exponential | $\lambda$ = rate | Time between events (Poisson process) |
+
+---
+
+## Theorems
+
+| Name | Statement (informal) |
+|------|---------------------|
+| Law of Large Numbers (LLN) | As sample size grows, the sample average converges to the true mean $E[X]$ |
+| Central Limit Theorem (CLT) | The sum (or average) of many independent random variables is approximately normal, regardless of the original distribution |
+
+<MathBlock expression={'\\bar{X}_n = \\frac{1}{n}\\sum_{i=1}^{n} X_i \\xrightarrow{n \\to \\infty} \\mu \\quad \\text{(LLN)}'} />
+
+<MathBlock expression={'\\frac{\\bar{X}_n - \\mu}{\\sigma/\\sqrt{n}} \\xrightarrow{d} N(0,1) \\quad \\text{(CLT)}'} />
+
+---
+
+## Counting
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $n!$ | Factorial | $n \times (n-1) \times \cdots \times 1$ | $5! = 120$ |
+| $\binom{n}{k}$ | Binomial coefficient | Number of ways to choose $k$ items from $n$ | $\binom{5}{2} = 10$ |
+| ${}_nP_k$ or $P(n,k)$ | Permutation | Number of ways to arrange $k$ items from $n$ | ${}_5P_2 = 20$ |
+
+<MathBlock expression={'\\binom{n}{k} = \\frac{n!}{k!(n-k)!}'} />
+
+---
+
+## Common Greek Letters in Probability
+
+| Letter | Symbol | Typical use |
+|--------|--------|-------------|
+| mu | $\mu$ | **Mean** (expected value) |
+| sigma | $\sigma$ | **Standard deviation** ($\sigma^2$ = variance) |
+| lambda | $\lambda$ | **Rate** parameter (Poisson, Exponential) |
+| rho | $\rho$ | **Correlation** coefficient |
+| omega | $\Omega$ | **Sample space** |
+| pi | $\pi$ | 3.14159... (appears in normal distribution formula) |
+
+---
+
+> This reference covers every symbol used in the probability course. Bookmark it and come back whenever you need it.

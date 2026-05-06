@@ -1,0 +1,85 @@
+---
+title: 'Linear Combinations'
+titleZh: '线性组合'
+description: 'Combine two arrows with scaling and adding — and discover what space they can reach.'
+descriptionZh: '用缩放和叠加把两个箭头组合起来——看看它们能触及多大的空间。'
+course: 'linear-algebra'
+module: 'Vector Basics'
+moduleZh: '向量基础'
+moduleOrder: 1
+lessonOrder: 4
+duration: 18
+difficulty: 'Beginner'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { LinearCombo } from '../../../components/interactive/linear-algebra/LinearCombo';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+# Linear Combinations
+
+Take two arrows. Scale each by whatever number you want, then add them. That's a **linear combination** — and it's the single most important operation in linear algebra.
+
+Why? Because *everything* in this subject is built from linear combinations. Matrices act on vectors through them. Solutions to linear systems are them. Eigenvalues are defined by them. If you understand this one operation geometrically, you have the seed of the entire subject.
+
+## The operation
+
+Given vectors **a** and **b**, a linear combination is:
+
+<MathBlock expression={'c_1 \\vec{a} + c_2 \\vec{b}'} />
+
+where c₁ and c₂ are any real numbers. You've already learned the two pieces: scalar multiplication (stretch/shrink/flip) and vector addition (head-to-tail). A linear combination is just doing both.
+
+## What can you reach?
+
+Here's the question that makes this concept click: **if you can choose any scalars c₁ and c₂, where can the combination c₁**a** + c₂**b** reach?**
+
+Drag the c₁ and c₂ sliders below. The blue arrow shows c₁·a, the green arrow shows c₂·b (placed head-to-tail), and the dashed accent arrow is the result. Change the basis vectors too and see what happens.
+
+<LinearCombo client:visible />
+
+Two things can happen:
+
+1. **The arrows point in different directions.** Then their combinations can reach *any point in the plane*. You've built the entire 2D space from just two arrows.
+
+2. **The arrows point in the same direction** (or one is zero). Then no matter how you combine them, you're stuck on a single line. Two arrows, but only one direction of freedom.
+
+This distinction — can you fill the whole space or are you trapped on a line? — is the geometric heart of **linear independence**, which we'll explore next lesson.
+
+<KeyInsight>
+A linear combination is "scale these arrows, then add them." Two arrows pointing different directions can build the entire plane. Two arrows pointing the same direction are stuck on a line.
+</KeyInsight>
+
+## Why it matters
+
+Every time you see a matrix equation Ax = b, it's asking: "Can b be written as a linear combination of the columns of A?" The whole question of solvability — does a system have a solution? — reduces to whether the right-hand side lives in the space that the columns can reach.
+
+This one picture — arrows stretching and adding to reach a point — is the geometric engine under the hood of every theorem that follows.
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Can the vector (3, 5) be written as a linear combination of (1, 0) and (0, 1)? If so, what are the scalars?"
+  hint="(1,0) reaches along x, (0,1) reaches along y."
+  answer="Yes: 3·(1,0) + 5·(0,1) = (3,5). These two vectors build the whole plane."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Can you reach (2, 3) using linear combinations of (1, 1) and (2, 2)? Try it."
+  hint="Both vectors point in the same direction — along the line y = x."
+  answer="No. Every combination of (1,1) and (2,2) lands on the line y = x. The point (2,3) is off that line, so it's unreachable."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="If **a** = (1, 2) and **b** = (3, 1), find scalars c₁, c₂ such that c₁**a** + c₂**b** = (7, 5)."
+  hint="Set up: c₁ + 3c₂ = 7 and 2c₁ + c₂ = 5. Solve the system."
+  answer="c₁ = 1.6, c₂ = 1.8. Check: 1.6·(1,2) + 1.8·(3,1) = (1.6+5.4, 3.2+1.8) = (7, 5). ✓"
+/>
+
+---
+
+**Up next:** [Span and linear independence →](/courses/linear-algebra/05-span-and-independence)

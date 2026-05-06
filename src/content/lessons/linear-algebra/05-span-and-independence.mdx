@@ -1,0 +1,80 @@
+---
+title: 'Span and Linear Independence'
+titleZh: 'Span 与线性无关'
+description: 'When do vectors get stuck on a line, and when do they break free to fill the plane — or all of space?'
+descriptionZh: '向量什么时候被困在一条线上，什么时候能挣脱出来铺满平面——或者整个空间？'
+course: 'linear-algebra'
+module: 'Vector Spaces'
+moduleZh: '向量空间'
+moduleOrder: 2
+lessonOrder: 5
+duration: 18
+difficulty: 'Beginner'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { SpanExplorer } from '../../../components/interactive/linear-algebra/SpanExplorer';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+# Span and Linear Independence
+
+Last lesson we saw that two arrows can sometimes build the entire plane — and sometimes get trapped on a single line. This lesson gives that observation a name and explains *why* it happens.
+
+## The span
+
+The **span** of a set of vectors is the set of all points you can reach by linear combinations. It's the answer to "how much space can these arrows cover?"
+
+- One nonzero vector spans a **line** through the origin.
+- Two vectors (pointing different directions) span the entire **plane**.
+- Two vectors (pointing the same direction) still only span a **line**.
+- Three vectors in 3D (pointing in three independent directions) span all of **space**.
+
+The span is the reachable territory. It always includes the origin (set all scalars to zero). And it's always "flat" — a line, a plane, a 3D space, never a curve or a ball.
+
+## When vectors are redundant
+
+Two vectors that point the same direction are **linearly dependent** — one is redundant. You could throw one away without shrinking the span at all. Formally:
+
+> Vectors are **linearly dependent** if one of them can be written as a linear combination of the others.
+
+Conversely, vectors are **linearly independent** if none of them is redundant — each one contributes a genuinely new direction.
+
+<SpanExplorer client:visible />
+
+## The visual test
+
+Here's a spatial test for independence: **do the arrows point in genuinely different directions?**
+
+- In 2D: two vectors are independent if they don't sit on the same line through the origin.
+- In 3D: three vectors are independent if they don't all sit in the same flat plane through the origin.
+
+The zero vector is never independent — it adds no direction at all.
+
+<KeyInsight>
+The span is the space your arrows can reach. Linear independence means every arrow contributes a new direction — none is redundant.
+</KeyInsight>
+
+## Why it matters
+
+Independence determines how much information your vectors carry. If you have 10 vectors but only 3 are independent, you really only have 3 directions of freedom. The other 7 are just echoes. Every algorithm in linear algebra — from solving systems to computing eigenvalues — depends on knowing how many independent directions you actually have.
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Are (1, 2) and (2, 4) linearly independent? What is their span?"
+  hint="(2,4) = 2·(1,2)."
+  answer="No — they're dependent because (2,4) = 2·(1,2). Their span is just the line y = 2x."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Are (1, 0, 0), (0, 1, 0), and (1, 1, 0) linearly independent in 3D?"
+  hint="Can one be written as a combination of the others?"
+  answer="No. (1,1,0) = (1,0,0) + (0,1,0). The third vector is redundant. Their span is the xy-plane, not all of 3D."
+/>
+
+---
+
+**Up next:** [Basis and dimension →](/courses/linear-algebra/06-basis-and-dimension)

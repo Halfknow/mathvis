@@ -1,0 +1,138 @@
+---
+title: 'Calculus Notation Reference'
+titleZh: '微积分符号速查'
+description: 'Every symbol used in this course — from limits and derivatives to integrals and series.'
+descriptionZh: '本课程所有符号的视觉参考——从极限、导数到积分与级数。'
+course: 'calculus'
+module: 'Notation'
+moduleZh: '符号速查'
+moduleOrder: 0
+lessonOrder: 0
+duration: 20
+difficulty: 'Beginner'
+---
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+# Calculus Notation Reference
+
+This page collects every symbol you'll meet in the calculus course. Calculus has several competing notations for the same idea (Newton vs. Leibniz invented different ways to write derivatives) — this page shows you all of them and explains when each is used.
+
+Don't memorize. Come back when you need to look something up.
+
+---
+
+## Functions
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $f(x)$ | Function | A rule that takes input $x$ and produces output $f(x)$ | $f(x) = x^2$ |
+| $f'(x)$ | Derivative (Lagrange) | The rate of change of $f$ at point $x$ | If $f(x) = x^2$ then $f'(x) = 2x$ |
+| $\frac{df}{dx}$ or $\frac{dy}{dx}$ | Derivative (Leibniz) | Same as $f'(x)$, but emphasizes "change in $y$ per change in $x$" | $\frac{d}{dx}(x^2) = 2x$ |
+| $\dot{y}$ | Time derivative (Newton) | Derivative with respect to time — used in physics | $\dot{s}$ = velocity if $s$ = position |
+| $y''$ or $f''(x)$ | Second derivative | Derivative of the derivative — rate of change of the rate of change | $f''(x) = 2$ when $f(x) = x^2$ |
+| $\frac{d^2y}{dx^2}$ | Second derivative (Leibniz) | Same as $y''$ | — |
+| $f^{(n)}(x)$ | n-th derivative | The derivative taken $n$ times | $f^{(3)}(x)$ is the third derivative |
+| $f^{-1}(x)$ | Inverse function | The function that reverses $f$: if $f(a) = b$ then $f^{-1}(b) = a$ | $e^x$ and $\ln(x)$ are inverses |
+| $f \circ g$ | Composition | Apply $g$ first, then $f$ | $(f \circ g)(x) = f(g(x))$ |
+
+---
+
+## Limits
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $\lim_{x \to a} f(x)$ | Limit | The value $f$ approaches as $x$ gets arbitrarily close to $a$ | $\lim_{x \to 0} \frac{\sin x}{x} = 1$ |
+| $\lim_{x \to a^+} f(x)$ | Right-hand limit | Approach $a$ from values greater than $a$ | — |
+| $\lim_{x \to a^-} f(x)$ | Left-hand limit | Approach $a$ from values less than $a$ | — |
+| $\lim_{x \to \infty} f(x)$ | Limit at infinity | The value $f$ approaches as $x$ grows without bound | $\lim_{x \to \infty} \frac{1}{x} = 0$ |
+| $\infty$ | Infinity | Not a number — a direction. "Grows without bound" | — |
+| $\epsilon$ (epsilon), $\delta$ (delta) | Precision variables | Used in the formal definition of limit: "how close is close enough?" | — |
+
+---
+
+## Derivatives — rules
+
+| Symbol / Pattern | Name | Meaning |
+|------------------|------|---------|
+| $\frac{d}{dx}[c] = 0$ | Constant rule | The derivative of a constant is zero |
+| $\frac{d}{dx}[x^n] = nx^{n-1}$ | Power rule | Lower the exponent, multiply by the old one |
+| $\frac{d}{dx}[cf] = cf'$ | Constant multiple | Pull constants out |
+| $\frac{d}{dx}[f + g] = f' + g'$ | Sum rule | Differentiate term by term |
+| $(fg)' = f'g + fg'$ | Product rule | Differentiate in turns |
+| $\frac{d}{dx}\left[\frac{f}{g}\right] = \frac{f'g - fg'}{g^2}$ | Quotient rule | — |
+| $\frac{d}{dx}[f(g(x))] = f'(g(x)) \cdot g'(x)$ | Chain rule | Derivative of outer times derivative of inner |
+
+---
+
+## Integrals
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $\int f(x)\,dx$ | Indefinite integral (antiderivative) | "What function has $f$ as its derivative?" + constant $C$ | $\int 2x\,dx = x^2 + C$ |
+| $\int_a^b f(x)\,dx$ | Definite integral | The signed area under $f$ from $x = a$ to $x = b$ | $\int_0^1 2x\,dx = 1$ |
+| $\sum_{i=1}^{n} f(x_i) \Delta x$ | Riemann sum | Approximate the area with rectangles | — |
+| $\Delta x$ | Width of a rectangle | In Riemann sums: the width of each strip | $\Delta x = \frac{b-a}{n}$ |
+| $F(x)$ | Antiderivative | A function whose derivative is $f$: $F'(x) = f(x)$ | If $f(x) = 2x$ then $F(x) = x^2$ |
+
+---
+
+## The Fundamental Theorem
+
+<MathBlock expression={'\\int_a^b f(x)\\,dx = F(b) - F(a)'} />
+
+This single equation connects derivatives and integrals. The definite integral (area under the curve) equals the net change in the antiderivative.
+
+---
+
+## Common Functions and Their Derivatives
+
+| Function $f(x)$ | Derivative $f'(x)$ |
+|-------------------|---------------------|
+| $x^n$ | $nx^{n-1}$ |
+| $e^x$ | $e^x$ (itself!) |
+| $\ln(x)$ | $1/x$ |
+| $\sin(x)$ | $\cos(x)$ |
+| $\cos(x)$ | $-\sin(x)$ |
+| $\tan(x)$ | $\sec^2(x)$ |
+
+---
+
+## Series and Approximation
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $\sum_{n=0}^{\infty} a_n$ | Infinite series | The sum of an infinite sequence of terms | $\sum_{n=0}^{\infty} \frac{x^n}{n!} = e^x$ |
+| $n!$ | Factorial | $n \times (n-1) \times \cdots \times 2 \times 1$ | $5! = 120$ |
+| $T_n(x)$ | Taylor polynomial (degree $n$) | The $n$-th degree polynomial approximation to $f$ near a point | — |
+| $f(x) \approx f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \cdots$ | Taylor series | Represent $f$ as an infinite sum of polynomial terms centered at $a$ | — |
+| $\approx$ | Approximately equal | "Close to" | $\sin(0.1) \approx 0.1$ |
+
+---
+
+## Common Greek Letters in Calculus
+
+| Letter | Symbol | Typical use |
+|--------|--------|-------------|
+| delta | $\Delta$ | **Change in** a quantity ($\Delta x$ = change in $x$) |
+| delta (lowercase) | $\delta$ | Small change (in limit definitions) |
+| epsilon | $\epsilon$ | Arbitrarily small positive number (in limit proofs) |
+| theta | $\theta$ | Angle (especially in polar/trig contexts) |
+| sigma | $\Sigma$ | **Summation** ($\sum_{i=1}^{n}$ = sum from $i=1$ to $n$) |
+| tau | $\tau$ | Time variable (alternative to $t$) |
+| pi | $\pi$ | Circle constant, 3.14159... |
+
+---
+
+## The two notations for derivatives
+
+If you've ever wondered why there are two ways to write the same thing:
+
+- **Lagrange notation** $f'(x)$ — compact, easy to write. Good for simple functions and in algebra.
+- **Leibniz notation** $\frac{dy}{dx}$ — shows that the derivative is a *ratio of changes*. Essential for chain rule, integrals, and differential equations.
+
+They mean the same thing. Use whichever makes the current problem clearer.
+
+---
+
+> This reference covers every symbol used in the calculus course. Bookmark it and come back whenever you need it.

@@ -1,0 +1,92 @@
+---
+title: 'Eigenvectors and Eigenvalues'
+titleZh: '特征向量与特征值'
+description: 'The special arrows that hold their direction through a transformation — they only stretch, never rotate.'
+descriptionZh: '在变换中保持方向不变的特殊箭头——它们只被拉伸，从不旋转。'
+course: 'linear-algebra'
+module: 'Deep Structure'
+moduleZh: '深入结构'
+moduleOrder: 4
+lessonOrder: 13
+duration: 22
+difficulty: 'Advanced'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { EigenvectorVis } from '../../../components/interactive/linear-algebra/EigenvectorVis';
+
+# Eigenvectors and Eigenvalues
+
+When a matrix warps space, most vectors get knocked off their original direction — they point somewhere new. But a few special vectors **keep their direction**. They might get stretched or shrunk, but they don't rotate. These are the **eigenvectors**, and their stretch factors are the **eigenvalues**.
+
+This is one of the deepest ideas in linear algebra. Eigenvectors reveal the "skeleton" of a transformation — the axes along which it acts most simply.
+
+## The equation
+
+An eigenvector **v** of a matrix A satisfies:
+
+<MathBlock expression={'A\\vec{v} = \\lambda \\vec{v}'} />
+
+Lambda (λ) is the eigenvalue. Read this geometrically: applying A to **v** gives the same direction **v**, just scaled by λ. No rotation. No shear. Pure stretch.
+
+## Finding eigenvalues
+
+Rearrange the equation:
+
+<MathBlock expression={'(A - \\lambda I)\\vec{v} = \\vec{0}'} />
+
+This has a nonzero solution **v** only if det(A - λI) = 0. So eigenvalues are the roots of the **characteristic polynomial** det(A - λI).
+
+For a 2x2 matrix with entries a, b, c, d:
+
+<MathBlock expression={'\\lambda^2 - (a+d)\\lambda + (ad - bc) = 0'} />
+
+The trace (a+d) and determinant (ad-bc) of A determine the eigenvalues. Two numbers tell you everything about the transformation's stretching behavior.
+
+## Find the eigenvectors
+
+The circle of blue vectors below shows what happens to *every* direction under a transformation. The yellow and red arrows are the eigenvectors — they stay on their line, only stretching. Drag the "Transform" slider to watch. Try the "Rotation" preset to see what happens when there are no real eigenvectors.
+
+<EigenvectorVis client:visible />
+
+## Visual examples
+
+- **Rotation by 90°**: No real eigenvectors — every vector rotates, so nothing keeps its direction. The eigenvalues are imaginary (±i), reflecting the rotational nature.
+- **Scaling by 2**: Every vector is an eigenvector with eigenvalue 2 — everything stretches uniformly.
+- **Shear**: Only one eigendirection. Vectors along the x-axis stay put (eigenvalue 1). All other vectors get tilted.
+
+<KeyInsight>
+Eigenvectors are the directions a transformation respects — they only stretch, never rotate. The eigenvalues tell you how much they stretch.
+</KeyInsight>
+
+## Why eigenvectors matter
+
+Eigenvectors give you the **natural coordinate system** for a transformation. If you rewrite a matrix in its eigenbasis, it becomes diagonal — just a list of stretch factors. Complex transformations simplify to independent stretches along independent axes.
+
+This idea powers:
+- **Differential equations**: solutions are combinations of eigenvectors (each evolving independently)
+- **Principal component analysis**: eigenvectors of the covariance matrix find the most important directions in data
+- **Google's PageRank**: the steady-state distribution is an eigenvector of the link matrix
+- **Quantum mechanics**: observable values are eigenvalues, measured states are eigenvectors
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Find the eigenvalues and eigenvectors of [[3,0],[0,5]]. What does this transformation do?"
+  hint="This is already diagonal — the eigenvalues are sitting on the diagonal."
+  answer="Eigenvalues λ₁=3, λ₂=5. Eigenvectors: (1,0) for λ₁, (0,1) for λ₂. The transformation stretches x by 3 and y by 5. The basis vectors are eigenvectors because the matrix is diagonal."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Find the eigenvalues of [[2,1],[1,2]]. For each eigenvalue, find an eigenvector."
+  hint="Characteristic polynomial: λ² - 4λ + 3 = 0. Roots: λ = 1 and λ = 3."
+  answer="λ₁=1: (A-I)v=0 → [[1,1],[1,1]]v=0 → v₁=(1,-1). Direction along y=-x, eigenvalue 1 (unchanged). λ₂=3: (A-3I)v=0 → [[-1,1],[1,-1]]v=0 → v₂=(1,1). Direction along y=x, eigenvalue 3 (stretched by 3)."
+/>
+
+---
+
+**Up next:** [Dot product and cross product →](/courses/linear-algebra/14-dot-and-cross-product)

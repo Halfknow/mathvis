@@ -1,0 +1,76 @@
+---
+title: 'Matrix Multiplication'
+titleZh: '矩阵乘法'
+description: 'Multiplying matrices is composing transformations — apply one warp, then the other, in sequence.'
+descriptionZh: '矩阵相乘就是变换的复合——先扭曲一次，再扭曲一次，顺序执行。'
+course: 'linear-algebra'
+module: 'Matrix Transformations'
+moduleZh: '矩阵变换'
+moduleOrder: 3
+lessonOrder: 9
+duration: 18
+difficulty: 'Intermediate'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { MatrixTransform2D } from '../../../components/interactive/linear-algebra/MatrixTransform2D';
+
+# Matrix Multiplication
+
+If a matrix is a transformation of space, then **multiplying two matrices** means doing one transformation after another. It's composition — apply the first warp, then apply the second warp to the already-warped space.
+
+This is why matrix multiplication exists. It's not arbitrary arithmetic — it's the algebra of sequential transformations.
+
+## The composition picture
+
+Suppose A rotates by 90° and B stretches by 2x. Then BA (read right to left: A first, then B) means: rotate the space, then stretch it. The combined effect is a different single transformation — and it's represented by a single matrix, the product BA.
+
+<MathBlock expression={'(BA)\\vec{x} = B(A\\vec{x})'} />
+
+Read this right to left: x goes into A, the result goes into B. The matrix BA is the "shortcut" — it encodes the entire two-step transformation in one step.
+
+## See composition in action
+
+The widget below lets you apply any 2x2 transformation. Think of each preset as one step in a composition: what happens if you apply "Shear" then "Rotation 90°"? Try it and see how the grid bends twice.
+
+<MatrixTransform2D client:visible initialA={1} initialB={1} initialC={0} initialD={1} />
+
+## How to compute it
+
+The (i,j) entry of the product AB is the dot product of row i of A with column j of B:
+
+<MathBlock expression={'(AB)_{ij} = \\text{row}_i(A) \\cdot \\text{col}_j(B) = \\sum_k a_{ik} \\, b_{kj}'} />
+
+But the geometric meaning is more useful: **column j of AB is A times column j of B**. In other words, apply transformation A to each column of B. The columns of the product are the transformed basis vectors.
+
+## Order matters
+
+Matrix multiplication is **not commutative**: AB ≠ BA in general.
+
+Geometrically this makes perfect sense. Rotate then stretch is different from stretch then rotate. The order of transformations matters — try putting on your socks after your shoes and you'll feel the principle directly.
+
+<KeyInsight>
+Matrix multiplication is composing transformations: apply one warp, then the other. Order matters — AB and BA are usually different transformations.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Let A = [[0,-1],[1,0]] (90° rotation) and B = [[2,0],[0,2]] (2x scaling). Compute AB and BA. Are they the same?"
+  hint="AB means: first B (scale), then A (rotate). BA means: first A (rotate), then B (scale)."
+  answer="AB = [[0,-2],[2,0]]. BA = [[0,-2],[2,0]]. In this special case they're equal because uniform scaling commutes with rotation. But this is the exception, not the rule."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Let A = [[1,1],[0,1]] (shear right) and B = [[0,1],[1,0]] (reflect across y=x). Compute AB and BA. Are they the same?"
+  hint="Compute both products and compare."
+  answer="AB = [[1,1],[1,0]]. BA = [[0,1],[1,1]]. They're different — shear-then-reflect is not the same as reflect-then-shear. Order matters."
+/>
+
+---
+
+**Up next:** [The determinant →](/courses/linear-algebra/10-the-determinant)

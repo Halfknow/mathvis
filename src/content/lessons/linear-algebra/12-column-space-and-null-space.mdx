@@ -1,0 +1,84 @@
+---
+title: 'Column Space and Null Space'
+titleZh: '列空间与零空间'
+description: 'Two fundamental subspaces reveal what a transformation can reach and what it annihilates.'
+descriptionZh: '两个基本子空间揭示了变换能到达哪里、以及它消灭了什么。'
+course: 'linear-algebra'
+module: 'Deep Structure'
+moduleZh: '深入结构'
+moduleOrder: 4
+lessonOrder: 12
+duration: 20
+difficulty: 'Intermediate'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { MatrixTransform2D } from '../../../components/interactive/linear-algebra/MatrixTransform2D';
+
+# Column Space and Null Space
+
+Every matrix transformation does two things at once: it **maps inputs to outputs** and it **collapses certain inputs to zero**. The column space describes where things go. The null space describes what disappears. Together, they give a complete picture of the transformation's anatomy.
+
+## See the collapse
+
+The transformation below warps the grid. The two column vectors (the green and accent arrows) define the **column space** — the space you can reach. When det = 0, those columns align and the entire plane collapses onto a single line — that's when the **null space** is non-trivial.
+
+<MatrixTransform2D client:visible />
+
+## Column space — where can you reach?
+
+The **column space** of a matrix A, written Col(A), is the span of its columns. Geometrically: it's all the possible outputs. Every vector Ax is a linear combination of the columns, so the column space is exactly the set of vectors you can reach.
+
+- If the columns span the plane, Col(A) = all of 2D — you can reach anywhere.
+- If the columns point in the same direction, Col(A) = a line — you're stuck.
+- If the columns are both zero, Col(A) = the zero subspace — everything collapses to the origin.
+
+The dimension of the column space is called the **rank** of A. It counts how many genuinely independent directions the transformation preserves.
+
+## Null space — what gets crushed to zero?
+
+The **null space** of A, written Null(A), is the set of all vectors x such that Ax = 0. Geometrically: it's everything that gets annihilated — mapped to the origin.
+
+- If A is invertible, Null(A) = the zero subspace — only the zero vector disappears.
+- If A collapses the plane to a line, Null(A) is a line — everything perpendicular (in some sense) to the surviving direction gets crushed.
+- If A sends everything to zero, Null(A) = all of 2D.
+
+## The fundamental trade-off
+
+Here's the deep connection:
+
+> **dim(Col(A)) + dim(Null(A)) = n** (the number of columns)
+
+This is the **Rank-Nullity Theorem**. It says: the dimensions you keep (column space) plus the dimensions you lose (null space) always add up to the total number of input dimensions. Every input dimension is either preserved or destroyed — none are unaccounted for.
+
+<KeyInsight>
+The column space is what the transformation can reach. The null space is what it annihilates. They trade off: dimensions preserved + dimensions destroyed = total input dimensions.
+</KeyInsight>
+
+## Why this matters for Ax = b
+
+The equation Ax = b has a solution **if and only if b is in the column space** of A. That's tautological but powerful: the column space is the set of reachable destinations. If b is unreachable — outside the column space — then no input x will ever land on b.
+
+And if Null(A) is more than just the zero vector, then when a solution exists, it's not unique. You can add any null space vector to a solution and still have a solution (because A annihilates the null space part).
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Find the column space and null space of A = [[1,2],[2,4]]."
+  hint="Column 2 is 2 times column 1. And Ax = (x₁+2x₂)(1,2)."
+  answer="Col(A) = the line through (1,2). Null(A) = all vectors (x₁,x₂) with x₁+2x₂=0, i.e., the line through (-2,1). Both are 1-dimensional. Rank + Nullity = 1 + 1 = 2 = n ✓."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Can [[1,2],[2,4]]x = (3,1) have a solution?"
+  hint="Is (3,1) in the column space?"
+  answer="No. The column space is the line y = 2x. The point (3,1) has y/x = 1/3 ≠ 2, so it's off the line. No solution exists — (3,1) is unreachable."
+/>
+
+---
+
+**Up next:** [Eigenvectors and eigenvalues →](/courses/linear-algebra/13-eigenvectors-and-eigenvalues)

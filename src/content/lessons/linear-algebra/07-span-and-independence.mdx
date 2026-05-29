@@ -67,6 +67,8 @@ Two independent vectors in 3D span a tilted plane (the terracotta dots), not all
 The span is the space your arrows can reach. Linear independence means every arrow contributes a new direction — none is redundant.
 </KeyInsight>
 
+**Connections.** Span answers "what can you reach?" Linear independence answers "is anyone redundant?" Together they define dimension and rank. The null space (lesson 21) is the set of coefficients that produce the zero vector — a linearly dependent combination. A matrix is invertible exactly when its columns are linearly independent.
+
 ## Why it matters
 
 Independence determines how much information your vectors carry. If you have 10 vectors but only 3 are independent, you really only have 3 directions of freedom. The other 7 are just echoes. Every algorithm in linear algebra — from solving systems to computing eigenvalues — depends on knowing how many independent directions you actually have.
@@ -85,6 +87,13 @@ Independence determines how much information your vectors carry. If you have 10 
   prompt="Are (1, 0, 0), (0, 1, 0), and (1, 1, 0) linearly independent in 3D?"
   hint="Can one be written as a combination of the others?"
   answer="No. (1,1,0) = (1,0,0) + (0,1,0). The third vector is redundant. Their span is the xy-plane, not all of 3D."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Are (1, 1, 0), (1, 0, 1), and (0, 1, 1) linearly independent? What is the dimension of their span?"
+  hint="Try to write the zero vector as a combination a(1,1,0) + b(1,0,1) + c(0,1,1) = (0,0,0)."
+  answer="They are dependent: (1,1,0) + (1,0,1) - (0,1,1) = (2,0,0), but more directly, (1,1,0) + (1,0,1) = (2,1,1) which is not (0,1,1). Actually, check by solving: a + b = 0, a + c = 0, b + c = 0 gives a = b = c = 0 — so they ARE independent. Their span is all of R³, dimension 3."
 />
 
 ---

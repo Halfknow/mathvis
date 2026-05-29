@@ -85,6 +85,8 @@ Orthogonality extends naturally — the red right-angle marker shows that **a** 
 The dot product encodes both length and angle. When two arrows are perpendicular, their dot product is exactly zero — and this algebraic condition is the foundation for everything from projection to the Pythagorean theorem in higher dimensions.
 </KeyInsight>
 
+**Connections.** The cos θ = (a . b)/(‖a‖‖b‖) formula is the bridge between geometry and algebra — it lets you compute angles from coordinates. This formula underpins the entire theory of orthogonal bases (lesson 24) and the covariance matrix in PCA (lesson 29), where "angle between variables" measures their correlation.
+
 ## Practice
 
 <ExerciseBlock
@@ -106,6 +108,13 @@ The dot product encodes both length and angle. When two arrows are perpendicular
   prompt="Find a vector perpendicular to (3, 1). How many such vectors exist?"
   hint="You need a vector (x, y) such that 3x + 1y = 0."
   answer="Any vector (x, y) where y = -3x works: (1, -3), (2, -6), (-1, 3), etc. There are infinitely many — they all point along the same line (the perpendicular direction). The 'perpendicular world' of a 2D vector is always a 1D line."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Two vectors have dot product 0. What angle separates them? If you double the length of one vector, does the angle change? Why or why not?"
+  hint="Dot product zero means perpendicular. What does the cos formula say when you scale one vector?"
+  answer="Dot product zero means the angle is 90 degrees — they are orthogonal. Doubling one vector's length doubles both the numerator and denominator of cos θ = (a . b)/(‖a‖‖b‖), so the ratio stays the same and the angle does not change. Orthogonality depends on direction, not length."
 />
 
 ---

@@ -74,6 +74,8 @@ Three independent vectors form a basis for all of 3D. The red point has unique c
 A basis is the minimal spanning set — enough arrows to reach everywhere, with none to spare. Dimension is how many arrows you need.
 </KeyInsight>
 
+**Connections.** A basis is the minimal set of vectors that still spans the whole space — no redundancies, no gaps. The dimension of the column space is the rank (lesson 20). The dimension of the null space is the nullity. Rank + nullity = number of columns, always. Every basis for the same space has the same number of vectors — dimension is well-defined.
+
 ## Practice
 
 <ExerciseBlock
@@ -88,6 +90,13 @@ A basis is the minimal spanning set — enough arrows to reach everywhere, with 
   prompt="A subspace contains all vectors of the form (a, a, 0). What is its dimension? Give a basis."
   hint="All vectors here lie on a line in 3D space."
   answer="Dimension 1. A basis is just {(1, 1, 0)}. Every vector in the subspace is a scalar multiple of this one."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Is {(1, 1), (1, -1)} a basis for R²? What about {(1, 2), (2, 4)}? Explain geometrically why the second set fails."
+  hint="Check if the vectors are independent. If they point different directions, they span the plane."
+  answer="Yes, {(1,1), (1,-1)} is a basis — they point in different directions (northeast and southeast), so they're independent and span R². {(1,2), (2,4)} fails because (2,4) = 2·(1,2): both vectors lie on the same line through the origin (the line y = 2x). Geometrically, you're stuck on one line and can never reach points off it."
 />
 
 ---

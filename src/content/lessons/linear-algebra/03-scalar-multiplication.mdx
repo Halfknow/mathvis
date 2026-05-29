@@ -55,6 +55,8 @@ In 3D, scalar multiplication still just stretches or flips — the direction lin
 Scalar multiplication is a uniform stretch. It scales length without rotating — or flips direction if the scalar is negative.
 </KeyInsight>
 
+**Connections.** Scalar multiplication is the "stretch" half of linear algebra — the other half being addition. Together, they define what a vector space IS. When c is an eigenvalue (lesson 25), the eigenvector gets scaled without rotating — scalar multiplication is the simplest possible transformation.
+
 ## Three special scalars
 
 - **c = 0**: Everything collapses to the origin. The zero vector — no direction, no length.
@@ -75,6 +77,13 @@ Scalar multiplication is a uniform stretch. It scales length without rotating �
   prompt="If 0.5 times vector **v** has length 2, what is the length of **v**? And what about **3v**?"
   hint="Scalar multiplication scales the length by |c|."
   answer="**v** has length 4 (halving gave 2, so original is 4). Then **3v** has length 12."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="If ‖v‖ = 5, what is ‖-3v‖? What is ‖cv‖ in terms of c and ‖v‖?"
+  hint="Scalar multiplication scales length by the absolute value of the scalar."
+  answer="‖-3v‖ = |−3| · ‖v‖ = 3 · 5 = 15. In general, ‖cv‖ = |c| · ‖v‖. The sign of c flips direction but never changes length."
 />
 
 ---

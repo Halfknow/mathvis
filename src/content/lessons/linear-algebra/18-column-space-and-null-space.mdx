@@ -77,6 +77,8 @@ In 3D, the column space is a plane or line inside 3D space. The terracotta dots 
 The column space is what the transformation can reach. The null space is what it annihilates. They trade off: dimensions preserved + dimensions destroyed = total input dimensions.
 </KeyInsight>
 
+**Connections.** Column space and null space are two of the four fundamental subspaces (lesson 22). Together with the row space and left null space, they give a complete anatomical picture of any matrix. The Rank-Nullity Theorem (rank + nullity = n) is one of the deepest results in linear algebra — it says no information is unaccounted for.
+
 ## Why this matters for Ax = b
 
 The equation Ax = b has a solution **if and only if b is in the column space** of A. That's tautological but powerful: the column space is the set of reachable destinations. If b is unreachable — outside the column space — then no input x will ever land on b.
@@ -97,6 +99,13 @@ And if Null(A) is more than just the zero vector, then when a solution exists, i
   prompt="Can [[1,2],[2,4]]x = (3,1) have a solution?"
   hint="Is (3,1) in the column space?"
   answer="No. The column space is the line y = 2x. The point (3,1) has y/x = 1/3 ≠ 2, so it's off the line. No solution exists — (3,1) is unreachable."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Find Col(A) and Null(A) for A = [[1, 0, 1], [0, 1, 1]]. Verify rank + nullity = n."
+  hint="The two columns (1,0) and (0,1) are independent. For the null space, solve x₁ + x₃ = 0 and x₂ + x₃ = 0."
+  answer="Col(A) = all of R² (the columns (1,0) and (0,1) span the plane), so rank = 2. Null(A): x₁ = -x₃, x₂ = -x₃, so vectors of the form t(-1,-1,1). Nullity = 1. Rank + Nullity = 2 + 1 = 3 = n ✓."
 />
 
 ---

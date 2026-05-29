@@ -58,6 +58,8 @@ In 3D, the null space is a line or plane of inputs that all map to zero. The yel
 The null space is the set of inputs that the transformation annihilates. When it's more than just the zero vector, the transformation has lost information — and solutions to Ax = b are not unique.
 </KeyInsight>
 
+**Connections.** The null space is what gets annihilated — the dimensions that don't survive the transformation. Finding the null space by row reduction reveals the 'free variables' — the directions you can move without changing the output. When the null space is non-trivial, solutions to Ax=b are never unique (you can always add a null space vector).
+
 ## Practice
 
 <ExerciseBlock
@@ -72,6 +74,13 @@ The null space is the set of inputs that the transformation annihilates. When it
   prompt="What is the null space of the identity matrix I = [[1, 0], [0, 1]]?"
   hint="Solve Ix = 0. What vector satisfies (x, y) = (0, 0)?"
   answer="Only the zero vector (0, 0). The identity matrix maps every vector to itself, so only the zero input produces zero output. Null(I) = {0}. This confirms: det != 0 implies trivial null space."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Find the null space of [[1, 2, 3], [2, 4, 6]]. How many free variables does it have? What does this tell you about the rank?"
+  hint="Row 2 is 2 times row 1. So you only have one equation: x₁ + 2x₂ + 3x₃ = 0. Two variables are free."
+  answer="The single equation x₁ + 2x₂ + 3x₃ = 0 gives x₁ = -2x₂ - 3x₃ with x₂ and x₃ free. Null(A) = {(-2s-3t, s, t) : s, t ∈ R}. Two free variables means nullity = 2, so rank = 3 - 2 = 1 (only one pivot column)."
 />
 
 ---

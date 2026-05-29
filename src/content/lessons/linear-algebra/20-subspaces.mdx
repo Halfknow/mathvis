@@ -77,6 +77,8 @@ In 3D, subspaces can be lines, planes, or the full space — all passing through
 A subspace is a flat region through the origin that absorbs all linear combinations — stretch, add, and you never leave.
 </KeyInsight>
 
+**Connections.** The four fundamental subspaces — Col(A), Null(A), Row(A), LeftNull(A) — form Strang's 'Fundamental Theorem of Linear Algebra.' Row(A) and Null(A) are orthogonal complements in Rⁿ. Col(A) and LeftNull(A) are orthogonal complements in Rᵐ. This orthogonality is why SVD (lesson 27) works: it finds orthogonal bases for all four subspaces simultaneously.
+
 ## The two most important subspaces
 
 We'll revisit these later, but preview them now:
@@ -100,6 +102,13 @@ These two subspaces hold the key to understanding what matrices *do* — which i
   prompt="Is the set of all vectors of the form (x, y, x+y) a subspace of 3D? Check the three rules."
   hint="Is (0,0,0) in the set? Is the sum of two such vectors still of that form? Is a scalar multiple?"
   answer="Yes. (0,0,0) = (0,0,0+0) ✓. Sum: (x₁,y₁,x₁+y₁)+(x₂,y₂,x₂+y₂) = (x₁+x₂, y₁+y₂, (x₁+x₂)+(y₁+y₂)) ✓. Scale: c(x,y,x+y) = (cx, cy, c(x+y)) = (cx, cy, cx+cy) ✓. It's a 2D subspace — a plane through the origin."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="For A = [[1, 2], [3, 6]], find all four fundamental subspaces. Verify that Row(A) ⊥ Null(A) and Col(A) ⊥ LeftNull(A)."
+  hint="Row 2 is 3× Row 1, so rank = 1. Row(A) = span of (1,2). Null(A): solve x+2y=0. Col(A) = span of (1,3). LeftNull(Aᵀ): solve a+3b=0."
+  answer="Rank = 1. Row(A) = span{(1,2)}. Null(A) = span{(-2,1)} (line where x₁ = -2x₂). Col(A) = span{(1,3)}. LeftNull(A) = Null(Aᵀ): Aᵀ = [[1,3],[2,6]], solve x+3y=0, giving span{(-3,1)}. Orthogonality checks: (1,2)·(-2,1) = -2+2 = 0 ✓. (1,3)·(-3,1) = -3+3 = 0 ✓."
 />
 
 ---

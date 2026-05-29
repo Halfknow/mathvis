@@ -53,6 +53,26 @@ Matrix multiplication is **not commutative**: AB ≠ BA in general.
 
 Geometrically this makes perfect sense. Rotate then stretch is different from stretch then rotate. The order of transformations matters — try putting on your socks after your shoes and you'll feel the principle directly.
 
+## The identity matrix
+
+The **identity matrix** I is the "do nothing" transformation:
+
+<MathBlock expression={'I = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}'} />
+
+Multiplying by I changes nothing: IA = AI = A for any matrix A. Every basis vector lands exactly where it started. The identity is to matrix multiplication what zero is to addition and one is to multiplication — the neutral element.
+
+## Associativity: (AB)C = A(BC)
+
+Matrix multiplication is **associative**: the grouping doesn't matter. (AB)C = A(BC) — apply A and B first, then C, or apply A to the result of BC. Either way, you get the same transformation.
+
+The geometric proof is immediate: both expressions mean "apply C, then B, then A." The order of *transformations* is fixed (C first, then B, then A). Parentheses just determine whether you compose the first two or the last two first — but the total composition is the same.
+
+This is why we can write ABC without ambiguity. Three transformations in sequence have one unambiguous combined effect.
+
+## Preview: four perspectives
+
+You've seen matrix multiplication as composition. In lesson 17, you'll see the *same product* from four different angles: entry-by-entry dot products, column combinations, row combinations, and outer product sums. Each perspective reveals a different structure. For now, notice one fact that will unlock everything: **column j of AB = A times column j of B**. The columns of the product are transformed versions of B's columns.
+
 ## In three dimensions
 
 Composing 3D transformations works identically — apply A then B, and the combined effect is the single matrix BA. The terracotta cube shows the final result.
@@ -68,6 +88,12 @@ Composing 3D transformations works identically — apply A then B, and the combi
 Matrix multiplication is composing transformations: apply one warp, then the other. Order matters — AB and BA are usually different transformations.
 </KeyInsight>
 
+## Connections
+
+Matrix multiplication is the engine of composition. Lesson 17 will show you four perspectives on this same operation, each revealing different structure — the column perspective connects to linear systems, the outer product perspective connects to SVD.
+
+The identity matrix I and associativity ((AB)C = A(BC)) are the algebraic backbone of everything from the determinant product rule (lesson 15) to the eigenvalue equation A(Av) = A(λv) = λ(Av) in lesson 25.
+
 ## Practice
 
 <ExerciseBlock
@@ -82,6 +108,13 @@ Matrix multiplication is composing transformations: apply one warp, then the oth
   prompt="Let A = [[1,1],[0,1]] (shear right) and B = [[0,1],[1,0]] (reflect across y=x). Compute AB and BA. Are they the same?"
   hint="Compute both products and compare."
   answer="AB = [[1,1],[1,0]]. BA = [[0,1],[1,1]]. They're different — shear-then-reflect is not the same as reflect-then-shear. Order matters."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Verify associativity: let A = [[1,0],[0,2]], B = [[0,1],[1,0]], C = [[1,1],[0,1]]. Compute (AB)C and A(BC). Are they equal?"
+  hint="Compute AB first, then multiply by C. Then compute BC first, then A times BC."
+  answer="AB = [[0,1],[2,0]]. (AB)C = [[0,1],[2,2]]. BC = [[0,1],[1,1]]. A(BC) = [[0,1],[2,2]]. Equal ✓. Associativity holds — the grouping doesn't change the result."
 />
 
 ---

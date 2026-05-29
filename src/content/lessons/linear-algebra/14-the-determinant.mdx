@@ -46,7 +46,26 @@ For a 2x2 matrix:
 
 Where does this come from? It's the area of the parallelogram formed by the two column vectors (a,c) and (b,d). The cross-product formula for parallelogram area gives exactly ad - bc.
 
-For a 3x3 matrix, the determinant measures **volume** scaling — how much the unit cube stretches or compresses.
+### Computing 3×3 determinants
+
+For a 3×3 matrix, the determinant measures **volume** scaling. The computation uses cofactor expansion along the first row:
+
+<MathBlock expression={'\\det \\begin{bmatrix} a & b & c \\\\ d & e & f \\\\ g & h & i \\end{bmatrix} = a(ei - fh) - b(di - fg) + c(dh - eg)'} />
+
+Each term multiplies an entry from the first row by the determinant of the 2×2 "minor" matrix that remains after removing that entry's row and column. The signs alternate: +, -, +. The geometric meaning remains the same — this formula gives the signed volume of the parallelepiped formed by the three column vectors.
+
+### Six properties of determinants
+
+These six properties encode everything you need to know:
+
+1. **det(I) = 1**: The identity transformation changes no areas.
+2. **Row swap flips sign**: Swapping two rows multiplies the determinant by -1. Geometrically, this reverses orientation.
+3. **Row scaling**: Multiplying a row by k multiplies det by k. One axis stretched by k means areas scale by k.
+4. **Row addition**: Adding a multiple of one row to another leaves det unchanged. This is why Gaussian elimination preserves the determinant (up to the row swaps).
+5. **det(Aᵀ) = det(A)**: A matrix and its transpose have the same determinant. Rows and columns are symmetric.
+6. **det(AB) = det(A)·det(B)**: Already covered — area scalings multiply under composition.
+
+Property 4 is the geometric reason Gaussian elimination works: shearing the grid (adding rows) preserves area, so the determinant is a reliable invariant throughout the elimination process.
 
 ## The zero determinant is special
 
@@ -67,6 +86,12 @@ In 3D, the determinant measures **volume** scaling. When det = 0, the cube colla
 <KeyInsight>
 The determinant is the area scaling factor. If it's zero, the transformation collapsed space flat — and information was lost forever.
 </KeyInsight>
+
+## Connections
+
+The determinant connects everything: it tells you whether a matrix is invertible (det ≠ 0), how areas change under transformation (|det|), whether orientation is preserved (sign of det), and it appears in the characteristic polynomial for eigenvalues. In lesson 25, the determinant of (A - λI) = 0 is exactly how you find eigenvalues. In lesson 27, det(A) = λ₁·λ₂ connects to singular values via det(A) = ±σ₁·σ₂.
+
+Row operations (property 4) are the computational bridge to lesson 19's null space — Gaussian elimination tracks the determinant while revealing the matrix's structure.
 
 ## The product rule
 
@@ -90,6 +115,20 @@ Geometrically: if A scales areas by 3 and B scales areas by 2, then doing A then
   prompt="The matrix [[1,2],[2,4]] has determinant 0. What does the plane look like after this transformation?"
   hint="Column 2 is exactly 2 times column 1."
   answer="Both columns point in the same direction (1,2). The entire plane collapses onto the line through (1,2). Every point ends up on this single line — all areas become zero."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Compute det([[2,1,3],[0,-1,4],[5,2,1]]) using cofactor expansion along the first row."
+  hint="det = 2((-1)(1)-(4)(2)) - 1((0)(1)-(4)(5)) + 3((0)(2)-(-1)(5))"
+  answer="det = 2(-1-8) - 1(0-20) + 3(0+5) = 2(-9) + 20 + 15 = -18 + 20 + 15 = 17. The transformation expands volume by a factor of 17."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Matrix A has det(A) = 3. What is det(2A)? What is det(A⁵)? What is det(A⁻¹)?"
+  hint="Scaling every entry by 2 is NOT the same as scaling one row. Use det(AB) = det(A)det(B)."
+  answer="det(2A) = 2²·det(A) = 12 (for 2×2: each row scaled by 2, so 2·2·3 = 12). det(A⁵) = det(A)⁵ = 3⁵ = 243. det(A⁻¹) = 1/det(A) = 1/3. The inverse undoes the transformation, so it scales areas by the reciprocal."
 />
 
 ---

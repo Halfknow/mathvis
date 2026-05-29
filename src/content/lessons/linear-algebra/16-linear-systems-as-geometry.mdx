@@ -60,6 +60,12 @@ In 3D, Ax = b asks whether the target vector b lives in the column space — a p
 Solving Ax = b asks "does b live in the span of A's columns?" The row picture shows crossing lines. The column picture shows vector combinations. Both ask the same geometric question.
 </KeyInsight>
 
+## Connections
+
+Linear systems are where algebra meets geometry: Ax = b asks "can b be reached by combining A's columns?" The row picture (intersecting lines) and column picture (combining arrows) are two views of the same question. Lesson 20 will formalize the reachable set as the "column space," and lesson 23 will show what to do when b is *unreachable* (least squares).
+
+Gaussian elimination — the algorithm for solving systems — is equivalent to performing row operations that don't change the solution set but simplify the geometry. Each elimination step is a shear or scale that preserves the intersection point.
+
 ## Practice
 
 <ExerciseBlock
@@ -74,6 +80,13 @@ Solving Ax = b asks "does b live in the span of A's columns?" The row picture sh
   prompt="Solve x + y = 3, 2x + 2y = 6 using the column picture. How many solutions are there?"
   hint="The second equation is just twice the first. What does that mean for the columns?"
   answer="Column 1 = (1,2), Column 2 = (1,2). These are the same direction! The column space is a line. But the target (3,6) lies on that line (it's 3*(1,2)). So infinitely many solutions exist: any (x,y) with x+y=3 works."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="The system x + 2y = 3 and 2x + 4y = 5 has no solution. Why, geometrically? What if the right-hand side were (3, 6) instead?"
+  hint="Look at the left-hand sides. The second equation is twice the first. What does that mean for the lines?"
+  answer="The two equations represent parallel lines — the second is a scaled copy of the first, but shifted to a different intercept (5 ≠ 6). Parallel lines never intersect, so no solution exists. If the right-hand side were (3, 6), the lines would be identical (every point on one is on the other) — infinitely many solutions."
 />
 
 ---

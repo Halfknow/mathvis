@@ -1,0 +1,96 @@
+---
+title: "Independence"
+titleZh: "独立性"
+description: "When knowing one variable tells you nothing about the other — the joint landscape factors into two separate hills."
+descriptionZh: "当知道一个变量对另一个毫无帮助——联合地形图分解为两座独立的山丘。"
+course: "probability"
+module: "When Variables Meet"
+moduleZh: "当变量相遇"
+moduleOrder: 3
+lessonOrder: 13
+duration: 16
+difficulty: "Intermediate"
+---
+
+We introduced independence earlier for events: $A$ and $B$ are independent when knowing $B$ happened tells you nothing new about $A$. Now we extend that idea to random variables. Two random variables are independent when knowing the value of one gives you zero information about the other. The joint landscape does not tilt or cluster — it decomposes cleanly into two separate, unrelated shapes.
+
+## The factoring condition
+
+$X$ and $Y$ are **independent** if and only if their joint distribution factors into the product of their marginals:
+
+$$f(x, y) = f_X(x) \cdot f_Y(y) \quad \text{(continuous)}$$
+
+$$p(x, y) = p_X(x) \cdot p_Y(y) \quad \text{(discrete)}$$
+
+The joint surface is not some new, surprising shape. It is simply the product of two separate curves. If $f_X$ is a bell curve centered at 5 and $f_Y$ is a bell curve centered at 3, then the joint density is a smooth hill whose cross-section in any direction parallel to the $x$-axis always has the shape of $f_X$, and whose cross-section parallel to the $y$-axis always has the shape of $f_Y$.
+
+### The visual: outer product of two hills
+
+Imagine slicing a bell curve into thin vertical strips — each strip is a 1D profile. Now take a second bell curve and slice it into horizontal strips. The joint distribution (if independent) is what you get when you drape the first set of strips along each row, scaled by the height of the corresponding horizontal strip. The resulting surface is the **outer product** of the two curves.
+
+In a heat map: every row looks the same (after rescaling to the same height), and every column looks the same. The brightness pattern along one row is a scaled copy of $f_X$. The brightness pattern along one column is a scaled copy of $f_Y$. No matter where you slice, you see the same shapes — just dimmer or brighter depending on the scaling.
+
+For the discrete case: the factoring condition means every cell in the joint PMF table equals the product of its row total and its column total. The entire table is determined by its margins.
+
+## Independence and conditional distributions
+
+There is an equivalent definition that connects back to the previous lesson. $X$ and $Y$ are independent if and only if every conditional distribution equals the corresponding marginal:
+
+$$f_{X \mid Y}(x \mid y) = f_X(x) \quad \text{for all } y$$
+
+This makes intuitive sense: "the distribution of $X$, given that $Y = y$, is the same as the distribution of $X$ with no information about $Y$." Learning $Y$ did not change your picture of $X$ at all. The slice through the joint landscape at any $y$-value, after normalization, always gives you back the same curve.
+
+If even one slice looks different — if $f_{X \mid Y}(x \mid y_1)$ differs from $f_{X \mid Y}(x \mid y_2)$ for some pair of $y$-values — then $X$ and $Y$ are not independent.
+
+## Independent implies uncorrelated
+
+If $X$ and $Y$ are independent, then their covariance is zero. This follows directly from the shortcut formula:
+
+$$\text{Cov}(X, Y) = E[XY] - E[X] \cdot E[Y]$$
+
+When $X$ and $Y$ are independent, $E[XY] = E[X] \cdot E[Y]$ (the expectation of the product equals the product of expectations). So the two terms cancel, and the covariance is zero. And if the covariance is zero, the correlation $\rho$ is also zero.
+
+The geometric reason is clear: an independent joint distribution has no diagonal ridge. The heat map is a symmetric blob — bright in the center, dim at the edges, with no tilt in any direction. A scatter plot from an independent joint distribution shows a circular cloud, not an elliptical one. There is no linear trend for correlation to detect.
+
+## Uncorrelated does NOT imply independent
+
+This is the trap. Zero correlation does not guarantee independence. Correlation measures only *linear* dependence. Two variables can be locked in a tight nonlinear relationship and still have $\rho = 0$.
+
+The classic example returns from the previous lesson: let $X$ be uniform on $[-1, 1]$ and $Y = X^2$. Then:
+
+- $\text{Cov}(X, Y) = 0$ (we computed this — the positive and negative deviations cancel).
+- But $X$ and $Y$ are *completely dependent*: knowing $X$ pins down $Y$ exactly.
+
+The joint distribution here is a parabolic ridge on the $xy$-plane. It is concentrated on the curve $y = x^2$ — most definitely not the product of two separate distributions. The factoring condition fails badly. Yet the covariance reports nothing.
+
+The hierarchy goes in one direction only:
+
+**Independent $\implies$ uncorrelated** (always true).
+
+**Uncorrelated $\not\implies$ independent** (usually false, except for special cases like jointly normal distributions).
+
+For jointly normal distributions, the two conditions do coincide: if two normal variables are uncorrelated, they are also independent. This is a special property of the normal distribution, not a general rule.
+
+## Checking independence in practice
+
+Given a joint PMF table, check independence by verifying that $p(x_i, y_j) = p_X(x_i) \cdot p_Y(y_j)$ for every cell. If even one cell fails, the variables are dependent. You do not need to check every pair — a single counterexample is enough.
+
+Given a joint PDF, ask: does the function factor into a product $g(x) \cdot h(y)$ where $g$ depends only on $x$ and $h$ depends only on $y$? If $f(x, y)$ contains cross-terms like $xy$ or $(x + y)^2$ that mix the two variables, it cannot factor, and the variables are dependent.
+
+## Key insight
+
+> Independence means the joint landscape decomposes into two separate, unrelated shapes — the heat map is the outer product of two 1D profiles. Independent variables are always uncorrelated, but uncorrelated variables are not always independent. Zero correlation only means "no linear trend," while independence means "no relationship of any kind."
+
+## Practice
+
+**Exercise 1.** Two fair dice are rolled independently. Let $X$ be the result of the first die and $Y$ be the result of the second. Write down the joint PMF table (it will be $6 \times 6$). Verify that $p(x, y) = p_X(x) \cdot p_Y(y)$ for any cell you pick.
+
+*Hint:* Since the dice are independent and fair, every cell has probability $1/36$. The marginal of each die is uniform on $1, 2, 3, 4, 5, 6$ with each value having probability $1/6$. And $(1/6)(1/6) = 1/36$.
+
+**Exercise 2.** A joint PMF is given by: $p(0, 0) = 0.1$, $p(0, 1) = 0.4$, $p(1, 0) = 0.3$, $p(1, 1) = 0.2$. Compute the marginals. Check whether $p(x, y) = p_X(x) \cdot p_Y(y)$ holds for every cell. Are $X$ and $Y$ independent?
+
+*Hint:* Compute $p_X(0) = 0.5$, $p_X(1) = 0.5$, $p_Y(0) = 0.4$, $p_Y(1) = 0.6$. Now check: does $p(0, 0) = 0.5 \times 0.4$? If not, you have your answer.
+
+**Exercise 3.** Let $X$ be uniform on $[-1, 1]$ and $Y = \cos(\pi X)$. Are $X$ and $Y$ independent? Compute $\text{Cov}(X, Y)$. If the covariance is zero, explain why independence still fails.
+
+*Hint:* Knowing $X$ determines $Y$ completely — $Y$ is a function of $X$. So they cannot be independent. For the covariance, use the fact that $\cos(\pi X)$ is an even function of $X$ and $X$ is symmetric about zero to argue that $E[X \cdot \cos(\pi X)] = 0$. Zero covariance, complete dependence.

@@ -1,0 +1,80 @@
+---
+title: 'Non-Square Matrices'
+titleZh: '非方阵'
+description: 'Matrices can change dimensions — projecting 3D onto a plane, or lifting 2D into 3D. The geometry still works.'
+descriptionZh: '矩阵可以改变维度——将 3D 投射到平面，或将 2D 提升到 3D。几何依然成立。'
+course: 'linear-algebra'
+module: 'Beyond 2D'
+moduleZh: '超越二维'
+moduleOrder: 6
+lessonOrder: 27
+duration: 16
+difficulty: 'Advanced'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { NonSquareVis } from '../../../components/interactive/linear-algebra/NonSquareVis';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# Non-Square Matrices
+
+So far, we've worked with square matrices — transformations that stay in the same dimension. But matrices can be tall, wide, or any shape. A non-square matrix **changes dimensions**.
+
+## Two directions of dimension change
+
+A **wide matrix** (2x3) maps 3D to 2D — it projects or embeds:
+
+<MathBlock expression={'\\begin{bmatrix} 1 & 0 & 0 \\\\ 0 & 1 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\\\ z \\end{bmatrix} = \\begin{bmatrix} x \\\\ y \\end{bmatrix}'} />
+
+This 2x3 matrix "flattens" 3D space onto the xy-plane by dropping the z-coordinate. It's a projection.
+
+A **tall matrix** (3x2) maps 2D to 3D — it lifts or embeds:
+
+<MathBlock expression={'\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\\\ 0 & 0 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} x \\\\ y \\\\ 0 \\end{bmatrix}'} />
+
+This 3x2 matrix "lifts" 2D vectors into the xy-plane of 3D space. The 2D plane becomes a subspace of 3D.
+
+## The column picture still works
+
+For any matrix (square or not), Ax is still a linear combination of the columns:
+- A 2x3 matrix has 3 columns in 2D — the output lives in 2D
+- A 3x2 matrix has 2 columns in 3D — the output lives in 3D
+
+The column space is the span of the columns in the output space. Its dimension is the rank.
+
+## Explore dimension change
+
+Switch between projection (3D→2D) and embedding (2D→3D). Drag to rotate the view and see how points move between dimensions.
+
+<NonSquareVis client:visible />
+
+<FormulaReadout formulas={[
+  { label: "非方阵维度", expression: "A \\in \\mathbb{R}^{m \\times n}: \\mathbb{R}^n \\to \\mathbb{R}^m" },
+  { label: "SVD 揭示本质", expression: "A = U\\Sigma V^T, \\quad \\Sigma \\in \\mathbb{R}^{m \\times n}" },
+]} />
+
+<KeyInsight>
+Non-square matrices change dimensions. Wide matrices project from higher to lower dimensions. Tall matrices embed from lower to higher. The column picture — Ax as a linear combination — works exactly the same way.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="What does the 2x3 matrix [[1,0,0],[0,0,1]] do to (2,3,4)?"
+  hint="It's a linear combination of the columns: 2*col1 + 3*col2 + 4*col3."
+  answer="(2,0) + (0,0) + (0,4) = (2,4). This matrix drops the y-coordinate. It projects 3D onto the xz-plane. Every vector (x,y,z) maps to (x,z)."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Can a 2x3 matrix be invertible? Why or why not?"
+  hint="Invertibility means you can undo the transformation. Can you recover 3D information from a 2D output?"
+  answer="No. A 2x3 matrix maps 3D to 2D, losing one dimension of information. Many different 3D inputs produce the same 2D output (the null space is at least 1-dimensional). You can't uniquely reverse it."
+/>
+
+---
+
+**Up next:** [Functions as Vectors →](/courses/linear-algebra/28-functions-as-vectors)

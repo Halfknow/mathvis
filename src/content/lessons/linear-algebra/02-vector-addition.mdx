@@ -4,8 +4,8 @@ titleZh: '向量加法'
 description: 'See vector addition as head-to-tail displacement — one arrow walks, then the other continues.'
 descriptionZh: '把向量加法看作"首尾相接"的位移——先走一段，再接着走另一段。'
 course: 'linear-algebra'
-module: 'Vector Basics'
-moduleZh: '向量基础'
+module: 'Vectors and Their Language'
+moduleZh: '向量与它的语言'
 moduleOrder: 1
 lessonOrder: 2
 duration: 15
@@ -16,6 +16,8 @@ import { KeyInsight } from '../../../components/learning/KeyInsight';
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
 import { VectorAddition } from '../../../components/interactive/linear-algebra/VectorAddition';
 import { MathBlock, MathInline } from '../../../components/math/Math';
+import { Vector3DCompanion } from '../../../components/interactive/linear-algebra/Vector3DCompanion';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
 # Vector Addition
 
@@ -25,18 +27,43 @@ You're at **4 east, 3 north**. That's the sum. Vector addition is nothing more m
 
 ## Head-to-tail
 
-The geometric picture is called **head-to-tail** addition: slide the second arrow so its tail sits on the first arrow's tip. The sum is the arrow from the first tail to the second head. Drag the blue and green dots below to explore — toggle the parallelogram to see commutativity.
+The geometric picture is called **head-to-tail** addition: slide the second arrow so its tail sits on the first arrow's tip. The sum is the arrow from the first tail to the second head. Try the presets below to see classic configurations animate into place, or drag the blue and green dots freely.
 
 <VectorAddition client:visible />
 
 Notice: the result doesn't depend on which vector you walk first. Walk green then blue, and you land at the same spot. This is the **commutative property** — not a theorem to memorize, but something you can *see*.
 
+### Commutativity in action
+
+Click the "Parallelogram" preset. Notice the two paths through the parallelogram: blue-then-green along the top, and green-then-blue along the bottom. Both reach the same corner. This is **a + b = b + a**, visible as a geometric fact. The order of the walks does not matter — you always end up at the same spot.
+
 ## The parallelogram rule
 
 Draw both vectors starting from the origin. Complete the parallelogram. The diagonal — from the origin to the opposite corner — is the sum. This is the same head-to-tail picture, just drawn twice (once in each order), making the commutativity visible.
 
+The parallelogram is not just a drawing trick — it reveals that vector addition is really about **two independent displacements happening simultaneously**. One displacement along **a**'s direction, one along **b**'s direction. The diagonal is the "shortcut" through the parallelogram, the single arrow that accomplishes both displacements at once.
+
+## Special cases
+
+Vector addition has a few configurations worth recognizing instantly:
+
+- **Canceling**: Try the "Cancel out" preset. When **b** = -**a**, the sum is the zero vector — you walk there and walk right back. The arrows are equal in length but opposite in direction.
+- **Same direction**: Try "Same direction." When both arrows point the same way, the sum is a longer arrow in that direction. The lengths add: |**a** + **b**| = |**a**| + |**b**|.
+- **Orthogonal**: Try "Orthogonal." When the arrows are perpendicular, the Pythagorean theorem kicks in: |**a** + **b**|² = |**a**|² + |**b**|². The sum arrow is the hypotenuse of the right triangle formed by **a** and **b**.
+- **Opposite directions**: Try "Opposite dirs." When the arrows point opposite ways but have different lengths, the sum points in the direction of the longer arrow, with length equal to the difference.
+
+## In three dimensions
+
+Head-to-tail works in 3D just as in 2D. The blue arrow is **a**, the green arrow continues from its tip, and the red arrow is the sum.
+
+<Vector3DCompanion client:visible mode="addition" />
+
+<FormulaReadout formulas={[
+  { label: "3D 加法", expression: "\\vec{a} + \\vec{b} = \\begin{bmatrix} a_1 + b_1 \\\\ a_2 + b_2 \\\\ a_3 + b_3 \\end{bmatrix}" },
+]} />
+
 <KeyInsight>
-Vector addition is stacking displacements: walk along one arrow, then along the other. The sum is the shortcut from start to finish.
+Vector addition is stacking displacements: walk along one arrow, then along the other. The sum is the shortcut from start to finish. Commutativity means the order of walks does not matter.
 </KeyInsight>
 
 ## When coordinates arrive
@@ -61,6 +88,13 @@ This formula is just the head-to-tail picture written in numbers. **The geometry
   prompt="If vector **a** + vector **b** points straight up (no horizontal component), what does that tell you about **a** and **b**?"
   hint="The x-components must cancel."
   answer="The x-components of **a** and **b** are equal in magnitude but opposite in sign: a₁ = -b₁. Their horizontal displacements cancel out."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Vector **a** has length 3 and vector **b** has length 4. What are the minimum and maximum possible lengths of **a** + **b**? (This is the **triangle inequality**.)"
+  hint="Think about the extreme cases: same direction and opposite directions."
+  answer="Minimum: |3 - 4| = 1 (opposite directions, they almost cancel). Maximum: 3 + 4 = 7 (same direction, lengths add). For any angle in between, |**a** + **b**| falls between 1 and 7."
 />
 
 ---

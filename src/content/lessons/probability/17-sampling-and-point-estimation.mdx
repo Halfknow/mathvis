@@ -1,0 +1,88 @@
+---
+title: "Sampling and Point Estimation"
+titleZh: "抽样与点估计"
+description: "From population to sample to statistic — the bridge between the real world and probability theory."
+descriptionZh: "从总体到样本到统计量——现实世界与概率论之间的桥梁。"
+course: "probability"
+module: "From Data to Inference"
+moduleZh: "从数据到推断"
+moduleOrder: 5
+lessonOrder: 17
+duration: 18
+difficulty: "Intermediate"
+---
+
+Imagine a vast lake — that is your **population**. You cannot drain the lake to count every fish. Instead, you dip in a bucket and pull out a handful — that is your **sample**. From the properties of that handful, you try to infer the properties of the entire lake.
+
+This is the fundamental act of statistics: reasoning from the part to the whole. Probability theory gives you the rules for how samples behave. Statistics turns those rules around and asks: given what I see in the sample, what can I say about the population? This lesson is about the simplest kind of answer — a single number, a **point estimate**.
+
+## Population, sample, statistic
+
+A **population** is the complete set of things you want to know about. It might be every voter in a country, every light bulb from a factory, or every possible measurement of a physical quantity. The population has **parameters** — fixed numbers like the mean $\mu$ and the variance $\sigma^2$ — that you want to learn.
+
+A **sample** is a subset of the population: $X_1, X_2, \ldots, X_n$. Each $X_i$ is a random variable — before you observe it, it could take many values. After observation, it becomes a fixed number $x_i$. The sample is your window into the population.
+
+A **statistic** is any function of the sample. It is a number you compute from your data. The most important examples:
+
+- **Sample mean**: $\bar{X} = \frac{1}{n}\sum_{i=1}^{n} X_i$
+- **Sample variance**: $S^2 = \frac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X})^2$
+
+A statistic is itself a random variable, because it depends on the random sample. If you drew a different sample, you would get a different value. The distribution of a statistic across all possible samples is called its **sampling distribution**.
+
+## Estimators and parameters
+
+An **estimator** is a statistic used to guess a population parameter. We use the notation $\hat{\theta}$ (read "theta hat") for an estimator of the parameter $\theta$.
+
+Think of the parameter as a fixed point on a map — it is there, unchanging, whether you look or not. The estimator is your finger, pointing at the map. Each time you draw a new sample, your finger lands in a slightly different spot. The question is: does your finger, on average, point at the right place? And how far does it typically wander?
+
+## Bias
+
+The **bias** of an estimator measures whether it systematically misses the target:
+
+$$\text{Bias}(\hat{\theta}) = E[\hat{\theta}] - \theta$$
+
+An estimator is **unbiased** if $E[\hat{\theta}] = \theta$. Geometrically: if you took infinitely many samples and averaged all the estimates, you would land exactly on the true parameter. Your finger points at the right spot on average.
+
+A biased estimator systematically overshoots or undershoots. It is like a scale that always reads half a kilogram too heavy — precise, perhaps, but not accurate.
+
+**The sample mean is unbiased for $\mu$.** By linearity of expectation:
+
+$$E[\bar{X}] = E\!\left[\frac{1}{n}\sum_{i=1}^{n} X_i\right] = \frac{1}{n}\sum_{i=1}^{n} E[X_i] = \frac{1}{n} \cdot n\mu = \mu$$
+
+No matter the sample size, no matter the shape of the population distribution, the sample mean points at the true mean on average.
+
+## The n-1 denominator
+
+The sample variance uses $n - 1$ in the denominator, not $n$. This is not a typo. It is a correction that makes $S^2$ unbiased for $\sigma^2$.
+
+Here is the geometric intuition. Each term $(X_i - \bar{X})^2$ measures the squared distance from $X_i$ to the sample mean $\bar{X}$, not to the population mean $\mu$. But $\bar{X}$ is itself computed from the sample — it tends to sit closer to the data points than $\mu$ does. The deviations from $\bar{X}$ are systematically smaller than the deviations from $\mu$.
+
+Imagine three data points on a line. Their sample mean sits at the center of those three points. The true population mean might be somewhere else entirely. The three distances to $\bar{X}$ are always a bit shorter than the three distances to $\mu$, because $\bar{X}$ chases the data.
+
+The total amount by which those squared deviations shrink is exactly one degree of freedom. Dividing by $n - 1$ instead of $n$ inflates the average just enough to compensate for that shrinkage. The result:
+
+$$E[S^2] = \sigma^2$$
+
+The sample variance, with the $n - 1$ correction, points at the true variance on average.
+
+## Consistency
+
+An estimator is **consistent** if it converges to the true parameter as the sample size grows:
+
+$$\hat{\theta}_n \to \theta \quad \text{as } n \to \infty$$
+
+Picture the sampling distribution as a bell curve centered on the estimator's expected value. As $n$ grows, two things happen: the center slides toward $\theta$ (bias shrinks) and the bell narrows (variance shrinks). A consistent estimator is one whose bell collapses onto the true value — your finger stops wandering and settles on the target.
+
+The sample mean $\bar{X}$ is consistent for $\mu$ by the Law of Large Numbers. As you pour more data into the average, it locks onto the true mean.
+
+## Key insight
+
+> An estimator is a finger pointing at a hidden target. Bias tells you whether the finger, on average, points at the right place. Consistency tells you whether the finger stops wandering as you collect more data. The sample mean is the cleanest example: unbiased for $\mu$, consistent, and its variance shrinks as $1/n$ — each doubling of sample size tightens the bell by a factor of $\sqrt{2}$.
+
+## Practice
+
+1. You measure the heights of 5 students and get: 170, 175, 168, 182, 173 cm. Compute the sample mean $\bar{x}$ and the sample variance $s^2$ (using the $n - 1$ denominator). Now compute the "variance" using $n$ in the denominator instead. Which is larger? Why does the $n - 1$ correction push the estimate upward?
+
+2. An estimator $\hat{\theta}$ has $E[\hat{\theta}] = \theta + 3$ and $\text{Var}(\hat{\theta}) = 10/n$. What is the bias? Is the estimator consistent? (Hint: does the estimator converge to $\theta$ or to $\theta + 3$ as $n \to \infty$?) What would you do to fix this estimator?
+
+3. You flip a fair coin 100 times and observe 55 heads. The sample proportion $\hat{p} = 0.55$ is an estimator of the true probability $p = 0.5$. Is $\hat{p}$ unbiased? Is it consistent? Describe what happens to the sampling distribution of $\hat{p}$ as $n$ increases from 100 to 1000 to 10000.

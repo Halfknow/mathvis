@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useAnimatedPreset } from './useAnimatedPreset';
 
 interface VectorCanvasProps {
   initialVectors?: Array<{
@@ -14,6 +15,7 @@ interface VectorCanvasProps {
   width?: number;
   height?: number;
   onVectorsChange?: (vectors: Array<{ x: number; y: number }>) => void;
+  showPresets?: boolean;
 }
 
 const COLORS = [
@@ -24,6 +26,15 @@ const COLORS = [
   'var(--color-vector-red)',
 ];
 
+const presetList = [
+  { label: 'Zero vector', x: 0, y: 0 },
+  { label: 'Unit vector', x: 0.707, y: 0.707 },
+  { label: 'Opposite', x: -3, y: -2 },
+  { label: 'Horizontal', x: 4, y: 0 },
+  { label: 'Vertical', x: 0, y: 3 },
+  { label: 'Reset', x: 3, y: 2 },
+];
+
 export function VectorCanvas({
   initialVectors,
   showGrid = true,
@@ -31,6 +42,7 @@ export function VectorCanvas({
   width = 640,
   height = 400,
   onVectorsChange,
+  showPresets = false,
 }: VectorCanvasProps) {
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -50,6 +62,18 @@ export function VectorCanvas({
   );
 
   const [dragging, setDragging] = useState<number | null>(null);
+  const [activePreset, setActivePreset] = useState<string | null>(null);
+
+  const { applyPreset, animating } = useAnimatedPreset(
+    () => ({ x: vectors[0].x, y: vectors[0].y }),
+    useCallback(({ x, y }) => {
+      setVectors(prev => {
+        const next = [...prev];
+        next[0] = { ...next[0], x, y };
+        return next;
+      });
+    }, []),
+  );
 
   const padding = 40;
   const plotW = width - padding * 2;
@@ -64,8 +88,9 @@ export function VectorCanvas({
   const fromSvgY = (py: number) => Math.round(((cy - py) / scale) * 4) / 4;
 
   const handlePointerDown = useCallback((idx: number) => {
+    if (animating) return;
     setDragging(idx);
-  }, []);
+  }, [animating]);
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<SVGSVGElement>) => {
@@ -133,78 +158,100 @@ export function VectorCanvas({
   );
 
   return (
-    <div className="relative h-full w-full" style={{ touchAction: 'none' }}>
-      <svg
-        ref={svgRef}
-        viewBox={`0 0 ${width} ${height}`}
-        className="h-full w-full"
-        style={{ background: 'var(--color-paper)' }}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-      >
-        <defs>
-          {vectors.map((v, i) => arrowHead(v.color, `ah-${i}`))}
-        </defs>
+    <div className="not-prose">
+      {showPresets && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {presetList.map((p) => (
+            <button
+              key={p.label}
+              onClick={() => {
+                setActivePreset(p.label);
+                applyPreset({ x: p.x, y: p.y });
+              }}
+              className={`rounded border px-3 py-1 text-xs font-sans font-medium transition-colors ${
+                activePreset === p.label
+                  ? 'border-accent bg-accent/10 text-accent'
+                  : 'border-rule bg-paper-elevated text-ink-muted hover:border-accent hover:text-accent'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="relative h-full w-full" style={{ touchAction: 'none' }}>
+        <svg
+          ref={svgRef}
+          viewBox={`0 0 ${width} ${height}`}
+          className="h-full w-full"
+          style={{ background: 'var(--color-paper)' }}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerUp}
+        >
+          <defs>
+            {vectors.map((v, i) => arrowHead(v.color, `ah-${i}`))}
+          </defs>
 
-        {gridLines}
+          {gridLines}
 
-        {vectors.map((v, i) => {
-          const ox = toSvgX(v.originX ?? 0);
-          const oy = toSvgY(v.originY ?? 0);
-          const tx = toSvgX((v.originX ?? 0) + v.x);
-          const ty = toSvgY((v.originY ?? 0) + v.y);
+          {vectors.map((v, i) => {
+            const ox = toSvgX(v.originX ?? 0);
+            const oy = toSvgY(v.originY ?? 0);
+            const tx = toSvgX((v.originX ?? 0) + v.x);
+            const ty = toSvgY((v.originY ?? 0) + v.y);
 
-          return (
-            <g key={i}>
-              <line
-                x1={ox} y1={oy} x2={tx} y2={ty}
-                stroke={v.color}
-                strokeWidth={2.5}
-                markerEnd={`url(#ah-${i})`}
-              />
-              <circle
-                cx={tx}
-                cy={ty}
-                r={8}
-                fill={v.color}
-                opacity={0.2}
-                className="cursor-grab active:cursor-grabbing"
-                onPointerDown={() => handlePointerDown(i)}
-              />
-              <circle
-                cx={tx}
-                cy={ty}
-                r={5}
-                fill={v.color}
-                className="cursor-grab active:cursor-grabbing"
-                onPointerDown={() => handlePointerDown(i)}
-              />
-              <text
-                x={tx + 10}
-                y={ty - 8}
-                className="text-xs font-semibold"
-                fill={v.color}
-                style={{ fontFamily: 'var(--font-serif)', pointerEvents: 'none' }}
-              >
-                {v.label} ({v.x.toFixed(1)}, {v.y.toFixed(1)})
-              </text>
-            </g>
-          );
-        })}
-      </svg>
+            return (
+              <g key={i}>
+                <line
+                  x1={ox} y1={oy} x2={tx} y2={ty}
+                  stroke={v.color}
+                  strokeWidth={2.5}
+                  markerEnd={`url(#ah-${i})`}
+                />
+                <circle
+                  cx={tx}
+                  cy={ty}
+                  r={8}
+                  fill={v.color}
+                  opacity={0.2}
+                  className="cursor-grab active:cursor-grabbing"
+                  onPointerDown={() => handlePointerDown(i)}
+                />
+                <circle
+                  cx={tx}
+                  cy={ty}
+                  r={5}
+                  fill={v.color}
+                  className="cursor-grab active:cursor-grabbing"
+                  onPointerDown={() => handlePointerDown(i)}
+                />
+                <text
+                  x={tx + 10}
+                  y={ty - 8}
+                  className="text-xs font-semibold"
+                  fill={v.color}
+                  style={{ fontFamily: 'var(--font-serif)', pointerEvents: 'none' }}
+                >
+                  {v.label} ({v.x.toFixed(1)}, {v.y.toFixed(1)})
+                </text>
+              </g>
+            );
+          })}
+        </svg>
 
-      {/* Vector info panel */}
-      <div className="absolute bottom-3 right-3 flex gap-2">
-        {vectors.map((v, i) => (
-          <span
-            key={i}
-            className="rounded-sm bg-paper-elevated border border-rule px-2 py-1 font-mono text-xs"
-            style={{ color: v.color }}
-          >
-            |{v.label}| = {Math.sqrt(v.x * v.x + v.y * v.y).toFixed(2)}
-          </span>
-        ))}
+        {/* Vector info panel */}
+        <div className="absolute bottom-3 right-3 flex gap-2">
+          {vectors.map((v, i) => (
+            <span
+              key={i}
+              className="rounded-sm bg-paper-elevated border border-rule px-2 py-1 font-mono text-xs"
+              style={{ color: v.color }}
+            >
+              |{v.label}| = {Math.sqrt(v.x * v.x + v.y * v.y).toFixed(2)}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );

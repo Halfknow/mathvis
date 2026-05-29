@@ -8,9 +8,20 @@ module: "Foundations of Differentiation"
 moduleZh: "微分基础"
 moduleOrder: 1
 lessonOrder: 2
-duration: 15
+duration: 16
 difficulty: "Beginner"
+interactiveWidgets:
+  - id: "limit-explorer-02"
+    type: "limit-explorer"
+    title: "Limit Explorer"
+publishedAt: 2026-05-26
 ---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { LimitExplorer } from '../../../components/interactive/calculus/LimitExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
 
 The derivative is defined as a **limit**. Before we can use that definition, we need to understand what limits are and when they exist.
 
@@ -18,24 +29,40 @@ The derivative is defined as a **limit**. Before we can use that definition, we 
 
 When we write:
 
-$$\lim_{x \to a} f(x) = L$$
+<MathBlock expression={"\\lim_{x \\to a} f(x) = L"} />
 
 we mean: as $x$ gets arbitrarily close to $a$ (but never equals $a$), the values of $f(x)$ get arbitrarily close to $L$.
 
 The key word is **arbitrarily close** — not *equal to*, but *approaching*. The function doesn't even need to be defined at $a$.
 
+For over a century, mathematicians used limits intuitively — "it gets closer and closer" — without a precise definition. In 1821, Augustin-Louis Cauchy formalized the limit concept, and Karl Weierstrass later sharpened it into the epsilon-delta definition below. This precision didn't change the geometric intuition; it made it airtight.
+
+## The epsilon-delta picture
+
+The formal definition says: for any tolerance ε > 0 you choose, there exists a δ > 0 such that whenever $|x - a| < δ$, we have $|f(x) - L| < ε$. Think of the limit value $L$ as a target. Epsilon is the size of the bullseye — how close the output needs to land. Delta is how close your input $x$ needs to be to $a$ to hit that bullseye. No matter how small you shrink the bullseye, there's always a neighborhood of $x$-values tight enough to hit it. In the interactive below, the green band is ε and the blue band is δ. Shrink ε and watch how δ responds:
+
+<InteractiveCanvas
+  title="Limit Explorer"
+  caption="Shrink ε (the green band around L) and watch δ (the blue band around a) narrow. When the curve stays inside the green band within the blue band, the limit exists."
+  aspectRatio="16/9"
+>
+  <LimitExplorer client:visible />
+</InteractiveCanvas>
+
+Try switching to `|x|/x` or `sin(1/x)` — watch what happens when the limit doesn't exist. The function can't stay inside the green band no matter how wide you make it.
+
 ## When does a limit exist?
 
 A limit exists when the function approaches the same value from **both sides**:
 
-$$\lim_{x \to a^-} f(x) = \lim_{x \to a^+} f(x) = L$$
+<MathBlock expression={"\\lim_{x \\to a^-} f(x) = \\lim_{x \\to a^+} f(x) = L"} />
 
 If the left-hand limit and right-hand limit disagree, the (two-sided) limit does not exist.
 
 Common situations where limits fail:
 
-1. **Jump discontinuity** — the function jumps to a different value.
-2. **Infinite oscillation** — the function oscillates faster and faster near the point.
+1. **Jump discontinuity** — the function jumps to a different value (like |x|/x at 0).
+2. **Infinite oscillation** — the function oscillates faster and faster near the point (like sin(1/x) at 0).
 3. **Vertical asymptote** — the function shoots off to infinity.
 
 ## Continuity
@@ -52,10 +79,32 @@ Informally: you can draw the graph without lifting your pen. Polynomials, expone
 
 The derivative is defined as:
 
-$$f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$
+<MathBlock expression={"f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}"} />
 
-This limit only makes sense if the function is continuous at $x$. In fact, **differentiability implies continuity** — if $f'(a)$ exists, then $f$ is continuous at $a$. The converse is not true: $|x|$ is continuous at $0$ but not differentiable there.
+This limit only makes sense if the function is continuous at $x$. In fact, **differentiability implies continuity** — if $f'(a)$ exists, then $f$ is continuous at $a$. The converse is not true: $|x|$ is continuous at $0$ but not differentiable there (the left and right derivatives disagree).
 
-## Key insight
+<KeyInsight>
+Limits let us talk about behavior at the boundary — what happens as we approach a point, even if the point itself is undefined or discontinuous. The epsilon-delta picture turns "arbitrarily close" into something precise and visual.
+</KeyInsight>
 
-> Limits let us talk about behavior "at the boundary" — what happens as we approach a point, even if the point itself is undefined or discontinuous.
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="In the interactive, select sin(x)/x and set ε = 0.1. What is δ? Now set ε = 0.01. What happens to δ?"
+  hint="As ε gets smaller, δ must also shrink to keep the function within the green band."
+  answer="As ε decreases from 0.1 to 0.01, δ shrinks proportionally. The limit exists because for any ε, there is a δ that works — the function stays inside the green band near x = 0."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Why does the limit of |x|/x as x → 0 not exist?"
+  hint="Check the left-hand and right-hand limits separately."
+  answer="From the left (x < 0), |x|/x = −1. From the right (x > 0), |x|/x = +1. The one-sided limits disagree (−1 ≠ +1), so the two-sided limit does not exist."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Is the function f(x) = x² continuous at x = 3? Is it differentiable there?"
+  hint="Polynomials are continuous and differentiable everywhere."
+  answer="Yes to both. f(3) = 9, lim(x→3) f(x) = 9, and f'(3) = 6. Polynomials are both continuous and differentiable at every point."
+/>
+
+[Next Lesson →](/courses/calculus/03-differentiation-rules)

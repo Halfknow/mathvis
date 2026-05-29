@@ -1,0 +1,143 @@
+---
+title: "Continuous Distributions"
+titleZh: "连续分布"
+description: "When values flow smoothly — the geometry of density functions and the area under the curve."
+descriptionZh: "当值连续流动——密度函数的几何与曲线下的面积。"
+course: "probability"
+module: "Random Variables and Their Shapes"
+moduleZh: "随机变量与它的形状"
+moduleOrder: 2
+lessonOrder: 8
+duration: 20
+difficulty: "Intermediate"
+---
+
+import { PDFCDFVis } from '../../../components/interactive/probability/PDFCDFVis';
+
+With a continuous random variable, asking for the probability of a single exact value is meaningless. $P(X = \text{exactly } 3.14159) = 0$. There are infinitely many possible values, and each individual one gets zero weight. Probability doesn't live at points — it lives in **intervals**.
+
+The right picture is a landscape. Imagine a smooth hill plotted over the number line. The height of the hill at each point tells you where values concentrate — the hill is tall where outcomes are likely, and short where they are rare. The probability of landing between two markers is the **area under the curve** between those markers. Not the height — the area.
+
+## From bars to a smooth curve
+
+Start with a histogram. You have bins along the x-axis, and each bin has a bar whose height represents the proportion of data that landed there. Now shrink the bins. Make them half as wide. Then half again. The bar chart gets finer and finer, stepping closer to a smooth shape.
+
+When the bins become infinitesimally narrow, the staircase of bars becomes a smooth curve $f(x)$. This is the **probability density function** (PDF).
+
+Here is the crucial point: $f(x)$ is **not** a probability. It is a density. Just as physical density (mass per unit length) can exceed 1, the value of $f(x)$ can be greater than 1. The density can be tall and narrow or short and wide — what matters is that the **total area under the curve is exactly 1**.
+
+$$P(a \leq X \leq b) = \int_a^b f(x)\,dx$$
+
+The integral is the area. Shaded regions of the landscape are probabilities.
+
+Two conditions define a valid PDF:
+
+- $f(x) \geq 0$ everywhere (the landscape never dips below ground)
+- $\int_{-\infty}^{\infty} f(x)\,dx = 1$ (the total area is exactly one)
+
+## Uniform(a, b) — the flat landscape
+
+The simplest continuous distribution is the **uniform distribution**. Imagine a spinner on a dial marked from $a$ to $b$. Where it lands is completely equally likely across the whole range.
+
+The density is a rectangle:
+
+$$f(x) = \frac{1}{b - a}, \quad a \leq x \leq b$$
+
+The height is $1/(b - a)$ because the rectangle must have area 1. A wider interval means a shorter rectangle. A narrow interval means a tall, skinny one. The geometry forces the trade-off.
+
+The mean sits exactly in the center:
+
+$$E[X] = \frac{a + b}{2}$$
+
+The variance grows with the square of the width:
+
+$$\text{Var}(X) = \frac{(b - a)^2}{12}$$
+
+Why the 12? It comes from the integral of $(x - \text{midpoint})^2$ across a flat strip. The geometric intuition: spread the mass uniformly over a wider range and the squared distances from the center grow fast.
+
+**Example**: A random number generator produces values uniformly between 0 and 1. The density is a flat line at height 1 over $[0, 1]$. The mean is $0.5$, the variance is $1/12 \approx 0.083$. Every sub-interval of length 0.2 has probability exactly 0.2.
+
+## Exponential($\lambda$) — the waiting-time landscape
+
+The **exponential distribution** models waiting times. If events arrive at rate $\lambda$ (think: buses at a stop, customers at a counter, radioactive decays), the time until the next arrival follows an exponential distribution.
+
+The density drops off sharply:
+
+$$f(x) = \lambda e^{-\lambda x}, \quad x \geq 0$$
+
+Picture a cliff at the origin that plunges rightward. The rate $\lambda$ controls how steep the drop is. Large $\lambda$ means events arrive fast, so short waits are very likely and the cliff is very steep. Small $\lambda$ means long waits are common and the cliff is gentler.
+
+The mean and variance are:
+
+$$E[X] = \frac{1}{\lambda}, \quad \text{Var}(X) = \frac{1}{\lambda^2}$$
+
+The mean waiting time is $1/\lambda$. If buses arrive at rate 4 per hour ($\lambda = 4$), the average wait is 15 minutes. The standard deviation is also $1/\lambda = 15$ minutes — the exponential distribution's spread equals its mean.
+
+### The memoryless property
+
+The exponential distribution has a remarkable feature: **it forgets how long you've already waited**.
+
+$$P(X > s + t \mid X > s) = P(X > t)$$
+
+If you've been waiting 10 minutes for a bus and no bus has come, the probability of waiting at least 5 more minutes is the *same* as the probability of waiting at least 5 minutes from the start. The distribution doesn't age. The landscape ahead of you looks identical no matter where you stand on it — as long as you haven't seen the event yet.
+
+This is the only continuous distribution with this property. It makes the exponential the natural model for "time until the next event" in memoryless processes.
+
+## The CDF — accumulated area
+
+The **cumulative distribution function** (CDF) gives you the running total:
+
+$$F(x) = P(X \leq x) = \int_{-\infty}^{x} f(t)\,dt$$
+
+Think of it as sweeping your hand from left to right under the density curve and accumulating area as you go. At the far left, $F(x) = 0$ (no area yet). At the far right, $F(x) = 1$ (all the area).
+
+The CDF has three guaranteed properties:
+
+- It starts at 0 and ends at 1
+- It never decreases (you can only accumulate area, never lose it)
+- It is right-continuous
+
+The PDF and CDF are two views of the same object:
+
+- **PDF is the slope of the CDF**: $f(x) = F'(x)$. Where the density is high, the CDF rises steeply. Where the density is low, the CDF is nearly flat.
+- **CDF is the accumulated area under the PDF**: $F(x)$ is the running integral of $f$.
+
+This is the key visual pair. The PDF is the landscape — hills and valleys showing where values concentrate. The CDF is the odometer — always climbing from 0 to 1, climbing fast through the hills and slow through the valleys.
+
+To compute $P(a \leq X \leq b)$ using the CDF:
+
+$$P(a \leq X \leq b) = F(b) - F(a)$$
+
+You read the odometer at $b$, read it at $a$, and subtract. The area between the two markers is the difference in accumulated totals.
+
+### CDF for the uniform distribution
+
+For $X \sim \text{Uniform}(a, b)$:
+
+$$F(x) = \frac{x - a}{b - a}, \quad a \leq x \leq b$$
+
+A straight ramp from 0 to 1. The slope is constant — $1/(b-a)$ — because the density is flat.
+
+### CDF for the exponential distribution
+
+For $X \sim \text{Exponential}(\lambda)$:
+
+$$F(x) = 1 - e^{-\lambda x}, \quad x \geq 0$$
+
+It rises steeply near zero (where the density is concentrated) and asymptotes toward 1 as $x$ grows. The tail probability $P(X > x) = 1 - F(x) = e^{-\lambda x}$ decays exponentially — the "long tail" of rare long waits.
+
+Explore the PDF and CDF side by side below. Drag the vertical line along the x-axis and watch the shaded area (PDF) and the height on the CDF stay perfectly in sync — one measures area, the other measures accumulated area.
+
+<PDFCDFVis client:visible />
+
+## Key insight
+
+> In a continuous distribution, probability is not height — it is area. The PDF is the landscape, and the CDF is the running total of land you've swept past. Every probability you compute is a shaded region under the curve.
+
+## Practice
+
+**Exercise 1.** A random variable $X$ has density $f(x) = 2x$ for $0 \leq x \leq 1$ and $f(x) = 0$ otherwise. Sketch this density. Without computing, decide: is $P(0 \leq X \leq 0.5)$ less than, equal to, or greater than 0.5? Then compute it to check your geometric intuition.
+
+**Exercise 2.** A lightbulb has lifetime $X \sim \text{Exponential}(\lambda)$ with mean 1000 hours. You've already used the bulb for 800 hours and it still works. What is the probability it lasts at least another 500 hours? (Hint: the memoryless property means the answer is the same as if the bulb were brand new.)
+
+**Exercise 3.** For the uniform distribution on $[2, 8]$, write down the PDF and the CDF. Then compute $P(3 \leq X \leq 5)$ two ways: (a) as area under the PDF, and (b) as a difference of CDF values. Confirm they match.

@@ -1,0 +1,141 @@
+---
+title: "Covariance and Correlation"
+titleZh: "协方差与相关"
+description: "How two variables dance together — covariance measures the shared rhythm, correlation normalizes it."
+descriptionZh: "两个变量如何一起跳舞——协方差衡量共同节奏，相关将其标准化。"
+course: "probability"
+module: "When Variables Meet"
+moduleZh: "当变量相遇"
+moduleOrder: 3
+lessonOrder: 12
+duration: 18
+difficulty: "Intermediate"
+---
+
+import { CovarianceVis } from '../../../components/interactive/probability/CovarianceVis';
+
+You can see it in a scatter plot. When points drift upward together — tall people tend to weigh more, sunny days tend to sell more ice cream — there is a shared rhythm between the two variables. When one variable rises, the other tends to rise too. Or sometimes they move in opposite directions: more hours of TV, lower grades.
+
+**Covariance** measures that shared rhythm. It tells you whether two variables tend to move together, move apart, or pay no attention to each other. **Correlation** takes that same information and normalizes it onto a fixed scale, so you can compare the strength of relationships across different contexts.
+
+## The scatter plot picture
+
+Before any formulas, look at a scatter plot of $(X, Y)$ pairs. Each dot is one observation. The overall shape of the cloud tells you everything:
+
+- **Rising cloud**: when $X$ is large, $Y$ also tends to be large. The points cluster along a line that slopes upward. Positive relationship.
+- **Falling cloud**: when $X$ is large, $Y$ tends to be small. The line slopes downward. Negative relationship.
+- **Circular blob**: no clear direction. Knowing $X$ tells you almost nothing about where $Y$ will land.
+
+Covariance puts a single number to that tilt.
+
+## Covariance
+
+The **covariance** of $X$ and $Y$ is defined as:
+
+$$\text{Cov}(X, Y) = E\!\left[(X - E[X])(Y - E[Y])\right]$$
+
+The logic inside the formula: measure how far $X$ is from its mean, measure how far $Y$ is from its mean, and multiply those deviations. Then take the average over all observations.
+
+Why multiply? If both deviations are positive (both variables are above their means) or both are negative (both below), the product is positive — they moved *together*. If one is positive and the other negative, the product is negative — they moved *apart*. Average all these products and you get a single number:
+
+- **Positive covariance**: the variables tend to move in the same direction.
+- **Negative covariance**: they tend to move in opposite directions.
+- **Zero covariance**: no linear tendency in either direction.
+
+There is a shortcut formula, just like for variance:
+
+$$\text{Cov}(X, Y) = E[XY] - E[X] \cdot E[Y]$$
+
+This is often easier to compute: find the expected value of the product, then subtract the product of the expected values.
+
+Drag the correlation slider below and hit "Regenerate" to draw new points. Watch the ellipse tilt and the scatter cloud reshape. Set ρ = 0 to see what "no linear relationship" looks like, then push it to ±0.9 to see the cloud collapse into a line.
+
+<CovarianceVis client:visible />
+
+### The units problem
+
+Covariance has units of $X$ times $Y$. If $X$ is in meters and $Y$ is in kilograms, the covariance is in meter-kilograms — a unit that is hard to interpret. You cannot answer "how strong is the relationship?" because the number depends on the scale of each variable.
+
+This is why we need correlation.
+
+## Correlation
+
+The **correlation coefficient** $\rho$ (the Greek letter rho) normalizes the covariance by dividing out the standard deviations:
+
+$$\rho = \frac{\text{Cov}(X, Y)}{\sigma_X \cdot \sigma_Y}$$
+
+The standard deviations in the denominator cancel out the units. The result is a pure number, always between $-1$ and $1$:
+
+- $\rho = +1$: perfect positive linear relationship. The scatter plot points lie exactly on an upward-sloping line.
+- $\rho = -1$: perfect negative linear relationship. The points lie exactly on a downward-sloping line.
+- $\rho = 0$: no *linear* relationship. The cloud shows no tilt.
+- Values between 0 and 1: positive relationship of varying strength.
+- Values between $-1$ and 0: negative relationship of varying strength.
+
+### The ellipse picture
+
+If the joint distribution of $X$ and $Y$ is roughly bell-shaped (bivariate normal), the scatter plot forms an elliptical cloud. The correlation $\rho$ controls both the tilt and the narrowness of that ellipse:
+
+- $\rho$ near $+1$: the ellipse is thin and tilted upward, nearly a line.
+- $\rho$ near $0$: the ellipse is round, almost a circle.
+- $\rho$ near $-1$: the ellipse is thin and tilted downward.
+
+The stronger the correlation, the thinner the ellipse — the more tightly the points hug a line. As correlation weakens, the ellipse inflates into a circle, and the cloud loses its direction.
+
+### A worked example
+
+Five students take a math test ($X$) and a verbal test ($Y$). Their scores:
+
+| Student | X | Y |
+|---|---|---|
+| A | 70 | 75 |
+| B | 80 | 85 |
+| C | 60 | 55 |
+| D | 90 | 95 |
+| E | 50 | 65 |
+
+Compute the means: $E[X] = 70$, $E[Y] = 75$.
+
+For each student, compute $(X - 70)(Y - 75)$:
+
+- A: $(0)(0) = 0$
+- B: $(10)(10) = 100$
+- C: $(-10)(-20) = 200$
+- D: $(20)(20) = 400$
+- E: $(-20)(-10) = 200$
+
+Average: $\text{Cov}(X, Y) = (0 + 100 + 200 + 400 + 200)/5 = 180$.
+
+The covariance is positive — students who score higher on math tend to score higher on verbal too. The cloud drifts upward.
+
+To get the correlation, compute the standard deviations. $\sigma_X \approx 14.1$ and $\sigma_Y \approx 15.8$. Then:
+
+$$\rho = \frac{180}{14.1 \times 15.8} \approx \frac{180}{222.8} \approx 0.81$$
+
+A correlation of 0.81 is strong. The ellipse is fairly thin and clearly tilted upward.
+
+## The limitation: linearity only
+
+Here is the crucial caveat. Correlation measures **linear** relationships. It detects how tightly points cluster around a *straight line*. It is blind to curves.
+
+Consider a perfect U-shaped relationship: $Y = X^2$ where $X$ is uniformly distributed on $[-1, 1]$. The points lie on a flawless parabola — knowing $X$ tells you $Y$ exactly. But the covariance (and hence the correlation) is zero. Why? Because the positive deviations on the right half of the parabola cancel the negative deviations on the left half when you average the products.
+
+A correlation of zero does not mean "no relationship." It means "no *linear* relationship." The variables could be locked in a perfect curve, and $\rho$ would report nothing.
+
+## Key insight
+
+> Covariance measures whether two variables move together — positive when they share a direction, negative when they oppose, zero when they ignore each other. Correlation normalizes this to a $[-1, 1]$ scale so you can compare across contexts. But both measures are blind to anything that is not a straight-line pattern. A perfect curve can hide behind a correlation of zero.
+
+## Practice
+
+**Exercise 1.** For the five-student example above, verify the correlation $\rho \approx 0.81$ by computing $\sigma_X$ and $\sigma_Y$ explicitly, then dividing the covariance by their product.
+
+*Hint:* Compute $\text{Var}(X) = E[X^2] - (E[X])^2$ using the five scores. Take the square root to get $\sigma_X$. Repeat for $Y$. Then divide $\text{Cov} = 180$ by $\sigma_X \cdot \sigma_Y$.
+
+**Exercise 2.** Suppose $\text{Cov}(X, Y) = -12$, $\sigma_X = 4$, and $\sigma_Y = 3$. Compute the correlation $\rho$. Describe what the scatter plot would look like. If you were to draw an ellipse through the cloud, which direction would it tilt?
+
+*Hint:* Plug into $\rho = \text{Cov}(X, Y) / (\sigma_X \cdot \sigma_Y)$. A negative $\rho$ means the ellipse tilts downward.
+
+**Exercise 3.** Let $X$ be uniform on $[-1, 1]$ and let $Y = X^2$. Compute $\text{Cov}(X, Y)$. Show that it equals zero even though $X$ and $Y$ are completely dependent. Explain geometrically why the positive and negative contributions cancel.
+
+*Hint:* $E[X] = 0$ by symmetry. Compute $E[XY] = E[X^3]$. Since $X^3$ is an odd function and the distribution is symmetric about zero, the integral vanishes. The covariance is $E[XY] - E[X]E[Y] = 0 - 0 = 0$.

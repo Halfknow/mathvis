@@ -1,0 +1,96 @@
+---
+title: "Sequences"
+titleZh: "数列"
+description: "A sequence is a function whose domain is the counting numbers — the key question is whether it settles down or runs away."
+descriptionZh: "数列是定义域为自然数的函数——关键问题是它是否趋于稳定还是发散。"
+course: "calculus"
+module: "Sequences and Series"
+moduleZh: "序列与级数"
+moduleOrder: 6
+lessonOrder: 21
+duration: 14
+difficulty: "Beginner"
+interactiveWidgets:
+  - id: "sequence-explorer-21"
+    type: "sequence-explorer"
+    title: "Sequence Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { SequenceExplorer } from '../../../components/interactive/calculus/SequenceExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+A **sequence** is an infinite list of numbers: $a_1, a_2, a_3, \ldots$ Think of it as a function $a(n)$ where the input is a positive integer. A sequence is an infinite list; a series (coming in the next lesson) is the sum of that list. The central question: **does the sequence settle down to a fixed number, or does it run away?** Convergence asks whether the list settles down -- but be warned, the harmonic series shows that "terms going to zero" is not enough to guarantee that a sum converges.
+
+<InteractiveCanvas
+  title="Sequence Explorer"
+  caption="Watch each term aₙ land on the plot. Switch between sequences to see convergence (terms cluster) versus divergence (terms scatter or oscillate)."
+  aspectRatio="16/9"
+>
+  <SequenceExplorer client:visible />
+</InteractiveCanvas>
+
+## Convergence and divergence
+
+A sequence **converges** to a limit $L$ if the terms get arbitrarily close to $L$ as $n$ grows. Formally:
+
+<MathBlock expression={"\\lim_{n \\to \\infty} a_n = L"} />
+
+A sequence **diverges** if it doesn't converge — it might oscillate, grow without bound, or behave chaotically.
+
+## Examples
+
+**Convergent sequences:**
+- $a_n = 1/n$ → converges to 0. The terms shrink toward nothing.
+- $a_n = (1 + 1/n)^n$ → converges to $e \approx 2.718$. This is the definition of Euler's number.
+- $a_n = \sin(1/n)$ → converges to 0.
+
+**Divergent sequences:**
+- $a_n = n$ → diverges to $\infty$.
+- $a_n = (-1)^n$ → oscillates between $-1$ and $1$, never settling.
+- $a_n = n \sin(n)$ → oscillates with growing amplitude.
+
+## Bounded and monotone
+
+Two useful properties:
+
+**Bounded**: there exists $M$ such that $|a_n| \leq M$ for all $n$.
+
+**Monotone**: the sequence is either always increasing or always decreasing.
+
+**Monotone Convergence Theorem**: A bounded monotone sequence converges. If it's always increasing and bounded above, it converges to its least upper bound. This theorem guarantees convergence without computing the limit.
+
+## The squeeze theorem for sequences
+
+If $b_n \leq a_n \leq c_n$ and both $b_n$ and $c_n$ converge to the same limit $L$, then $a_n$ also converges to $L$.
+
+Example: $\lim_{n \to \infty} \frac{\cos n}{n} = 0$ because $-\frac{1}{n} \leq \frac{\cos n}{n} \leq \frac{1}{n}$ and both bounds converge to 0.
+
+<KeyInsight>
+A sequence converges when its terms settle toward a fixed number. Bounded monotone sequences always converge — they can't oscillate or run away.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Does the sequence aₙ = n/(n+1) converge? If so, to what value?"
+  hint="Divide numerator and denominator by n."
+  answer="aₙ = n/(n+1) = 1/(1 + 1/n) → 1/(1 + 0) = 1. Yes, it converges to 1."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Prove that aₙ = (−1)ⁿ / n converges to 0 using the squeeze theorem."
+  hint="Find upper and lower bounds that both converge to 0."
+  answer="−1/n ≤ (−1)ⁿ/n ≤ 1/n. Both −1/n and 1/n converge to 0. By the squeeze theorem, (−1)ⁿ/n → 0. The alternating sign doesn't matter — the shrinking denominator dominates."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Is the sequence aₙ = n² bounded? Is it monotone?"
+  hint="Does it stay within a fixed range? Does it always increase or always decrease?"
+  answer="It is monotone increasing (n² always grows) but not bounded (it exceeds any finite M for large enough n). Since it's monotone increasing but unbounded, it diverges to ∞."
+/>
+
+[Next Lesson →](/courses/calculus/22-infinite-series)

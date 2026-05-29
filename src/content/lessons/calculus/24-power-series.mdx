@@ -1,0 +1,105 @@
+---
+title: "Power Series"
+titleZh: "幂级数"
+description: "A power series is a polynomial with infinitely many terms — it defines a function inside its radius of convergence."
+descriptionZh: "幂级数是有无穷多项的多项式——它在收敛半径内定义一个函数。"
+course: "calculus"
+module: "Sequences and Series"
+moduleZh: "序列与级数"
+moduleOrder: 6
+lessonOrder: 24
+duration: 18
+difficulty: "Advanced"
+interactiveWidgets:
+  - id: "power-series-24"
+    type: "power-series"
+    title: "Power Series Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { PowerSeriesVis } from '../../../components/interactive/calculus/PowerSeriesVis';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+A power series is a function in disguise. It looks like an infinite polynomial, but inside its radius of convergence, it behaves like any other function -- you can differentiate and integrate it term by term, add and multiply it like a polynomial, and evaluate it to any desired precision. The series defines the function completely within that disk of convergence.
+
+<InteractiveCanvas
+  title="Power Series Explorer"
+  caption="The top panel shows the convergence interval on a number line. The bottom panel shows how the partial sum approximates the function inside the radius of convergence — and diverges outside it."
+  aspectRatio="16/9"
+>
+  <PowerSeriesVis client:visible />
+</InteractiveCanvas>
+
+<MathBlock expression={"\\sum_{n=0}^{\\infty} c_n (x - a)^n = c_0 + c_1(x-a) + c_2(x-a)^2 + \\cdots"} />
+
+For each value of $x$, you get a different series. Some converge, some diverge. The set of $x$-values where it converges is the **interval of convergence**.
+
+## The radius of convergence
+
+There exists a number $R$ (possibly 0 or $\infty$) such that:
+
+- $|x - a| < R$: the series **converges absolutely**
+- $|x - a| > R$: the series **diverges**
+- $|x - a| = R$: **check manually** (the ratio/root test is inconclusive at the boundary)
+
+The interval $(a - R, a + R)$ is the convergence interval. $R$ is the **radius of convergence**, found by:
+
+<MathBlock expression={"R = \\frac{1}{\\lim_{n \\to \\infty} |c_{n+1}/c_n|}"} />
+
+or equivalently by the root test.
+
+## Example: The geometric power series
+
+<MathBlock expression={"\\frac{1}{1-x} = \\sum_{n=0}^{\\infty} x^n = 1 + x + x^2 + x^3 + \\cdots \\quad \\text{for } |x| < 1"} />
+
+This is just the geometric series formula with $r = x$. The radius of convergence is $R = 1$. At the boundary $x = \pm 1$, the series diverges.
+
+## Operations on power series
+
+**Differentiation**: Inside the radius of convergence, you can differentiate term-by-term:
+
+<MathBlock expression={"\\frac{d}{dx}\\left[\\sum c_n x^n\\right] = \\sum n c_n x^{n-1}"} />
+
+**Integration**: Similarly, integrate term-by-term:
+
+<MathBlock expression={"\\int \\left[\\sum c_n x^n\\right] dx = \\sum \\frac{c_n}{n+1} x^{n+1} + C"} />
+
+**Addition and multiplication**: Power series add and multiply like polynomials, within the common interval of convergence.
+
+## Why power series matter
+
+Many important functions are defined by power series:
+- $e^x = \sum x^n / n!$ — the exponential function
+- $\sin x = \sum (-1)^n x^{2n+1} / (2n+1)!$ — sine
+- $\cos x = \sum (-1)^n x^{2n} / (2n)!$ — cosine
+
+These definitions let you compute function values to any desired precision.
+
+<KeyInsight>
+A power series is a polynomial with infinitely many terms. It converges inside a radius R centered at a, and defines a function there. You can differentiate and integrate term-by-term within this interval.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Find the radius of convergence of ∑ xⁿ/n."
+  hint="Use the ratio test: lim |x^{n+1}/(n+1)| / |xⁿ/n| = lim |x| · n/(n+1)."
+  answer="The limit is |x|. The series converges when |x| < 1, so R = 1. At x = 1: ∑ 1/n diverges (harmonic). At x = −1: ∑ (−1)ⁿ/n converges (alternating). So the interval is [−1, 1)."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Find the radius of convergence of ∑ xⁿ/n!."
+  hint="Ratio test: lim |x^{n+1}/(n+1)!| / |xⁿ/n!| = lim |x|/(n+1)."
+  answer="The limit is 0 for any x. The ratio is always less than 1, so R = ∞. The series converges for all x — this is the power series for eˣ."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Starting from 1/(1−x) = ∑ xⁿ, differentiate to find the power series for 1/(1−x)²."
+  hint="d/dx [1/(1−x)] = 1/(1−x)². Differentiate the series term-by-term."
+  answer="d/dx ∑_{n=0}^∞ xⁿ = ∑_{n=1}^∞ nx^{n−1} = ∑_{n=0}^∞ (n+1)xⁿ. So 1/(1−x)² = 1 + 2x + 3x² + 4x³ + ···, valid for |x| < 1."
+/>
+
+[Next Lesson →](/courses/calculus/25-taylor-polynomials)

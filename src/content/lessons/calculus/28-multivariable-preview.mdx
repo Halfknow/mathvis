@@ -1,0 +1,98 @@
+---
+title: "Multivariable Preview"
+titleZh: "多元微积分预告"
+description: "The derivative becomes a gradient arrow on a surface — the integral becomes a volume under a sheet. The same ideas, one dimension up."
+descriptionZh: "导数变成曲面上的梯度箭头——积分变成曲面下的体积。相同的想法，升了一个维度。"
+course: "calculus"
+module: "Taylor Series and Beyond"
+moduleZh: "泰勒与超越"
+moduleOrder: 7
+lessonOrder: 28
+duration: 18
+difficulty: "Advanced"
+interactiveWidgets:
+  - id: "surface-explorer-28"
+    type: "surface-explorer-3d"
+    title: "Surface Explorer 3D"
+publishedAt: 2026-05-26
+---
+
+import { SurfaceExplorer3D } from '../../../components/interactive/calculus/SurfaceExplorer3D';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+Everything you've learned -- derivatives, integrals, optimization, series -- extends to functions of several variables. The ideas are the same; there are just more directions to look. In 3D, the derivative becomes a gradient arrow on the landscape. The arrow points uphill; its length tells you how steep the slope is. To descend fastest -- the core idea behind gradient descent in machine learning -- walk in the opposite direction of the gradient arrow.
+
+Drag the (x₀, y₀) sliders to move a point on the surface. Toggle the gradient arrow and slicing planes to see partial derivatives as slopes on the surface.
+
+<SurfaceExplorer3D client:visible />
+
+## Functions of two variables
+
+A function $z = f(x, y)$ takes a point $(x, y)$ in the plane and outputs a height $z$. The graph is a **surface** in 3D space — a landscape with hills, valleys, and saddle points.
+
+## Partial derivatives
+
+Instead of one derivative, you get two:
+
+<MathBlock expression={"\\frac{\\partial f}{\\partial x} = \\text{slope in the } x \\text{-direction (hold } y \\text{ fixed)}"} />
+<MathBlock expression={"\\frac{\\partial f}{\\partial y} = \\text{slope in the } y \\text{-direction (hold } x \\text{ fixed)}"} />
+
+For $f(x,y) = x^2 + y^2$ (a paraboloid): $\partial f/\partial x = 2x$, $\partial f/\partial y = 2y$.
+
+The partial derivatives measure how steep the surface is in the $x$ and $y$ directions independently. It's like standing on a hillside: the slope depends on which direction you face.
+
+## The gradient
+
+The gradient packs the partial derivatives into a vector:
+
+<MathBlock expression={"\\nabla f = \\left(\\frac{\\partial f}{\\partial x}, \\frac{\\partial f}{\\partial y}\\right)"} />
+
+The gradient arrow points in the direction of **steepest ascent** on the surface. Its length is the slope in that direction. To descend fastest (like gradient descent in machine learning), follow $-\nabla f$.
+
+## The multivariable chain rule
+
+If $z = f(x, y)$ and $x = x(t)$, $y = y(t)$, then:
+
+<MathBlock expression={"\\frac{dz}{dt} = \\frac{\\partial f}{\\partial x}\\frac{dx}{dt} + \\frac{\\partial f}{\\partial y}\\frac{dy}{dt}"} />
+
+The single-variable chain rule gets a term for each input variable.
+
+## Double integrals
+
+The integral extends too. Instead of area under a curve, you get **volume under a surface**:
+
+<MathBlock expression={"V = \\iint_R f(x, y)\\, dA = \\int_a^b \\int_c^d f(x, y)\\, dy\\, dx"} />
+
+You integrate in one variable, then the other. Fubini's theorem says the order doesn't matter (for nice functions).
+
+For $f(x,y) = x^2 + y^2$ over $[0,1] \times [0,1]$:
+
+<MathBlock expression={"\\int_0^1 \\int_0^1 (x^2 + y^2)\\, dy\\, dx = \\int_0^1 [x^2 y + y^3/3]_0^1\\, dx = \\int_0^1 (x^2 + 1/3)\\, dx = 1/3 + 1/3 = 2/3"} />
+
+<KeyInsight>
+Multivariable calculus lifts every single-variable idea one dimension higher. The derivative becomes a gradient (a vector of partial derivatives), the integral becomes a volume, and optimization searches a landscape with more directions. The core ideas — rates, accumulation, optimization — are unchanged.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Find both partial derivatives of f(x,y) = x³y + sin(xy)."
+  hint="Treat one variable as constant while differentiating with respect to the other."
+  answer="∂f/∂x = 3x²y + y·cos(xy). ∂f/∂y = x³ + x·cos(xy)."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Find the gradient of f(x,y) = eˣ cos(y) at the point (0, 0)."
+  hint="Compute ∂f/∂x and ∂f/∂y, then evaluate at (0,0)."
+  answer="∂f/∂x = eˣ cos(y) → at (0,0): 1. ∂f/∂y = −eˣ sin(y) → at (0,0): 0. ∇f(0,0) = (1, 0). The gradient points purely in the x-direction — the surface rises fastest along the x-axis at the origin."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Compute ∫₀¹ ∫₀² xy dy dx."
+  hint="Integrate with respect to y first (treating x as constant), then x."
+  answer="∫₀² xy dy = x[y²/2]₀² = 2x. Then ∫₀¹ 2x dx = [x²]₀¹ = 1."
+/>
+
+[Next Lesson →](/courses/calculus/29-where-calculus-lives)

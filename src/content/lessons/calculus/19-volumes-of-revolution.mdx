@@ -1,0 +1,99 @@
+---
+title: "Volumes of Revolution"
+titleZh: "旋转体体积"
+description: "Spin a 2D region around an axis and it sweeps out a 3D solid — disk and shell methods count the same volume two ways."
+descriptionZh: "把二维区域绕轴旋转就扫出三维实体——圆盘法和柱壳法用两种方式计算同一个体积。"
+course: "calculus"
+module: "Applications of Integration"
+moduleZh: "积分应用"
+moduleOrder: 5
+lessonOrder: 19
+duration: 22
+difficulty: "Advanced"
+interactiveWidgets:
+  - id: "shell-method-19"
+    type: "shell-method-3d"
+    title: "Shell Method 3D"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { ShellMethod3D } from '../../../components/interactive/calculus/ShellMethod3D';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+Take a 2D curve and spin it around an axis. The curve sweeps out a surface, and the enclosed region becomes a 3D solid -- a **solid of revolution**. Two methods let you compute its volume: the disk/washer method and the shell method. Think of these as two camera angles on the same solid. Disk slices perpendicular to the axis, producing circular cross-sections; shell wraps vertical strips around the axis, producing cylindrical layers. Same volume, different integrals. Choose whichever angle gives the simpler calculation.
+
+<InteractiveCanvas
+  title="Shell Method 3D"
+  caption="Toggle between Disk and Shell methods to see the same solid decomposed two ways. The highlighted slice shows how each method cuts the volume differently."
+  aspectRatio="16/9"
+>
+  <ShellMethod3D client:visible />
+</InteractiveCanvas>
+
+## The disk method (review)
+
+Rotate $y = f(x)$ around the x-axis. Each cross-section perpendicular to the x-axis is a circular disk:
+
+<MathBlock expression={"V = \\pi \\int_a^b [f(x)]^2\\, dx"} />
+
+This works well when you can easily express the radius as a function of $x$.
+
+## The shell method
+
+Sometimes it's easier to think of the solid as a stack of **cylindrical shells** rather than disks. A vertical strip at position $x$ with height $f(x)$ and width $dx$, when rotated around the y-axis, becomes a thin cylindrical shell:
+
+<MathBlock expression={"dV = 2\\pi \\cdot \\underbrace{x}_{\\text{radius}} \\cdot \\underbrace{f(x)}_{\\text{height}} \\cdot \\underbrace{dx}_{\\text{thickness}}"} />
+
+Total volume:
+
+<MathBlock expression={"V = 2\\pi \\int_a^b x \\cdot f(x)\\, dx"} />
+
+## When to use which method?
+
+- **Disk/washer**: when slices perpendicular to the axis of rotation give clean circular cross-sections.
+- **Shell**: when vertical (or horizontal) strips give simpler integrands when wrapped around the axis.
+
+The two methods give the same answer — they're just different ways of slicing the same solid.
+
+## Example: rotate $y = x^2$ from $x = 0$ to $x = 2$ around the y-axis
+
+**Shell method** (natural choice):
+
+<MathBlock expression={"V = 2\\pi \\int_0^2 x \\cdot x^2\\, dx = 2\\pi \\int_0^2 x^3\\, dx = 2\\pi \\cdot \\frac{x^4}{4}\\Big|_0^2 = 2\\pi \\cdot 4 = 8\\pi"} />
+
+**Disk method** (requires solving for x):
+
+$y = x^2$ gives $x = \sqrt{y}$. The solid extends from $y = 0$ to $y = 4$.
+
+<MathBlock expression={"V = \\pi \\int_0^4 [\\sqrt{y}]^2 - [0]^2\\, dy = \\pi \\int_0^4 y\\, dy = \\pi \\cdot \\frac{y^2}{2}\\Big|_0^4 = 8\\pi"} />
+
+Same answer. The shell method was simpler because it didn't require solving for $x$.
+
+<KeyInsight>
+Disk method slices perpendicular to the axis; shell method wraps strips around the axis. They give the same volume but one is usually easier than the other. Choose based on which gives the simpler integral.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Find the volume of the solid formed by rotating y = √x from x = 0 to x = 4 around the x-axis."
+  hint="Disk method: V = π∫₀⁴ (√x)² dx = π∫₀⁴ x dx."
+  answer="V = π[x²/2]₀⁴ = π · 8 = 8π."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Find the volume when y = 1/x from x = 1 to x = 3 is rotated around the y-axis. Use the shell method."
+  hint="V = 2π∫₁³ x · (1/x) dx = 2π∫₁³ dx."
+  answer="V = 2π∫₁³ 1 dx = 2π[x]₁³ = 2π(3 − 1) = 4π. The x and 1/x cancel beautifully, making the shell method trivial."
+/>
+
+<ExerciseBlock number={3}
+  prompt="A region is bounded by y = x, y = 0, and x = 4. Find its volume when rotated around the line x = 4."
+  hint="The axis of rotation is not x = 0. For the shell method, the radius of each shell is (4 − x), not x."
+  answer="V = 2π∫₀⁴ (4 − x) · x dx = 2π∫₀⁴ (4x − x²) dx = 2π[2x² − x³/3]₀⁴ = 2π[32 − 64/3] = 2π · 32/3 = 64π/3."
+/>
+
+[Next Lesson →](/courses/calculus/20-arc-length)

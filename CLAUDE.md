@@ -10,6 +10,8 @@
 动画技术：**D3.js** 做 2D 数学动画，**React Three Fiber** 做 3D 可视化。
 支持中英文（`/` English, `/zh/` 中文）。
 
+**当前状态**：线性代数课程已完成 8 模块 30 课 + 1 符号参考页，18 个交互组件（15 D3 + 3 R3F）。构建输出 89 页（EN+ZH）。微积分 4 课、概率论 4 课为初版。
+
 ## 核心理念
 
 **先看见，再形式化。** 每课的目标是建立一个空间直觉——让学习者能"看见"符号背后的几何含义。如果一课的内容没有帮助建立直觉，那就是失败的内容。
@@ -151,12 +153,19 @@ MDX parser interprets `{...}` as JSX before remark-math processes math blocks. F
 | `src/components/layout/` | BaseLayout, Header (with lang toggle), Footer |
 | `src/components/learning/` | Domain components (CourseCard, KeyInsight, ExerciseBlock, etc.) |
 | `src/components/animation/` | ManimVideo, InteractiveCanvas |
-| `src/components/interactive/` | SVG/Canvas widgets (VectorCanvas, DerivativeSlope, NormalDistribution) |
+| `src/components/interactive/` | Interactive math widgets — see below |
+| `src/components/interactive/linear-algebra/` | 18 components (5 SVG+React, 10 D3.js, 3 R3F) |
 | `src/components/math/` | MathBlock, MathInline (KaTeX client-side wrappers) |
 | `src/content/lessons/` | MDX lesson files, organized by course subdirectory |
+| `src/content/lessons/linear-algebra/` | 31 files: 00-notation + 30 lessons (01-30) |
+| `src/content/lessons/calculus/` | 4 files: 00-notation + 3 lessons |
+| `src/content/lessons/probability/` | 4 files: 00-notation + 3 lessons |
 | `src/i18n/` | Translation strings and i18n utilities |
 | `src/hooks/` | useReducedMotion, useMobileDetect |
 | `src/pages/` | Astro routes (English at root, Chinese under `/zh/`) |
 | `animations/` | Manim scripts, theme, manifest, render pipeline |
 | `public/fonts/` | Self-hosted woff2 font files |
 | `deploy.sh` | Self-hosted deployment script (Nginx/Caddy/serve) |
+| `ROADMAP.md` | Product vision, curriculum overview, milestones |
+| `CHANGELOG.md` | Version history |
+| `DESIGN_SYSTEM.md` | Design tokens and component inventory |

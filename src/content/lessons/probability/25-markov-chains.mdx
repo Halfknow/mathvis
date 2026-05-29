@@ -1,0 +1,103 @@
+---
+title: "Markov Chains"
+titleZh: "马尔可夫链"
+description: "A memoryless process — the next state depends only on where you are now, not how you got here."
+descriptionZh: "无记忆过程——下一个状态只取决于你现在在哪，而不是你怎么来的。"
+course: "probability"
+module: "Stochastic Processes"
+moduleZh: "随机过程初探"
+moduleOrder: 7
+lessonOrder: 25
+duration: 18
+difficulty: "Advanced"
+---
+
+Some processes carry the full weight of their history. Where you go next depends on everywhere you have been. But there is a simpler, stranger class of processes where the past does not matter. Only the present state determines the future. These are **Markov chains**, and they are the workhorse model of stochastic processes.
+
+The Markov property is a radical simplification. It says: forget everything except where you are right now. The chain has no memory. It makes no distinction between a state you just arrived at and one you have occupied for a hundred steps. All that matters is the current position.
+
+## The Markov property
+
+Formally, a sequence of random variables $X_0, X_1, X_2, \ldots$ is a Markov chain if:
+
+$$P(X_{n+1} = j \mid X_n = i, X_{n-1} = i_{n-1}, \ldots, X_0 = i_0) = P(X_{n+1} = j \mid X_n = i)$$
+
+The conditional probability of the next state, given the entire history, reduces to the conditional probability given only the current state. The past is summarized completely by the present.
+
+Think of it as a board game. You land on a square. What happens next depends only on which square you are on — not on the path you took to get there. The board does not remember your journey.
+
+## The transition matrix
+
+For a Markov chain with a finite set of states, the dynamics are encoded in a **transition matrix** $P$. The entry $P_{ij}$ is the probability of moving from state $i$ to state $j$ in one step:
+
+$$P_{ij} = P(X_{n+1} = j \mid X_n = i)$$
+
+Each row of $P$ is a probability distribution — it sums to 1, because from any state $i$, the chain must go *somewhere*. The transition matrix is a complete description of the chain's dynamics. Given $P$, you can compute the probability of any future path.
+
+### A weather example
+
+Suppose the weather has three states: sunny, cloudy, rainy. The transition probabilities:
+
+- From sunny: 70% chance stay sunny, 20% go cloudy, 10% go rainy
+- From cloudy: 30% go sunny, 40% stay cloudy, 30% go rainy
+- From rainy: 20% go sunny, 30% go cloudy, 50% stay rainy
+
+As a matrix:
+
+| | Sunny | Cloudy | Rainy |
+|---|---|---|---|
+| **Sunny** | 0.7 | 0.2 | 0.1 |
+| **Cloudy** | 0.3 | 0.4 | 0.3 |
+| **Rainy** | 0.2 | 0.3 | 0.5 |
+
+If today is sunny, the probability it is rainy the day after tomorrow is:
+
+$P(\text{rainy in 2 steps} \mid \text{sunny today}) = P_{S,C} \cdot P_{C,R} + P_{S,S} \cdot P_{S,R} + P_{S,R} \cdot P_{R,R}$
+
+$= 0.2 \times 0.3 + 0.7 \times 0.1 + 0.1 \times 0.5 = 0.18$
+
+Multi-step transitions are matrix powers. The probability of going from $i$ to $j$ in exactly $n$ steps is the $(i,j)$ entry of $P^n$.
+
+## Visualizing a Markov chain: the state diagram
+
+The most natural picture of a Markov chain is a **directed graph** with weighted edges. Each state is a node. Each possible transition is an arrow from state $i$ to state $j$, labeled with probability $P_{ij}$.
+
+The arrows tell you where the flow goes. A state with thick outgoing arrows to its neighbors is "sticky" — the chain tends to visit it often. A state with thin incoming arrows and thick outgoing arrows is "transient" — the chain passes through but rarely returns.
+
+Look at the weather diagram. The rainy state has a thick self-loop ($0.5$). Once it starts raining, it tends to keep raining. The sunny state also has a thick self-loop ($0.7$) — sunny days cluster. This is the visual fingerprint of **persistence**.
+
+## Stationary distribution
+
+Run the weather chain for a long time. After many steps, the probability of being in each state stabilizes. The chain settles into a **stationary distribution** $\pi$, satisfying:
+
+$$\pi = \pi P$$
+
+The stationary distribution is a row vector that does not change when multiplied by the transition matrix. It is a fixed point of the row-matrix product.
+
+For the weather chain, solving $\pi = \pi P$ with $\pi_S + \pi_C + \pi_R = 1$ gives approximately:
+
+$$\pi_S \approx 0.48, \quad \pi_C \approx 0.27, \quad \pi_R \approx 0.25$$
+
+In the long run, this climate is sunny about 48% of the time, cloudy 27%, rainy 25%. The chain has "forgotten" where it started. Whether you begin in blazing sun or pouring rain, the distribution of states after enough steps is the same.
+
+This is the ergodic property: the chain mixes. It explores the state space according to the stationary distribution, regardless of the starting point. Not all chains do this (some get trapped in subsets of states), but for chains that are **irreducible** (every state can reach every other state) and **aperiodic** (the chain does not cycle in lockstep), the stationary distribution is the long-run attractor.
+
+## PageRank: a giant Markov chain
+
+Google's original PageRank algorithm treats web surfing as a Markov chain. The states are web pages. The transitions are links: from page $i$, the surfer follows a random outgoing link with uniform probability. The stationary distribution gives the long-run fraction of time a random surfer spends on each page — which is taken as a measure of importance.
+
+There is a twist: with probability $\alpha$ (typically 0.85), the surfer follows a link. With probability $1 - \alpha$, the surfer jumps to a random page anywhere on the web. This "teleportation" ensures the chain is irreducible and aperiodic, guaranteeing a unique stationary distribution. Pages with many incoming links from important pages rank high — the stationary probability flows toward them through the link structure.
+
+The entire web, reduced to a single matrix equation. Billions of states, one stationary distribution.
+
+## Key insight
+
+> A Markov chain is a memoryless process governed by a transition matrix. Run it long enough and it forgets its starting point, settling into a stationary distribution that depends only on the transition probabilities — not on where it began. The past is washed away; only the transition structure remains.
+
+## Practice
+
+**Exercise 1.** A Markov chain has two states, $A$ and $B$. From $A$, the chain moves to $B$ with probability 0.6 and stays at $A$ with probability 0.4. From $B$, the chain moves to $A$ with probability 0.3 and stays at $B$ with probability 0.7. Write the transition matrix. Find the stationary distribution $\pi = (\pi_A, \pi_B)$ by solving $\pi = \pi P$.
+
+**Exercise 2.** Consider the weather Markov chain from the lesson. Suppose today is rainy. Compute the probability that it is rainy two days from now using the matrix product $P^2$. Verify your answer by computing $P^2$ (multiply $P$ by itself) and reading off the appropriate entry.
+
+**Exercise 3.** A rat runs through a maze of three rooms. From Room 1, it always goes to Room 2. From Room 2, it goes to Room 1 or Room 3 with equal probability. From Room 3, it always goes to Room 2. Draw the state diagram. Write the transition matrix. Find the stationary distribution. Which room does the rat visit most often in the long run, and why does this make intuitive sense?

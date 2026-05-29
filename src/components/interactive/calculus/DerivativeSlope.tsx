@@ -3,6 +3,7 @@ import { useState, useMemo } from 'react';
 interface DerivativeSlopeProps {
   width?: number;
   height?: number;
+  mode?: 'tangent' | 'compare' | 'reverse' | 'secant-to-tangent';
 }
 
 type FnDef = {
@@ -21,9 +22,11 @@ const FUNCTIONS: Record<string, FnDef> = {
 export function DerivativeSlope({
   width = 640,
   height = 400,
+  mode = 'tangent',
 }: DerivativeSlopeProps) {
   const [fnKey, setFnKey] = useState('x²');
   const [tangentX, setTangentX] = useState(1);
+  const [hValue, setHValue] = useState(2);
   const currentFn = FUNCTIONS[fnKey];
 
   const padding = { top: 20, right: 20, bottom: 40, left: 50 };
@@ -39,38 +42,51 @@ export function DerivativeSlope({
   const sx = (x: number) => padding.left + ((x - xMin) / (xMax - xMin)) * plotW;
   const sy = (y: number) => padding.top + plotH - ((y - yMin) / (yMax - yMin)) * plotH;
 
-  const curvePath = useMemo(() => {
-    const pts: string[] = [];
-    for (let i = 0; i <= 200; i++) {
-      const x = xMin + (i / 200) * (xMax - xMin);
-      const y = currentFn.fn(x);
-      if (y < yMin - 2 || y > yMax + 2) continue;
-      pts.push(`${i === 0 || pts.length === 0 ? 'M' : 'L'}${sx(x).toFixed(1)},${sy(y).toFixed(1)}`);
-    }
-    return pts.join(' ');
-  }, [fnKey, width, height]);
+  const buildPath = useMemo(() => {
+    return (fn: (x: number) => number) => {
+      const pts: string[] = [];
+      for (let i = 0; i <= 200; i++) {
+        const x = xMin + (i / 200) * (xMax - xMin);
+        const y = fn(x);
+        if (y < yMin - 2 || y > yMax + 2) continue;
+        pts.push(`${i === 0 || pts.length === 0 ? 'M' : 'L'}${sx(x).toFixed(1)},${sy(y).toFixed(1)}`);
+      }
+      return pts.join(' ');
+    };
+  }, [width, height]);
 
-  const derivativePath = useMemo(() => {
-    const pts: string[] = [];
-    for (let i = 0; i <= 200; i++) {
-      const x = xMin + (i / 200) * (xMax - xMin);
-      const y = currentFn.dfn(x);
-      if (y < yMin - 2 || y > yMax + 2) continue;
-      pts.push(`${i === 0 || pts.length === 0 ? 'M' : 'L'}${sx(x).toFixed(1)},${sy(y).toFixed(1)}`);
-    }
-    return pts.join(' ');
-  }, [fnKey, width, height]);
+  const curvePath = useMemo(() => buildPath(currentFn.fn), [fnKey, buildPath]);
+  const derivativePath = useMemo(() => buildPath(currentFn.dfn), [fnKey, buildPath]);
 
   const fAtX = currentFn.fn(tangentX);
   const slope = currentFn.dfn(tangentX);
 
-  const tangentPath = useMemo(() => {
+  const tangentLinePath = useMemo(() => {
     const x1 = tangentX - 1.5;
     const y1 = fAtX + slope * (x1 - tangentX);
     const x2 = tangentX + 1.5;
     const y2 = fAtX + slope * (x2 - tangentX);
     return `M${sx(x1).toFixed(1)},${sy(y1).toFixed(1)} L${sx(x2).toFixed(1)},${sy(y2).toFixed(1)}`;
   }, [tangentX, fnKey, width, height]);
+
+  // In reverse mode: show f'(x) as solid, reconstruct f(x) as dashed
+  const showOriginalSolid = mode !== 'reverse';
+  const showDerivativeSolid = mode === 'reverse';
+  const showTangent = mode === 'tangent' || mode === 'reverse' || mode === 'secant-to-tangent';
+
+  // Secant line for secant-to-tangent mode
+  const secantLinePath = useMemo(() => {
+    if (mode !== 'secant-to-tangent') return '';
+    const x1 = tangentX - hValue;
+    const x2 = tangentX + hValue;
+    const y1 = currentFn.fn(x1);
+    const y2 = currentFn.fn(x2);
+    return `M${sx(x1).toFixed(1)},${sy(y1).toFixed(1)} L${sx(x2).toFixed(1)},${sy(y2).toFixed(1)}`;
+  }, [mode, tangentX, hValue, fnKey, width, height]);
+
+  const secantSlope = mode === 'secant-to-tangent'
+    ? (currentFn.fn(tangentX + hValue) - currentFn.fn(tangentX - hValue)) / (2 * hValue)
+    : 0;
 
   const gridLines = useMemo(() => {
     const lines: JSX.Element[] = [];
@@ -89,6 +105,14 @@ export function DerivativeSlope({
     return lines;
   }, [width, height]);
 
+  const modeLabel = mode === 'reverse'
+    ? 'Reverse: given f′(x), find f(x)'
+    : mode === 'compare'
+      ? 'f(x) and f′(x) side by side'
+      : mode === 'secant-to-tangent'
+        ? 'Secant → Tangent: shrink h toward 0'
+        : 'Tangent line explorer';
+
   return (
     <div className="flex h-full w-full flex-col">
       <svg
@@ -99,31 +123,60 @@ export function DerivativeSlope({
         {gridLines}
 
         {/* f(x) curve */}
-        <path d={curvePath} fill="none" stroke="var(--color-vector-blue)" strokeWidth={2.5} />
+        <path
+          d={curvePath}
+          fill="none"
+          stroke={showOriginalSolid ? 'var(--color-vector-blue)' : 'var(--color-vector-blue)'}
+          strokeWidth={showOriginalSolid ? 2.5 : 1.5}
+          strokeDasharray={showOriginalSolid ? undefined : '6,3'}
+        />
 
         {/* f'(x) curve */}
-        <path d={derivativePath} fill="none" stroke="var(--color-vector-green)" strokeWidth={1.5} strokeDasharray="6,3" />
+        <path
+          d={derivativePath}
+          fill="none"
+          stroke={showDerivativeSolid ? 'var(--color-vector-green)' : 'var(--color-vector-green)'}
+          strokeWidth={showDerivativeSolid ? 2.5 : 1.5}
+          strokeDasharray={showDerivativeSolid ? undefined : '6,3'}
+        />
 
         {/* Tangent line */}
-        <path d={tangentPath} fill="none" stroke="var(--color-accent)" strokeWidth={2} />
+        {showTangent && (
+          <path d={tangentLinePath} fill="none" stroke="var(--color-accent)" strokeWidth={2} />
+        )}
 
-        {/* Tangent point */}
+        {/* Secant line */}
+        {mode === 'secant-to-tangent' && hValue > 0.01 && (
+          <path d={secantLinePath} fill="none" stroke="var(--color-vector-yellow)" strokeWidth={2} strokeDasharray="6,3" />
+        )}
+        {mode === 'secant-to-tangent' && (
+          <>
+            <circle cx={sx(tangentX - hValue)} cy={sy(currentFn.fn(tangentX - hValue))} r={4} fill="var(--color-vector-yellow)" stroke="var(--color-paper)" strokeWidth={2} />
+            <circle cx={sx(tangentX + hValue)} cy={sy(currentFn.fn(tangentX + hValue))} r={4} fill="var(--color-vector-yellow)" stroke="var(--color-paper)" strokeWidth={2} />
+          </>
+        )}
+
+        {/* Tangent point on f(x) */}
         <circle cx={sx(tangentX)} cy={sy(fAtX)} r={5} fill="var(--color-accent)" />
 
-        {/* Derivative point on f' curve */}
+        {/* Point on f'(x) */}
         <circle cx={sx(tangentX)} cy={sy(slope)} r={4} fill="var(--color-vector-green)" stroke="var(--color-paper)" strokeWidth={2} />
 
         {/* Legend */}
         <line x1={width - 140} y1={20} x2={width - 120} y2={20} stroke="var(--color-vector-blue)" strokeWidth={2.5} />
         <text x={width - 115} y={24} className="text-[10px]" fill="var(--color-ink-muted)" style={{ fontFamily: 'var(--font-sans)' }}>f(x)</text>
-        <line x1={width - 140} y1={34} x2={width - 120} y2={34} stroke="var(--color-vector-green)" strokeWidth={1.5} strokeDasharray="4,2" />
+        <line x1={width - 140} y1={34} x2={width - 120} y2={34} stroke="var(--color-vector-green)" strokeWidth={1.5} strokeDasharray={showDerivativeSolid ? undefined : '4,2'} />
         <text x={width - 115} y={38} className="text-[10px]" fill="var(--color-ink-muted)" style={{ fontFamily: 'var(--font-sans)' }}>f′(x)</text>
-        <line x1={width - 140} y1={48} x2={width - 120} y2={48} stroke="var(--color-accent)" strokeWidth={2} />
-        <text x={width - 115} y={52} className="text-[10px]" fill="var(--color-ink-muted)" style={{ fontFamily: 'var(--font-sans)' }}>tangent</text>
+        {showTangent && (
+          <>
+            <line x1={width - 140} y1={48} x2={width - 120} y2={48} stroke="var(--color-accent)" strokeWidth={2} />
+            <text x={width - 115} y={52} className="text-[10px]" fill="var(--color-ink-muted)" style={{ fontFamily: 'var(--font-sans)' }}>tangent</text>
+          </>
+        )}
       </svg>
 
       {/* Controls */}
-      <div className="flex items-center gap-4 border-t border-rule bg-paper-elevated px-4 py-3">
+      <div className="flex flex-wrap items-center gap-4 border-t border-rule bg-paper-elevated px-4 py-3">
         <label className="flex items-center gap-2 font-sans text-xs text-ink-muted">
           x =
           <input
@@ -137,6 +190,22 @@ export function DerivativeSlope({
           />
           <span className="font-mono text-xs text-ink w-12">{tangentX.toFixed(2)}</span>
         </label>
+
+        {mode === 'secant-to-tangent' && (
+          <label className="flex items-center gap-2 font-sans text-xs text-ink-muted">
+            h =
+            <input
+              type="range"
+              min={0.01}
+              max={2.5}
+              step={0.01}
+              value={hValue}
+              onChange={(e) => setHValue(+e.target.value)}
+              className="h-1 w-24 cursor-pointer accent-[var(--color-vector-yellow)]"
+            />
+            <span className="font-mono text-xs text-ink w-10">{hValue.toFixed(2)}</span>
+          </label>
+        )}
 
         <div className="flex gap-1">
           {Object.keys(FUNCTIONS).map((k) => (
@@ -158,7 +227,15 @@ export function DerivativeSlope({
         <div className="ml-auto flex gap-3 font-mono text-[11px]">
           <span className="text-vector-blue">f({tangentX.toFixed(1)}) = {fAtX.toFixed(2)}</span>
           <span className="text-vector-green">f′ = {slope.toFixed(2)}</span>
+          {mode === 'secant-to-tangent' && (
+            <span className="text-vector-yellow">secant = {secantSlope.toFixed(2)}</span>
+          )}
         </div>
+      </div>
+
+      {/* Mode indicator */}
+      <div className="border-t border-rule bg-surface-1 px-4 py-1 text-center font-sans text-[10px] text-ink-muted">
+        {modeLabel}
       </div>
     </div>
   );

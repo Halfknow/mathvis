@@ -1,0 +1,109 @@
+---
+title: "Discrete Distributions"
+titleZh: "离散分布"
+description: "Bernoulli, Binomial, Poisson — each is a story about counting successes, told in a different setting."
+descriptionZh: "伯努利、二项、泊松——每一个都是关于计算成功次数的故事，只是在不同的场景中。"
+course: "probability"
+module: "Random Variables and Their Shapes"
+moduleZh: "随机变量与它的形状"
+moduleOrder: 2
+lessonOrder: 7
+duration: 20
+difficulty: "Intermediate"
+---
+
+import { DiscreteDistVis } from '../../../components/interactive/probability/DiscreteDistVis';
+
+Every discrete distribution tells a story about **counting**. The setting changes — a single coin flip, a sequence of free throws, emails arriving in an hour — but the question is always the same: how many successes do we get?
+
+This lesson is about three distributions that form a family. They look different at first glance, but each one grows out of the one before it. By the end, you will see how the same counting story gets retold in different scenes, and how the bar chart morphs as the parameters shift.
+
+## The Bernoulli distribution: one trial, two outcomes
+
+The simplest non-trivial random variable is a single yes-or-no trial. Flip a coin. Press a button. Check whether a single email is spam. The result is either 1 (success) or 0 (failure), and the only parameter is $p$, the probability of success.
+
+$$P(X = 1) = p, \quad P(X = 0) = 1 - p$$
+
+Its bar chart is just two bars: a bar of height $p$ at $x = 1$ and a bar of height $1 - p$ at $x = 0$. When $p = 0.5$ the bars are equal height. When $p = 0.9$, the success bar towers over the failure bar.
+
+The mean and variance are immediate:
+
+$$E[X] = p, \quad \text{Var}(X) = p(1 - p)$$
+
+The variance is largest when $p = 0.5$ — maximum uncertainty — and shrinks to zero as $p$ approaches 0 or 1, where the outcome becomes nearly certain.
+
+The Bernoulli distribution is the **atom** from which all the others are built. Everything that follows is just a matter of combining Bernoulli trials in different ways.
+
+## The Binomial distribution: counting yeses across n trials
+
+Now run $n$ independent Bernoulli($p$) trials and count how many come up as 1. The count $X$ follows a **Binomial($n$, $p$)** distribution.
+
+$$P(X = k) = \binom{n}{k} p^k (1 - p)^{n-k}$$
+
+The formula has three pieces, and each one has a clear job:
+
+- $\binom{n}{k}$ — how many ways to choose which $k$ of the $n$ trials are successes
+- $p^k$ — the probability that those $k$ chosen trials all succeed
+- $(1 - p)^{n-k}$ — the probability that the remaining $n - k$ trials all fail
+
+Picture the bar chart. It starts near zero at $k = 0$, rises to a peak near $k = np$, then falls back toward zero. The shape depends on $p$:
+
+- **$p$ near 0.5**: the bar chart is roughly symmetric, like a bell sitting on the integers
+- **$p$ near 0**: the bars are bunched on the left with a long tail to the right — skewed right
+- **$p$ near 1**: the bars are bunched on the right with a long tail to the left — skewed left
+
+**Example**: A basketball player shoots 20 free throws with 70% accuracy. The number of made shots follows Binomial(20, 0.7). The bar chart peaks near $np = 14$. Most of the probability mass sits between 11 and 17 — that is where the bars are tall. Getting exactly 20 is possible but the bar at $k = 20$ is tiny: $(0.7)^{20} \approx 0.0008$. Getting exactly 0 is even smaller: $(0.3)^{20}$, essentially invisible on the chart.
+
+The mean and variance:
+
+$$E[X] = np, \quad \text{Var}(X) = np(1 - p)$$
+
+When $n = 1$, the Binomial collapses back to a Bernoulli. That is the family connection: Bernoulli($p$) is exactly Binomial(1, $p$).
+
+## The Poisson distribution: events arriving in time
+
+Some situations involve counting events that occur at random moments — emails arriving in an hour, typos on a page, earthquakes in a decade. There is no fixed number of "trials" here. Instead, there is a **rate** $\lambda$ (average number of events per interval), and the count of events follows a **Poisson($\lambda$)** distribution.
+
+$$P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}$$
+
+The formula looks different from Binomial, but it is actually the limit of Binomial($n$, $p$) as $n$ grows large and $p$ shrinks small, while holding $np = \lambda$ constant. Imagine slicing an hour into tinier and tinier sub-intervals. In each sub-interval, the chance of an email arriving gets very small (tiny $p$), but there are very many sub-intervals (huge $n$). The Binomial bar chart converges to the Poisson bar chart.
+
+The Poisson bar chart peaks near $k = \lambda$ and has a **long right tail**. The right tail is longer than the left because counts cannot go below zero, but there is no upper bound — occasionally you get an unusually large number of events.
+
+**Example**: A server receives an average of $\lambda = 4$ requests per minute. The number of requests in any given minute follows Poisson(4). The tallest bar is at $k = 4$. The bar at $k = 0$ — a completely silent minute — has height $e^{-4} \approx 0.018$, about 1.8%. The bar at $k = 8$ — double the average — still has noticeable height, roughly 3%. That long tail is what makes the Poisson look distinctly lopsided compared to a symmetric bell curve.
+
+The mean and variance are both $\lambda$:
+
+$$E[X] = \lambda, \quad \text{Var}(X) = \lambda$$
+
+The fact that mean equals variance is a signature property. If you observe data where the variance is much larger than the mean, Poisson is the wrong model — the events are "overdispersed," which points to a different story entirely.
+
+## The family portrait
+
+All three distributions are connected by a single thread: counting independent successes.
+
+- **Bernoulli($p$)** is the base case — one trial, one count
+- **Binomial($n$, $p$)** stacks $n$ Bernoulli trials — count the yeses
+- **Poisson($\lambda$)** is Binomial pushed to the limit — many trials, tiny success probability, fixed expected count
+
+Imagine sliding a single knob: increase $n$ while decreasing $p$ to keep $np$ constant. The Binomial bar chart starts chunky and discrete, then the bars get thinner and more numerous, the shape smooths out, and you arrive at the Poisson bar chart. It is the same story — counting successes — told in a setting where the trials are so numerous and so unlikely that only the rate $\lambda$ matters.
+
+Or wind the other direction: set $n = 1$ in the Binomial and the bar chart collapses to just two bars. You are back to Bernoulli.
+
+Understanding these relationships means you never have to memorize three separate distributions. You learn one story — independent trials, count the successes — and the three distributions are just that story told at different scales.
+
+Explore all three distributions below. Switch between Bernoulli, Binomial, and Poisson. Drag the parameter sliders and watch the bar chart reshape. Notice how Binomial(n, p) flattens as n grows and p shrinks toward the Poisson limit.
+
+<DiscreteDistVis client:visible />
+
+## Key insight
+
+> Every discrete distribution in this family is the same counting story at a different magnification: one trial (Bernoulli), many trials (Binomial), so many trials you lose count and only the rate matters (Poisson).
+
+## Practice
+
+1. A fair coin is flipped 10 times. What is the probability of getting exactly 7 heads? Sketch the rough shape of the bar chart — where does it peak, and which tail is longer?
+
+2. A call center receives an average of 3 calls per minute. Model this with a Poisson distribution. What is $P(X = 0)$ — the probability of a completely silent minute? What about $P(X = 6)$? Which is larger, and does that match your intuition about where the bar chart peaks?
+
+3. A drug test has a 95% accuracy rate for detecting a disease when it is present, and a 1% false positive rate. If you test 200 healthy people, model the number of false positives as a Binomial. What are the mean and standard deviation? Roughly how many false positives would you expect?

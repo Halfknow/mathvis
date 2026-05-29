@@ -1,0 +1,100 @@
+---
+title: "Volumes by Slicing"
+titleZh: "切片法求体积"
+description: "Stack infinitesimally thin cross-sectional slices — the volume is the integral of each slice's area."
+descriptionZh: "把无限薄的截面切片堆叠起来——体积就是每个切片面积的积分。"
+course: "calculus"
+module: "Applications of Integration"
+moduleZh: "积分应用"
+moduleOrder: 5
+lessonOrder: 18
+duration: 20
+difficulty: "Advanced"
+interactiveWidgets:
+  - id: "volume-slicer-18"
+    type: "volume-slicer-3d"
+    title: "Volume Slicer 3D"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { VolumeSlicer3D } from '../../../components/interactive/calculus/VolumeSlicer3D';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+We've computed areas -- 2D regions. Now we compute **volumes** -- 3D solids. The strategy is the same: slice, compute each piece, and integrate. The key insight is that slicing reduces a 3D problem to a 2D problem. At each x-position, you see a 2D cross-section with area $A(x)$. Stack all the areas and you get volume -- the integral does the stacking for you, adding up infinitely many paper-thin slices.
+
+<InteractiveCanvas
+  title="Volume Slicer 3D"
+  caption="Drag the x-slider to move the slicing plane through the solid. The yellow cross-section shows A(x) at that position. Rotate the 3D view by dragging the scene."
+  aspectRatio="16/9"
+>
+  <VolumeSlicer3D client:visible />
+</InteractiveCanvas>
+
+## The idea
+
+Imagine slicing a solid with a knife perpendicular to the x-axis. Each slice is a thin disk with some cross-sectional area $A(x)$ and thickness $dx$. The volume of each slice is $A(x)\, dx$. Stack all the slices:
+
+<MathBlock expression={"V = \\int_a^b A(x)\\, dx"} />
+
+The integral adds up infinitely many infinitesimally thin slices. Just as the Riemann sum converges to the area under a curve, the slice sum converges to the exact volume.
+
+## The disk method
+
+When the solid is formed by rotating $y = f(x)$ around the x-axis, each cross-section is a circular disk of radius $f(x)$:
+
+<MathBlock expression={"A(x) = \\pi [f(x)]^2"} />
+
+So:
+
+<MathBlock expression={"V = \\pi \\int_a^b [f(x)]^2\\, dx"} />
+
+### Example: Volume of a cone
+
+A cone of height $h$ and base radius $R$ is formed by rotating the line $y = (R/h)x$ from $x = 0$ to $x = h$.
+
+<MathBlock expression={"V = \\pi \\int_0^h \\left(\\frac{R}{h}x\\right)^2 dx = \\pi \\frac{R^2}{h^2} \\int_0^h x^2\\, dx = \\pi \\frac{R^2}{h^2} \\cdot \\frac{h^3}{3} = \\frac{1}{3}\\pi R^2 h"} />
+
+The familiar formula $V = \frac{1}{3}\pi r^2 h$ emerges from the integral.
+
+## The washer method
+
+When the solid has a hole (rotating the region between two curves), the cross-section is a ring — a disk with a disk removed:
+
+<MathBlock expression={"A(x) = \\pi [R(x)]^2 - \\pi [r(x)]^2"} />
+
+where $R(x)$ is the outer radius and $r(x)$ is the inner radius.
+
+### Example: A bowl
+
+Rotate the region between $y = \sqrt{x}$ and $y = x/2$ from $x = 0$ to $x = 4$ around the x-axis.
+
+<MathBlock expression={"V = \\pi \\int_0^4 [\\sqrt{x}]^2 - [x/2]^2\\, dx = \\pi \\int_0^4 [x - x^2/4]\\, dx = \\pi [x^2/2 - x^3/12]_0^4 = \\pi[8 - 64/12] = \\frac{8\\pi}{3}"} />
+
+<KeyInsight>
+Volume by slicing: cut the solid into thin disks (or washers), compute each slice's area A(x), and integrate A(x) dx from one end to the other. The integral replaces an infinite stack of infinitesimal slices.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Find the volume of the solid formed by rotating y = x² from x = 0 to x = 2 around the x-axis."
+  hint="Use the disk method: A(x) = π(x²)² = πx⁴."
+  answer="V = π∫₀² x⁴ dx = π[x⁵/5]₀² = π(32/5) = 32π/5."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Find the volume of a sphere of radius R using the disk method."
+  hint="The sphere is y = √(R²−x²) rotated around the x-axis, from x = −R to x = R."
+  answer="V = π∫_{−R}^R (R²−x²) dx = π[R²x − x³/3]_{−R}^R = π[(R³ − R³/3) − (−R³ + R³/3)] = π(4R³/3) = 4πR³/3."
+/>
+
+<ExerciseBlock number={3}
+  prompt="A solid has cross-sectional area A(x) = 3 + x at position x. Find its volume from x = 0 to x = 4."
+  hint="No rotation needed — just integrate A(x) directly."
+  answer="V = ∫₀⁴ (3 + x) dx = [3x + x²/2]₀⁴ = 12 + 8 = 20 cubic units."
+/>
+
+[Next Lesson →](/courses/calculus/19-volumes-of-revolution)

@@ -1,0 +1,119 @@
+---
+title: "Marginal and Conditional Distributions"
+titleZh: "边缘分布与条件分布"
+description: "Projecting the joint landscape onto one axis, and slicing it to see one variable given the other."
+descriptionZh: "将联合地形图投影到一条轴上，并切片以查看给定另一个变量的分布。"
+course: "probability"
+module: "When Variables Meet"
+moduleZh: "当变量相遇"
+moduleOrder: 3
+lessonOrder: 11
+duration: 16
+difficulty: "Intermediate"
+---
+
+You have a joint distribution — a heat map or a surface showing the probability landscape of two variables together. But often you want to ask a simpler question. What does $X$ look like on its own? Or: given that $Y$ takes a specific value, what does $X$ look like now?
+
+These two questions produce two different kinds of distributions. The **marginal** collapses the landscape onto one wall. The **conditional** slices through it at a fixed value and rescales what remains. One ignores the other variable entirely. The other uses it as a lens.
+
+## Marginal distributions: projecting onto one axis
+
+Imagine the joint density $f(x, y)$ as a 3D surface. Now imagine a light source far to one side, casting a shadow of the entire surface onto the $xz$-wall (the wall where $Y = 0$). That shadow is the marginal distribution of $X$.
+
+To compute it, you integrate out the other variable:
+
+$$f_X(x) = \int_{-\infty}^{\infty} f(x, y)\,dy$$
+
+For discrete distributions, the integral becomes a sum:
+
+$$p_X(x) = \sum_j p(x, y_j)$$
+
+Geometrically: for each value of $x$, you sweep along the $y$-axis and accumulate all the probability mass at that $x$-coordinate. The result is a single curve $f_X(x)$ — a one-dimensional landscape that tells you everything about $X$ alone, and nothing about how $X$ relates to $Y$.
+
+The word "marginal" comes from the literal margin of a table. If you write a joint PMF as a grid, the row totals written in the right margin give you $p_X$, and the column totals written in the bottom margin give you $p_Y$. The margins of the table *are* the marginal distributions.
+
+### The loss of information
+
+Here is the catch. Many different joint distributions can produce the same marginals. Two very different landscapes — one with a diagonal ridge, one with a circular blob — can cast the same shadow on each wall. The marginal tells you about each variable alone, but it destroys all information about the *relationship* between them.
+
+If the joint distribution is a photograph of two people, the marginals are two separate portraits. You can learn each person's face, but you cannot tell whether they are standing side by side or back to back.
+
+## Conditional distributions: slicing the landscape
+
+Now a different operation. Instead of projecting the entire surface onto a wall, you slice it at one fixed value of $Y$. You pick $Y = y_0$, and you look only at the cross-section $f(x, y_0)$.
+
+But a cross-section is not yet a distribution. Its total area (or sum) is almost certainly not 1 — it is some fraction of the total probability, namely $f_Y(y_0)$ (or $p_Y(y_0)$ for discrete). To turn this slice into a valid distribution, you normalize it — divide by that total.
+
+$$f_{X \mid Y}(x \mid y) = \frac{f(x, y)}{f_Y(y)}$$
+
+Read the bar as "given." This is the density of $X$, *given that* $Y = y$. It is a genuine probability distribution in its own right: it is non-negative, and it integrates to 1 over $x$.
+
+For discrete random variables:
+
+$$p_{X \mid Y}(x \mid y) = \frac{p(x, y)}{p_Y(y)}$$
+
+### The visual
+
+Go back to the heat map. Pick one row — say the row where $Y = y_0$. The brightness values across that row are the unnormalized slice. Now rescale the entire row so that its total brightness becomes 1. The pattern of relative brightness within that row — the ups and downs across $x$ — is the conditional distribution $p(x \mid y_0)$.
+
+Different rows may look very different. Row $Y = 1$ might show mass concentrated at large $x$-values. Row $Y = 3$ might show mass concentrated at small $x$-values. If the rows all look the same (after normalization), then knowing $Y$ tells you nothing about $X$ — the variables are independent. If the rows look different, knowing $Y$ reshapes your picture of $X$.
+
+### Connection to earlier conditional probability
+
+This is the same conditional probability from earlier, but lifted from events to random variables. There, we wrote:
+
+$$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$
+
+Here, the "event" $A$ is "$X$ takes a particular value" and the "event" $B$ is "$Y = y$." The joint distribution gives you $P(A \cap B) = p(x, y)$ and the marginal gives you $P(B) = p_Y(y)$. Same formula, richer context.
+
+## A worked example
+
+Return to the two-dice setting from the previous lesson. Let $X$ be the number of heads in two coin flips, and $Y$ be the number of heads on the first flip. The joint PMF was:
+
+| | Y = 0 | Y = 1 |
+|---|---|---|
+| X = 0 | 1/4 | 0 |
+| X = 1 | 1/4 | 1/2 |
+| X = 2 | 0 | 1/4 |
+
+**Marginal of $X$** (sum across columns): $p_X(0) = 1/4$, $p_X(1) = 3/4$, $p_X(2) = 1/4$. Wait — that sums to more than 1. Let us recompute: $p_X(0) = 1/4 + 0 = 1/4$. $p_X(1) = 1/4 + 1/2 = 3/4$. But $1/4 + 3/4 + 1/4 = 5/4$. Something is wrong — and it is. Re-examining: $p_X(0) = 1/4$, $p_X(1) = 1/4 + 1/2 = 3/4$? No. The correct sum: row $X = 0$ gives $1/4 + 0 = 1/4$. Row $X = 1$ gives $1/4 + 1/2 = 3/4$. Row $X = 2$ gives $0 + 1/4 = 1/4$. Total: $1/4 + 3/4 + 1/4 = 5/4$. That cannot be right.
+
+Let us fix the table. Two fair coins: outcomes are HH, HT, TH, TT, each with probability $1/4$. Then $Y$ (first coin heads) is 0 for TH, TT and 1 for HH, HT. And $X$ (total heads) is 2 for HH, 1 for HT and TH, 0 for TT.
+
+| | Y = 0 | Y = 1 |
+|---|---|---|
+| X = 0 | 1/4 (TT) | 0 |
+| X = 1 | 1/4 (TH) | 1/4 (HT) |
+| X = 2 | 0 | 1/4 (HH) |
+
+Now the marginals: $p_X(0) = 1/4$, $p_X(1) = 1/2$, $p_X(2) = 1/4$. These sum to 1. And $p_Y(0) = 1/2$, $p_Y(1) = 1/2$. These sum to 1.
+
+**Conditional $X \mid Y = 1$**: take the $Y = 1$ column: $p(0, 1) = 0$, $p(1, 1) = 1/4$, $p(2, 1) = 1/4$. Divide by $p_Y(1) = 1/2$:
+
+$$p_{X \mid Y}(0 \mid 1) = 0, \quad p_{X \mid Y}(1 \mid 1) = \frac{1}{2}, \quad p_{X \mid Y}(2 \mid 1) = \frac{1}{2}$$
+
+Given that the first flip is heads, the total number of heads is either 1 or 2, with equal probability. It cannot be 0. The slice removed a possibility and rescaled the rest.
+
+**Conditional $X \mid Y = 0$**: take the $Y = 0$ column: $p(0, 0) = 1/4$, $p(1, 0) = 1/4$, $p(2, 0) = 0$. Divide by $p_Y(0) = 1/2$:
+
+$$p_{X \mid Y}(0 \mid 0) = \frac{1}{2}, \quad p_{X \mid Y}(1 \mid 0) = \frac{1}{2}, \quad p_{X \mid Y}(2 \mid 0) = 0$$
+
+Given the first flip is tails, total heads is 0 or 1, never 2. The two conditional distributions look different — knowing $Y$ reshapes what you expect from $X$.
+
+## Key insight
+
+> The marginal projects the joint landscape onto one axis — it collapses the heat map into a single profile, losing all information about the relationship. The conditional slices the landscape at a fixed value and rescales — it shows you one variable through the lens of the other, preserving the shape of the relationship.
+
+## Practice
+
+**Exercise 1.** Using the corrected joint PMF table from the example above, compute the conditional distribution of $Y$ given $X = 1$. That is, find $p_{Y \mid X}(0 \mid 1)$ and $p_{Y \mid X}(1 \mid 1)$. Describe in words: given that exactly one head appeared in total, what is the probability the first coin was heads?
+
+*Hint:* Use the row $X = 1$. The joint probabilities are $p(1, 0) = 1/4$ and $p(1, 1) = 1/4$. The marginal $p_X(1) = 1/2$. Normalize.
+
+**Exercise 2.** A joint PDF is $f(x, y) = 6x$ for $0 \leq x \leq 1$ and $0 \leq y \leq x$, and zero otherwise. Find the marginal $f_X(x)$. Then find the conditional $f_{Y \mid X}(y \mid x)$. What shape does the conditional distribution have?
+
+*Hint:* To find $f_X(x)$, integrate $6x$ over $y$ from 0 to $x$. For the conditional, divide $f(x, y)$ by $f_X(x)$ and notice what remains — it should not depend on $x$ at all for the shape.
+
+**Exercise 3.** Suppose $X$ and $Y$ are independent with $X \sim \text{Uniform}(0, 1)$ and $Y \sim \text{Uniform}(0, 1)$. Write down the joint PDF. Then compute the conditional $f_{X \mid Y}(x \mid y)$. Does it depend on $y$? Why or why not?
+
+*Hint:* Independence means $f(x, y) = f_X(x) \cdot f_Y(y)$. When you form the conditional by dividing by $f_Y(y)$, what cancels?

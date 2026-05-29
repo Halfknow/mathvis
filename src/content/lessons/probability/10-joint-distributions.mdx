@@ -1,0 +1,85 @@
+---
+title: "Joint Distributions"
+titleZh: "联合分布"
+description: "When two random variables share the same probability space — the landscape of pairs."
+descriptionZh: "当两个随机变量共享同一个概率空间——配对的地形图。"
+course: "probability"
+module: "When Variables Meet"
+moduleZh: "当变量相遇"
+moduleOrder: 3
+lessonOrder: 10
+duration: 18
+difficulty: "Intermediate"
+---
+
+So far we have studied one random variable at a time — a single landscape of probability, a single curve. But the real world rarely deals in isolation. Height and weight arrive together. A stock's price today and tomorrow are entangled. Two dice land simultaneously. When two random variables share the same probability space, we need a map that shows them *both* at once.
+
+That map is the **joint distribution**. It tells you the probability of every possible *pair* of outcomes — not just how $X$ behaves on its own, and not just how $Y$ behaves on its own, but how they behave *together*.
+
+## The discrete case: a table of pairs
+
+Suppose you roll two dice. Call the first die $X$ and the second $Y$. Each die has six faces, so there are $6 \times 6 = 36$ possible pairs. The joint probability mass function (joint PMF) assigns a probability to each cell in a grid:
+
+$$p(x_i, y_j) = P(X = x_i \text{ and } Y = y_j)$$
+
+For two fair dice, every cell gets $1/36$. The table is flat — no cell is brighter than any other. But now suppose the dice are loaded, or suppose $X$ and $Y$ are not dice at all but something entangled — say, daily temperature and ice cream sales. Now some cells glow bright (hot day, lots of ice cream) and others are nearly dark (hot day, zero ice cream). The pattern of brightness across the grid *is* the joint distribution.
+
+The only constraint: every probability must be non-negative, and all cells must sum to 1.
+
+$$\sum_i \sum_j p(x_i, y_j) = 1$$
+
+## The continuous case: a surface over the plane
+
+When $X$ and $Y$ are continuous, the table becomes a smooth surface. The **joint probability density function** (joint PDF) $f(x, y)$ is a landscape stretched over the $xy$-plane. There are hills where pairs are likely and valleys where pairs are rare.
+
+$$P(a \leq X \leq b \text{ and } c \leq Y \leq d) = \int_a^b \int_c^d f(x, y)\,dy\,dx$$
+
+The probability of a rectangular region is the **volume** under the surface — just as the probability for one continuous variable was the *area* under its curve. We have gone from a 2D picture (one variable) to a 3D picture (two variables). The total volume under the entire surface is 1.
+
+Picture a heat map laid flat on a table. Bright regions are high probability; dark regions are low probability. Now inflate the bright regions upward into hills and push the dark regions down into valleys. That inflated landscape is $f(x, y)$.
+
+## The geometry of concentration
+
+Where the mass concentrates tells you how $X$ and $Y$ relate. If the bright ridge runs from lower-left to upper-right, large values of $X$ tend to accompany large values of $Y$. If the ridge runs from upper-left to lower-right, large $X$ pairs with small $Y$. If the bright spot sits in a circular blob near the center, the two variables have little to do with each other.
+
+This ridge direction is the visual signature of dependence. In the next lessons we will give it precise names — covariance, correlation, conditional distributions. But the raw geometry comes first. Before you compute anything, look at the landscape. Where is the mass?
+
+### A concrete example
+
+Let $X$ be the number of heads in two coin flips, and let $Y$ be the number of heads on the first flip alone. The joint PMF:
+
+| | Y = 0 | Y = 1 |
+|---|---|---|
+| X = 0 | 1/4 | 0 |
+| X = 1 | 1/4 | 1/2 |
+| X = 2 | 0 | 1/4 |
+
+The zeros tell you something: if the first flip is heads ($Y = 1$), then $X$ cannot be 0 (you already have one head). And if the first flip is tails ($Y = 0$), then $X$ cannot be 2 (you need both flips to be heads, but the first is tails). The pattern of zeros and non-zeros in the grid is the fingerprint of the relationship between $X$ and $Y$.
+
+## From joint to individual: a preview
+
+If you have the full joint distribution, you can recover each variable's individual distribution. For the discrete case, sum along rows or columns:
+
+$$p_X(x) = \sum_j p(x, y_j)$$
+
+$$p_Y(y) = \sum_i p(x_i, y)$$
+
+Geometrically: collapse the heat map by projecting all the brightness onto one axis. The result is the **marginal distribution** — the profile you see when you squint and look at only one variable, ignoring the other. We will explore this in depth in the next lesson.
+
+## Key insight
+
+> A joint distribution is a landscape of pairs — a heat map (discrete) or a surface (continuous) that shows where probability mass concentrates across all possible combinations of two variables. The shape of that landscape — its ridges, valleys, and symmetry — encodes everything about how the two variables relate.
+
+## Practice
+
+**Exercise 1.** Two fair coins are flipped. Let $X$ be the number of heads on the first coin (0 or 1) and $Y$ be the total number of heads across both coins (0, 1, or 2). Build the joint PMF table. Which cells are zero, and why?
+
+*Hint:* For each possible pair of coin outcomes, compute $X$ and $Y$. There are four equally likely coin-pairs to consider.
+
+**Exercise 2.** A joint PDF is given by $f(x, y) = 2$ for $0 \leq x \leq 1$ and $0 \leq y \leq x$, and $f(x, y) = 0$ otherwise. Sketch the region where the density is nonzero. Does the total probability equal 1?
+
+*Hint:* The support region is a triangle below the line $y = x$. Integrate $f(x, y) = 2$ over that triangle. The inner integral over $y$ goes from 0 to $x$, and the outer integral over $x$ goes from 0 to 1.
+
+**Exercise 3.** For the joint PMF in the coin-flip example above, compute $P(X = Y)$. Then compute $P(X \geq Y)$. Describe in words what each probability measures.
+
+*Hint:* Identify which cells in the table satisfy $X = Y$, sum their probabilities. Then do the same for $X \geq Y$.

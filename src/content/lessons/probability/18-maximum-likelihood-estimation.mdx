@@ -1,0 +1,105 @@
+---
+title: "Maximum Likelihood Estimation"
+titleZh: "最大似然估计"
+description: "Choose the parameter that makes the observed data most probable — the peak of the likelihood landscape."
+descriptionZh: "选择使观测数据最可能的参数——似然地形图的峰值。"
+course: "probability"
+module: "From Data to Inference"
+moduleZh: "从数据到推断"
+moduleOrder: 5
+lessonOrder: 18
+duration: 20
+difficulty: "Intermediate"
+---
+
+import { MLEVis } from '../../../components/interactive/probability/MLEVis';
+
+You have collected data. You have chosen a family of distributions — say, a normal, or an exponential, or a Bernoulli. The family has one or more unknown parameters. Which member of the family produced your data?
+
+**Maximum likelihood estimation** answers this question with a simple principle: pick the parameter that makes the data you actually observed the most probable. Think of the parameter space as a landscape. Each point on the landscape is a possible value of the parameter. The height at that point is the probability of your data given that parameter value. You climb to the highest peak. That peak is your estimate.
+
+## The likelihood function
+
+For independent observations $x_1, x_2, \ldots, x_n$ drawn from a distribution with density $f(x \mid \theta)$, the **likelihood function** is:
+
+$$L(\theta) = \prod_{i=1}^{n} f(x_i \mid \theta)$$
+
+This looks like a probability, but notice the shift in perspective. In probability, $\theta$ is fixed and you vary $x$ — "given this parameter, how likely is each outcome?" In likelihood, $x$ is fixed (you already observed the data) and you vary $\theta$ — "given this data, how well does each parameter value explain it?"
+
+The **maximum likelihood estimator** (MLE) is the value of $\theta$ that maximizes $L(\theta)$:
+
+$$\hat{\theta}_{\text{MLE}} = \arg\max_{\theta} L(\theta)$$
+
+## The log-likelihood
+
+Products are awkward to differentiate and prone to numerical underflow (multiplying many small probabilities produces an extremely small number). The fix: take the logarithm.
+
+$$\ell(\theta) = \log L(\theta) = \sum_{i=1}^{n} \log f(x_i \mid \theta)$$
+
+The logarithm is a strictly increasing function, so it preserves the order. The peak of $L(\theta)$ and the peak of $\ell(\theta)$ occur at exactly the same $\theta$. But $\ell(\theta)$ is a sum, not a product — far easier to work with. To find the MLE, differentiate $\ell(\theta)$ with respect to $\theta$, set the derivative to zero, and solve.
+
+Try it below. Click "Flip coin" to add data and watch the log-likelihood curve reshape. The diamond marks the MLE — the peak of the curve. Notice how the peak migrates toward the true proportion as data accumulates.
+
+<MLEVis client:visible />
+
+## Example: coin flips
+
+You flip a coin $n$ times and observe $k$ heads. The coin has an unknown probability $p$ of landing heads. Each flip is a Bernoulli trial: $f(x_i \mid p) = p^{x_i}(1-p)^{1-x_i}$, where $x_i$ is 1 for heads and 0 for tails.
+
+The likelihood:
+
+$$L(p) = \prod_{i=1}^{n} p^{x_i}(1-p)^{1-x_i} = p^k (1-p)^{n-k}$$
+
+The log-likelihood:
+
+$$\ell(p) = k \log p + (n - k)\log(1-p)$$
+
+Differentiate and set to zero:
+
+$$\frac{d\ell}{dp} = \frac{k}{p} - \frac{n-k}{1-p} = 0$$
+
+Solving: $\hat{p}_{\text{MLE}} = k/n$. The MLE is the proportion of heads. The most likely coin, given your data, is the one whose heads probability equals the observed fraction of heads. Intuitive and clean.
+
+## Example: exponential distribution
+
+You observe waiting times $x_1, \ldots, x_n$ from an exponential distribution with rate $\lambda$. The density is $f(x \mid \lambda) = \lambda e^{-\lambda x}$ for $x > 0$.
+
+The log-likelihood:
+
+$$\ell(\lambda) = n\log\lambda - \lambda\sum_{i=1}^{n} x_i$$
+
+Differentiate and set to zero:
+
+$$\frac{d\ell}{d\lambda} = \frac{n}{\lambda} - \sum_{i=1}^{n} x_i = 0$$
+
+Solving: $\hat{\lambda}_{\text{MLE}} = n / \sum x_i = 1/\bar{x}$. The MLE of the rate is the reciprocal of the sample mean. If the average wait is 5 minutes, the estimated rate is 0.2 per minute.
+
+## Example: normal distribution
+
+For data from $N(\mu, \sigma^2)$ with both parameters unknown, the likelihood is a surface over a two-dimensional landscape — one axis for $\mu$, one for $\sigma^2$. The MLE is:
+
+$$\hat{\mu}_{\text{MLE}} = \bar{x}, \quad \hat{\sigma}^2_{\text{MLE}} = \frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})^2$$
+
+The MLE of the mean is the sample mean. The MLE of the variance uses $n$ in the denominator — this makes it **biased** (recall the previous lesson). The unbiased estimator uses $n - 1$. The MLE trades a small bias for slightly lower variance. In practice, the difference is negligible for large $n$.
+
+## Properties of the MLE
+
+The MLE has three properties that make it the default choice in practice:
+
+- **Consistency**: as $n \to \infty$, the MLE converges to the true parameter. The peak of the likelihood landscape sharpens and narrows until it collapses onto the correct value.
+- **Asymptotic normality**: for large $n$, the sampling distribution of the MLE is approximately normal, centered at the true parameter. This makes it easy to construct confidence intervals.
+- **Efficiency**: among all consistent estimators, the MLE achieves the smallest possible asymptotic variance. No other estimator can use the data more efficiently — the MLE extracts the most information per observation.
+
+These properties hold under regularity conditions (the likelihood must be smooth, the parameter must be identifiable, etc.). For most standard models, they apply.
+
+## Key insight
+
+> Maximum likelihood estimation turns the inference problem into an optimization problem. Instead of asking "what parameter is most reasonable?", it asks "what parameter makes the data most probable?" The answer is the peak of the likelihood landscape. As you collect more data, that peak sharpens — the landscape develops a single, narrow spike pointing at the true value.
+
+## Practice
+
+1. You observe 3 calls arriving at a switchboard at times (measured in minutes from some reference): 2.1, 3.4, 7.8. Assume the inter-arrival times follow an exponential distribution with rate $\lambda$. Compute the MLE of $\lambda$. What is the estimated average time between calls?
+
+2. You flip a coin 20 times and get 8 heads. Write down the log-likelihood $\ell(p)$ and verify that the maximum occurs at $p = 0.4$. Now sketch $\ell(p)$ for $p$ from 0 to 1 — what shape is the curve? Where does it peak?
+
+3. For normal data, the MLE of $\sigma^2$ uses $n$ in the denominator while the unbiased estimator uses $n - 1$. For a sample of size $n = 10$, compute the ratio $\hat{\sigma}^2_{\text{MLE}} / S^2$. How large does $n$ need to be before this ratio exceeds 0.99 — that is, before the two estimates are practically identical?

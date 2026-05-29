@@ -1,0 +1,90 @@
+---
+title: "Arc Length and Surface Area"
+titleZh: "弧长与表面积"
+description: "Approximate a curve with tiny straight segments — their total length converges to the true arc length."
+descriptionZh: "用微小的直线段逼近曲线——它们的总长度收敛到真实的弧长。"
+course: "calculus"
+module: "Applications of Integration"
+moduleZh: "积分应用"
+moduleOrder: 5
+lessonOrder: 20
+duration: 16
+difficulty: "Advanced"
+interactiveWidgets:
+  - id: "arc-length-20"
+    type: "arc-length-explorer"
+    title: "Arc Length Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { ArcLengthExplorer } from '../../../components/interactive/calculus/ArcLengthExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+We've computed areas and volumes. Now we measure **length** -- how long is a curve? -- and **surface area** -- how much paint to cover a surface of revolution? Arc length is the Pythagorean theorem distributed across infinitely many tiny right triangles. Each triangle has legs $dx$ and $dy$; the hypotenuse $\sqrt{dx^2 + dy^2}$ is the arc length element. The integral adds up all those tiny hypotenuses to get the total length.
+
+<InteractiveCanvas
+  title="Arc Length Explorer"
+  caption="Increase the number of line segments n and watch the yellow approximation converge to the true arc length. Switch to Surface Area mode to see the rotation bands."
+  aspectRatio="16/9"
+>
+  <ArcLengthExplorer client:visible />
+</InteractiveCanvas>
+
+## Arc length
+
+A curve $y = f(x)$ from $x = a$ to $x = b$ can be approximated by many short line segments. Each segment has length $\sqrt{(\Delta x)^2 + (\Delta y)^2}$ by the Pythagorean theorem. Sum them and take the limit:
+
+<MathBlock expression={"L = \\int_a^b \\sqrt{1 + [f'(x)]^2}\\, dx"} />
+
+The formula is the integral version of the Pythagorean theorem: at each point, the infinitesimal arc length is $\sqrt{dx^2 + dy^2} = \sqrt{1 + (dy/dx)^2}\, dx$.
+
+### Example: Length of $y = x^{3/2}$ from $x = 0$ to $x = 4$
+
+<MathBlock expression={"f'(x) = \\frac{3}{2}x^{1/2}, \\quad [f'(x)]^2 = \\frac{9}{4}x"} />
+<MathBlock expression={"L = \\int_0^4 \\sqrt{1 + \\frac{9}{4}x}\\, dx = \\frac{4}{9} \\cdot \\frac{2}{3}\\left(1 + \\frac{9}{4}x\\right)^{3/2}\\Big|_0^4 = \\frac{8}{27}(10^{3/2} - 1)"} />
+
+## Surface area
+
+When $y = f(x)$ from $x = a$ to $x = b$ is rotated around the x-axis, the surface area is:
+
+<MathBlock expression={"S = 2\\pi \\int_a^b f(x) \\sqrt{1 + [f'(x)]^2}\\, dx"} />
+
+This is the circumference ($2\pi r = 2\pi f(x)$) times the arc length element, integrated over the curve.
+
+### Example: Surface area of a sphere
+
+Rotate $y = \sqrt{R^2 - x^2}$ from $x = -R$ to $x = R$ around the x-axis.
+
+<MathBlock expression={"f'(x) = \\frac{-x}{\\sqrt{R^2 - x^2}}, \\quad 1 + [f'(x)]^2 = \\frac{R^2}{R^2 - x^2}"} />
+<MathBlock expression={"S = 2\\pi \\int_{-R}^{R} \\sqrt{R^2 - x^2} \\cdot \\frac{R}{\\sqrt{R^2 - x^2}}\\, dx = 2\\pi R \\int_{-R}^{R} dx = 4\\pi R^2"} />
+
+The classic formula $S = 4\pi R^2$ emerges naturally from the integral.
+
+<KeyInsight>
+Arc length integrates the infinitesimal hypotenuse √(1 + f′²) along the curve. Surface area multiplies each arc length element by the circumference at that height. Both formulas extend the Pythagorean theorem to continuous curves.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Find the length of y = ln(cos x) from x = 0 to x = π/4."
+  hint="f'(x) = −sin(x)/cos(x) = −tan(x). Compute 1 + tan²(x)."
+  answer="1 + tan²(x) = sec²(x). √(sec²(x)) = sec(x). L = ∫₀^{π/4} sec(x) dx = ln|sec(x) + tan(x)|₀^{π/4} = ln(√2 + 1)."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Find the arc length of y = (2/3)x^{3/2} from x = 0 to x = 3."
+  hint="f'(x) = x^{1/2} = √x. Compute 1 + x."
+  answer="1 + (√x)² = 1 + x. L = ∫₀³ √(1 + x) dx = [(2/3)(1 + x)^{3/2}]₀³ = (2/3)(8 − 1) = 14/3."
+/>
+
+<ExerciseBlock number={3}
+  prompt="The surface area formula S = 2π∫ f(x)√(1+f′²) dx has two factors. What does each one represent geometrically?"
+  hint="2πf(x) is a circumference. √(1+f′²) dx is a length."
+  answer="2πf(x) is the circumference of the circle traced by the point (x, f(x)) as it rotates — the 'unwrapped' band width. √(1 + f′²) dx is the arc length of the curve element at that x. Their product is the area of a thin band, and integrating adds up all the bands."
+/>
+
+[Next Lesson →](/courses/calculus/21-sequences)

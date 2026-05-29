@@ -1,0 +1,103 @@
+---
+title: "Poisson Processes"
+titleZh: "泊松过程"
+description: "Events arriving randomly in time — the mathematical model for emails, earthquakes, and everything in between."
+descriptionZh: "事件在时间中随机到达——电子邮件、地震以及其间一切的数学模型。"
+course: "probability"
+module: "Stochastic Processes"
+moduleZh: "随机过程初探"
+moduleOrder: 7
+lessonOrder: 26
+duration: 16
+difficulty: "Advanced"
+---
+
+Picture a timeline stretching from left to right. Dots appear on it — each dot is an event. They do not come at regular intervals. Sometimes two arrive close together; sometimes there is a long gap. But on average, they arrive at a steady rate. Emails into your inbox. Earthquakes along a fault line. Photons hitting a detector. Radioactive decays in a sample.
+
+All of these are modeled by the same mathematical object: the **Poisson process**. It is the simplest model for events occurring randomly in continuous time, and it captures a surprisingly wide slice of reality.
+
+## The setup
+
+A Poisson process with rate $\lambda$ satisfies three assumptions:
+
+1. **Independence**: the number of events in disjoint time intervals are independent. What happens between 2:00 and 2:05 has nothing to do with what happens between 2:05 and 2:10.
+2. **Stationarity**: the probability of an event in a small interval of length $\Delta t$ is approximately $\lambda \Delta t$, regardless of where the interval sits on the timeline.
+3. **No simultaneity**: the probability of two or more events occurring in the same infinitesimal instant is zero.
+
+From these three assumptions, everything follows.
+
+## Counting events: the Poisson distribution
+
+Let $N(t)$ be the number of events that occur in a time interval of length $t$. Then:
+
+$$N(t) \sim \text{Poisson}(\lambda t)$$
+
+$$P(N(t) = k) = \frac{(\lambda t)^k e^{-\lambda t}}{k!}$$
+
+The mean and variance are both $\lambda t$. If emails arrive at rate $\lambda = 5$ per hour, then in a 3-hour window the number of emails is Poisson with mean $15$. The most likely count is near 15, but the actual count will fluctuate — occasionally you get 8, occasionally 22.
+
+Picture the distribution as a lump centered at $\lambda t$, with a width (standard deviation) of $\sqrt{\lambda t}$. As $\lambda t$ grows, the lump becomes smoother and more symmetric, approximating a bell curve.
+
+## Waiting times: the exponential distribution
+
+Flip the question. Instead of asking "how many events in time $t$?", ask "how long until the next event?" The answer is:
+
+$$T \sim \text{Exponential}(\lambda)$$
+
+$$f(t) = \lambda e^{-\lambda t}, \quad t \geq 0$$
+
+The mean waiting time is $1/\lambda$. If emails arrive at rate 5 per hour, the average gap between emails is 12 minutes. But the distribution is heavily skewed — short gaps are common, long gaps are rare but possible.
+
+Picture the density: a steep drop from height $\lambda$ at $t = 0$, decaying exponentially. Most of the mass is packed near zero. The probability of waiting more than $1/\lambda$ is $e^{-1} \approx 0.37$. The probability of waiting more than $3/\lambda$ is $e^{-3} \approx 0.05$. Long waits are exponentially unlikely.
+
+### Inter-arrival times are i.i.d.
+
+The gaps between consecutive events — call them $T_1, T_2, T_3, \ldots$ — are independent and identically distributed exponential random variables, all with rate $\lambda$. This is what makes the Poisson process so tractable: the gaps are a sequence of coin flips (in continuous time), each independent of the others.
+
+The timeline of events looks like a series of dots with irregular spacing — sometimes bunched, sometimes spread out — but each gap is drawn fresh from the same exponential distribution, with no memory of the previous gap.
+
+## The memoryless property
+
+The exponential distribution has a property that feels wrong at first:
+
+$$P(T > s + t \mid T > s) = P(T > t)$$
+
+If you have already waited $s$ minutes for an event, the probability of waiting at least $t$ *more* minutes is the same as if you had not waited at all. The distribution does not remember how long you have been waiting.
+
+This is the **memoryless property**, and the exponential is the *only* continuous distribution that has it. It is both a mathematical convenience and a genuine modeling assumption. For radioactive decay, it is physically accurate: an atom that has existed for a billion years is no more or less likely to decay in the next second than a freshly created atom. For bus arrivals, it is often wrong — if the bus is late, it is probably coming soon.
+
+## Superposition and thinning
+
+Two elegant operations on Poisson processes:
+
+### Superposition
+
+Suppose you have two independent Poisson processes: emails arrive at rate $\lambda_1$ and text messages arrive at rate $\lambda_2$. The combined stream of notifications is also a Poisson process, with rate $\lambda_1 + \lambda_2$.
+
+Picture two timelines, one blue (emails) and one red (texts). Merge them onto a single timeline. The result is another Poisson process — same structure, faster rate. The sum of two independent Poisson random variables is Poisson with the sum of the rates.
+
+### Thinning
+
+Start with a Poisson process of rate $\lambda$. For each event, flip a biased coin: keep it with probability $p$, discard it with probability $1-p$. The kept events form a Poisson process with rate $\lambda p$.
+
+This is useful for modeling filtered streams. If customers arrive at a store at rate $\lambda$ and each independently makes a purchase with probability $p$, then purchases arrive as a Poisson process of rate $\lambda p$. The thinning preserves the Poisson structure because of independence.
+
+## The full timeline picture
+
+Imagine drawing a horizontal line — the time axis. Events appear as dots. The dots are irregularly spaced, with gaps drawn from Exponential($\lambda$). Sometimes two dots land close together (the exponential distribution allows this). Sometimes there is a long empty stretch. But the average density of dots is $\lambda$ per unit time.
+
+If you zoom in on any small window, the dots look the same — same average density, same randomness. If you zoom out and count dots in a large window, the count is Poisson with mean proportional to the window length.
+
+This scale-invariant randomness is the hallmark of the Poisson process. No preferred timescale. No periodicity. No clustering beyond what pure chance produces.
+
+## Key insight
+
+> A Poisson process is the purest model of random events in time: events arrive independently at constant rate, the count in any interval is Poisson, and the gaps between events are exponential. Its most striking feature is the memoryless property — the waiting time distribution restarts from zero at every instant, as if the past never happened.
+
+## Practice
+
+**Exercise 1.** Calls arrive at a customer service center as a Poisson process with rate $\lambda = 10$ per hour. What is the probability of receiving exactly 8 calls in a given hour? What is the probability of receiving at least 15 calls in a two-hour window?
+
+**Exercise 2.** Buses arrive as a Poisson process with rate 4 per hour. You arrive at the bus stop at a random time. What is the expected waiting time until the next bus? Now suppose you have already waited 20 minutes. What is the expected additional waiting time? Explain how the memoryless property applies.
+
+**Exercise 3.** Two independent Poisson processes generate events at rates $\lambda_1 = 3$ and $\lambda_2 = 5$ per hour. What is the probability that the next event (from either process) comes from process 1? (Hint: use superposition, then consider the probability that the minimum of two exponential waiting times comes from process 1.)

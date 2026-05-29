@@ -24,6 +24,7 @@ export function MatrixTransform2D({
   const [c, setC] = useState(initialC);
   const [d, setD] = useState(initialD);
   const [animating, setAnimating] = useState(false);
+  const [activePreset, setActivePreset] = useState<string | null>(null);
   const animTRef = useRef(0);
 
   const det = a * d - b * c;
@@ -218,13 +219,16 @@ export function MatrixTransform2D({
   const presets = [
     { label: 'Identity', a: 1, b: 0, c: 0, d: 1 },
     { label: 'Rotation 90°', a: 0, b: -1, c: 1, d: 0 },
+    { label: 'Rotation 45°', a: Math.cos(Math.PI / 4), b: -Math.sin(Math.PI / 4), c: Math.sin(Math.PI / 4), d: Math.cos(Math.PI / 4) },
     { label: 'Scale 2x', a: 2, b: 0, c: 0, d: 2 },
     { label: 'Shear', a: 1, b: 1, c: 0, d: 1 },
     { label: 'Reflect x', a: 1, b: 0, c: 0, d: -1 },
+    { label: 'Projection', a: 1, b: 0, c: 0, d: 0 },
     { label: 'Collapse', a: 1, b: 2, c: 0.5, d: 1 },
   ];
 
   const applyPreset = (p: typeof presets[0]) => {
+    setActivePreset(p.label);
     setA(p.a); setB(p.b); setC(p.c); setD(p.d);
     setAnimating(true);
   };
@@ -237,7 +241,11 @@ export function MatrixTransform2D({
           <button
             key={p.label}
             onClick={() => applyPreset(p)}
-            className="rounded border border-rule bg-paper-elevated px-3 py-1 text-xs font-sans font-medium text-ink-muted hover:border-accent hover:text-accent transition-colors"
+            className={`rounded border px-3 py-1 text-xs font-sans font-medium transition-colors ${
+              activePreset === p.label
+                ? 'border-accent bg-accent/10 text-accent'
+                : 'border-rule bg-paper-elevated text-ink-muted hover:border-accent hover:text-accent'
+            }`}
           >
             {p.label}
           </button>

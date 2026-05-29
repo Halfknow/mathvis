@@ -4,8 +4,8 @@ titleZh: '向量即箭头'
 description: 'Build geometric intuition for vectors before any coordinates.'
 descriptionZh: '在引入坐标之前，先建立向量的几何直觉。'
 course: 'linear-algebra'
-module: 'Vector Spaces'
-moduleZh: '向量空间'
+module: 'Vectors and Their Language'
+moduleZh: '向量与它的语言'
 moduleOrder: 1
 lessonOrder: 1
 duration: 14
@@ -24,6 +24,8 @@ import { PrerequisiteList } from '../../../components/learning/PrerequisiteList'
 import { LessonProgress } from '../../../components/learning/LessonProgress';
 import { VectorCanvas } from '../../../components/interactive/linear-algebra/VectorCanvas';
 import { MathBlock, MathInline } from '../../../components/math/Math';
+import { Vector3DCompanion } from '../../../components/interactive/linear-algebra/Vector3DCompanion';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
 <LessonProgress current={1} total={6} moduleTitle="Vector Spaces" />
 
@@ -53,9 +55,15 @@ its tail starts — and this freedom is what gives vectors their power.
   caption="Three arrows of the same vector, drawn from different starting points."
 />
 
+### The zero vector
+
+There is one arrow that breaks the rule. The **zero vector** has no direction at all — its tip and tail are the same point. It is the only vector that cannot point somewhere, because "somewhere" requires a direction, and the zero vector has none.
+
+This might seem like a technicality, but the zero vector is the additive identity of the vector space: adding it to any vector leaves that vector unchanged, just as adding zero to a number does nothing. It is the "do nothing" displacement — you walk zero steps in zero directions and end up exactly where you started.
+
 ## Drag it yourself
 
-Below is the same idea, but interactive. Grab any of the arrows and slide it around.
+Below is the same idea, but interactive. Grab any of the arrows and slide it around. Or try the preset buttons to see special vectors animate into place.
 
 <InteractiveCanvas
   title="Free vectors"
@@ -63,6 +71,7 @@ Below is the same idea, but interactive. Grab any of the arrows and slide it aro
   aspectRatio="16/9"
 >
   <VectorCanvas
+    showPresets={true}
     initialVectors={[
       { x: 3, y: 2, color: 'var(--color-vector-blue)', label: 'v', originX: -3, originY: -1 },
       { x: 3, y: 2, color: 'var(--color-vector-green)', label: 'v', originX: -1, originY: 0 },
@@ -71,8 +80,25 @@ Below is the same idea, but interactive. Grab any of the arrows and slide it aro
   />
 </InteractiveCanvas>
 
+### Opposite vectors
+
+For every arrow, there is an arrow pointing the exact opposite way with the same length. This is the **negative** of the vector: -v has the same magnitude but points in the opposite direction. If v is "walk 3 east and 2 north," then -v is "walk 3 west and 2 south."
+
+Geometrically, negating a vector rotates it 180 degrees around its tail. The direction flips, the length stays the same. Watch what happens when you click the "Opposite" preset above — the vector pivots to face the other way.
+
+## In three dimensions
+
+The same idea extends to 3D — a vector is still an arrow defined by direction and length, regardless of where it starts. Drag to orbit the scene below.
+
+<Vector3DCompanion client:visible mode="single" />
+
+<FormulaReadout formulas={[
+  { label: "3D 向量", expression: "\\vec{v} = \\begin{bmatrix} v_1 \\\\ v_2 \\\\ v_3 \\end{bmatrix}" },
+  { label: "长度", expression: "\\|\\vec{v}\\| = \\sqrt{v_1^2 + v_2^2 + v_3^2}" },
+]} />
+
 <KeyInsight>
-  A vector is the **equivalence class** of all arrows with the same direction and length.
+A vector is the **equivalence class** of all arrows with the same direction and length. The zero vector is the unique arrow with no direction.
 </KeyInsight>
 
 ## When coordinates enter
@@ -80,6 +106,8 @@ Below is the same idea, but interactive. Grab any of the arrows and slide it aro
 With a starting point fixed at the origin, the arrow's tip lands at its components:
 
 <MathBlock expression={'\\vec{v} = \\begin{bmatrix} 2 \\\\ 1 \\end{bmatrix}'} />
+
+The first number tells you how far east (positive) or west (negative). The second tells you how far north (positive) or south (negative). So the vector (3, 2) points northeast — mostly east, slightly north — while (-1, 3) points northwest — slightly west, strongly north. Both are in the upper half of the plane, but their *character* is completely different: one chases the horizon, the other climbs toward the sky.
 
 Notice the order: **geometry first, numbers second**.
 
@@ -90,6 +118,20 @@ Notice the order: **geometry first, numbers second**.
   prompt="Two arrows: first from (0,0) to (3,1), second from (2,4) to (5,5). Same vector?"
   hint="Compute Δx and Δy for each."
   answer="Yes. Both have Δx=3 and Δy=1."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="What is special about the vector (0, 0)? Can you draw it as an arrow?"
+  hint="Think about direction and magnitude."
+  answer="The zero vector has zero magnitude and no direction. It cannot be drawn as a meaningful arrow — the tip and tail coincide at a single point."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Vector v has length 5. What is the length of -v? What is the length of 2v?"
+  hint="Negating flips direction, scaling changes magnitude."
+  answer="|-v| = 5 (direction flips, length stays the same). |2v| = 10 (scaling by 2 doubles the length)."
 />
 
 ---

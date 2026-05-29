@@ -1,0 +1,100 @@
+---
+title: "Taylor Polynomials"
+titleZh: "泰勒多项式"
+description: "A Taylor polynomial matches a function's value, slope, curvature, and higher-order bends at a single point."
+descriptionZh: "泰勒多项式在一点匹配函数的值、斜率、曲率和更高阶弯曲。"
+course: "calculus"
+module: "Taylor Series and Beyond"
+moduleZh: "泰勒与超越"
+moduleOrder: 7
+lessonOrder: 25
+duration: 20
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "taylor-explorer-25"
+    type: "taylor-explorer"
+    title: "Taylor Polynomial Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { TaylorExplorer } from '../../../components/interactive/calculus/TaylorExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+Can you approximate any smooth function with a polynomial? Yes -- and the recipe is: match derivatives at a single point. Taylor's idea is to encode everything about a function at a single point into its derivatives. The first derivative gives the slope, the second gives the curvature, the third gives the rate of change of curvature, and so on. More derivatives means a better approximation -- each additional term captures a finer detail of how the function bends.
+
+## The Taylor polynomial
+
+The $n$-th degree Taylor polynomial of $f$ centered at $a$ is:
+
+<MathBlock expression={"T_n(x) = \\sum_{k=0}^{n} \\frac{f^{(k)}(a)}{k!} (x-a)^k"} />
+
+Each term matches an additional derivative at $x = a$:
+- $k = 0$: matches the **value** $f(a)$
+- $k = 1$: matches the **slope** $f'(a)$
+- $k = 2$: matches the **curvature** $f''(a)$
+- Higher $k$: match higher-order bending behavior
+
+## Watch the polynomial hug the function
+
+<InteractiveCanvas
+  title="Taylor Polynomial Explorer"
+  caption="Increase the degree n and watch the yellow Taylor polynomial wrap around the blue function. The match extends further from the center as n grows."
+  aspectRatio="16/9"
+>
+  <TaylorExplorer client:visible />
+</InteractiveCanvas>
+
+Start with $f(x) = \sin(x)$ at center $= 0$:
+- $n = 1$: a straight line through the origin — matches the slope.
+- $n = 3$: a cubic that hugs one full arch of sine.
+- $n = 9$: the polynomial and sine are visually indistinguishable over $[-4, 4]$.
+
+Now try $f(x) = \ln(1+x)$. The red dashed lines mark the radius of convergence ($R = 1$). Beyond $x = 1$, no amount of Taylor terms will help — the series simply doesn't converge there.
+
+## The error: Taylor's Remainder Theorem
+
+How good is the approximation? The remainder term tells us:
+
+<MathBlock expression={"f(x) - T_n(x) = \\frac{f^{(n+1)}(c)}{(n+1)!}(x-a)^{n+1}"} />
+
+for some $c$ between $a$ and $x$. The error is bounded by the $(n+1)$-th derivative at an unknown point, divided by $(n+1)!$. Since factorials grow astronomically fast, the error usually shrinks quickly.
+
+## Maclaurin series (Taylor at $a = 0$)
+
+Most commonly, we center at $a = 0$:
+
+| Function | Maclaurin series |
+|----------|-----------------|
+| $e^x$ | $1 + x + x^2/2! + x^3/3! + \cdots$ |
+| $\sin x$ | $x - x^3/3! + x^5/5! - \cdots$ |
+| $\cos x$ | $1 - x^2/2! + x^4/4! - \cdots$ |
+| $\ln(1+x)$ | $x - x^2/2 + x^3/3 - \cdots$ |
+
+<KeyInsight>
+A Taylor polynomial matches a function's value, slope, curvature, and higher-order bends at a single point. As the degree increases, the polynomial hugs the function over a wider interval — but only within the radius of convergence.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Find the 3rd degree Taylor polynomial of f(x) = eˣ centered at a = 0."
+  hint="All derivatives of eˣ equal eˣ. At a = 0, they all equal 1."
+  answer="T₃(x) = f(0) + f′(0)x + f″(0)x²/2! + f‴(0)x³/3! = 1 + x + x²/2 + x³/6."
+/>
+
+<ExerciseBlock number={2}
+  prompt="In the interactive, set f(x) = sin(x) and center = 0. How does T₁(x) compare to T₃(x) visually?"
+  hint="T₁ is a line. T₃ is a cubic. Which one curves to follow sin(x)?"
+  answer="T₁(x) = x is a straight line through the origin. T₃(x) = x − x³/6 adds the first correction term, curving downward to follow sin(x) for a wider range. T₃ is noticeably better than T₁ for |x| > 1."
+/>
+
+<ExerciseBlock number={3}
+  prompt="The Maclaurin series for cos(x) contains only even powers. Why?"
+  hint="cos(x) is an even function: cos(−x) = cos(x). What does symmetry imply for the Taylor series?"
+  answer="cos(x) is an even function (symmetric about x = 0). Its odd derivatives at 0 are all zero: cos′(0) = −sin(0) = 0, cos‴(0) = sin(0) = 0, etc. Only even-order terms survive, giving the series 1 − x²/2! + x⁴/4! − ···."
+/>
+
+[Next Lesson →](/courses/calculus/26-taylor-series)

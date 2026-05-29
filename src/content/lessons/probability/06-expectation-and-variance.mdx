@@ -1,0 +1,115 @@
+---
+title: "Expectation and Variance"
+titleZh: "期望与方差"
+description: "The center of mass and the spread — the two numbers that capture a distribution's shape."
+descriptionZh: "质心与散布——捕捉分布形状的两个数字。"
+course: "probability"
+module: "Random Variables and Their Shapes"
+moduleZh: "随机变量与它的形状"
+moduleOrder: 2
+lessonOrder: 6
+duration: 18
+difficulty: "Beginner"
+---
+
+import { ExpectationVis } from '../../../components/interactive/probability/ExpectationVis';
+
+Imagine a probability distribution as a physical object — a bar chart cut from sheet metal. The bars have different heights because some outcomes are heavier than others. If you tried to balance this metal chart on your fingertip, there is exactly one point where it would rest level. That point is the **expectation**.
+
+Now look at how far the metal extends to either side of that balance point. A distribution that is tall and narrow has most of its mass clustered near the center — it barely reaches outward. A distribution that is short and wide has mass spread far from center — it reaches far in both directions. That reach is the **variance**. Between them, expectation and variance capture the two most important things about any distribution: where it sits, and how it spreads.
+
+## Expectation as center of mass
+
+The **expected value** (also called the mean, or expectation) of a discrete random variable is the probability-weighted average of all possible outcomes:
+
+$$E[X] = \sum_i x_i \cdot p_i$$
+
+For a continuous random variable, the sum becomes an integral:
+
+$$E[X] = \int_{-\infty}^{\infty} x \cdot f(x)\,dx$$
+
+The geometric picture: multiply each bar's height (probability) by its position (value), and sum them up. You are computing the center of mass of the distribution.
+
+**A fair die.** Each face from 1 to 6 has probability $1/6$. The expectation is:
+
+$$E[X] = \frac{1+2+3+4+5+6}{6} = 3.5$$
+
+The balance point sits at 3.5 — a value you can never actually roll. The expectation is not "the most likely outcome." It is where the distribution balances. Think of it as the fulcrum, not the peak.
+
+## Linearity of expectation
+
+Expectation has a property so useful it deserves its own name: **linearity**.
+
+$$E[aX + b] = a \cdot E[X] + b$$
+
+Scaling a random variable scales its center of mass. Shifting it shifts the balance point. That part is intuitive.
+
+The deeper surprise is this: the expectation of a sum is always the sum of expectations, even when the variables are tangled together:
+
+$$E[X + Y] = E[X] + E[Y]$$
+
+This holds **unconditionally** — whether $X$ and $Y$ are independent or not.
+
+**Example: aces in a poker hand.** You draw 5 cards from a standard deck. What is the expected number of aces?
+
+Define an indicator variable for each card: $I_k = 1$ if the $k$-th card is an ace, and $0$ otherwise. The probability that any single card is an ace is $4/52 = 1/13$. So $E[I_k] = 1/13$ for each of the 5 cards.
+
+The total number of aces is $X = I_1 + I_2 + I_3 + I_4 + I_5$. By linearity:
+
+$$E[X] = 5 \cdot \frac{1}{13} = \frac{5}{13} \approx 0.385$$
+
+Notice: we did not need to know how the cards depend on each other. (If the first card is an ace, the second card is less likely to be one — but that does not matter for the expectation of the sum.) Linearity cuts through the dependence.
+
+## Variance as spread
+
+The expectation tells you where the distribution balances. It says nothing about how the mass is arranged around that point. Two distributions can share the same balance point but look completely different — one tall and narrow, the other short and wide.
+
+The **variance** measures that spread:
+
+$$\text{Var}(X) = E\!\left[(X - E[X])^2\right]$$
+
+It is the average squared distance from the center of mass. Every outcome contributes its squared deviation, weighted by its probability. Outliers pull hard because squaring amplifies large distances.
+
+There is a computationally convenient equivalent form:
+
+$$\text{Var}(X) = E[X^2] - \left(E[X]\right)^2$$
+
+In words: "the mean of the squares, minus the square of the mean." This form is often faster to compute because you only need $E[X]$ and $E[X^2]$, rather than computing every individual deviation.
+
+**A fair die, revisited.** We already know $E[X] = 3.5$. Computing $E[X^2]$:
+
+$$E[X^2] = \frac{1^2 + 2^2 + 3^2 + 4^2 + 5^2 + 6^2}{6} = \frac{91}{6} \approx 15.17$$
+
+So the variance is:
+
+$$\text{Var}(X) = \frac{91}{6} - \left(\frac{7}{2}\right)^2 = \frac{91}{6} - \frac{49}{4} = \frac{35}{12} \approx 2.917$$
+
+**Same mean, different spread.** Consider a random variable that is always exactly 3.5 — a "deterministic" variable. Its mean is 3.5 and its variance is 0 (there is no spread at all). Now consider a fair die: same mean, but the variance is about 2.917. Same balance point, completely different shape. The variance is what distinguishes them.
+
+## Standard deviation
+
+Variance is measured in **squared units**. If $X$ represents a length in meters, then $\text{Var}(X)$ has units of square meters — an area, not a length. That makes it hard to compare directly with the original quantity.
+
+The **standard deviation** fixes this by taking the square root:
+
+$$\sigma = \sqrt{\text{Var}(X)}$$
+
+If $X$ is in meters, $\sigma$ is back in meters. It answers the question: "how far does a typical outcome land from the center of mass?" — in the same units as the data.
+
+For the fair die: $\sigma = \sqrt{35/12} \approx 1.71$. A typical roll lands about 1.7 units away from 3.5. That feels right — the die ranges from 1 to 6, and most rolls are within 2 of the center.
+
+Drag the fulcrum below to find the balance point of each distribution. When the seesaw levels out, you've found E[X]. Toggle "Show Variance" to see the spread arrows.
+
+<ExpectationVis client:visible />
+
+## Key insight
+
+> Expectation is the balance point — where the distribution would rest on your fingertip. Variance is the reach — how far the mass extends from that point. Together, these two numbers give you the position and the spread of the entire distribution, like knowing both the center and the radius of a cloud.
+
+## Practice
+
+1. A biased coin lands heads with probability 0.7 and tails with probability 0.3. Let $X = 1$ for heads and $X = 0$ for tails. Compute $E[X]$ and $\text{Var}(X)$. What happens to the variance as the coin becomes more biased (say, $p = 0.9$ or $p = 0.99$)? What does that tell you geometrically about the shape of the distribution?
+
+2. A class has 20 students. Each independently flips a fair coin. Let $X$ be the total number of heads. Use linearity of expectation to find $E[X]$. Does your answer depend on whether the students are "independent" or not — and why does the answer not require any information about dependence?
+
+3. Two random variables have the same mean of 10. Variable $A$ always equals 10. Variable $B$ is equally likely to be 0 or 20. Compute the variance of each. Which one is "tall and narrow" and which is "short and wide"? Sketch the two distributions side by side.

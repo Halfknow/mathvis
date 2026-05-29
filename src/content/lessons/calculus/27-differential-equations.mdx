@@ -1,0 +1,99 @@
+---
+title: "Differential Equations"
+titleZh: "微分方程"
+description: "A differential equation is a rule for how things change — solving it means finding the function that follows that rule."
+descriptionZh: "微分方程是描述事物如何变化的规则——求解意味着找到遵循该规则的函数。"
+course: "calculus"
+module: "Taylor Series and Beyond"
+moduleZh: "泰勒与超越"
+moduleOrder: 7
+lessonOrder: 27
+duration: 22
+difficulty: "Advanced"
+interactiveWidgets:
+  - id: "slope-field-27"
+    type: "slope-field"
+    title: "Slope Field Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { SlopeFieldVis } from '../../../components/interactive/calculus/SlopeFieldVis';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+A differential equation says: "at every point $(x, y)$, here's the slope of the solution curve." Your job is to find the function whose derivative matches that rule. Picture a landscape of arrows: at each point $(x, y)$, the equation tells you which direction to walk. Solution curves are the paths that follow the arrows -- they flow through the field like leaves in a river, each one tracing out a valid solution.
+
+## The slope field
+
+For a first-order ODE $dy/dx = f(x, y)$, the **slope field** (or direction field) draws a small tick mark at every grid point showing the required slope. The solution curves must follow these tick marks — they flow along the field like leaves in a river.
+
+<InteractiveCanvas
+  title="Slope Field Explorer"
+  caption="Click anywhere to plant an initial condition and watch the solution curve grow. Switch between differential equations to see different flow patterns."
+  aspectRatio="16/9"
+>
+  <SlopeFieldVis client:visible />
+</InteractiveCanvas>
+
+Try each equation:
+- $dy/dx = y$: solution curves grow exponentially. The ticks all point upward on the right (positive $y$ grows) and downward on the left (negative $y$ decays).
+- $dy/dx = -x/y$: solution curves are circles centered at the origin. The field rotates around the center.
+- $dy/dx = x + y$: curves that start negative get pulled positive by the $+y$ term, then accelerate upward.
+
+## Separable equations
+
+The simplest type: $dy/dx = g(x) \cdot h(y)$. Separate variables and integrate:
+
+<MathBlock expression={"\\int \\frac{dy}{h(y)} = \\int g(x)\\, dx + C"} />
+
+### Example: $dy/dx = xy$
+
+Separate: $\frac{dy}{y} = x\, dx$. Integrate: $\ln|y| = x^2/2 + C$. Solve: $y = Ae^{x^2/2}$.
+
+## First-order linear ODEs
+
+The form $y' + P(x)y = Q(x)$ can always be solved using an **integrating factor**:
+
+<MathBlock expression={"\\mu(x) = e^{\\int P(x)\\, dx}"} />
+
+Multiply through by $\mu(x)$ and the left side becomes a perfect derivative:
+
+<MathBlock expression={"\\frac{d}{dx}[\\mu(x) \\cdot y] = \\mu(x) \\cdot Q(x)"} />
+
+Integrate both sides to get the solution.
+
+## Why differential equations matter
+
+DEs are the language of nature:
+- **Newton's law**: $F = ma$ is a second-order ODE for position.
+- **Population growth**: $dP/dt = kP$ gives exponential growth.
+- **Cooling**: $dT/dt = -k(T - T_{env})$ gives Newton's law of cooling.
+- **Circuits**: $L \cdot dI/dt + RI = V$ governs R-L circuits.
+
+<KeyInsight>
+A differential equation specifies the slope at every point. The slope field visualizes this landscape. Solution curves follow the field — click anywhere to see where that initial condition leads. Separable and linear ODEs can be solved by integration.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Solve dy/dx = 2y with y(0) = 3."
+  hint="Separate: dy/y = 2 dx. Integrate: ln|y| = 2x + C."
+  answer="y = Ae^{2x}. y(0) = A = 3. So y = 3e^{2x}."
+/>
+
+<ExerciseBlock number={2}
+  prompt="In the interactive, select dy/dx = −x/y and click several points at different distances from the origin. What shape do the solution curves form?"
+  hint="Look at the curves. Are they circles, lines, or something else?"
+  answer="The solution curves are circles centered at the origin. This is because separating gives y dy = −x dx, integrating to y²/2 + x²/2 = C, i.e., x² + y² = constant — the equation of a circle."
+/>
+
+<ExerciseBlock number={3}
+  prompt="A population grows at rate dP/dt = 0.05P. If P(0) = 1000, find P(10)."
+  hint="This is the exponential growth equation. Solve and plug in."
+  answer="P(t) = 1000e^{0.05t}. P(10) = 1000e^{0.5} ≈ 1000 × 1.649 ≈ 1649. The population grows by about 65% in 10 time units."
+/>
+
+[Next Lesson →](/courses/calculus/28-multivariable-preview)

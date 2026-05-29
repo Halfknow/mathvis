@@ -1,0 +1,91 @@
+---
+title: "Hypothesis Testing"
+titleZh: "假设检验"
+description: "How to decide whether the data is compatible with a default assumption — and how to measure the cost of being wrong."
+descriptionZh: "如何判断数据是否与默认假设兼容——以及如何衡量犯错成本。"
+course: "probability"
+module: "From Data to Inference"
+moduleZh: "从数据到推断"
+moduleOrder: 5
+lessonOrder: 20
+duration: 20
+difficulty: "Advanced"
+---
+
+You have a default assumption about the world — a drug does not work, a coin is fair, a factory produces within specifications. Then you collect data. The data might be perfectly consistent with your assumption, or it might look surprising under that assumption. How surprising does the data need to be before you abandon the default?
+
+**Hypothesis testing** gives you a framework for making that decision. It is a probabilistic version of proof by contradiction: assume the default, check whether the data makes that assumption look absurd, and if it does, reject the default. The catch is that "absurd" is not binary — it is a matter of degree, and you must choose where to draw the line.
+
+## Null and alternative hypotheses
+
+The **null hypothesis** $H_0$ is the default assumption — the status quo, the boring explanation, the "nothing is going on" scenario. Examples: the mean is 100, the coin is fair, the drug has no effect.
+
+The **alternative hypothesis** $H_1$ is what you suspect might be true instead. Examples: the mean is not 100, the coin is biased, the drug does have an effect.
+
+The asymmetry is deliberate. $H_0$ gets the benefit of the doubt. You need evidence — strong evidence — to overthrow it. Think of $H_0$ as the defendant in a trial: innocent until proven guilty.
+
+## The test statistic and the p-value
+
+You compute a **test statistic** from your data — a number that measures how far the data falls from what $H_0$ predicts. The further the test statistic from zero (or from whatever value $H_0$ implies), the more surprising the data is under $H_0$.
+
+The **p-value** is the probability of seeing data at least as extreme as what you observed, assuming $H_0$ is true:
+
+$$p\text{-value} = P(\text{data this extreme or more} \mid H_0)$$
+
+A small p-value means: "if $H_0$ were true, data this extreme would be rare." That is evidence against $H_0$.
+
+A large p-value means: "data like this is perfectly normal under $H_0$." That is not evidence for $H_0$ — it just means you lack the evidence to reject it. Absence of evidence is not evidence of absence.
+
+## Drawing the line: significance level
+
+You choose a **significance level** $\alpha$ before looking at the data. Common values: $\alpha = 0.05$ (5%) or $\alpha = 0.01$ (1%). The rule is simple:
+
+- If $p\text{-value} \leq \alpha$: reject $H_0$. The data is too extreme to be compatible with the null.
+- If $p\text{-value} > \alpha$: fail to reject $H_0$. The data is not extreme enough to overthrow the default.
+
+The significance level is the threshold for how much surprise you are willing to tolerate before changing your mind. A strict threshold ($\alpha = 0.01$) demands overwhelming evidence. A lenient threshold ($\alpha = 0.10$) is more easily convinced.
+
+## Two kinds of error
+
+Every decision under uncertainty can be wrong. There are exactly two ways to make a mistake:
+
+**Type I error (false positive):** You reject $H_0$ when it is actually true. You convict an innocent defendant. You declare the drug effective when it is not. The probability of this error is $\alpha$, the significance level. You control it directly by choosing the threshold.
+
+**Type II error (false negative):** You fail to reject $H_0$ when $H_1$ is actually true. You let a guilty defendant go free. You miss a truly effective drug. The probability of this error is $\beta$.
+
+The **power** of a test is $1 - \beta$ — the probability of correctly detecting a real effect. High power means the test is sensitive enough to catch the signal when it is there.
+
+## The tradeoff
+
+Here is the fundamental tension: reducing one type of error increases the other.
+
+Picture two overlapping bell curves on the same axis. The left curve is the sampling distribution under $H_0$. The right curve is the sampling distribution under $H_1$. The **critical value** is the boundary between "fail to reject" and "reject" — a vertical line on the number line.
+
+- $\alpha$ is the area in the right tail of the $H_0$ curve, beyond the critical value. It is the probability of a false alarm.
+- $\beta$ is the area in the left tail of the $H_1$ curve, before the critical value. It is the probability of a missed detection.
+
+Now slide the critical value to the right. $\alpha$ shrinks (fewer false alarms) but $\beta$ grows (more missed detections). You become harder to convince, but you also miss more real effects. Slide it to the left and the reverse happens.
+
+The only way to reduce both errors simultaneously is to collect more data. More data pulls the two curves apart — $H_0$ and $H_1$ distributions separate from each other — so the overlap shrinks and both tails get smaller.
+
+## A concrete example
+
+You suspect a coin is biased. Your null hypothesis: $H_0: p = 0.5$ (fair coin). You flip it 100 times and observe 62 heads.
+
+Under $H_0$, the number of heads follows a binomial distribution with mean 50 and standard deviation 5. The observed 62 is 2.4 standard deviations above the mean. The p-value is the probability of seeing 62 or more heads under a fair coin — about 0.011.
+
+At $\alpha = 0.05$, you reject $H_0$: the coin appears biased. At $\alpha = 0.01$, you would fail to reject — the evidence is strong but not overwhelming.
+
+Notice how the threshold matters. The data is the same. The p-value is the same. The conclusion changes depending on how strict you decided to be before seeing the data.
+
+## Key insight
+
+> Hypothesis testing is a probabilistic courtroom. The null hypothesis is innocent until proven guilty. The p-value measures how surprising the evidence is under that innocence assumption. You cannot eliminate the risk of a wrong verdict — you can only choose which kind of wrong you are willing to live with. More data is the only way to have it both ways: fewer false convictions and fewer guilty escapes.
+
+## Practice
+
+1. A factory claims its bolts have a mean diameter of 10 mm. You sample 36 bolts and find a sample mean of 10.3 mm with a known standard deviation of 0.9 mm. State $H_0$ and $H_1$. Compute the test statistic (how many standard errors is 10.3 from 10?). Find the p-value. Would you reject $H_0$ at $\alpha = 0.05$?
+
+2. Two doctors use different significance levels. Doctor A uses $\alpha = 0.05$, Doctor B uses $\alpha = 0.01$. Which doctor is more likely to commit a Type I error? Which is more likely to commit a Type II error? If the treatment actually has no effect, which doctor's patients are more likely to receive an ineffective treatment? If the treatment does work, whose patients are more likely to miss out?
+
+3. Sketch two overlapping bell curves on the same horizontal axis — label the left one $H_0$ and the right one $H_1$. Draw a vertical line as the critical value. Shade the area representing $\alpha$. Shade the area representing $\beta$. Now imagine you double the sample size. What happens to the overlap between the two curves? What happens to both shaded areas?

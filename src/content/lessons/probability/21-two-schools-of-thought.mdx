@@ -1,0 +1,88 @@
+---
+title: "Two Schools of Thought"
+titleZh: "两种思想流派"
+description: "Frequentists see probability as long-run frequency; Bayesians see it as degree of belief — same math, different philosophy."
+descriptionZh: "频率学派将概率视为长期频率；贝叶斯学派将其视为信念程度——相同的数学，不同的哲学。"
+course: "probability"
+module: "Bayesian Thinking"
+moduleZh: "贝叶斯思维"
+moduleOrder: 6
+lessonOrder: 21
+duration: 14
+difficulty: "Advanced"
+---
+
+Flip a coin. What does "the probability of heads is 0.5" actually *mean*? Most people answer without thinking: it means heads comes up half the time. But that answer hides a deep philosophical divide — one that has split statisticians into two camps for over a century.
+
+This lesson is about that divide. Not to declare a winner, but to understand what each camp sees when they look at the same data. Because the math is the same. The disagreement is about what the numbers *mean*.
+
+## The Frequentist view
+
+For the **frequentist**, probability is an objective property of the world. It lives *out there* in the physical process, not in your mind. The statement "this coin has probability 0.5 of landing heads" means: if you flipped this coin infinitely many times, the fraction of heads would converge to 0.5.
+
+This definition grounds probability in **long-run frequency**. It is concrete, measurable, and has no room for personal opinion.
+
+The consequences of this view run deep:
+
+- **Parameters are fixed constants.** The true probability of heads is some number $p$, sitting out there in the world, whether you know it or not. It does not change, it does not have a distribution, and your personal beliefs about it are irrelevant.
+- **Data is random.** Each sample you draw is a random event governed by the fixed parameter. Different experiments produce different data, but the underlying truth stays the same.
+- **Inference means estimation.** Since you cannot observe the true parameter directly, you build **estimators** — functions of the data that approximate the truth. The sample mean, the maximum likelihood estimator, the unbiased estimator — these are tools for guessing a fixed unknown.
+- **Uncertainty lives in the procedure, not the parameter.** A 95% confidence interval does *not* mean "there is a 95% chance the true value is in this interval." The true value is fixed — it is either in the interval or it isn't. The 95% refers to the **procedure**: if you repeated the experiment infinitely many times, 95% of the intervals constructed this way would contain the true value.
+
+This last point trips up nearly everyone. The frequentist cannot make probability statements about parameters, because parameters are not random.
+
+## The Bayesian view
+
+For the **Bayesian**, probability is a **degree of belief**. It lives in your mind, not in the coin. The statement "the probability of heads is 0.5" means: given everything I know, I would bet even money on heads. If new information arrived — say, I noticed the coin looks slightly bent — I would update that belief.
+
+This definition grounds probability in **rational uncertainty**. It is subjective, but not arbitrary — it is constrained by the rules of probability (the axioms), which ensure that a coherent Bayesian never contradicts themselves.
+
+The consequences are the mirror image of the frequentist view:
+
+- **Parameters are random variables.** The true probability of heads is *unknown*, and your uncertainty about it is described by a **probability distribution**. Before you flip the coin, you might say: "I think $p$ is probably near 0.5, but I am not sure." That belief is your **prior distribution**.
+- **Data is observed, not random.** Once you see the data, it is fixed. The randomness has already played out. What you update is your belief about the parameter, using Bayes' theorem.
+- **Inference means updating.** You start with a prior, you observe data, and you compute a **posterior distribution** — your new belief about the parameter, having absorbed what the data told you.
+- **Uncertainty lives in the parameter.** A 95% **credible interval** *does* mean "there is a 95% probability the parameter lies in this interval" — because the parameter has a distribution, and you are reading off the area.
+
+This is the interpretation most people *want* from statistics. "What is the chance the treatment works?" is a natural Bayesian question. The frequentist framework cannot answer it directly — the treatment either works or it doesn't.
+
+## The coin: side by side
+
+Imagine I hand you a coin and ask you to estimate the probability of heads.
+
+**The frequentist flips it 100 times, counts 58 heads, and reports:**
+
+$$\hat{p} = 0.58$$
+
+along with a confidence interval. The estimate is the point on the number line where the likelihood peaks. The confidence interval is the range that would, in repeated experiments, cover the true value 95% of the time. The true $p$ is a fixed dot somewhere on the line. The interval is a net cast around it.
+
+**The Bayesian starts with a prior — say Beta(2,2), a gentle hill centered at 0.5 — then flips the coin 100 times, sees 58 heads, and reports:**
+
+$$p \mid \text{data} \sim \text{Beta}(60, 44)$$
+
+The posterior is a full distribution. It peaks near 0.58, but it also shows *how wide* the remaining uncertainty is. You can read off the probability that $p > 0.5$ (it is about 94%). You can read off a credible interval. You can feed this posterior into your next decision.
+
+The frequentist got a point and an interval. The Bayesian got a landscape.
+
+## Neither is wrong
+
+The two schools answer **different questions**.
+
+- The frequentist asks: "If the true parameter were $\theta$, how unusual is the data I actually saw?" This is a question about the data, holding the parameter fixed.
+- The Bayesian asks: "Given the data I saw, what should I believe about $\theta$?" This is a question about the parameter, holding the data fixed.
+
+Both are legitimate. In practice, modern statistics uses both. Frequentist methods dominate hypothesis testing and experimental design — they are simple, fast, and well-understood. Bayesian methods dominate prediction, decision theory, and sequential updating — they are flexible, coherent, and produce full distributions.
+
+The Bayesian revolution of the last 30 years was driven not by philosophy, but by computation. Fast computers and clever algorithms (MCMC, variational inference) finally made it practical to compute the posterior distributions that Bayesians had been writing down on paper for centuries.
+
+## Key insight
+
+> Frequentists and Bayesians use the same probability axioms but disagree on what probability *is*. The frequentist sees a fixed world and random data. The Bayesian sees fixed data and an uncertain world. The coin does not care about your philosophy — but your choice of framework shapes every answer you give.
+
+## Practice
+
+**Exercise 1.** A frequentist constructs a 95% confidence interval for a mean and gets $[3.1, 7.4]$. A colleague says: "So there is a 95% chance the true mean is between 3.1 and 7.4?" Explain why this statement is wrong from the frequentist perspective, and rephrase it correctly.
+
+**Exercise 2.** A Bayesian estimates the proportion of voters supporting a policy. Their posterior distribution for the proportion $p$ is approximately normal with mean 0.52 and standard deviation 0.03. What is the approximate probability that $p > 0.5$? (This is a question a frequentist framework cannot directly answer — explain why.)
+
+**Exercise 3.** You are testing a new drug. Describe (a) what a frequentist would do to evaluate it, and (b) what a Bayesian would do differently. Focus on the questions each framework asks, not the computational details.

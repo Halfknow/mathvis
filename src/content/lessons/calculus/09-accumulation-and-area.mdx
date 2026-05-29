@@ -1,0 +1,93 @@
+---
+title: "Accumulation and Area"
+titleZh: "累积与面积"
+description: "The integral is about accumulated total — area is just the picture that happens when you accumulate height over width."
+descriptionZh: "积分的本质是累积总量——面积只是你把高度沿宽度累积起来时自然出现的图形。"
+course: "calculus"
+module: "From Area to the Integral"
+moduleZh: "从面积到积分"
+moduleOrder: 3
+lessonOrder: 9
+duration: 16
+difficulty: "Beginner"
+interactiveWidgets:
+  - id: "accumulation-09"
+    type: "accumulation"
+    title: "Accumulation Visualizer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { AccumulationVis } from '../../../components/interactive/calculus/AccumulationVis';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+You're driving at variable speed. At each moment, the speedometer reads a different number. The question is: **how far have you traveled in total?**
+
+Think of a bank account: each day's deposit adds to the total. Now imagine the deposits happen every hour, then every minute, then every second. The integral is what happens when you switch from discrete deposits to continuous flow — the sum becomes an area. Velocity is the rate; distance is the accumulation. The integral turns rates into totals.
+
+If you drove at a constant 3 m/s for 4 seconds, the answer is easy: 12 meters. But what if your speed changes continuously?
+
+## The area under the velocity curve
+
+Plot your velocity $v(t)$ against time. The total distance traveled is the **area** under that curve.
+
+Why? Because at each instant, velocity × a tiny slice of time gives a tiny slice of distance. Stack all those slices together and you get the total — the accumulated area.
+
+<InteractiveCanvas
+  title="Accumulation Visualizer"
+  caption="Drag the time slider to watch the yellow area grow. The total area under the velocity curve equals the distance traveled."
+  aspectRatio="16/9"
+>
+  <AccumulationVis client:visible />
+</InteractiveCanvas>
+
+Try each velocity profile:
+- **Constant speed**: the area grows linearly — equal slices stack up.
+- **Linearly increasing**: the area grows faster and faster — each new slice is taller.
+- **Oscillating**: the area grows in bursts — speed up, slow down, speed up again.
+
+## From distance to the general idea
+
+This "stack up slices" idea works for any quantity, not just distance:
+
+- Accumulate **rate of water flow** over time → total water volume
+- Accumulate **power consumption** over time → total energy used
+- Accumulate **force × displacement** over distance → total work done
+
+In each case, you're computing the area under a curve. That area has a name: the **integral**.
+
+<MathBlock expression={"\\text{total accumulated} = \\int_{a}^{b} f(t)\\, dt = \\text{area under } f \\text{ from } a \\text{ to } b"} />
+
+The integral symbol $\int$ is a stretched "S" for "sum" — you're summing up infinitely many infinitesimal contributions.
+
+## The sign convention
+
+Area below the x-axis counts as **negative**. If your velocity goes negative (you reverse), the distance decreases. This makes the integral a **signed area** — it measures net accumulation, counting direction.
+
+<KeyInsight>
+The integral is not about area — it's about accumulation. Area is just the geometric picture that happens when you accumulate height over width. The integral symbol ∫ means "sum up all the tiny pieces."
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="A car's velocity is v(t) = 2t m/s for t in [0, 5]. Without any formulas, estimate the total distance by thinking about the area. What shape is the area under this curve?"
+  hint="The velocity function v(t) = 2t is a straight line from (0,0) to (5,10). What geometric shape is the region under it?"
+  answer="The region is a right triangle with base 5 and height 10. Area = ½ × base × height = ½ × 5 × 10 = 25 meters."
+/>
+
+<ExerciseBlock number={2}
+  prompt="In the interactive, switch to v(t) = 3 + 2sin(t). At what time has the car traveled approximately 15 meters?"
+  hint="Drag the time slider and watch the distance readout. The area grows more slowly when sin(t) is negative."
+  answer="By dragging the slider, you'll find the distance reaches about 15 meters around t ≈ 4.7 seconds. The exact answer requires calculus, but the interactive lets you approximate it visually."
+/>
+
+<ExerciseBlock number={3}
+  prompt="If the velocity curve dips below the x-axis (v < 0), what does that mean physically? What happens to the accumulated distance?"
+  hint="Negative velocity means moving backward. Does the distance increase or decrease?"
+  answer="Negative velocity means the object is moving in the reverse direction. The accumulated distance decreases because the area below the axis contributes negatively to the total."
+/>
+
+[Next Lesson →](/courses/calculus/10-riemann-sums)

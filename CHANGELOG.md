@@ -6,6 +6,69 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.3.0] — 2026-05-06
+
+### Added — Linear Algebra Curriculum Redesign (15 → 30 lessons, 6 → 18 components)
+
+The linear algebra course was completely redesigned from 15 to 30 lessons across 8 modules, synthesizing four major teaching approaches: 3Blue1Brown (space transformation metaphor), Iris Math (multiple perspectives), Strang (four fundamental subspaces), and Axler (determinant-delayed, abstract spaces).
+
+**New Lessons (15 new MDX files):**
+
+- `05-length-angles-orthogonality` — length/angle/orthogonality from dot product
+- `09-projections` — vector projection formula and decomposition
+- `10-basis-change` — change-of-basis matrix P and P⁻¹
+- `12-matrices-encode-transformations` — reading matrix columns as destinations
+- `13-matrix-vector-product` — Ax as linear combination of columns
+- `16-linear-systems-as-geometry` — row picture vs column picture
+- `19-null-space` — null space as transformation blind spot
+- `21-orthogonal-bases-gram-schmidt` — Gram-Schmidt orthogonalization
+- `23-diagonalization` — A=PDP⁻¹ in eigenbasis
+- `24-singular-value-decomposition` — A=UΣVᵀ decomposition
+- `25-3d-transformations` — 3D matrix transformations (R3F)
+- `26-cross-product` — 3D cross product with parallelogram (R3F)
+- `27-non-square-matrices` — dimension-changing matrices (R3F)
+- `28-functions-as-vectors` — polynomials and functions as vector spaces
+- `29-inner-product-spaces` — generalized inner products and orthogonality
+
+**New Interactive Components (12 new):**
+
+- `ProjectionVis` (D3) — vector projection with perpendicular drop line
+- `BasisChangeVis` (D3) — dual basis grid with coordinate comparison
+- `LinearSystemVis` (D3) — row/column view toggle for linear systems
+- `NullSpaceVis` (D3) — null space direction visualization
+- `GramSchmidtVis` (D3) — step-by-step orthogonalization
+- `DiagonalizationVis` (D3) — eigenbasis grid transformation
+- `SVDExplorer` (D3) — unit circle to ellipse via SVD
+- `FunctionSpaceVis` (D3) — polynomial add/scale/basis operations
+- `InnerProductVis` (D3) — function inner product with integral shading
+- `MatrixTransform3D` (R3F) — 3D grid cube transformation with sliders
+- `CrossProductVis` (R3F) — 3D cross product with parallelogram
+- `NonSquareVis` (R3F) — 3D↔2D projection/embedding toggle
+
+### Changed
+
+- Restructured linear algebra from 15 to 30 lessons across 8 modules
+- Lesson 04: removed cross product content (now in lesson 26), rewritten as pure dot product
+- Lesson numbering completely revised (old 04-15 → new positions)
+- `00-notation.mdx`: expanded with orthogonality, SVD, basis change, abstract spaces sections
+- All existing lessons renumbered and re-categorized into new module structure
+- Module names unified: "Vectors and Their Language", "Span, Basis, and Coordinate Systems", etc.
+- Build output increased from ~59 pages to 89 pages (EN + ZH)
+- `DESIGN_SYSTEM.md` updated with interactive component inventory
+- `ROADMAP.md` updated with complete curriculum overview and next milestones
+- `CLAUDE.md` updated with current architecture state
+
+### Technical
+
+- **First usage of React Three Fiber** in the project (lessons 25-27)
+- R3F + Drei (v9.6/v10.7) + Three.js (v0.169) for 3D visualizations
+- All R3F components use `client:visible` for lazy loading
+- Fixed MDX parsing issue: `{...}` in prose text triggers JSX parser, replaced with parentheses
+- Fixed `|` in markdown tables conflicting with LaTeX `\|`, using `\lVert`/`\rVert`
+- All 89 pages build with 0 errors, Pagefind indexes 4820 words
+
+---
+
 ## [0.2.0] — 2026-05-01
 
 ### Added

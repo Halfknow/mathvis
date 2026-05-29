@@ -1,0 +1,131 @@
+---
+title: "Random Variables"
+titleZh: "随机变量"
+description: "A random variable assigns a number to each outcome — the bridge between events and functions."
+descriptionZh: "随机变量为每个结果赋予一个数值——连接事件与函数的桥梁。"
+course: "probability"
+module: "Random Variables and Their Shapes"
+moduleZh: "随机变量与它的形状"
+moduleOrder: 2
+lessonOrder: 5
+duration: 16
+difficulty: "Beginner"
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+# Random Variables
+
+A random variable is a **translator**. It takes the language of outcomes — heads or tails, red or blue, pass or fail — and converts it into the language of numbers.
+
+This matters because numbers are what we know how to work with. We can add them, average them, plot them, compare them. Outcomes like "the bus arrived late" or "the coin landed heads" are hard to compute with directly. A random variable bridges that gap.
+
+## The function machine
+
+Imagine a machine on an assembly line. Raw outcomes go in one side: a coin lands heads, a die shows 6, a bus arrives 12 minutes late. Numbers come out the other side. That machine is a random variable $X$.
+
+Mathematically, $X$ is a **function** from the sample space to the real numbers. It is not random in the usual sense — it is a deterministic rule. The randomness lives in the outcome that goes in. The machine just translates.
+
+This is why the name is confusing. A "random variable" is not a variable in the algebra sense, and the "random" part refers to the input, not the rule. The rule itself is fixed: "count the number of heads," "read the number on the die face," "measure the minutes late."
+
+## A concrete mapping: two coin flips
+
+Flip a fair coin twice. The sample space has four outcomes:
+
+$$\Omega = \{HH, HT, TH, TT\}$$
+
+Now define $X$ = the number of heads. The machine processes each outcome:
+
+- $HH \longrightarrow 2$
+- $HT \longrightarrow 1$
+- $TH \longrightarrow 1$
+- $TT \longrightarrow 0$
+
+Four outcomes go in. Three distinct numbers come out: 0, 1, and 2. Notice that the number 1 appears twice — both $HT$ and $TH$ translate to 1. That means $X = 1$ is more likely than $X = 0$ or $X = 2$.
+
+## The portrait: the probability distribution
+
+The most important thing about a random variable is not the mapping itself, but the **probabilities** attached to each output number. This is the probability distribution — the bar chart that tells you everything about how $X$ behaves.
+
+For the two-coin-flip example:
+
+| Value of $X$ | 0 | 1 | 2 |
+|---|---|---|---|
+| Probability | 1/4 | 2/4 | 1/4 |
+
+Picture a bar chart. The bar at $X = 0$ rises to height 1/4. The bar at $X = 1$ rises to 2/4 — twice as tall. The bar at $X = 2$ returns to 1/4. This bar chart **is** the random variable's portrait. It tells you at a glance: the most likely outcome is one head, and the extremes (zero or two heads) are equally rare.
+
+The heights always sum to 1. No exceptions. The bars cover every possibility, and something must happen.
+
+## Two families: discrete and continuous
+
+Random variables come in two fundamentally different shapes.
+
+### Discrete: bars with gaps
+
+A **discrete** random variable takes on isolated values you can count — integers, or any countable set. The bar chart has visible gaps between bars. The height of each bar is given by the **probability mass function** (PMF):
+
+$$P(X = x_i) = p_i, \quad \text{where } p_i \geq 0 \text{ and } \sum_i p_i = 1$$
+
+The two-coin-flip variable is discrete. So is the number on a die face, the number of emails you receive in an hour, or the number of attempts before a machine part fails. You can list the possible values (even if the list is infinite).
+
+### Continuous: a smooth curve
+
+A **continuous** random variable can take any value in an interval. Think of a spinner on a circle — when you flick it, it can stop at any angle, not just at discrete notches. The bar chart becomes a **smooth curve**, and individual bars vanish.
+
+For continuous variables, the probability of hitting any *exact* value is zero. $P(X = 0.7) = 0$. Instead, you measure **areas under the curve**:
+
+$$P(a \leq X \leq b) = \int_a^b f(x)\,dx$$
+
+The function $f(x)$ is the **probability density function** (PDF). It is not a probability — it can be greater than 1. Only the *area* between two points gives a probability.
+
+### A continuous example: the random spinner
+
+Imagine a spinner that can land anywhere on the interval $[0, 1]$. The density is flat — a horizontal line at height 1. Every sub-interval of the same length has the same probability:
+
+$$P(0.3 \leq X \leq 0.7) = 0.7 - 0.3 = 0.4$$
+
+You just measure the length. The curve is flat, so area equals base times height, and the height is 1. Simple geometry.
+
+Contrast this with a bar chart where each bar has a distinct height. The continuous curve trades discrete bars for smooth area, but the idea is the same: the shape tells you where the variable is likely to land.
+
+## What comes next
+
+Every probability distribution — bar chart or smooth curve — has two key features. It has a **center**: the value the random variable tends to hover around. This is the expected value $E[X]$, and you will meet it in the next lesson.
+
+It also has a **width**: how spread out the values are. A tall narrow bar chart means the variable is predictable. A short wide one means it is all over the place. This spread is called the variance, and it comes right after the expected value.
+
+These two numbers — center and width — are often all you need to know about a random variable. They are the headline statistics. The full distribution is the detailed picture; the mean and variance are the summary.
+
+<KeyInsight>
+A random variable translates outcomes into numbers. Its probability distribution — a bar chart for discrete variables, a smooth curve for continuous ones — is its portrait. Read the shape and you know how the variable behaves.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Flip a fair coin three times. Let X = the number of heads. List all 8 outcomes in the sample space. For each, write the value of X. Then build the probability distribution table."
+  hint="The outcomes are HHH, HHT, HTH, THH, HTT, THT, TTH, TTT. Count heads in each."
+  answer="X = 0: 1 outcome (TTT), P = 1/8. X = 1: 3 outcomes (HTT, THT, TTH), P = 3/8. X = 2: 3 outcomes (HHT, HTH, THH), P = 3/8. X = 3: 1 outcome (HHH), P = 1/8."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="A spinner lands uniformly on the interval [0, 1]. Let X = the distance from the landing point to 0.5 (i.e., X = absolute value of the result minus 0.5). What values can X take? Is X discrete or continuous?"
+  hint="The minimum distance is 0 (landing exactly at 0.5). The maximum is 0.5 (landing at 0 or 1). Every value in between is possible."
+  answer="X takes values in [0, 0.5]. It is continuous — the spinner can stop at any point, so X can take any value in that interval."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="A discrete random variable Y has the distribution: P(Y = 1) = 0.2, P(Y = 2) = 0.3, P(Y = 3) = 0.5. Verify that this is a valid probability distribution. Then find P(Y is at most 2)."
+  hint="Check two things: all probabilities non-negative, and they sum to 1."
+  answer="All probabilities are non-negative, and 0.2 + 0.3 + 0.5 = 1. Valid. P(Y at most 2) = P(Y = 1) + P(Y = 2) = 0.2 + 0.3 = 0.5."
+/>
+
+---
+
+**Up next:** [Expectation and variance →](/courses/probability/06-expectation-and-variance)

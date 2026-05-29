@@ -1,0 +1,96 @@
+---
+title: "Curve Sketching"
+titleZh: "函数图像绘制"
+description: "The derivative IS the shape — where it's positive the curve rises, where it's negative the curve falls, where it's zero you find peaks and valleys."
+descriptionZh: "导数就是形状——导数为正曲线上升，为负下降，为零处找到峰谷。"
+course: "calculus"
+module: "Function Behavior"
+moduleZh: "函数行为"
+moduleOrder: 2
+lessonOrder: 5
+duration: 18
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "derivative-slope-05"
+    type: "derivative-slope"
+    title: "Curve Sketching Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { DerivativeSlope } from '../../../components/interactive/calculus/DerivativeSlope';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+If someone tells you a function's derivative, you can sketch the original function. You don't need the formula — just the sign of $f'$ tells you everything about the shape.
+
+## The derivative reads the landscape
+
+Think of $f(x)$ as a hilly landscape and $f'(x)$ as a topographic map:
+
+- $f'(x) > 0$: the terrain slopes **uphill** — the function is increasing.
+- $f'(x) < 0$: the terrain slopes **downhill** — the function is decreasing.
+- $f'(x) = 0$: the terrain is **flat** — you've found a peak, a valley, or a plateau.
+
+<InteractiveCanvas
+  title="Curve Sketching Explorer"
+  caption="Switch to f(x) = x³−3x and trace the curve. Where f′ is positive (green above zero), the blue curve rises. Where f′ is negative, it falls. At f′ = 0, find the peaks and valleys."
+  aspectRatio="16/9"
+>
+  <DerivativeSlope client:visible mode="compare" />
+</InteractiveCanvas>
+
+Trace $f(x) = x^3 - 3x$ from left to right: the curve rises (green positive), peaks at $x = -1$ (green crosses zero), falls through the origin (green negative), bottoms out at $x = 1$ (green crosses zero again), then rises forever.
+
+## The second derivative and concavity
+
+$f''(x)$ tells you about the **curvature**:
+
+- $f''(x) > 0$: the curve is **concave up** — it holds water, like a bowl. The slope is increasing.
+- $f''(x) < 0$: the curve is **concave down** — it spills water, like a dome. The slope is decreasing.
+- $f''(x) = 0$: a possible **inflection point** — where the concavity switches.
+
+For $f(x) = x^3 - 3x$, we have $f''(x) = 6x$. The inflection point is at $x = 0$ — the exact moment the curve switches from concave down (dome) to concave up (bowl).
+
+## The curve sketching recipe
+
+Think of curve sketching as a **diagnostic flowchart** — a systematic procedure that extracts the complete shape from just a few pieces of information:
+
+**Domain** → **First derivative** (where does the curve rise or fall?) → **Second derivative** (where does it bend like a bowl or a dome?) → **Sketch**
+
+Given information about $f'$ and $f''$, here's how to sketch:
+
+1. Find where $f'(x) = 0$ → these are the critical points.
+2. Test the sign of $f'$ between critical points → determine increasing/decreasing.
+3. Find where $f''(x) = 0$ → these are the inflection points.
+4. Test the sign of $f''$ → determine concavity.
+5. Combine: a peak is where $f'$ changes from positive to negative (or equivalently, $f'' < 0$ at a critical point).
+
+A computer can plot any function instantly — but understanding these diagnostic steps is what makes you a mathematician, not a button-pusher. The point of curve sketching isn't to produce the picture; it's to train yourself to read a function's shape directly from its derivatives, the way a doctor reads an X-ray.
+
+<KeyInsight>
+The first derivative tells you direction (up/down/flat). The second derivative tells you curvature (bowl/dome/switching). Together they give you the complete shape of the function.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="A function has f'(x) > 0 for x < 2 and f'(x) < 0 for x > 2. What can you say about f(2)?"
+  hint="The function increases until x = 2, then decreases. What does that make x = 2?"
+  answer="f(2) is a local maximum. The function climbs up to x = 2 then falls away from it."
+/>
+
+<ExerciseBlock number={2}
+  prompt="The function f(x) = x⁴ has f'(0) = 0 and f''(0) = 0. Is x = 0 a maximum, minimum, or neither?"
+  hint="Check the sign of f'(x) on either side of 0. Does f change from increasing to decreasing, or vice versa?"
+  answer="f'(x) = 4x³, which is negative for x < 0 and positive for x > 0. The function decreases then increases — so x = 0 is a minimum. The second derivative test fails here (f''(0) = 0), but the first derivative test works."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Sketch a function where f'(x) = 0 at x = 1 and x = 3, f'(x) > 0 for x < 1, f'(x) < 0 for 1 < x < 3, and f'(x) > 0 for x > 3."
+  hint="This function rises, peaks at x = 1, falls to x = 3, then rises again. What shape is it?"
+  answer="The function has a local maximum at x = 1 and a local minimum at x = 3. It looks like a mountain followed by a valley, then climbing again — like a 'W' with the left peak higher than the center."
+/>
+
+[Next Lesson →](/courses/calculus/06-optimization)

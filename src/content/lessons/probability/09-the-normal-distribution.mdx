@@ -1,0 +1,148 @@
+---
+title: "The Normal Distribution"
+titleZh: "正态分布"
+description: "The bell curve — the most important distribution in statistics, and why it appears everywhere."
+descriptionZh: "钟形曲线——统计学中最重要的分布，以及它为何无处不在。"
+course: "probability"
+module: "Random Variables and Their Shapes"
+moduleZh: "随机变量与它的形状"
+moduleOrder: 2
+lessonOrder: 9
+duration: 20
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "normal-dist"
+    type: "normal-dist"
+    title: "Normal Distribution Explorer"
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { NormalDistribution } from '../../../components/interactive/probability/NormalDistribution';
+
+# The Normal Distribution
+
+If probability has a celebrity, it is the bell curve. You have seen it in test scores, heights, measurement errors, blood pressure readings. It shows up in physics, biology, economics, psychology, engineering — almost every quantitative field. Understanding why it appears everywhere is one of the deepest insights in all of mathematics.
+
+## The shape: a hill
+
+Picture a hill — smooth, symmetric, peaked in the center, sloping down on both sides. That is the normal distribution. The peak sits at the **mean** $\mu$, and the width is controlled by the **standard deviation** $\sigma$.
+
+Slide $\mu$ left and right — the hill slides with it. The peak stays the same height and the shape stays the same; it just relocates. Turn $\sigma$ up — the hill flattens and spreads, like dough stretching outward. Turn $\sigma$ down — the hill narrows and sharpens, like a tower.
+
+The bell is always symmetric around $\mu$. The left half is a mirror image of the right half. The tails approach zero but never quite touch the horizontal axis — they extend infinitely in both directions, carrying vanishingly small probability out to the extremes.
+
+## The density formula
+
+A normal distribution with mean $\mu$ and standard deviation $\sigma$ is written $X \sim N(\mu, \sigma^2)$. Its probability density function is:
+
+$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)$$
+
+The formula looks intimidating. Do not memorize it. The geometry is the point. The exponential term creates the bell shape. The fraction in front normalizes the total area to 1. Everything else follows from those two facts.
+
+## Standardization: translating to a common language
+
+Here is the key practical skill for working with normal distributions. Any normal variable $X \sim N(\mu, \sigma^2)$ can be converted to a **standard normal** variable $Z \sim N(0, 1)$ by subtracting the mean and dividing by the standard deviation:
+
+$$Z = \frac{X - \mu}{\sigma}$$
+
+This process is called **standardization**, and the resulting $Z$ is called a **z-score**. It measures how many standard deviations above or below the mean a value sits.
+
+Standardization is like translating every bell curve into a common language. No matter what $\mu$ and $\sigma$ are, after this transformation you are working with the same standard bell. That means you only need one table (or one set of rules) to compute probabilities for *any* normal distribution.
+
+### A worked example: SAT scores
+
+SAT scores are approximately normally distributed with mean $\mu = 500$ and standard deviation $\sigma = 100$. What fraction of test-takers score above 700?
+
+First, standardize:
+
+$$z = \frac{700 - 500}{100} = \frac{200}{100} = 2$$
+
+A score of 700 is **2 standard deviations above the mean**. Look up $P(Z > 2)$ in the standard normal table:
+
+$$P(Z > 2) \approx 0.023$$
+
+About 2.3% of test-takers score above 700. The bell curve drops off fast — two standard deviations out, you are already in rare territory.
+
+What about scoring below 350?
+
+$$z = \frac{350 - 500}{100} = \frac{-150}{100} = -1.5$$
+
+$$P(Z < -1.5) \approx 0.067$$
+
+About 6.7% score below 350. By symmetry, about 6.7% also score above 650 (which is $z = 1.5$). The bell is a mirror.
+
+## The 68-95-99.7 rule
+
+You do not always need a table. For quick estimates, the **68-95-99.7 rule** (also called the empirical rule) gives you three anchor points:
+
+- **68%** of the mass falls within $\mu \pm 1\sigma$ — one step from the peak.
+- **95%** of the mass falls within $\mu \pm 2\sigma$ — two steps from the peak.
+- **99.7%** of the mass falls within $\mu \pm 3\sigma$ — three steps from the peak.
+
+Think of these as **bands** painted on the hill. The band between $\mu - \sigma$ and $\mu + \sigma$ captures about two-thirds of the total area. The next band out (from $\sigma$ to $2\sigma$ on each side) captures most of what remains. Beyond $3\sigma$, you are in the tails — fewer than 3 in 1000 observations.
+
+For the SAT example: about 68% of scores fall between 400 and 600, about 95% between 300 and 700, and about 99.7% between 200 and 800. If someone tells you they scored 850, they are more than 3 standard deviations from the mean — roughly 1 in 1000 territory.
+
+### Reading the bands the other way
+
+The rule also tells you what is *outside* the bands:
+
+- About 32% lies outside the $\pm 1\sigma$ band (16% on each tail).
+- About 5% lies outside the $\pm 2\sigma$ band (2.5% on each tail).
+- About 0.3% lies outside the $\pm 3\sigma$ band (0.15% on each tail).
+
+When you hear "statistically significant at the 5% level," it usually means the observed value falls outside the $\pm 2\sigma$ band — far enough from the mean that chance alone would produce it less than 5% of the time.
+
+## Explore the bell
+
+Drag $\mu$ and $\sigma$ below and watch the bell reshape. Hit "Sample +50" repeatedly to see the histogram converge to the theoretical curve. Pay attention to how $\sigma$ controls the width — a small $\sigma$ makes the bell tall and narrow, concentrating mass near the center; a large $\sigma$ spreads it flat.
+
+<NormalDistribution client:visible />
+
+## Why is it everywhere?
+
+The normal distribution is not just one distribution among many. It is the shape that nature **converges to** whenever many small independent effects pile up.
+
+The **Central Limit Theorem** (which you will study in detail in a later lesson) says: take any distribution — skewed, lumpy, uniform, whatever. Draw a sample of size $n$ and compute the average. Repeat many times. The histogram of those averages will look bell-shaped, and it gets more bell-shaped as $n$ grows.
+
+This is why the bell curve appears in so many contexts:
+
+- **Heights** are the sum of many genetic and environmental factors. The result is bell-shaped.
+- **Measurement errors** are the accumulation of many tiny disturbances — vibration, parallax, calibration drift. Bell-shaped.
+- **Test scores** aggregate many questions, each contributing a small amount of variance. Bell-shaped.
+- **Stock returns** over short periods reflect many independent trades. Approximately bell-shaped.
+
+The CLT explains why statisticians reach for the normal distribution as a first approximation. It is not always exactly right, but it is often close, and the mathematical tools for working with it are powerful and well-developed.
+
+<KeyInsight>
+The normal distribution is a family of bell curves parameterized by $\mu$ (where the peak sits) and $\sigma$ (how wide it spreads). Standardization translates any member of this family into the common language of z-scores. The Central Limit Theorem explains why this family appears naturally whenever many small independent effects combine.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="The weights of apples from an orchard are approximately normal with mean 150g and standard deviation 20g. What fraction of apples weigh more than 190g? First compute the z-score, then use the 68-95-99.7 rule to estimate."
+  hint="z = (190 - 150)/20 = 2. Use the rule: what fraction is above +2 sigma?"
+  answer="z = 2. By the 68-95-99.7 rule, about 95% of the mass is within plus or minus 2 sigma, so about 5% is outside. By symmetry, half of that is above +2 sigma. Approximately 2.5% of apples weigh more than 190g."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="A machine produces bolts whose lengths are normally distributed with mean 50mm and standard deviation 0.5mm. A bolt is rejected if its length is more than 51.2mm. What is the z-score for 51.2mm? Approximately what fraction of bolts are rejected?"
+  hint="Compute z = (51.2 - 50)/0.5 = 2.4. This is beyond 2 sigma. How much mass is in the tail beyond 2.4 sigma?"
+  answer="z = (51.2 - 50)/0.5 = 2.4. This is beyond the 2-sigma mark (which has 2.5% in the upper tail). From a standard normal table, P(Z > 2.4) is approximately 0.008. Roughly 0.8% of bolts are rejected."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Exam scores in a large class are approximately normal with mean 72 and standard deviation 8. The professor announces that students scoring below 56 will fail. Using standardization, find the z-score for 56. Approximately what fraction of students fail?"
+  hint="z = (56 - 72)/8 = -2. Use symmetry and the 68-95-99.7 rule."
+  answer="z = (56 - 72)/8 = -16/8 = -2. By the 68-95-99.7 rule, about 95% of scores fall between 56 and 88 (mean plus or minus 2 sigma). So about 5% fall outside this range, split evenly between the two tails. Approximately 2.5% of students score below 56 and fail."
+/>
+
+---
+
+**Up next:** [Joint distributions →](/courses/probability/10-joint-distributions)

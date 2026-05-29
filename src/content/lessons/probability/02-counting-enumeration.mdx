@@ -1,0 +1,113 @@
+---
+title: "Counting: The Art of Enumeration"
+titleZh: "计数：枚举的艺术"
+description: "Before computing probabilities, you need to count outcomes — and there are elegant ways to do it."
+descriptionZh: "在计算概率之前，你需要数清楚结果——而且有优雅的方法。"
+course: "probability"
+module: "The Language of Chance"
+moduleZh: "机会的语言"
+moduleOrder: 1
+lessonOrder: 2
+duration: 16
+difficulty: "Beginner"
+---
+
+Imagine you are at a restaurant. The menu has 3 appetizers, 4 main courses, and 2 desserts. How many different complete meals can you build?
+
+You could try listing them all — appetizer 1 with main 1 with dessert 1, then appetizer 1 with main 1 with dessert 2, and so on. That works, but it gets painful fast. Add a fourth course with 5 options and suddenly you are staring at 120 combinations. What we need is a *system* — a way to count without missing anything and without double-counting.
+
+This lesson is about that system. Counting is the foundation underneath every probability calculation. Before you can ask "how likely?" you must first ask "how many?"
+
+## The multiplication principle
+
+Here is the key insight behind all of counting: **when choices are independent, multiply.**
+
+Think of it as a tree. At the first branch, you pick an appetizer — 3 ways to go. At the second branch, you pick a main — 4 ways to go from *each* of those 3 branches. At the third branch, you pick a dessert — 2 ways from *each* of those. The branches split and split again.
+
+$$3 \times 4 \times 2 = 24 \text{ meals}$$
+
+The tree picture is what makes this click. You are not adding branches — you are multiplying because each new choice multiplies the number of paths so far. If you add a fourth course with 5 options, the tree grows by a factor of 5:
+
+$$3 \times 4 \times 2 \times 5 = 120 \text{ meals}$$
+
+This is the **multiplication principle**: if a task has $r$ stages, and stage $i$ has $n_i$ choices regardless of what was picked before, then the total number of outcomes is $n_1 \times n_2 \times \cdots \times n_r$.
+
+The "regardless of what was picked before" part matters. If the dessert options changed depending on which main you ordered, the simple multiplication breaks down — you would need to draw the tree and count branches case by case.
+
+## Permutations: when order matters
+
+Five runners cross the finish line. Gold, silver, bronze go to the top three. How many different ways can the medals be awarded?
+
+Picture three empty slots on a podium:
+
+$$\underline{\quad} \quad \underline{\quad} \quad \underline{\quad}$$
+
+For the first slot (gold), any of the 5 runners could be there. Once gold is decided, 4 runners remain for silver. Once silver is decided, 3 runners remain for bronze.
+
+$$5 \times 4 \times 3 = 60 \text{ medal arrangements}$$
+
+This is a **permutation** — an arrangement where order matters. Getting gold is not the same as getting bronze, so the arrangement "Alice, Bob, Carol" is different from "Carol, Alice, Bob."
+
+The general pattern: arranging $k$ objects selected from $n$ total gives:
+
+$$P(n, k) = n \times (n-1) \times (n-2) \times \cdots \times (n-k+1) = \frac{n!}{(n-k)!}$$
+
+When $k = n$ — arranging all $n$ objects — this simplifies to $n!$ (n factorial). Five runners in all five positions: $5! = 5 \times 4 \times 3 \times 2 \times 1 = 120$ orderings.
+
+The factorial $n!$ is the "multiplier that keeps shrinking" — each slot has one fewer option than the one before it, because one more object has already been placed.
+
+## Combinations: when order does not matter
+
+Now a different question. You have 5 friends and need to choose 2 for a team. Alice-and-Bob is the same team as Bob-and-Alice — order does not matter.
+
+Start with what we know. The number of *ordered* pairs from 5 people is:
+
+$$5 \times 4 = 20$$
+
+But every pair of people was counted twice — once as Alice-then-Bob, once as Bob-then-Alice. The 20 ordered pairs overcount by a factor of 2. So divide:
+
+$$\frac{20}{2} = 10 \text{ teams}$$
+
+This is the core idea behind **combinations**. Start with permutations, then divide away the overcounting.
+
+For choosing $k$ objects from $n$ when order does not matter, each group of $k$ objects was counted $k!$ times (once for each possible ordering of that group). So divide:
+
+$$C(n, k) = \binom{n}{k} = \frac{n!}{k! \times (n-k)!}$$
+
+The notation $\binom{n}{k}$ is read "n choose k." It counts the number of ways to grab $k$ items from a pile of $n$, where the grab-bag is what matters, not the sequence in which you grabbed them.
+
+Why does $k!$ appear in the denominator? Because $k$ objects can be arranged in $k!$ ways. The permutation counted every one of those arrangements separately. Dividing by $k!$ collapses them back into a single group.
+
+## Connecting counting to probability
+
+Classical probability — the $k/n$ ratio from the previous lesson — requires you to count both the favorable outcomes $k$ and the total outcomes $n$. That is where all of this leads.
+
+A standard deck has 52 cards. What is the probability of drawing a heart?
+
+Total outcomes: 52. Favorable outcomes: 13 (one for each heart). The probability is $13/52 = 1/4$.
+
+What about drawing 2 hearts from a full deck? Now you need combinations.
+
+Total ways to choose 2 cards from 52:
+
+$$\binom{52}{2} = \frac{52!}{2! \times 50!} = \frac{52 \times 51}{2} = 1326$$
+
+Favorable ways (both are hearts, chosen from 13):
+
+$$\binom{13}{2} = \frac{13!}{2! \times 11!} = \frac{13 \times 12}{2} = 78$$
+
+$$P(\text{two hearts}) = \frac{78}{1326} = \frac{1}{17}$$
+
+The counting is the hard part. Once you have the numerator and denominator, the probability is just division.
+
+## Key insight
+
+> Counting is not about memorizing formulas — it is about seeing the structure. Permutations count sequences (the slots shrink). Combinations count groups (each group was overcounted by every possible reordering). The multiplication principle is the engine underneath both.
+
+## Practice
+
+1. A password must be exactly 4 characters long. Each character is a lowercase letter (a–z). How many possible passwords are there? What if the password must contain 4 *different* letters?
+
+2. A committee of 3 people is chosen from a group of 8. Two of the 8 are siblings. How many committees include both siblings? How many exclude at least one of them?
+
+3. A lock has 3 dials, each showing digits 0–9. The lock opens with one specific combination. Someone tries a random combination — what is the probability it opens? What changes if no two dials can show the same digit?

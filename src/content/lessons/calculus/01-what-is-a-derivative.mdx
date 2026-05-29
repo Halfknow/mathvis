@@ -8,11 +8,24 @@ module: "Foundations of Differentiation"
 moduleZh: "微分基础"
 moduleOrder: 1
 lessonOrder: 1
-duration: 12
+duration: 14
 difficulty: "Beginner"
+interactiveWidgets:
+  - id: "derivative-slope-01"
+    type: "derivative-slope"
+    title: "Tangent Line Explorer"
+publishedAt: 2026-05-26
 ---
 
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { DerivativeSlope } from '../../../components/interactive/calculus/DerivativeSlope';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
 Imagine you're driving along a winding road. At every instant, your speedometer tells you exactly how fast you're going. That reading — your instantaneous rate of change — is what a **derivative** captures for any function.
+
+This idea — capturing instantaneous change — is one of the great intellectual breakthroughs in mathematics. In the 1660s and 1670s, Isaac Newton and Gottfried Wilhelm Leibniz independently invented calculus, each arriving at the same core insight through different routes: Newton through physics and the geometry of motion, Leibniz through infinitesimals and the notation we still use today. Their parallel discovery sparked one of the most famous priority disputes in the history of science, but the mathematics they uncovered was the same.
 
 ## The geometric picture
 
@@ -24,13 +37,25 @@ Given a function $f(x)$, the derivative $f'(x)$ at a point tells you the **slope
 
 Try dragging the point along the curve below to see the tangent line and the derivative value change in real time:
 
+<InteractiveCanvas
+  title="Tangent Line Explorer"
+  caption="Drag the point along the curve. The tangent line tilts as you move, and the dashed curve shows f'(x) at every point."
+  aspectRatio="16/9"
+>
+  <DerivativeSlope client:visible mode="tangent" />
+</InteractiveCanvas>
+
+Notice the dashed green curve — that's $f'(x)$ plotted alongside $f(x)$. Where the original curve is steep, the derivative curve is far from zero. Where the original curve is flat, the derivative touches zero.
+
 ## From secant to tangent
 
 The formal definition builds on a simple idea: measure the **average** rate of change over a shrinking interval.
 
-$$f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$
+Imagine zooming in on the curve at a single point. From far away, the curve looks curved — it bends away from any straight line you try to lay on it. But as you zoom in, the curve straightens out. At high enough magnification, a small piece of the curve looks almost like a line. The tangent line is the limit of this zooming process — the straight line that best approximates the curve at that point.
 
-The fraction $\frac{f(x+h) - f(x)}{h}$ is the slope of a **secant line** — a line connecting two points on the curve. As $h$ shrinks to zero, the secant line converges to the tangent line.
+<MathBlock expression={"f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}"} />
+
+The fraction is the slope of a **secant line** — a line connecting two points on the curve. As $h$ shrinks to zero, the two points slide together and the secant line converges to the tangent line. You just watched this happen in the interactive above: the tangent line is the limit of secant lines as the two points merge.
 
 ## Why derivatives matter
 
@@ -40,6 +65,28 @@ Derivatives appear everywhere in science and engineering:
 - **Optimization**: finding the minimum of a cost function means finding where its derivative is zero.
 - **Machine learning**: gradient descent follows the negative derivative to minimize loss.
 
-## Key insight
+<KeyInsight>
+The derivative converts a function into a slope-at-each-point machine — it tells you not where you are, but which direction and how fast you're moving. Equivalently, the derivative gives the best linear approximation to the function at each point: zoom in far enough, and the curve becomes its tangent line.
+</KeyInsight>
 
-> The derivative converts a function into a **slope-at-each-point** machine — it tells you not *where* you are, but *which direction and how fast* you're moving.
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="The derivative of f(x) = x³ at x = 2 equals 12. What does the number 12 mean geometrically?"
+  hint="Think about the tangent line at x = 2. What does its slope tell you?"
+  answer="The slope of the tangent line to y = x³ at the point (2, 8) is 12. The curve rises 12 units vertically for every 1 unit horizontally at that exact point."
+/>
+
+<ExerciseBlock number={2}
+  prompt="In the interactive, switch to f(x) = sin(x) and drag to x = 0. The derivative reads f'(0) ≈ 1. Now drag to x = π/2 ≈ 1.57. What happens to the derivative, and what does that mean physically?"
+  hint="Watch the tangent line. When the curve peaks, what direction does the tangent point?"
+  answer="At x = π/2, sin(x) reaches its peak. The tangent line is flat — f'(π/2) = cos(π/2) = 0. A zero derivative means the function has stopped increasing and is about to turn around."
+/>
+
+<ExerciseBlock number={3}
+  prompt="A car's position is s(t) = t² + 3t (meters, t in seconds). At t = 2 seconds, what is the car's instantaneous velocity?"
+  hint="Velocity is the derivative of position. Compute s'(t) and evaluate at t = 2."
+  answer="s'(t) = 2t + 3, so s'(2) = 7 m/s. The car is moving at 7 meters per second at the 2-second mark."
+/>
+
+[Next Lesson →](/courses/calculus/02-limits-and-continuity)

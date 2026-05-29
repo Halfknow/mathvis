@@ -4,51 +4,119 @@ titleZh: "什么是概率？"
 description: "From coin flips to formal definitions — probability quantifies uncertainty."
 descriptionZh: "从抛硬币到形式化定义——概率量化不确定性。"
 course: "probability"
-module: "Foundations of Probability"
-moduleZh: "概率基础"
+module: "The Language of Chance"
+moduleZh: "机会的语言"
 moduleOrder: 1
 lessonOrder: 1
 duration: 14
 difficulty: "Beginner"
 ---
 
-Probability is the mathematics of **uncertainty**. It gives us a precise language for talking about events whose outcomes are not guaranteed — coin flips, weather, election results, stock prices.
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
 
-## Three perspectives
+You hold a six-sided die in your hand. Before you roll, the outcome is uncertain — it could land on any of 1 through 6. After you roll, the outcome is fixed. Probability lives in the space between those two moments: the grey zone before the die lands, where the outcome exists only as a possibility.
 
-There are three ways to think about probability, each useful in different contexts:
+That grey zone is what this entire course is about. Probability gives you a precise language for talking about events that have not happened yet, or that you simply do not know about. It does not predict the future — it measures the shape of uncertainty.
 
-### 1. Classical probability
+## The sample space as a physical place
 
-If an experiment has $n$ equally likely outcomes and $k$ of them count as "success," then:
+Imagine a floor tiled with six squares, each the same size, labeled 1 through 6. Rolling the die is like being blindfolded and dropped randomly onto one of these tiles. Every tile is equally likely to be the one you land on.
 
-$$P(\text{success}) = \frac{k}{n}$$
+This tiled floor is your **sample space** — the set of all possible outcomes. For a fair die, the sample space has six equally sized tiles, so the probability of landing on any particular one is:
 
-A fair die has 6 equally likely faces. The probability of rolling an even number is $3/6 = 1/2$.
+$$P(\text{landing on tile } k) = \frac{1}{6}$$
 
-### 2. Frequentist probability
+The "P" stands for probability. The statement says: one favorable tile out of six total tiles. That fraction — one sixth — is the probability.
 
-If you repeat an experiment many times, the fraction of times the event occurs converges to its probability:
+This tile picture is the foundation. Every concept in probability can be understood as something happening on this floor: regions of tiles, overlaps between regions, parts of the floor painted different colors. Keep the floor in mind and the formulas will never feel abstract.
+
+## Three ways to read the tiles
+
+Probability has three major interpretations. All three produce the same numbers, but they mean different things. Here is how each one reads the die:
+
+### Classical: counting favorable tiles
+
+You count the favorable tiles and divide by the total number of tiles. The probability of rolling an even number? Tiles 2, 4, and 6 are favorable — three out of six.
+
+$$P(\text{even}) = \frac{3}{6} = \frac{1}{2}$$
+
+This works when every tile is equally likely. Fair coins, fair dice, well-shuffled decks — the classical view handles these cleanly. It is the oldest interpretation, dating back to the gambling problems that launched the field in the 1600s.
+
+### Frequentist: rolling over and over
+
+Imagine rolling that die 10,000 times. You build a histogram — one bar per face. After 10 rolls, the bars are jagged and uneven. After 1,000 rolls, they start to even out. After 10,000 rolls, every bar has grown to roughly the same height: about 1,667 out of 10,000, which is close to 1/6.
 
 $$P(A) = \lim_{n \to \infty} \frac{\text{number of times } A \text{ occurs}}{n}$$
 
-Flip a coin 10,000 times and count heads — the fraction will be very close to 0.5.
+The frequentist view says: probability is the long-run frequency. If you could repeat the experiment infinitely many times under identical conditions, the fraction of times event $A$ occurs converges to $P(A)$. No die is truly fair — but over enough rolls, the histogram reveals the truth.
 
-### 3. Subjective probability
+### Subjective: your degree of belief
 
-Probability as a **degree of belief** — how confident you are that an event will happen, based on all available evidence. This view is essential in Bayesian statistics.
+Before the die lands, how confident are you that the result will be even? That confidence — your degree of belief — is also a probability.
 
-## The rules of probability
+The subjective view treats probability as a *quantified opinion*. Two people can have different probabilities for the same event if they have different information. A weather forecaster says "30% chance of rain" — that number encodes their belief based on all available data, not a long-run frequency of identical Tuesdays.
 
-All three interpretations share the same mathematical rules:
+This interpretation is the foundation of Bayesian statistics, which you will encounter later in this course.
 
-1. $0 \leq P(A) \leq 1$ for any event $A$
-2. $P(\text{something happens}) = 1$
-3. $P(A \text{ or } B) = P(A) + P(B) - P(A \text{ and } B)$
-4. $P(\text{not } A) = 1 - P(A)$
+## Four rules as geometric constraints
 
-These four rules are surprisingly powerful. From them, you can derive everything from Bayes' theorem to the law of large numbers.
+All three interpretations share the same mathematical structure. Here are the four axioms, translated into the language of the tiled floor:
 
-## Key insight
+**Rule 1. No tile has negative area.**
 
-> Probability doesn't tell you what *will* happen — it tells you what's *likely* to happen, and by how much. Over many trials, those likelihoods become certainties.
+$$P(A) \geq 0$$
+
+A probability is never negative. You cannot have "minus three percent chance." On the floor, this means every region you shade in has non-negative area.
+
+**Rule 2. The total floor area is 1.**
+
+$$P(\Omega) = 1$$
+
+Something must happen. The total probability across all possible outcomes is exactly 1. On the floor, all six tiles together cover 100% of the surface.
+
+**Rule 3. Overlapping regions: add areas, then subtract the overlap.**
+
+$$P(A \cup B) = P(A) + P(B) - P(A \cap B)$$
+
+If region $A$ and region $B$ overlap, simply adding their areas double-counts the overlap. Subtract it once to get the correct total. On the die: $P(\text{even}) = 3/6$, $P(\text{greater than 3}) = 3/6$, but $P(\text{even or greater than 3}) = 5/6$, not $6/6$. The overlap — tile 4 and tile 6 — would be double-counted without the subtraction.
+
+**Rule 4. "Not A" is the floor with region A removed.**
+
+$$P(A^c) = 1 - P(A)$$
+
+The complement of $A$, written $A^c$, is everything outside $A$. On the die: $P(\text{not even}) = 1 - 1/2 = 1/2$. You just take the whole floor (area 1) and cut out the shaded region.
+
+These four rules are surprisingly powerful. From them you can derive everything from Bayes' theorem to the law of large numbers. They are the grammar of the language of chance.
+
+<KeyInsight>
+Probability does not tell you what will happen — it tells you what is likely to happen, and by how much. Think of it as measuring regions on a tiled floor: every tile is a possible outcome, and probability is the fraction of floor your event covers.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="A fair six-sided die is rolled. What is the probability that the result is either a multiple of 3 (i.e., 3 or 6) or greater than 4 (i.e., 5 or 6)? Use Rule 3 to account for overlap."
+  hint="The multiples of 3 are tiles 3 and 6. The numbers greater than 4 are tiles 5 and 6. They share tile 6."
+  answer="P(multiple of 3) = 2/6. P(greater than 4) = 2/6. Overlap = tile 6 = 1/6. So P = 2/6 + 2/6 - 1/6 = 3/6 = 1/2."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="A bag contains 4 red marbles and 6 blue marbles. You draw one marble at random. What is P(not red)? Which rule gives you this directly?"
+  hint="Use Rule 4: the complement. P(red) = 4/10."
+  answer="P(red) = 4/10 = 2/5. By Rule 4: P(not red) = 1 - 2/5 = 3/5. You just remove the red tiles from the floor and measure what remains."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="On the tile floor for a 20-sided die (d20), shade the tiles for the event 'the roll is at most 5.' What fraction of the floor did you shade? Now use Rule 4 to find P(roll is greater than 5) without counting tiles."
+  hint="P(at most 5) = 5/20. P(greater than 5) is its complement."
+  answer="P(at most 5) = 5/20 = 1/4. By Rule 4: P(greater than 5) = 1 - 1/4 = 3/4. Three quarters of the floor is unshaded."
+/>
+
+---
+
+**Up next:** [Counting and enumeration →](/courses/probability/02-counting-enumeration)

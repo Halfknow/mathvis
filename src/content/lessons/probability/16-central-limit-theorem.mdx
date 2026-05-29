@@ -1,0 +1,102 @@
+---
+title: "Central Limit Theorem"
+titleZh: "中心极限定理"
+description: "Why the bell curve appears everywhere — the sum of many small independent effects is approximately normal."
+descriptionZh: "为什么钟形曲线无处不在——许多微小独立效应的总和近似正态。"
+course: "probability"
+module: "The Laws That Govern Randomness"
+moduleZh: "支配随机性的法则"
+moduleOrder: 4
+lessonOrder: 16
+duration: 20
+difficulty: "Intermediate"
+---
+
+import { SamplingAnimation } from '../../../components/interactive/probability/SamplingAnimation';
+
+You have seen the bell curve before — the normal distribution, symmetric and smooth, appearing everywhere from heights to test scores to measurement errors. The last lesson showed that the average of many draws converges to the expected value. But it said nothing about the *shape* of the average. The Central Limit Theorem (CLT) fills in that missing piece: not only does the average converge, but the *distribution* of the average becomes bell-shaped.
+
+This is the deepest result in probability. It explains why the normal distribution is not just one distribution among many — it is the distribution that emerges whenever many small, independent effects pile up. It is why polls work, why measurement errors are Gaussian, and why the bell curve is carved into the foundations of statistics.
+
+## The statement
+
+Let $X_1, X_2, \ldots, X_n$ be i.i.d. random variables with mean $\mu$ and variance $\sigma^2$. Define the standardized sample mean:
+
+$$Z_n = \frac{\bar{X}_n - \mu}{\sigma/\sqrt{n}}$$
+
+The **Central Limit Theorem** says:
+
+$$Z_n \xrightarrow{d} N(0, 1) \quad \text{as } n \to \infty$$
+
+The standardized mean converges in distribution to a standard normal. In practical terms: for large $n$, the sample mean $\bar{X}_n$ is approximately normally distributed with mean $\mu$ and variance $\sigma^2/n$.
+
+Notice what is *not* assumed. The original variables $X_i$ can follow *any* distribution — uniform, exponential, Bernoulli, wildly skewed, anything at all. The CLT does not care. Take their average, standardize it, and the result is bell-shaped.
+
+## Watching the bell emerge
+
+The best way to understand the CLT is to watch it happen. Start with a distribution that looks nothing like a bell — say, a uniform distribution on $[0, 1]$. Its density is a flat rectangle. No peak, no symmetry around a center, no tails.
+
+Now draw a sample of size $n = 2$ from this uniform distribution and compute the mean. The distribution of that mean is a triangle — peaked in the middle, sloping down to the sides. Already more bell-like than the original rectangle, but still angular.
+
+Try $n = 5$. The distribution of the mean is smooth and rounded, with a clear peak in the center. It looks almost normal already.
+
+Try $n = 30$. The histogram of means is a beautiful bell curve, indistinguishable from a Gaussian to the naked eye.
+
+The original distribution was flat as a tabletop. But the *mean* of 30 draws from that flat distribution is bell-shaped. The act of averaging has smoothed the distribution into a Gaussian form. This is the CLT in action.
+
+Try it yourself below. Pick the bimodal distribution (the ugliest one) and set n = 30. Hit "Draw 100" repeatedly. The histogram of sample means will grow into a perfect bell curve, no matter how non-normal the source is. That is the CLT.
+
+<SamplingAnimation client:visible />
+
+## Why it works — the shape of sums
+
+The CLT works because adding independent random variables is a smoothing operation. When you add two independent variables, their distributions **convolve**. Convolution rounds off corners, fills in gaps, and pushes the result toward symmetry. Each convolution is a step closer to the bell shape.
+
+The mathematical engine behind this is the **characteristic function** (or equivalently, the moment-generating function). When you add independent variables, their characteristic functions multiply. When you standardize the sum (subtract the mean, divide by the standard deviation), the characteristic function converges to $e^{-t^2/2}$ — which is the characteristic function of the standard normal.
+
+You do not need to follow the proof in detail. The geometric takeaway is this: summing independent random variables is like stirring paint. Each ingredient may have its own color and texture, but stir enough of them together and the result converges to a uniform blend. The normal distribution is the "uniform blend" of probability — the shape that emerges when many independent contributions are mixed.
+
+## The speed of convergence
+
+A natural question: how large does $n$ need to be? The CLT is an asymptotic statement ($n \to \infty$), but in practice the convergence is fast.
+
+A common rule of thumb: $n \geq 30$ is usually enough for the normal approximation to be "close enough" for practical purposes. This is not a mathematical fact — it is a heuristic — but it works well for distributions that are not extremely skewed.
+
+For heavily skewed distributions (like the exponential), you may need larger $n$ for the approximation to be accurate in the tails. For symmetric distributions (like the uniform), even $n = 5$ or $n = 10$ gives a decent approximation.
+
+The formal result on convergence speed is the **Berry-Esseen theorem**:
+
+$$\sup_x \left|P(Z_n \leq x) - \Phi(x)\right| \leq \frac{C \cdot E[|X - \mu|^3]}{\sigma^3 \sqrt{n}}$$
+
+where $\Phi$ is the standard normal CDF and $C \leq 0.4748$. The bound shrinks as $1/\sqrt{n}$, and is smaller when the distribution is less skewed (small third moment). For practical purposes: more skew means you need more observations, but the convergence always happens.
+
+## Applications — why this matters everywhere
+
+**Polls.** A poll samples $n$ people and computes the fraction who support a candidate. Each person is a Bernoulli trial (support or not). The CLT says the sample fraction is approximately normal. This is how pollsters compute margins of error.
+
+**Measurement errors.** A physical measurement is the true value plus many tiny independent perturbations (thermal noise, vibration, calibration drift, human imprecision). By the CLT, the sum of these perturbations is approximately normal. This is why measurement errors follow a bell curve.
+
+**Quality control.** A factory measures the average weight of 50 items from a batch. The batch may contain items from machines with different characteristics, but the average weight is approximately normal by the CLT. Quality thresholds can be set using normal-distribution tables.
+
+**Finance.** Daily stock returns are not normal (they have heavy tails), but monthly or annual returns — being sums of many daily returns — are closer to normal. The CLT explains why longer-horizon returns are more bell-shaped.
+
+## CLT vs LLN — the two pillars
+
+The Law of Large Numbers says the average converges *to* the mean. The Central Limit Theorem says the average converges *as* a bell curve. They answer different questions:
+
+- **LLN**: "Will the average be close to $\mu$?" — Yes, with high probability.
+- **CLT**: "What is the distribution of the distance from $\bar{X}_n$ to $\mu$?" — Approximately normal, with width $\sigma/\sqrt{n}$.
+
+The CLT contains strictly more information. It does not just say the average is close; it tells you *how* the remaining randomness is distributed. That extra information is what lets you build confidence intervals and run hypothesis tests.
+
+## Key insight
+
+> The Central Limit Theorem is the reason the normal distribution is everywhere. It is not that nature "prefers" the bell curve — it is that averaging many independent effects produces a bell shape, regardless of what the individual effects look like. Take any distribution, sample it, average the samples, and the histogram of averages becomes Gaussian. This is the deepest universal shape in probability.
+
+## Practice
+
+**Exercise 1.** You roll a fair die 36 times and compute the average. The die has mean $\mu = 3.5$ and $\sigma^2 = 35/12$. By the CLT, $\bar{X}_{36}$ is approximately $N(\mu, \sigma^2/36)$. Approximate $P(3.3 \leq \bar{X}_{36} \leq 3.7)$ using the normal distribution. Compare this to what Chebyshev's inequality would give for the same probability.
+
+**Exercise 2.** A poll of 400 voters asks whether they support a policy. Suppose exactly 55% of all voters support it. By the CLT, the sample proportion is approximately normal. Compute the standard deviation of the sample proportion and estimate the probability that the poll shows support between 50% and 60%.
+
+**Exercise 3.** Simulate (or describe the simulation of) the CLT for the exponential distribution with rate $\lambda = 1$. Draw samples of size $n = 1, 5, 20, 50$ from the exponential, compute the mean of each sample, and repeat 1000 times. Describe what the four histograms look like. Which $n$ values produce a histogram that looks approximately bell-shaped? Why does the exponential require more samples than the uniform to "look normal"?

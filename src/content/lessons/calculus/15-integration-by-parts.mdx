@@ -1,0 +1,114 @@
+---
+title: "Integration by Parts"
+titleZh: "分部积分"
+description: "Integration by parts is the product rule running backwards — trade a hard integral for an easier one."
+descriptionZh: "分部积分是乘积法则的逆运算——用一个难积分换一个简单积分。"
+course: "calculus"
+module: "Techniques of Integration"
+moduleZh: "积分技术"
+moduleOrder: 4
+lessonOrder: 15
+duration: 18
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "parts-explorer-15"
+    type: "parts-explorer"
+    title: "Integration by Parts Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { PartsExplorer } from '../../../components/interactive/calculus/PartsExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+The product rule says: $(uv)' = u'v + uv'$. Integrate both sides and rearrange. Integration by parts is the product rule filmed in reverse. Geometrically, the rectangle area $uv$ gets split into two pieces -- one piece is the integral you want, the other is the integral you compute. You trade one area for another, hoping the new one is simpler.
+
+<InteractiveCanvas
+  title="Integration by Parts Explorer"
+  caption="Step through each example to see how u and dv are chosen, how the formula applies, and why the new integral is simpler. The LIATE badges show which function type to pick as u."
+  aspectRatio="16/9"
+>
+  <PartsExplorer client:visible />
+</InteractiveCanvas>
+
+<MathBlock expression={"\\int u\\, dv = uv - \\int v\\, du"} />
+
+This is **integration by parts**. You trade one integral ($\int u\, dv$) for another ($\int v\, du$). The hope is that the new integral is simpler.
+
+## The strategy
+
+Choose $u$ and $dv$ from the integrand:
+
+- $u$: the part you want to **differentiate** (it should simplify when you take its derivative).
+- $dv$: the part you want to **integrate** (you need to be able to find $v = \int dv$).
+
+A common mnemonic is **LIATE** — choose $u$ to be the function type that comes first in this list:
+1. **L**ogarithmic ($\ln x$)
+2. **I**nverse trig ($\arctan x$, $\arcsin x$)
+3. **A**lgebraic ($x^n$)
+4. **T**rigonometric ($\sin x$, $\cos x$)
+5. **E**xponential ($e^x$)
+
+## Example 1: $\int x e^x\, dx$
+
+Let $u = x$ (algebraic, simplifies to 1 when differentiated), $dv = e^x\, dx$ (easy to integrate).
+
+Then $du = dx$, $v = e^x$.
+
+<MathBlock expression={"\\int x e^x\\, dx = x e^x - \\int e^x\\, dx = x e^x - e^x + C = e^x(x - 1) + C"} />
+
+## Example 2: $\int x^2 \sin x\, dx$
+
+Let $u = x^2$, $dv = \sin x\, dx$. Then $du = 2x\, dx$, $v = -\cos x$.
+
+<MathBlock expression={"\\int x^2 \\sin x\\, dx = -x^2 \\cos x + \\int 2x \\cos x\\, dx"} />
+
+The remaining integral $\int 2x \cos x\, dx$ still needs parts, but it's simpler (lower power of $x$). Apply parts again: $u = 2x$, $dv = \cos x\, dx$.
+
+<MathBlock expression={"\\int 2x \\cos x\\, dx = 2x \\sin x - \\int 2 \\sin x\\, dx = 2x \\sin x + 2\\cos x + C"} />
+
+Combining: $\int x^2 \sin x\, dx = -x^2 \cos x + 2x \sin x + 2\cos x + C$.
+
+## Example 3: The circular case — $\int e^x \sin x\, dx$
+
+Let $u = e^x$, $dv = \sin x\, dx$. Then $du = e^x\, dx$, $v = -\cos x$.
+
+<MathBlock expression={"\\int e^x \\sin x\\, dx = -e^x \\cos x + \\int e^x \\cos x\\, dx"} />
+
+Apply parts again to the remaining integral with $u = e^x$, $dv = \cos x\, dx$:
+
+<MathBlock expression={"\\int e^x \\cos x\\, dx = e^x \\sin x - \\int e^x \\sin x\\, dx"} />
+
+The original integral reappears! This is the "circular" case. Substitute back and solve:
+
+<MathBlock expression={"\\int e^x \\sin x\\, dx = -e^x \\cos x + e^x \\sin x - \\int e^x \\sin x\\, dx"} />
+<MathBlock expression={"2\\int e^x \\sin x\\, dx = e^x(\\sin x - \\cos x) + C"} />
+<MathBlock expression={"\\int e^x \\sin x\\, dx = \\frac{e^x(\\sin x - \\cos x)}{2} + C"} />
+
+<KeyInsight>
+Integration by parts trades one integral for another by exploiting the product rule in reverse. Choose u to be the part that simplifies when differentiated, and hope the new integral is easier. When the original integral reappears, you've hit the circular case — solve algebraically.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Evaluate ∫ x cos(x) dx using integration by parts."
+  hint="Let u = x, dv = cos(x) dx. Then du = dx, v = sin(x)."
+  answer="∫ x cos(x) dx = x sin(x) − ∫ sin(x) dx = x sin(x) + cos(x) + C."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Evaluate ∫ ln(x) dx. (Hint: there's no obvious 'product', but you can let u = ln(x) and dv = dx.)"
+  hint="u = ln(x), du = (1/x) dx, v = x."
+  answer="∫ ln(x) dx = x ln(x) − ∫ x · (1/x) dx = x ln(x) − ∫ dx = x ln(x) − x + C."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Evaluate ∫ x² eˣ dx. How many times do you need to apply integration by parts?"
+  hint="Each application reduces the power of x by 1. Start with u = x²."
+  answer="Apply twice. First: u = x², dv = eˣ dx → x²eˣ − ∫ 2xeˣ dx. Second: u = 2x, dv = eˣ dx → 2xeˣ − ∫ 2eˣ dx. Result: x²eˣ − 2xeˣ + 2eˣ + C = eˣ(x² − 2x + 2) + C. Two applications because x² has degree 2."
+/>
+
+[Next Lesson →](/courses/calculus/16-partial-fractions)

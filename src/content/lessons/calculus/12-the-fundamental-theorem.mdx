@@ -1,0 +1,104 @@
+---
+title: "The Fundamental Theorem of Calculus"
+titleZh: "微积分基本定理"
+description: "The most important theorem in calculus: differentiation and integration are inverse operations."
+descriptionZh: "微积分中最重要的定理：微分和积分是互逆运算。"
+course: "calculus"
+module: "From Area to the Integral"
+moduleZh: "从面积到积分"
+moduleOrder: 3
+lessonOrder: 12
+duration: 22
+difficulty: "Advanced"
+interactiveWidgets:
+  - id: "ftc-explorer-12"
+    type: "ftc-explorer"
+    title: "Fundamental Theorem Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { FTCExplorer } from '../../../components/interactive/calculus/FTCExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+This is the moment everything connects. The derivative and the integral — two ideas that seem completely different — are actually **inverse operations**. This single insight, the Fundamental Theorem of Calculus (FTC), is why calculus is one subject, not two.
+
+Think of the dashboard of a car. The **speedometer** reads instantaneous velocity — that's the derivative. The **odometer** records total distance traveled — that's the integral. The FTC says they're inverses of each other: if you know the speed at every moment, you can recover the total distance, and if you know how the distance is changing, you know the speed. Differentiation and integration are two sides of the same coin.
+
+## Part 1: The integral undoes the derivative
+
+If $F$ is an antiderivative of $f$ (meaning $F'(x) = f(x)$), then:
+
+<MathBlock expression={"\\int_{a}^{b} f(x)\\, dx = F(b) - F(a)"} />
+
+To compute an area, you don't need rectangles. You just need an antiderivative. The integral of the derivative gives you back the original function's net change.
+
+## Part 2: The derivative undoes the integral
+
+Define $A(x) = \int_a^x f(t)\, dt$ — the accumulated area from $a$ to $x$. Then:
+
+<MathBlock expression={"A'(x) = f(x)"} />
+
+The rate at which the accumulated area changes is the original function. If you differentiate the integral, you get back the integrand.
+
+## See both parts at once
+
+The interactive below shows two linked panels. The top shows $f(x)$ with the shaded area growing as you drag the upper bound. The bottom shows $F(x)$, the antiderivative, being constructed in real time:
+
+<InteractiveCanvas
+  title="Fundamental Theorem Explorer"
+  caption="Drag the upper bound in the top panel. The yellow area is the integral. The bottom panel shows F(x) being built — the antiderivative whose slope equals f(x)."
+  aspectRatio="4/3"
+>
+  <FTCExplorer client:visible />
+</InteractiveCanvas>
+
+Watch how the bottom curve's **steepness** matches the top curve's **height**. Where $f(x)$ is large (top panel), $F(x)$ rises steeply (bottom panel). Where $f(x)$ is near zero, $F(x)$ flattens out. This is Part 2 in action: $F'(x) = f(x)$.
+
+## Why this theorem matters
+
+Before the FTC, computing areas required infinite sums of infinitesimal rectangles — a philosophical headache. After the FTC, you just find an antiderivative and plug in the bounds.
+
+The FTC bridges two worlds:
+- **Differential calculus** (rates of change, slopes, derivatives)
+- **Integral calculus** (accumulation, areas, integrals)
+
+They are not separate subjects. They are two faces of the same coin. This is why calculus is one unified discipline — differentiation takes you from totals to rates, and integration takes you from rates back to totals.
+
+**Isaac Newton** and **Gottfried Wilhelm Leibniz** both discovered this connection independently in the late 17th century, each developing his own notation and approach. Newton thought in terms of "fluxions" (rates of change of flowing quantities), while Leibniz thought in terms of sums of infinitesimal differences. Their independent discovery of the same deep structure is one of the great parallel discoveries in the history of mathematics — and it sparked one of its bitterest priority disputes.
+
+## The intuition
+
+Think of it like a bank account:
+- $f(t)$ is your income rate at time $t$ (dollars per month).
+- $F(t)$ is your total balance at time $t$ (dollars).
+- $\int_a^b f(t)\, dt$ is how much you earned between month $a$ and month $b$ — which equals $F(b) - F(a)$.
+- The rate of change of your balance is your income rate: $F'(t) = f(t)$.
+
+<KeyInsight>
+Differentiation and integration are inverse operations. The derivative of the integral gives back the original function. The integral of the derivative gives back the net change. This is the Fundamental Theorem — the bridge between rates and totals.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Find ∫₀² 3x² dx using the FTC. (Hint: what function has derivative 3x²?)"
+  hint="The antiderivative of 3x² is x³. Apply the FTC: F(2) − F(0)."
+  answer="F(x) = x³. ∫₀² 3x² dx = F(2) − F(0) = 8 − 0 = 8."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Define A(x) = ∫₀ˣ cos(t) dt. What is A'(x)?"
+  hint="Apply Part 2 of the FTC directly."
+  answer="By Part 2 of the FTC, A'(x) = cos(x). The derivative of the accumulated area function is the original integrand."
+/>
+
+<ExerciseBlock number={3}
+  prompt="In the interactive, select f(x) = eˣ. Since eˣ is its own antiderivative, the two panels should show identical curves. Verify this visually. Why does this happen?"
+  hint="eˣ satisfies the special equation f'(x) = f(x). What does this mean for the FTC?"
+  answer="Since d/dx(eˣ) = eˣ, the function is its own antiderivative. The top panel (f(x) = eˣ) and bottom panel (F(x) = eˣ) show identical curves. The area under eˣ from 0 to x equals eˣ − 1, and the derivative of that area function is eˣ."
+/>
+
+[Next Lesson →](/courses/calculus/13-antiderivatives)

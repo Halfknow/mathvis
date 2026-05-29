@@ -1,0 +1,95 @@
+---
+title: "Concentration Inequalities"
+titleZh: "集中不等式"
+description: "Why random variables can't wander too far from their mean — the mathematical guardrails of randomness."
+descriptionZh: "为什么随机变量不能偏离均值太远——随机性的数学护栏。"
+course: "probability"
+module: "The Laws That Govern Randomness"
+moduleZh: "支配随机性的法则"
+moduleOrder: 4
+lessonOrder: 14
+duration: 16
+difficulty: "Intermediate"
+---
+
+Randomness feels wild. A random variable can, in principle, take any value in its range. But there are guardrails — mathematical fences that limit how far the mass of a distribution can drift from its center. These guardrails are called **concentration inequalities**, and they work for *every* distribution, no matter how strange.
+
+The surprise is not that these bounds are tight. They are not. The surprise is that they exist at all, and that they require almost no information about the distribution — just the mean, or the mean and the variance. From two numbers alone, you can draw a fence around the probability mass.
+
+## Markov's inequality — the simplest guardrail
+
+Suppose $X$ is a non-negative random variable with mean $E[X]$. You want to know: how likely is $X$ to be at least some value $a$?
+
+**Markov's inequality** says:
+
+$$P(X \geq a) \leq \frac{E[X]}{a}$$
+
+That is the entire statement. If the mean is 10, then $P(X \geq 100) \leq 10/100 = 0.1$. At most 10% of the probability mass sits beyond 100. No other information needed — no variance, no shape, no distribution family.
+
+The intuition is a seesaw. Imagine a rod balanced at the origin, with probability mass distributed along it. If too much mass were piled far to the right, the rod would tip — it couldn't balance at $E[X]$. Markov's inequality is the formal version of that balance constraint. The mean pins the mass down. You can't have heavy probability far from the origin without pulling the mean along with it.
+
+**Example: exam scores.** Suppose the average score on an exam is 60 out of 100. What fraction of students scored at least 90? Markov says: at most $60/90 = 2/3$. That is a loose bound — in practice, far fewer than two-thirds of students score above 90 — but it is guaranteed by the balance constraint alone.
+
+### Why Markov needs non-negativity
+
+Markov only applies to non-negative random variables ($X \geq 0$). Without that constraint, a distribution could have its mass piled far above $a$ but balanced by a long negative tail pulling the mean down. The seesaw would still balance, but the upper tail would carry more mass than Markov allows. Non-negativity cuts off that escape route.
+
+## Chebyshev's inequality — adding variance to the picture
+
+Markov uses only the mean. Chebyshev's inequality adds the variance and gets a tighter, more useful bound. It asks: how likely is $X$ to wander more than $k$ standard deviations from its mean?
+
+**Chebyshev's inequality** says:
+
+$$P\left(|X - \mu| \geq k\sigma\right) \leq \frac{1}{k^2}$$
+
+where $\mu = E[X]$ and $\sigma = \sqrt{\text{Var}(X)}$.
+
+Plug in values of $k$ and read off the guardrails:
+
+- $k = 2$: at most $1/4 = 25\%$ of the mass is beyond $2\sigma$ from the mean
+- $k = 3$: at most $1/9 \approx 11\%$ beyond $3\sigma$
+- $k = 5$: at most $1/4 = 4\%$ beyond $5\sigma$
+
+These numbers hold for **any distribution whatsoever** — symmetric or skewed, continuous or discrete, unimodal or multimodal. The only requirement is that the mean and variance exist (are finite).
+
+**The proof is one line of Markov.** Set $Y = (X - \mu)^2$. Then $Y \geq 0$ and $E[Y] = \sigma^2$. Apply Markov to $Y$ with threshold $k^2\sigma^2$:
+
+$$P\left((X - \mu)^2 \geq k^2\sigma^2\right) \leq \frac{\sigma^2}{k^2\sigma^2} = \frac{1}{k^2}$$
+
+Taking the square root inside the probability gives Chebyshev. It is Markov in disguise, applied to the squared deviation.
+
+## How loose are these bounds?
+
+Chebyshev says at most 25% of the mass is beyond $2\sigma$. For a normal distribution, the actual number is about 5%. Chebyshev promises 25%; reality delivers 5%. The bound is loose by a factor of 5.
+
+At $3\sigma$, Chebyshev allows up to $1/9 \approx 11.1\%$. The normal distribution puts only 0.3% of its mass beyond $3\sigma$. The bound overshoots by a factor of 37.
+
+This looseness is the price of universality. Chebyshev works for distributions that look nothing like a bell — distributions with heavy tails, sharp spikes, or multiple modes. It must account for the worst case. For well-behaved distributions like the normal, the actual concentration is much tighter.
+
+Think of it this way: Chebyshev builds a fence wide enough to contain *every* possible dog — from a Chihuahua to a Great Dane. For most specific dogs, the fence is absurdly oversized. But if you don't know which dog you're dealing with, you need the oversized fence.
+
+## The one-sided version
+
+Sometimes you only care about one tail — how likely is $X$ to be far *above* the mean, not how likely it is to be far in either direction. For this, there is a one-sided variant:
+
+$$P(X - \mu \geq k\sigma) \leq \frac{1}{1 + k^2}$$
+
+This is the **Cantelli inequality** (also called the one-sided Chebyshev). At $k = 2$, it gives $1/5 = 20\%$ for the upper tail alone — weaker than the two-sided 25% split between both tails, but focused on the direction you care about.
+
+## Why these bounds matter
+
+Concentration inequalities are the foundation of probability theory's most powerful results. They are the scaffolding behind the Law of Large Numbers (next lesson) and behind every claim that "the average is close to the mean with high probability."
+
+In practice, you rarely use Chebyshev directly to get a numerical bound. Its power is qualitative: it tells you that probability mass *must* concentrate around the mean, at a rate that depends on the variance. When the variance is small, the concentration is tight. When the variance is large, the mass spreads out. The relationship is universal.
+
+## Key insight
+
+> Concentration inequalities are guardrails, not tightropes. Markov uses only the mean; Chebyshev adds the variance. Both are loose for well-behaved distributions but hold universally. They prove that no distribution — no matter how wild — can scatter its mass far from the center without paying a steep price in variance.
+
+## Practice
+
+**Exercise 1.** A lightbulb has an average lifetime of 800 hours. Use Markov's inequality to bound the probability that a bulb lasts at least 2000 hours. Now suppose you also know the standard deviation is 200 hours. Use Chebyshev to bound $P(|X - 800| \geq 600)$. Which bound is tighter for this question, and why?
+
+**Exercise 2.** A random variable has mean 50 and variance 25. Chebyshev says at most 1/9 of the mass is beyond $3\sigma = 15$ units from the mean. Suppose the variable is actually uniform on $[a, b]$. Find $a$ and $b$ so that the mean and variance match. What fraction of the mass is actually beyond $3\sigma$ for this uniform distribution? Compare to Chebyshev's bound.
+
+**Exercise 3.** Show that Markov's inequality is an equality for a particular distribution. (Hint: consider a random variable that takes value 0 with probability $1 - \mu/a$ and value $a$ with probability $\mu/a$, where $0 < \mu < a$.) What does this tell you about whether Chebyshev can be improved without additional assumptions?

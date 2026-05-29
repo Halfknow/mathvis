@@ -1,0 +1,102 @@
+---
+title: "Antiderivatives"
+titleZh: "不定积分"
+description: "An antiderivative runs the derivative in reverse — every function has a family of 'undo' functions differing by a constant."
+descriptionZh: "不定积分是导数的逆运算——每个函数都有一族相差一个常数的'还原'函数。"
+course: "calculus"
+module: "Techniques of Integration"
+moduleZh: "积分技术"
+moduleOrder: 4
+lessonOrder: 13
+duration: 16
+difficulty: "Beginner"
+interactiveWidgets:
+  - id: "derivative-slope-13"
+    type: "derivative-slope"
+    title: "Reverse Mode: Antiderivatives"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { DerivativeSlope } from '../../../components/interactive/calculus/DerivativeSlope';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+If the derivative takes you from $F$ to $f$, the antiderivative takes you back from $f$ to $F$. It's the "undo" button for differentiation. Antidifferentiation is like running a film backward -- each derivative rule has a reverse. But there's a twist: the original function could have had any constant added, so you get a whole family of solutions, not just one.
+
+## The definition
+
+$F(x)$ is an **antiderivative** of $f(x)$ if $F'(x) = f(x)$.
+
+Simple enough. But there's a catch: antiderivatives are not unique. If $F(x)$ is an antiderivative, then so is $F(x) + C$ for any constant $C$. Derivatives destroy constant information; antiderivatives can't recover it.
+
+## The family of antiderivatives
+
+The **indefinite integral** captures the whole family:
+
+<MathBlock expression={"\\int f(x)\\, dx = F(x) + C"} />
+
+where $C$ is the "constant of integration" — an arbitrary constant representing the lost information.
+
+Common antiderivatives you should know:
+
+| $f(x)$ | $F(x) + C$ |
+|---------|-------------|
+| $x^n$ ($n \neq -1$) | $\frac{x^{n+1}}{n+1} + C$ |
+| $1/x$ | $\ln|x| + C$ |
+| $e^x$ | $e^x + C$ |
+| $\sin x$ | $-\cos x + C$ |
+| $\cos x$ | $\sin x + C$ |
+
+## Visualizing the reverse
+
+In the interactive below, the mode is reversed: the dashed curve shows $f'(x)$ (the derivative), and the solid curve shows $f(x)$ (the original function). Think of it as: given the slope pattern, reconstruct the landscape.
+
+<InteractiveCanvas
+  title="Reverse Mode: Antiderivatives"
+  caption="The dashed green curve is f′(x). The solid blue curve is f(x), one possible antiderivative. Any vertical shift of the blue curve is also valid."
+  aspectRatio="16/9"
+>
+  <DerivativeSlope client:visible mode="reverse" />
+</InteractiveCanvas>
+
+## Why the constant matters
+
+The constant $C$ isn't just a formality. Consider:
+
+<MathBlock expression={"\\int 2x\\, dx = x^2 + C"} />
+
+If an object's velocity is $v(t) = 2t$, its position is $s(t) = t^2 + C$. The constant $C$ is the starting position. Without it, you know the object accelerates uniformly but you don't know where it started.
+
+In the FTC context, the constant cancels:
+
+<MathBlock expression={"\\int_a^b f(x)\\, dx = [F(x) + C]_a^b = (F(b) + C) - (F(a) + C) = F(b) - F(a)"} />
+
+The constant doesn't affect definite integrals — only the shape of the antiderivative family.
+
+<KeyInsight>
+The antiderivative runs the derivative in reverse. Every function has infinitely many antiderivatives, all differing by a constant C. The indefinite integral ∫ f dx = F + C captures the whole family.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Find the general antiderivative of f(x) = 6x² − 4x + 3."
+  hint="Apply the power rule in reverse to each term."
+  answer="F(x) = 6·x³/3 − 4·x²/2 + 3x + C = 2x³ − 2x² + 3x + C."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Find F(x) given F'(x) = cos(x) and F(0) = 5."
+  hint="The general antiderivative of cos(x) is sin(x) + C. Use the initial condition to find C."
+  answer="F(x) = sin(x) + C. F(0) = sin(0) + C = C = 5. So F(x) = sin(x) + 5."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Why can't you find ∫ sin(x²) dx using elementary functions?"
+  hint="Not every antiderivative can be expressed with basic functions (polynomials, exponentials, trig, logs)."
+  answer="The function sin(x²) has no antiderivative expressible in terms of elementary functions. This isn't a failure of technique — it's a mathematical fact. The integral exists (it's a perfectly good area), but it can't be written as a finite combination of elementary functions. We express it as a special function or compute it numerically."
+/>
+
+[Next Lesson →](/courses/calculus/14-u-substitution)

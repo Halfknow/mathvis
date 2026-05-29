@@ -1,0 +1,84 @@
+---
+title: '3D Transformations'
+titleZh: '三维变换'
+description: '3D matrices work exactly like 2D — the grid cube warps into a parallelepiped, and the columns are where the basis vectors land.'
+descriptionZh: '三维矩阵与二维完全同理——网格立方体变形为平行六面体，列就是基向量落到的位置。'
+course: 'linear-algebra'
+module: 'Beyond 2D'
+moduleZh: '超越二维'
+moduleOrder: 6
+lessonOrder: 25
+duration: 18
+difficulty: 'Advanced'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { MatrixTransform3D } from '../../../components/interactive/linear-algebra/MatrixTransform3D';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# 3D Transformations
+
+Everything you learned in 2D extends naturally to 3D. A 3x3 matrix transforms a grid *cube* into a parallelepiped (a slanted box). The columns are still where the basis vectors land — now there are three of them.
+
+## Same rules, more room
+
+A 3x3 matrix has three columns, each a 3D vector:
+
+<MathBlock expression={'A = \\begin{bmatrix} a & d & g \\\\ b & e & h \\\\ c & f & i \\end{bmatrix} = \\bigl[\\, A\\hat{e}_1 \\;\\; A\\hat{e}_2 \\;\\; A\\hat{e}_3 \\,\\bigr]'} />
+
+The three columns tell you where (1,0,0), (0,1,0), and (0,0,1) land. Everything else follows by linearity — just as in 2D.
+
+## The determinant in 3D
+
+The 3D determinant measures **volume scaling**. It tells you how much the unit cube's volume changes under the transformation.
+
+- det = 6: the cube's volume becomes 6
+- det = 0: the cube collapses flat (rank drops)
+- det < 0: the cube turns inside-out (orientation flips)
+
+The formula is longer, but the geometric meaning is identical to 2D: **how much does the transformation scale the fundamental unit of space?**
+
+## Explore 3D transformations
+
+Drag to rotate the view. Adjust the matrix entries and watch the grid cube warp. The terracotta parallelepiped shows where the unit cube lands.
+
+<MatrixTransform3D client:visible />
+
+## 3D rotation
+
+Rotations in 3D are more nuanced than 2D. In 2D, rotation happens around a point. In 3D, it happens around an *axis*. Rotation around the z-axis:
+
+<MathBlock expression={'R_z(\\theta) = \\begin{bmatrix} \\cos\\theta & -\\sin\\theta & 0 \\\\ \\sin\\theta & \\cos\\theta & 0 \\\\ 0 & 0 & 1 \\end{bmatrix}'} />
+
+The third column (0, 0, 1) shows that e3 stays put — the z-axis is the rotation axis. The upper-left 2x2 block is the familiar 2D rotation.
+
+<FormulaReadout formulas={[
+  { label: "3D 变换", expression: "A\\vec{x} = x_1\\vec{c}_1 + x_2\\vec{c}_2 + x_3\\vec{c}_3" },
+  { label: "3D 行列式", expression: "\\det(A) = \\text{signed volume of parallelepiped}" },
+]} />
+
+<KeyInsight>
+3D transformations follow the same rules as 2D — columns are destinations, determinant measures volume scaling, and eigenvectors are the "unchanged directions." The only new complexity is that rotation happens around an axis, not a point.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="What does [[2,0,0],[0,2,0],[0,0,2]] do? What is the determinant?"
+  hint="Look at the columns: where does each basis vector go?"
+  answer="Each basis vector is doubled in length. This is uniform scaling by 2 in all directions. The unit cube becomes a cube with side length 2. det = 2*2*2 = 8. The volume scales by 8."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="A 3D rotation matrix always has det = 1 and one eigenvalue = 1. Why?"
+  hint="Rotation doesn't change volumes. And one direction doesn't move..."
+  answer="Rotation preserves volume (no stretching or compression), so det = 1. The rotation axis itself doesn't move — vectors along it stay put — so λ = 1 is always an eigenvalue, with the rotation axis as its eigenvector."
+/>
+
+---
+
+**Up next:** [The Cross Product →](/courses/linear-algebra/26-cross-product)

@@ -1,0 +1,137 @@
+---
+title: "Bayesian Inference in Practice"
+titleZh: "贝叶斯推断实践"
+description: "Conjugate priors make Bayesian updating exact — watch the Beta distribution evolve as coin flips arrive."
+descriptionZh: "共轭先验使贝叶斯更新精确——观察Beta分布随着硬币翻转而演化。"
+course: "probability"
+module: "Bayesian Thinking"
+moduleZh: "贝叶斯思维"
+moduleOrder: 6
+lessonOrder: 23
+duration: 20
+difficulty: "Advanced"
+---
+
+Bayesian updating sounds elegant in theory: multiply prior by likelihood, normalize, done. In practice, the normalization step requires computing an integral — and for most real models, that integral has no closed form. For centuries, this computational wall kept Bayesian methods in the realm of theory.
+
+But there is a shortcut. When the prior and the likelihood are chosen to work together — when they are **conjugate** — the integral solves itself. The posterior lands in the same family as the prior, with updated parameters you can write down by hand. No integrals. No approximations. Exact updating, one observation at a time.
+
+This lesson walks through the most important conjugate pair — Beta and Binomial — and shows how Bayesian inference looks when the machinery actually runs.
+
+## Conjugate priors: the idea
+
+A prior is **conjugate** to a likelihood if the posterior belongs to the same distribution family as the prior.
+
+$$\text{Prior: } p(\theta) \in \mathcal{F} \quad + \quad \text{Likelihood: } p(\text{data} \mid \theta) \quad \Longrightarrow \quad \text{Posterior: } p(\theta \mid \text{data}) \in \mathcal{F}$$
+
+The family $\mathcal{F}$ is preserved. Only the parameters change.
+
+Why does this matter? Because it means you can update your beliefs **analytically** — with algebra, not with numerical integration. Each new data point adjusts the parameters of the distribution, and you can do it sequentially, one observation at a time, without ever going back to the raw data.
+
+Conjugate pairs exist for many common models:
+
+| Likelihood | Conjugate Prior | Posterior |
+|---|---|---|
+| Binomial (coin flips) | Beta | Beta |
+| Poisson (counts) | Gamma | Gamma |
+| Normal (known variance) | Normal | Normal |
+| Normal (known mean) | Inverse-Gamma | Inverse-Gamma |
+| Multinomial (categories) | Dirichlet | Dirichlet |
+
+The Beta-Binomial pair is the most intuitive entry point, so that is where we start.
+
+## The Beta distribution
+
+The **Beta distribution** is a family of distributions defined on $[0, 1]$. It is the natural prior for any unknown probability — a coin's fairness, a conversion rate, a success probability.
+
+Its density is:
+
+$$f(\theta) = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)} \theta^{\alpha - 1} (1 - \theta)^{\beta - 1}$$
+
+Do not let the gamma functions intimidate you. The shape is controlled entirely by two parameters, $\alpha$ and $\beta$, and the geometry is intuitive:
+
+- The **mean** is $\alpha / (\alpha + \beta)$. This is where the peak tends to sit.
+- The **concentration** is $\alpha + \beta$. Larger values mean a tighter, more peaked distribution — more certainty.
+- When $\alpha = \beta = 1$, you get the **flat** uniform distribution on $[0, 1]$ — complete ignorance.
+- When $\alpha = \beta$ and both are large, you get a symmetric bell centered at 0.5, increasingly narrow.
+- When $\alpha > \beta$, the mass shifts right. When $\beta > \alpha$, it shifts left.
+
+Think of $\alpha$ as "imaginary heads" and $\beta$ as "imaginary tails." A Beta(3, 3) prior says: "before I saw any data, it is as if I had flipped 6 coins and got 3 heads — I mildly believe the coin is fair, but I am not certain." The more imaginary flips you start with, the stronger your prior conviction.
+
+## The Beta-Binomial update
+
+Here is the beautiful part. Suppose your prior for a coin's probability of heads $\theta$ is $\text{Beta}(\alpha, \beta)$. You flip the coin $n$ times and observe $k$ heads. The posterior is:
+
+$$\theta \mid \text{data} \sim \text{Beta}(\alpha + k,\; \beta + n - k)$$
+
+That is it. Add the observed heads to $\alpha$. Add the observed tails to $\beta$. The posterior is a Beta distribution with the updated parameters.
+
+The update is **additive** and **sequential**. Each new flip either increments $\alpha$ (if it is a head) or $\beta$ (if it is a tail). You do not need to store the full history — the running sums $\alpha + k$ and $\beta + (n - k)$ are sufficient statistics.
+
+## Watching the distribution evolve
+
+Start with a **flat prior**: $\text{Beta}(1, 1)$. This is a horizontal line at height 1 across the entire $[0, 1]$ interval. You are saying: "the coin's probability of heads could be anything, and I have no preference."
+
+**Flip 1: heads.** The posterior becomes $\text{Beta}(2, 1)$. The distribution tilts to the right — a gentle upward slope from left to right. The peak is at the right edge (the mode is 1). The data says "heads," and the prior had nothing to say, so the posterior follows the data strongly. But this is just one flip. The distribution is still very wide.
+
+**Flip 2: heads.** The posterior becomes $\text{Beta}(3, 1)$. The tilt sharpens. More mass piles up near 1. The coin has shown two heads in a row — the distribution is beginning to suspect this is a biased coin, but it is still very uncertain.
+
+**Flip 3: tails.** The posterior becomes $\text{Beta}(3, 2)$. Now something interesting happens. The distribution shifts left — the single tail pulls mass away from 1 and toward the center. The peak moves to around 0.75. The shape is no longer a monotone slope; it is a genuine hill with a mode somewhere in the interior.
+
+**Flip 4: heads.** $\text{Beta}(4, 2)$. The hill shifts right again, peaking near 0.8.
+
+**Continue flipping...** Each flip nudges the hill. Heads push it right and sharpen it. Tails push it left and sharpen it. After 100 flips with 58 heads, the posterior is $\text{Beta}(59, 43)$ — a narrow bell centered at about 0.578. The width of the bell has shrunk dramatically from the flat line you started with.
+
+The pattern is clear: **the distribution sharpens as data accumulates.** Uncertainty shrinks. The peak converges toward the true proportion. The shape evolves from a flat sheet of ignorance into a tight spike of knowledge.
+
+## The role of the prior parameters
+
+What if you had started with $\text{Beta}(10, 10)$ instead of $\text{Beta}(1, 1)$? This prior says: "I have strong reason to think the coin is fair — it is as if I have already seen 20 flips with 10 heads."
+
+After observing 58 heads in 100 flips, the posterior would be $\text{Beta}(68, 52)$. The peak is at about 0.567 — pulled toward 0.5 compared to the $\text{Beta}(59, 43)$ result. The prior's 10-10 is pulling the posterior toward fairness, and it takes real data to drag it away.
+
+The prior parameters $\alpha$ and $\beta$ act as **pseudo-counts**. They represent the weight of your initial belief in units of "equivalent observations." A Beta(100, 100) prior would need hundreds of flips to be moved significantly. A Beta(1, 1) prior gets out of the way almost immediately.
+
+This gives you a dial: choose $\alpha + \beta$ to match how strongly you want the prior to resist the data.
+
+## Credible intervals
+
+Once you have the posterior, you can extract a **credible interval** — the Bayesian analog of a confidence interval.
+
+For a 95% credible interval, you find the range $[a, b]$ such that:
+
+$$P(a \leq \theta \leq b \mid \text{data}) = 0.95$$
+
+This is an area under the posterior curve. You shade the central 95% of the posterior distribution, and the boundaries of that shaded region are your interval.
+
+The interpretation is the one most people intuitively want: **"there is a 95% probability that the true $\theta$ lies in this interval."** This is a valid statement for Bayesians because $\theta$ has a distribution. For frequentists, this statement is meaningless — $\theta$ is a fixed constant, not a random variable.
+
+For the Beta posterior, the credible interval can be computed exactly using the quantile function of the Beta distribution. For $\text{Beta}(59, 43)$, the 95% credible interval is approximately $[0.484, 0.670]$. You can report: "given the data and a flat prior, there is a 95% probability that the coin's probability of heads is between 0.484 and 0.670."
+
+### Highest posterior density intervals
+
+There is a subtlety. The standard credible interval splits the remaining 5% equally: 2.5% in each tail. But for asymmetric posteriors (like $\text{Beta}(3, 1)$ after just a few flips), there is a more natural choice: the **highest posterior density** (HPD) interval. This is the narrowest interval that contains 95% of the posterior mass.
+
+For symmetric posteriors, the HPD interval and the equal-tailed interval are the same. For skewed posteriors, the HPD interval is shorter and shifted toward the peak. It is the tightest summary of where the parameter probably lives.
+
+## Beyond coin flips
+
+The Beta-Binomial is the cleanest example, but the same logic applies everywhere Bayesian inference is used:
+
+- **A/B testing**: each variant's conversion rate gets a Beta posterior. You can directly compute the probability that variant A beats variant B.
+- **Medical trials**: the treatment effect has a prior, the trial data provides the likelihood, and the posterior tells you the probability the treatment works.
+- **Sequential updating**: as patients enroll one by one, the posterior updates in real time. You can stop the trial early if the posterior probability of effectiveness exceeds a threshold.
+
+In each case, the workflow is the same: specify a prior, observe data, compute the posterior, extract the quantities you need. Conjugate priors make this clean. When conjugacy is not available, the same workflow is powered by numerical methods — Markov chain Monte Carlo, variational inference — but the conceptual structure is identical.
+
+## Key insight
+
+> Conjugate priors turn Bayesian updating from an integral calculus problem into simple arithmetic. The Beta-Binomial update — add heads to $\alpha$, add tails to $\beta$ — is the purest illustration: each observation increments a counter, and the distribution sharpens a little more. Bayesian inference is not mysterious. It is counting with uncertainty.
+
+## Practice
+
+**Exercise 1.** You start with a Beta(2, 2) prior for a coin's probability of heads. You flip the coin 20 times and observe 14 heads. Write down the posterior distribution. What is the posterior mean? Compare it to the sample proportion 14/20 = 0.7 — is the posterior mean larger, smaller, or equal? Explain why.
+
+**Exercise 2.** Start with a Beta(1, 1) (flat) prior. Flip a coin 5 times: H, H, T, H, T. Write down the posterior after each flip (there will be 5 posteriors). Describe how the shape of the distribution changes from step to step.
+
+**Exercise 3.** Analyst A uses Beta(1, 1) and observes 30 heads in 50 flips. Analyst B uses Beta(50, 50) and observes the same data. Compute the posterior mean for each analyst. How much do their conclusions differ? Now suppose both observe 300 heads in 500 flips. How much do their conclusions differ now? Explain what this demonstrates about the role of the prior.

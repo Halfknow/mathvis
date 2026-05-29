@@ -28,9 +28,9 @@ Notation is just a compact way of writing geometric ideas. Don't memorize it —
 |--------|------|---------|---------|
 | $\vec{v}$ | Vector | An arrow with direction and magnitude | $\vec{v} = (3, 2)$ |
 | $v$ or $\mathbf{v}$ | Vector (alternative) | Bold or arrow — same thing | $\mathbf{v} = (1, 0)$ |
-| $(a, b)$ or $\begin{pmatrix}a\\b\end{pmatrix}$ | Vector components | The coordinates of the arrow tip | $(3, 1)$ means 3 right, 1 up |
+| $(a, b)$ | Vector components | The coordinates of the arrow tip | $(3, 1)$ means 3 right, 1 up |
 | $v_1, v_2$ | Components | The individual numbers in a vector | If $\vec{v} = (3, 1)$ then $v_1 = 3, v_2 = 1$ |
-| $\lVert\vec{v}\rVert$ or $\lvert\vec{v}\rvert$ | Magnitude / Norm | The length of the arrow | $\lVert(3, 4)\rVert = 5$ |
+| $\lVert\vec{v}\rVert$ | Magnitude / Norm | The length of the arrow | $\lVert(3, 4)\rVert = 5$ |
 | $\hat{v}$ | Unit vector | A vector of length 1 in the same direction | $\hat{v} = \vec{v}/\lVert\vec{v}\rVert$ |
 | $\vec{0}$ | Zero vector | The vector with no direction, no length | $(0, 0)$ in 2D |
 | $\hat{e}_1, \hat{e}_2$ or $\hat{i}, \hat{j}$ | Standard basis vectors | The unit arrows along the axes | $\hat{e}_1 = (1, 0)$, $\hat{e}_2 = (0, 1)$ |
@@ -45,9 +45,20 @@ Notation is just a compact way of writing geometric ideas. Don't memorize it —
 | $\vec{a} + \vec{b}$ | Vector addition | Head-to-tail: walk along one arrow, then the other | $(a_1+b_1, a_2+b_2)$ |
 | $c\vec{v}$ or $c \cdot \vec{v}$ | Scalar multiplication | Stretch the arrow by factor $c$; flip if $c < 0$ | $(cv_1, cv_2)$ |
 | $\vec{a} \cdot \vec{b}$ | Dot product | Measures alignment: positive = same direction, zero = perpendicular | $a_1 b_1 + a_2 b_2$ |
-| $\vec{a} \times \vec{b}$ | Cross product (3D) | Produces a vector perpendicular to both; its length = area of parallelogram | See lesson 14 |
+| $\vec{a} \times \vec{b}$ | Cross product (3D) | Produces a vector perpendicular to both; its length = area of parallelogram | See lesson 26 |
 | $\vec{a} \cdot \vec{b} = \lVert\vec{a}\rVert\lVert\vec{b}\rVert\cos\theta$ | Dot product (angle form) | Dot product = product of lengths times cosine of the angle between them | — |
 | $\text{proj}_{\vec{a}} \vec{b}$ | Projection | The shadow of $\vec{b}$ onto $\vec{a}$'s line | $\frac{\vec{a} \cdot \vec{b}}{\vec{a} \cdot \vec{a}} \vec{a}$ |
+
+---
+
+## Angles and Orthogonality
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $\theta$ | Angle between vectors | The angle at the origin between two arrows | $\cos\theta = \frac{\vec{a} \cdot \vec{b}}{\lVert\vec{a}\rVert\lVert\vec{b}\rVert}$ |
+| $\vec{a} \perp \vec{b}$ | Perpendicular / Orthogonal | Two vectors at right angles | $\vec{a} \cdot \vec{b} = 0$ |
+| $\vec{a}^\perp$ | Perpendicular vector | The vector rotated 90° from $\vec{a}$ | $(a_1, a_2)^\perp = (-a_2, a_1)$ |
+| $\lVert\vec{v}\rVert = \sqrt{\vec{v} \cdot \vec{v}}$ | Length from dot product | The norm is the square root of the self-dot-product | $\lVert(3,4)\rVert = \sqrt{9+16} = 5$ |
 
 ---
 
@@ -62,8 +73,9 @@ Notation is just a compact way of writing geometric ideas. Don't memorize it —
 | $I$ or $I_n$ | Identity matrix | The "do nothing" transformation | $I_2 = \begin{pmatrix}1&0\\0&1\end{pmatrix}$ |
 | $A^{-1}$ | Inverse matrix | The transformation that undoes $A$ | $A^{-1}A = I$ |
 | $A^T$ | Transpose | Flip rows and columns | $\begin{pmatrix}1&2\\3&4\end{pmatrix}^T = \begin{pmatrix}1&3\\2&4\end{pmatrix}$ |
-| $\det(A)$ or $\lvert A\rvert$ | Determinant | Area scaling factor of the transformation | $\det\begin{pmatrix}a&b\\c&d\end{pmatrix} = ad - bc$ |
+| $\det(A)$ | Determinant | Area scaling factor of the transformation | $\det\begin{pmatrix}a&b\\c&d\end{pmatrix} = ad - bc$ |
 | $\text{tr}(A)$ | Trace | Sum of diagonal entries | $\text{tr}\begin{pmatrix}a&b\\c&d\end{pmatrix} = a + d$ |
+| $P$ | Change-of-basis matrix | Columns are the new basis vectors; converts coordinates | $[\vec{v}]_\text{new} = P^{-1}\vec{v}$ |
 
 ---
 
@@ -75,13 +87,15 @@ Notation is just a compact way of writing geometric ideas. Don't memorize it —
 | $\text{Col}(A)$ | Column space | All possible outputs of the transformation $A$ | Range of $A$ |
 | $\text{Null}(A)$ or $\text{ker}(A)$ | Null space / Kernel | All inputs that $A$ maps to zero | $\text{Null}(A) = \{\vec{x} : A\vec{x} = \vec{0}\}$ |
 | $\text{Row}(A)$ | Row space | Span of the rows of $A$ | — |
+| $\text{Null}(A^T)$ | Left null space | All vectors $\vec{y}$ with $A^T\vec{y} = \vec{0}$ | Orthogonal complement of Col(A) |
 | $\dim(V)$ | Dimension | Number of independent directions in a space | $\dim(\mathbb{R}^3) = 3$ |
 | $\text{rank}(A)$ | Rank | Dimension of the column space | Number of independent columns |
 | $\text{nullity}(A)$ | Nullity | Dimension of the null space | — |
+| $V^\perp$ | Orthogonal complement | All vectors perpendicular to every vector in $V$ | $\text{Null}(A) = \text{Row}(A)^\perp$ |
 
 ---
 
-## Eigen-things
+## Eigen-things and Decomposition
 
 | Symbol | Name | Meaning | Example |
 |--------|------|---------|---------|
@@ -93,6 +107,28 @@ Notation is just a compact way of writing geometric ideas. Don't memorize it —
 
 ---
 
+## Singular Value Decomposition
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $\sigma_i$ | Singular value | The stretch factor along the $i$-th singular axis | $\sigma_1 \geq \sigma_2 \geq \cdots \geq 0$ |
+| $\Sigma$ | Singular value matrix | Diagonal matrix of singular values | $\Sigma = \text{diag}(\sigma_1, \sigma_2, \ldots)$ |
+| $U$ | Left singular vectors | Orthonormal basis for the output space (column space) | $U^TU = I$ |
+| $V$ | Right singular vectors | Orthonormal basis for the input space (row space) | $V^TV = I$ |
+| $A = U\Sigma V^T$ | SVD | Every matrix decomposes into rotate, stretch, rotate | Works for any matrix, not just square |
+
+---
+
+## Abstract Spaces
+
+| Symbol | Name | Meaning | Example |
+|--------|------|---------|---------|
+| $\langle f, g \rangle$ | Inner product | Generalized dot product for functions, sequences, etc. | $\langle f, g \rangle = \int_0^1 f(x)g(x)\,dx$ |
+| $f \perp g$ | Orthogonal functions | Their inner product is zero | $\langle f, g \rangle = 0$ |
+| $\lVert f \rVert$ | Function norm | "Length" of a function via its inner product | $\lVert f \rVert = \sqrt{\langle f, f \rangle}$ |
+
+---
+
 ## Common Greek Letters
 
 | Letter | Symbol | Typical use in linear algebra |
@@ -101,7 +137,7 @@ Notation is just a compact way of writing geometric ideas. Don't memorize it —
 | beta | $\beta$ | Angle or scalar |
 | lambda | $\lambda$ | **Eigenvalue** (this is the big one) |
 | theta | $\theta$ | **Angle** between vectors |
-| sigma | $\sigma$ | Singular value (in SVD) |
+| sigma | $\sigma$ | **Singular value** (in SVD) |
 | Sigma | $\Sigma$ | Diagonal matrix of singular values |
 
 ---
@@ -112,8 +148,8 @@ The central equation of linear algebra connects everything:
 
 <MathBlock expression={'A\\vec{x} = \\vec{b}'} />
 
-Read this as: "Transformation $A$ sends input $\vec{x}$ to output $\vec{b}$." Everything — span, rank, null space, eigenvalues, determinants — is a different way of understanding this one equation.
+Read this as: "Transformation $A$ sends input $\vec{x}$ to output $\vec{b}$." Everything — span, rank, null space, eigenvalues, determinants, SVD — is a different way of understanding this one equation.
 
 ---
 
-> This reference covers every symbol used in the 15 lessons of this course. Bookmark it and come back whenever you need to look something up.
+> This reference covers every symbol used across the 30 lessons of this course. Bookmark it and come back whenever you need to look something up.

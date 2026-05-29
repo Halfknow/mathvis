@@ -1,0 +1,102 @@
+---
+title: "Partial Fractions and Strategies"
+titleZh: "部分分式与策略"
+description: "Break a rational function into simpler pieces, integrate each piece separately — a divide-and-conquer strategy."
+descriptionZh: "把有理函数分解成简单部分，分别积分——分而治之的策略。"
+course: "calculus"
+module: "Techniques of Integration"
+moduleZh: "积分技术"
+moduleOrder: 4
+lessonOrder: 16
+duration: 20
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "partial-fractions-16"
+    type: "partial-fractions-vis"
+    title: "Partial Fractions Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { PartialFractionsVis } from '../../../components/interactive/calculus/PartialFractionsVis';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+You've learned substitution (chain rule backwards) and parts (product rule backwards). Now we add partial fractions -- a technique for rational functions. Together, these three techniques form your integration toolkit. The important thing to understand about partial fractions is that it is algebra, not calculus. The hard part is decomposing the fraction; the integration itself is straightforward (logarithms and arctangents). You do the heavy lifting with algebra, then coast through the calculus.
+
+<InteractiveCanvas
+  title="Partial Fractions Explorer"
+  caption="Drag the A and B sliders to match the decomposed sum (dashed) to the original function (solid). When the coefficients are correct, the curves overlap and the integral result appears."
+  aspectRatio="16/9"
+>
+  <PartialFractionsVis client:visible />
+</InteractiveCanvas>
+
+## The idea
+
+A rational function $\frac{P(x)}{Q(x)}$ can be split into simpler fractions whose denominators are the factors of $Q(x)$. Each simple fraction is easy to integrate.
+
+<MathBlock expression={"\\frac{5x + 3}{(x+1)(x-2)} = \\frac{A}{x+1} + \\frac{B}{x-2}"} />
+
+Solve for $A$ and $B$ by multiplying both sides by $(x+1)(x-2)$ and matching coefficients:
+
+$5x + 3 = A(x-2) + B(x+1)$
+
+Set $x = -1$: $-5 + 3 = A(-3)$, so $A = 2/3$.
+
+Set $x = 2$: $10 + 3 = B(3)$, so $B = 13/3$.
+
+<MathBlock expression={"\\int \\frac{5x+3}{(x+1)(x-2)}\\, dx = \\frac{2}{3}\\ln|x+1| + \\frac{13}{3}\\ln|x-2| + C"} />
+
+## Three cases for partial fractions
+
+### Case 1: Distinct linear factors
+$\frac{1}{(x-1)(x+2)} = \frac{A}{x-1} + \frac{B}{x+2}$
+
+### Case 2: Repeated linear factors
+$\frac{1}{(x-1)^2(x+2)} = \frac{A}{x-1} + \frac{B}{(x-1)^2} + \frac{C}{x+2}$
+
+Note: you need one term for each power up to the multiplicity.
+
+### Case 3: Irreducible quadratic factors
+$\frac{1}{(x^2+1)(x-1)} = \frac{Ax+B}{x^2+1} + \frac{C}{x-1}$
+
+The quadratic factor gets a linear numerator $Ax + B$.
+
+## Integration strategy guide
+
+When you face an integral, work through this checklist:
+
+1. **Simplify** first — can you expand, factor, or cancel?
+2. **u-Substitution** — is there an inner function whose derivative appears?
+3. **Integration by parts** — is the integrand a product of different function types?
+4. **Partial fractions** — is the integrand a rational function?
+5. **Trig identities** — for products of trig functions, use half-angle or product-to-sum formulas.
+6. **Look it up** — not every integral has an elementary antiderivative.
+
+<KeyInsight>
+Partial fractions break a complicated rational function into simple pieces. Each piece integrates to a logarithm, arctangent, or power function. The technique is algebraically intensive but conceptually straightforward — divide and conquer.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Decompose 1/[(x−1)(x+3)] into partial fractions."
+  hint="Write 1/[(x−1)(x+3)] = A/(x−1) + B/(x+3). Multiply through and solve."
+  answer="1 = A(x+3) + B(x−1). Set x=1: 1 = 4A, A = 1/4. Set x=−3: 1 = −4B, B = −1/4. So 1/[(x−1)(x+3)] = 1/[4(x−1)] − 1/[4(x+3)]."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Integrate ∫ dx / (x² − 1)."
+  hint="Factor the denominator as (x−1)(x+1) and use partial fractions."
+  answer="1/(x²−1) = 1/[(x−1)(x+1)] = 1/[2(x−1)] − 1/[2(x+1)]. Integrate: ½ ln|x−1| − ½ ln|x+1| + C = ½ ln|(x−1)/(x+1)| + C."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Which integration technique would you use for ∫ x e^(x²) dx? (a) Parts, (b) u-substitution, (c) Partial fractions?"
+  hint="Look at the relationship between x and x²."
+  answer="(b) u-substitution. Let u = x², du = 2x dx. The x in the integrand is the derivative of x² (up to a constant). Result: ½ e^(x²) + C."
+/>
+
+[Next Lesson →](/courses/calculus/17-area-between-curves)

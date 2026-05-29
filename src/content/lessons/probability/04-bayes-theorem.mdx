@@ -1,0 +1,136 @@
+---
+title: "Bayes' Theorem"
+titleZh: "贝叶斯定理"
+description: "How to flip conditional probability — from P(evidence|cause) to P(cause|evidence)."
+descriptionZh: "如何翻转条件概率——从 P(证据|原因) 到 P(原因|证据)。"
+course: "probability"
+module: "The Language of Chance"
+moduleZh: "机会的语言"
+moduleOrder: 1
+lessonOrder: 4
+duration: 18
+difficulty: "Beginner"
+---
+
+import { BayesVisualizer } from '../../../components/interactive/probability/BayesVisualizer';
+
+Bayes' theorem is about **flipping your perspective**. A doctor knows: if you have the disease, the test comes back positive 99% of the time. That is $P(\text{positive} \mid \text{disease})$. But what you, the patient, actually need to know is the reverse: given that the test came back positive, what is the chance I actually have the disease? That is $P(\text{disease} \mid \text{positive})$.
+
+These two quantities are *not* the same, and confusing them leads to profoundly wrong conclusions. In the scenario above — a disease that affects 1 in 100 people, a test that is 99% sensitive and 95% specific — a positive result means you have roughly a **16.6% chance** of being sick. Not 99%. Not even close. Bayes' theorem is the bridge that gets you from the doctor's perspective to the patient's.
+
+## The formula
+
+Bayes' theorem in its simplest form:
+
+$$P(H \mid E) = \frac{P(E \mid H) \cdot P(H)}{P(E)}$$
+
+Each piece has a name and a geometric meaning:
+
+- **Prior** $P(H)$ — your belief in the hypothesis *before* you see any evidence. This is the base rate. It shrinks the world before you even look at the data. If the disease is rare (1%), the prior is tiny, and it takes extraordinary evidence to overcome it.
+- **Likelihood** $P(E \mid H)$ — how well the hypothesis *predicts* the evidence. If the disease is present, how likely is a positive test? This is the direction the doctor knows.
+- **Posterior** $P(H \mid E)$ — your updated belief *after* seeing the evidence. This is what you actually want.
+- **Evidence** $P(E)$ — the total probability of seeing this evidence under *all* possible hypotheses. It acts as a normalizing constant, making sure the posterior is a valid probability.
+
+The evidence term can be expanded using the law of total probability. For two mutually exclusive hypotheses $H$ and $\neg H$:
+
+$$P(E) = P(E \mid H) \cdot P(H) + P(E \mid \neg H) \cdot P(\neg H)$$
+
+This says: the chance of seeing the evidence is the sum over every way the evidence could appear — weighted by how likely each path is.
+
+## The visual picture
+
+Imagine a rectangle representing all possible outcomes. Divide it into **horizontal strips** — one strip for each hypothesis. The height of each strip is proportional to the prior probability $P(H_i)$. A rare hypothesis gets a thin strip. A common one gets a wide strip.
+
+Now draw a **vertical line** through each strip, dividing it into two regions: the evidence $E$ occurs on the left, and $\neg E$ on the right. The position of the vertical line is determined by the likelihood $P(E \mid H_i)$ — if the hypothesis strongly predicts the evidence, the left portion of that strip is large.
+
+Bayes' theorem asks: look at the entire left column (all the $E$-regions stacked up). What fraction of that column comes from the $H_1$-strip?
+
+$$P(H_1 \mid E) = \frac{\text{area of } H_1\text{-strip's } E\text{-region}}{\text{total area of the entire } E\text{-column}}$$
+
+When the prior for $H_1$ is tiny, its strip is thin. Even if nearly all of that thin strip falls in the $E$-column, the absolute area is small compared to the $E$-contributions from the fat $\neg H_1$-strip. That is why a rare disease with an accurate test still yields a surprisingly low posterior.
+
+## Worked example: the medical test
+
+A disease affects **1%** of the population. A test has:
+
+- **Sensitivity** (true positive rate): 99% — if you are sick, the test says positive with probability 0.99
+- **Specificity** (true negative rate): 95% — if you are healthy, the test says negative with probability 0.95
+
+You test positive. What is the probability you actually have the disease?
+
+### Step 1: Set up the priors
+
+$$P(\text{disease}) = 0.01, \quad P(\text{healthy}) = 0.99$$
+
+The healthy strip is 99 times wider than the sick strip. This is the base rate at work.
+
+### Step 2: The likelihoods
+
+$$P(\text{positive} \mid \text{disease}) = 0.99$$
+
+$$P(\text{positive} \mid \text{healthy}) = 1 - 0.95 = 0.05$$
+
+### Step 3: The 10,000-person table
+
+Imagine 10,000 people tested:
+
+| | Sick (100) | Healthy (9,900) | Total |
+|---|---|---|---|
+| **Test +** | 99 | 495 | 594 |
+| **Test -** | 1 | 9,405 | 9,406 |
+
+Look at the top row. There are 594 positive results in total. Of those, only 99 come from actually sick people. The other 495 are **false positives** — healthy people who happened to test positive.
+
+### Step 4: Apply Bayes
+
+$$P(\text{disease} \mid \text{positive}) = \frac{99}{594} = \frac{99}{99 + 495} \approx 0.166$$
+
+**About 16.6%.** Despite a test that seems highly accurate, a positive result means you probably do *not* have the disease. The reason: the healthy population is so large that even a 5% false positive rate generates far more false positives (495) than the true positives (99) from the tiny sick population.
+
+This is not a paradox. It is the prior doing its job. A rare hypothesis needs strong evidence to become probable.
+
+Try the visualizer below. Adjust the disease prevalence and test accuracy, and watch how the posterior probability shifts. Pay special attention to what happens when the prior is very small — even a good test produces mostly false positives.
+
+<BayesVisualizer client:visible />
+
+## The Monty Hall problem
+
+You are on a game show. Three doors. Behind one door is a car; behind the other two, goats. You pick door 1. The host, Monty, opens door 3 to reveal a goat. He asks: do you want to switch to door 2?
+
+Most people feel the remaining two doors should be equally likely. They are wrong. **You should switch.**
+
+### Bayes' thinking
+
+Your prior for each door: $P(\text{car behind } i) = 1/3$ for $i = 1, 2, 3$.
+
+Monty's action is **evidence**. He always opens a goat door, and he chooses which door to open based on where the car actually is. Let $E$ be the event "Monty opens door 3."
+
+- If the car is behind door 1 (your pick), Monty opens door 2 or door 3 at random. So $P(E \mid \text{door 1}) = 1/2$.
+- If the car is behind door 2, Monty *must* open door 3. So $P(E \mid \text{door 2}) = 1$.
+- If the car is behind door 3, Monty cannot open it. So $P(E \mid \text{door 3}) = 0$.
+
+The total probability of the evidence:
+
+$$P(E) = \frac{1}{3} \cdot \frac{1}{2} + \frac{1}{3} \cdot 1 + \frac{1}{3} \cdot 0 = \frac{1}{2}$$
+
+Now apply Bayes:
+
+$$P(\text{door 1} \mid E) = \frac{(1/2)(1/3)}{1/2} = \frac{1}{3}$$
+
+$$P(\text{door 2} \mid E) = \frac{(1)(1/3)}{1/2} = \frac{2}{3}$$
+
+Door 2 is **twice as likely** as door 1. Switching wins 2/3 of the time.
+
+The intuition: when you picked door 1, there was a 2/3 chance the car was behind one of the other two doors. Monty's revelation does not change that — it concentrates the 2/3 into the single remaining door. He has filtered out one goat for you.
+
+## Key insight
+
+> Bayes' theorem says: your posterior belief is the prior times the likelihood, normalized. A tiny prior acts like a narrow funnel — even strong evidence can only push so much probability through a narrow opening.
+
+## Practice
+
+**Exercise 1.** A spam filter flags 98% of spam emails and incorrectly flags 3% of legitimate emails. If 60% of all incoming email is spam, what is the probability that a flagged email is actually spam? Hint: build the 1000-email table.
+
+**Exercise 2.** A factory has two machines producing widgets. Machine A makes 70% of the widgets with a 2% defect rate. Machine B makes 30% with a 5% defect rate. You find a defective widget. What is the probability it came from Machine B?
+
+**Exercise 3.** In the Monty Hall problem, suppose there are 100 doors instead of 3. You pick door 1. Monty opens 98 other doors, all revealing goats, leaving only door 1 and door 73 closed. Should you switch? What is $P(\text{car behind door 73} \mid \text{Monty opened the other 98})$?

@@ -1,0 +1,84 @@
+---
+title: 'The Dot Product'
+titleZh: '点积'
+description: 'The dot product measures alignment — how much two arrows point in the same direction.'
+descriptionZh: '点积衡量对齐程度——两根箭头有多少指向同一个方向。'
+course: 'linear-algebra'
+module: 'Vectors and Their Language'
+moduleZh: '向量与它的语言'
+moduleOrder: 1
+lessonOrder: 4
+duration: 18
+difficulty: 'Beginner'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { DotProductVis } from '../../../components/interactive/linear-algebra/DotProductVis';
+import { DotProduct3DCompanion } from '../../../components/interactive/linear-algebra/DotProduct3DCompanion';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# The Dot Product
+
+We know how to build vectors (add them, scale them) and move them around. Now let's measure the *relationship* between two vectors. The **dot product** answers one question: **how much do these two arrows point in the same direction?**
+
+## The formula
+
+Take two arrows. The dot product is:
+
+<MathBlock expression={'\\vec{a} \\cdot \\vec{b} = a_1 b_1 + a_2 b_2 = \\lVert\\vec{a}\\rVert \\, \\lVert\\vec{b}\\rVert \\, \\cos\\theta'} />
+
+where θ is the angle between them. Match up the components, multiply pairs, add them up.
+
+The sign tells you everything:
+- **Positive** (θ < 90°): arrows point roughly the same way — they're aligned
+- **Zero** (θ = 90°): arrows are perpendicular — completely unaligned
+- **Negative** (θ > 90°): arrows point away from each other — anti-aligned
+
+## See the alignment
+
+Drag the vectors below and watch the dot product change. Toggle the projection to see how much of b lies along a. When the dot product hits zero, the arrows are perpendicular.
+
+<DotProductVis client:visible />
+
+## Projection — the geometric meaning
+
+The dot product equals the length of **a** times the projection of **b** onto **a**. Think of shining a light perpendicular to **a**: the shadow **b** casts onto **a**'s line is its projection. The dot product scales that shadow by the length of **a**.
+
+This means: **a** · **b** answers "how much of **b** lies in the direction of **a**?" — weighted by **a**'s length.
+
+## In three dimensions
+
+The dot product works identically in 3D — project one arrow onto another and measure the shadow. The yellow dashed line shows the projection of **b** onto **a**.
+
+<DotProduct3DCompanion client:visible mode="dot" />
+
+<FormulaReadout formulas={[
+  { label: "3D 点积", expression: "\\vec{a} \\cdot \\vec{b} = a_1 b_1 + a_2 b_2 + a_3 b_3" },
+  { label: "投影", expression: "\\text{proj}_{\\vec{a}}\\vec{b} = \\frac{\\vec{a} \\cdot \\vec{b}}{\\vec{a} \\cdot \\vec{a}}\\,\\vec{a}" },
+]} />
+
+<KeyInsight>
+The dot product measures how much two arrows agree in direction — positive means aligned, zero means perpendicular, negative means opposed. It's the component-wise product, summed up.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Compute (3,1) · (1,4). Are these vectors more aligned or more perpendicular?"
+  hint="3·1 + 1·4 = 7. Both vectors have length about 3.2 and 4.1."
+  answer="Dot product = 7. The cosine of the angle is 7/(√10 · √17) ≈ 0.54, so θ ≈ 57°. More aligned than perpendicular — they're somewhat pointing the same way."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Find a vector perpendicular to (3, 4). How many such vectors exist?"
+  hint="Perpendicular means dot product = 0. Set up 3x + 4y = 0."
+  answer="Any scalar multiple of (-4, 3) works, since 3(-4) + 4(3) = 0. Infinitely many vectors are perpendicular to (3, 4) — they all lie along the same line, pointing in opposite directions. In 2D, the perpendicular family is always a line."
+/>
+
+---
+
+**Up next:** [Length, Angles, Orthogonality →](/courses/linear-algebra/05-length-angles-orthogonality)

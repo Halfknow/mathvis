@@ -1,0 +1,107 @@
+---
+title: "Law of Large Numbers"
+titleZh: "大数定律"
+description: "The average of many draws converges to the expected value — randomness smooths out in the long run."
+descriptionZh: "多次抽取的平均值收敛于期望——随机性在长期中会趋于平滑。"
+course: "probability"
+module: "The Laws That Govern Randomness"
+moduleZh: "支配随机性的法则"
+moduleOrder: 4
+lessonOrder: 15
+duration: 18
+difficulty: "Intermediate"
+---
+
+import { LLNAnimation } from '../../../components/interactive/probability/LLNAnimation';
+
+Roll a die. The result is random — 1, 4, 6, 2, who knows. Roll it again. And again. After a thousand rolls, compute the average. That average is remarkably close to 3.5. Not because any single roll is predictable, but because the randomness cancels out when you pile enough of it together.
+
+This is the **Law of Large Numbers** (LLN), and it is the reason statistics works. It says: the average of many independent draws converges to the expected value. The individual observations are wild and unpredictable, but their average is calm and precise. The river of randomness eventually settles into a smooth, predictable course.
+
+## The running average
+
+Let $X_1, X_2, \ldots, X_n$ be independent and identically distributed (i.i.d.) random variables, each with mean $\mu$ and variance $\sigma^2$. Define the **sample mean**:
+
+$$\bar{X}_n = \frac{1}{n}\left(X_1 + X_2 + \cdots + X_n\right)$$
+
+The mean of the sample mean is still $\mu$:
+
+$$E[\bar{X}_n] = \mu$$
+
+But the variance shrinks:
+
+$$\text{Var}(\bar{X}_n) = \frac{\sigma^2}{n}$$
+
+Each new observation adds information and the uncertainty drops. After $n$ draws, the variance of the average is $1/n$ of the original. The "cloud of uncertainty" around the mean shrinks like $1/\sqrt{n}$.
+
+Picture it as a river. Upstream, the water churns and splashes — that is the individual observations. Downstream, the current is smooth and steady — that is the running average. The turbulence is still there in each molecule, but the river as a whole has settled.
+
+## The Weak Law of Large Numbers
+
+The **Weak Law** says that $\bar{X}_n$ converges to $\mu$ **in probability**:
+
+$$\text{For any } \epsilon > 0: \quad \lim_{n \to \infty} P\left(|\bar{X}_n - \mu| > \epsilon\right) = 0$$
+
+In plain language: as $n$ grows, the probability that the sample mean is more than $\epsilon$ away from the true mean goes to zero. The sample mean can still be far off, but the chance of that happening becomes vanishingly small.
+
+The proof is a direct application of Chebyshev's inequality from the previous lesson. Apply Chebyshev to $\bar{X}_n$:
+
+$$P\left(|\bar{X}_n - \mu| \geq \epsilon\right) \leq \frac{\text{Var}(\bar{X}_n)}{\epsilon^2} = \frac{\sigma^2}{n\epsilon^2}$$
+
+As $n \to \infty$, the right side goes to 0. That is the entire proof. The Law of Large Numbers is Chebyshev's inequality pointed at the sample mean, whose variance is shrinking as $\sigma^2/n$.
+
+## The Strong Law of Large Numbers
+
+The Weak Law says the probability of being far off goes to zero. The **Strong Law** says something stronger: the sample mean actually *settles* on $\mu$, not just with high probability but with certainty:
+
+$$P\left(\lim_{n \to \infty} \bar{X}_n = \mu\right) = 1$$
+
+This is called **almost sure convergence**. With probability 1, the sequence $\bar{X}_1, \bar{X}_2, \bar{X}_3, \ldots$ converges to $\mu$ as a sequence of numbers. For a given realization (a specific sequence of die rolls, for instance), the running average will eventually get and stay close to $\mu$.
+
+The distinction between the Weak and Strong Laws is subtle. The Weak Law says "the probability of a large deviation is small for large $n$." The Strong Law says "with probability 1, the deviations eventually vanish for good." In practice, the Strong Law tells you that the running average chart will settle down and stay down — it will not occasionally jump far away again after having been close.
+
+## Rolling a die — watching the river settle
+
+Consider rolling a fair six-sided die. Each roll is uniformly distributed on $\1, 2, 3, 4, 5, 6\$, with mean $\mu = 3.5$ and variance $\sigma^2 = 35/12 \approx 2.917$.
+
+The first roll gives an average of wherever that single roll landed — 1, or 6, or anything in between. After 10 rolls, the average is typically somewhere between 2.5 and 4.5. After 100 rolls, it is usually between 3.2 and 3.8. After 1000 rolls, it hugs 3.5 like a river hugging its bed.
+
+The individual rolls are still wild. Roll 1000 is just as random as roll 1. But the average is calm, because the upward and downward deviations cancel. Every roll above 3.5 tends to be balanced by a roll below 3.5, and the imbalance shrinks as $n$ grows.
+
+The standard deviation of the running average after $n$ rolls is $\sigma/\sqrt{n} \approx 1.71/\sqrt{n}$. After 100 rolls, that is about 0.17. After 10,000 rolls, it is 0.017. The river narrows at rate $1/\sqrt{n}$.
+
+Hit "Flip 100" a few times and watch the running average settle toward the true mean. The blue band (±σ/√n) narrows as n grows — that is convergence becoming *tighter*, not just closer. Try all three distributions.
+
+<LLNAnimation client:visible />
+
+## Why the LLN is not trivial
+
+The LLN says the average converges to the expected value. It does **not** say that "things even out" in the sense of compensating for early deviations. If your first 10 die rolls are all 6s, the running average starts at 6.0 and slowly drifts down toward 3.5 — but those early 6s are never "canceled" by a string of 1s. They are just diluted by the growing denominator.
+
+This is the difference between "cancellation" and "dilution." The LLN works by dilution. Each new observation adds its own random contribution, but divided by an ever-growing $n$. The early observations keep their influence forever — it just fades as $n$ increases.
+
+## The speed of convergence
+
+How many observations do you need? That depends on the variance and on how precise you want to be. Chebyshev gives a conservative answer:
+
+$$n \geq \frac{\sigma^2}{\epsilon^2 \delta}$$
+
+to guarantee $P(|\bar{X}_n - \mu| > \epsilon) < \delta$.
+
+For the die roll with $\sigma^2 \approx 2.917$, to get within $\epsilon = 0.1$ of the true mean with probability at least $1 - \delta = 0.95$:
+
+$$n \geq \frac{2.917}{0.01 \times 0.05} = 5834$$
+
+About 6000 rolls. In practice, the convergence is much faster because the normal approximation (which we will see in the next lesson) is tighter than Chebyshev. But the Chebyshev guarantee is ironclad — it works for any distribution.
+
+## Key insight
+
+> The Law of Large Numbers is the bridge between probability and statistics. Probability gives you the model (the distribution, the mean, the variance). The LLN guarantees that the data — averaged over enough observations — will reflect that model faithfully. The individual draws are wild; the average is calm. The proof is one line of Chebyshev.
+
+## Practice
+
+**Exercise 1.** A coin is biased with $P(\text{heads}) = 0.7$. You flip it $n$ times and record the fraction of heads. Use Chebyshev's inequality to find $n$ large enough that the fraction of heads is within 0.05 of 0.7 with probability at least 0.9. (Hint: for a Bernoulli variable, $\sigma^2 = p(1-p)$.)
+
+**Exercise 2.** You measure the length of a table 100 times. Each measurement has mean $\mu$ (the true length) and standard deviation 2 cm. Use the Law of Large Numbers to approximate the probability that the average of the 100 measurements is within 0.5 cm of $\mu$. How many measurements would you need to be within 0.1 cm?
+
+**Exercise 3.** The running average of die rolls after $n$ throws has standard deviation $\sigma/\sqrt{n}$. After how many rolls is the running average guaranteed (by Chebyshev) to be within 0.5 of the true mean 3.5 with probability at least 0.99? What does the Central Limit Theorem (next lesson) suggest the actual probability is at that same $n$ — much higher or much lower?

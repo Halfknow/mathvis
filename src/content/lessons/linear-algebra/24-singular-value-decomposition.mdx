@@ -1,0 +1,121 @@
+---
+title: 'Singular Value Decomposition'
+titleZh: '奇异值分解'
+description: 'Every matrix — even non-square ones — has an orthogonal input basis and an orthogonal output basis, connected by pure stretch factors.'
+descriptionZh: '每个矩阵——即使是非方阵——都有正交输入基和正交输出基，由纯拉伸因子连接。'
+course: 'linear-algebra'
+module: 'Orthogonality and Decomposition'
+moduleZh: '正交与分解'
+moduleOrder: 5
+lessonOrder: 24
+duration: 22
+difficulty: 'Advanced'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { SVDExplorer } from '../../../components/interactive/linear-algebra/SVDExplorer';
+import { EigenDecomposition3DCompanion } from '../../../components/interactive/linear-algebra/EigenDecomposition3DCompanion';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# Singular Value Decomposition
+
+Eigenvectors only work for square matrices. But what about non-square matrices — the ones that change dimensions? **SVD** is the ultimate decomposition: it works for *every* matrix, no exceptions.
+
+<MathBlock expression={'A = U \\Sigma V^T'} />
+
+Three pieces:
+- **V** (right singular vectors): an orthonormal basis for the input space — the "natural" input directions
+- **Σ** (singular values): how much each direction is stretched
+- **U** (left singular vectors): an orthonormal basis for the output space — where the stretched directions land
+
+## The geometric story
+
+SVD decomposes any linear transformation into three atomic steps:
+
+1. **Rotate** the input by Vᵀ — align the input with the "natural" directions (the right singular vectors)
+2. **Stretch** along those axes by Σ — scale each direction independently by its singular value σ₁, σ₂, ...
+3. **Rotate again** by U — align the stretched result with the output axes (the left singular vectors)
+
+The result: a unit circle becomes an ellipse whose semi-axes have lengths σ₁ and σ₂. The longest axis points along the first left singular vector; the input direction that maps to it is the first right singular vector.
+
+## See the ellipse
+
+Below, the blue ellipse is the image of the unit circle under A. The red and yellow dashed lines show the singular value axes (the semi-axes of the ellipse). Click a preset to see different configurations animate, or drag the animation slider to watch the circle transform.
+
+<SVDExplorer client:visible />
+
+## SVD vs. eigendecomposition
+
+| Property | Eigendecomposition | SVD |
+|----------|-------------------|-----|
+| Works for | Square matrices only | **Any matrix** |
+| Bases | One basis (eigenvectors) | Two bases (U and V) |
+| Orthogonality | Not guaranteed | **Always orthogonal** |
+| Values | Eigenvalues (can be negative/complex) | Singular values (always ≥ 0) |
+
+The key geometric difference: eigendecomposition uses the **same coordinate system** for input and output — you're asking "which directions stay on their own line?" SVD uses **different coordinate systems** for input and output — you're asking "which input direction maps to which output direction, and how much does it stretch?"
+
+This is why SVD always works: you're free to pick the most natural basis for each side independently. The eigendecomposition insists on one basis for both, which is only possible when the matrix is square and well-behaved.
+
+## The condition number
+
+The ratio κ = σ₁/σ₂ is the **condition number** of the matrix. It measures how "elongated" the ellipse is — how much the transformation distorts the input:
+
+- **κ = 1** (circle → circle): The transformation preserves all directions equally. Perfect conditioning.
+- **κ ≈ 3**: The ellipse is moderately stretched. Some directions are amplified more than others.
+- **κ > 10**: The ellipse is very flat. The transformation massively amplifies one direction while crushing another. This is **ill-conditioning** — small changes in input can cause huge changes in output.
+- **κ = ∞** (σ₂ = 0): The ellipse collapses to a line. The matrix is singular — information is lost.
+
+A matrix is invertible if and only if all its singular values are positive. The condition number tells you *how close* a matrix is to being singular.
+
+## Where SVD lives
+
+- **PCA (data science):** The singular vectors of a data matrix are the principal components — the directions of maximum variance in your data
+- **Image compression:** Keep only the largest singular values and discard the rest. A 1000×1000 image might be well-approximated by just 50 singular values — a 20x compression
+- **Recommendations (Netflix):** Low-rank approximation via SVD reveals hidden preferences in sparse user-movie rating matrices
+- **Natural language processing:** Latent semantic analysis applies SVD to word-document matrices, uncovering hidden topics
+
+## In three dimensions
+
+SVD in 3D: the gray unit circle stretches to the orange ellipse, then rotates to the final terracotta position. The red and green arrows are the singular vectors.
+
+<EigenDecomposition3DCompanion client:visible mode="svd" />
+
+<FormulaReadout formulas={[
+  { label: "SVD", expression: "A = U \\Sigma V^T" },
+  { label: "奇异值", expression: "\\sigma_1 \\geq \\sigma_2 \\geq \\sigma_3 \\geq 0" },
+  { label: "条件数", expression: "\\kappa = \\sigma_1 / \\sigma_2" },
+]} />
+
+<KeyInsight>
+SVD decomposes any matrix into three clean pieces: rotate (V), stretch (Σ), rotate again (U). The singular values are always non-negative and reveal the "importance" of each direction. The condition number κ = σ₁/σ₂ measures how much the transformation distorts its input.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="A = [[3,0],[0,2]]. What are the singular values? How do they relate to the eigenvalues?"
+  hint="Compute A^T A and find its eigenvalues. Then take square roots."
+  answer="A^T A = [[9,0],[0,4]]. Eigenvalues: 9 and 4. Singular values: √9 = 3, √4 = 2. For this diagonal matrix, the singular values equal the absolute values of the eigenvalues."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="If σ₁ = 5 and σ₂ = 0, what does that tell you about the transformation?"
+  hint="The second singular value is zero — what direction gets crushed?"
+  answer="The transformation has rank 1. It stretches one direction by 5 and completely crushes the perpendicular direction. The output is always on a line. All the information in one dimension is lost."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Matrix A has singular values σ₁ = 10 and σ₂ = 0.1. What is the condition number? Is this matrix well-conditioned or ill-conditioned? What does that mean practically?"
+  hint="κ = σ₁/σ₂. A large κ means the transformation is very sensitive to small input changes."
+  answer="κ = 10/0.1 = 100. The matrix is severely ill-conditioned. Input errors along the first singular direction get amplified 100× more than along the second direction. In numerical computation, you'd expect to lose about 2 digits of precision (log₁₀(100) = 2)."
+/>
+
+---
+
+**Up next:** [3D Transformations →](/courses/linear-algebra/25-3d-transformations)

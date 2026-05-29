@@ -1,0 +1,104 @@
+---
+title: "Visualizing the Chain Rule"
+titleZh: "链式法则可视化"
+description: "See the chain rule as a conveyor belt — the inner function feeds the outer function, and derivatives multiply."
+descriptionZh: "把链式法则看作传送带——内函数把结果传递给外函数，导数相乘。"
+course: "calculus"
+module: "Foundations of Differentiation"
+moduleZh: "微分基础"
+moduleOrder: 1
+lessonOrder: 4
+duration: 15
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "chain-rule"
+    type: "chain-rule"
+    title: "Chain Rule Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { ChainRuleExplorer } from '../../../components/interactive/calculus/ChainRuleExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+## A conveyor belt for functions
+
+Imagine a factory with two machines in a row. The first machine takes raw material `x` and outputs `g(x)`. The second machine takes that output and produces `f(g(x))`. Each machine has its own speed — its own derivative. The chain rule says: **multiply the speeds**.
+
+Think of it this way: $x$ enters the first machine ($g$), gets transformed, comes out as $g(x)$, then enters the second machine ($f$). The overall speed change — how fast the final output responds to a nudge in the input — is the product of each machine's speed change, evaluated at the right point. If the inner machine doubles the speed and the outer machine triples it, the combined effect is a sixfold speedup.
+
+## The formal statement
+
+For a composite function $h(x) = f(g(x))$, the derivative is:
+
+<MathBlock expression={"h'(x) = f'(g(x)) \\cdot g'(x)"} />
+
+The key insight is that $f'$ is evaluated at $g(x)$, not at $x$. The outer derivative is measured at the output of the inner function.
+
+## Explore the conveyor belt
+
+Drag the `x` slider and watch how the inner function feeds into the outer function. The derivative readout at the bottom shows each factor and their product:
+
+<InteractiveCanvas
+  title="Chain Rule Explorer"
+  caption="Top panel: the composite function f(g(x)). Bottom panel: the inner function g(x). The derivative chain multiplies at every x."
+  aspectRatio="4/3"
+>
+  <ChainRuleExplorer client:visible />
+</InteractiveCanvas>
+
+## Three examples, one pattern
+
+Let's trace the chain rule through concrete examples:
+
+**Example 1: $h(x) = \sin(x^2)$**
+
+The inner function is $g(x) = x^2$ with $g'(x) = 2x$. The outer function is $f(u) = \sin(u)$ with $f'(u) = \cos(u)$. So:
+
+<MathBlock expression={"h'(x) = \\cos(x^2) \\cdot 2x"} />
+
+**Example 2: $h(x) = e^{3x}$**
+
+Inner: $g(x) = 3x$, $g'(x) = 3$. Outer: $f(u) = e^u$, $f'(u) = e^u$.
+
+<MathBlock expression={"h'(x) = e^{3x} \\cdot 3 = 3e^{3x}"} />
+
+**Example 3: $h(x) = (x^2 + 1)^3$**
+
+This is where the chain rule really shines. Expanding this cubic would be painful. Instead: inner $g(x) = x^2 + 1$, $g'(x) = 2x$. Outer $f(u) = u^3$, $f'(u) = 3u^2$.
+
+<MathBlock expression={"h'(x) = 3(x^2+1)^2 \\cdot 2x = 6x(x^2+1)^2"} />
+
+## Why the chain rule is the workhorse
+
+Most functions you'll encounter in science and engineering are compositions. Neural networks are chains of layer functions — backpropagation is just the chain rule applied repeatedly. Physics equations chain coordinate transformations. The chain rule is not just one tool in the toolbox — it's the mechanism that connects all the others.
+
+This is why we can differentiate something like $\sin(x^2)$ without expanding it first. The chain rule decomposes the rate of change into stages: first ask "how fast is $x^2$ changing?" then ask "how fast is $\sin$ changing at that output?" and multiply the answers. Any composition, no matter how deeply nested, yields to the same strategy — peel off one layer at a time.
+
+<KeyInsight>
+The chain rule says: when functions compose, their rates of change multiply. The derivative of a pipeline is the product of the derivatives at each stage.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Find the derivative of h(x) = cos(5x)."
+  hint="Identify the inner function and the outer function, then apply the chain rule."
+  answer="Inner: g(x) = 5x, g'(x) = 5. Outer: f(u) = cos(u), f'(u) = -sin(u). So h'(x) = -sin(5x) · 5 = -5sin(5x)."
+/>
+
+<ExerciseBlock number={2}
+  prompt="The derivative of h(x) = ln(x² + 1) equals 2x/(x² + 1). Verify this using the chain rule."
+  hint="Outer: f(u) = ln(u), f'(u) = 1/u. Inner: g(x) = x² + 1, g'(x) = 2x."
+  answer="h'(x) = 1/(x² + 1) · 2x = 2x/(x² + 1). The derivative exists for all real x since x² + 1 > 0."
+/>
+
+<ExerciseBlock number={3}
+  prompt="A particle's position is s(t) = e^(sin(t)). Find its velocity."
+  hint="This is a chain rule problem. What is the inner function? What is the outer function?"
+  answer="Inner: g(t) = sin(t), g'(t) = cos(t). Outer: f(u) = eᵘ, f'(u) = eᵘ. Velocity: s'(t) = e^(sin(t)) · cos(t)."
+/>
+
+[Next Lesson →](/courses/calculus/05-curve-sketching)

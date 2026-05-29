@@ -1,0 +1,89 @@
+---
+title: "Confidence Intervals"
+titleZh: "置信区间"
+description: "A range that traps the true parameter with specified probability — the precision behind the point estimate."
+descriptionZh: "以指定概率捕获真实参数的范围——点估计背后的精度。"
+course: "probability"
+module: "From Data to Inference"
+moduleZh: "从数据到推断"
+moduleOrder: 5
+lessonOrder: 19
+duration: 18
+difficulty: "Advanced"
+---
+
+import { CIAnimation } from '../../../components/interactive/probability/CIAnimation';
+
+A point estimate gives you a single number — your best guess. But a single number carries no information about how precise that guess is. You might estimate the average height of a population as 172 cm, but is that 172 give or take 1 cm, or 172 give or take 20 cm? The answer determines whether your estimate is useful or meaningless.
+
+A **confidence interval** gives you a range instead of a point. It says: "based on the data, the true parameter likely lives somewhere in here." The width of that range encodes your uncertainty. Narrow interval: you know a lot. Wide interval: you know little. This lesson is about how to build those ranges and what they really mean.
+
+## The correct interpretation
+
+A **95% confidence interval** means: if you repeated the sampling process many times, about 95% of the resulting intervals would contain the true parameter.
+
+This is subtle, and it is the most commonly misunderstood concept in statistics. The correct mental picture:
+
+- The **parameter** (say, $\mu$) is a fixed point. It does not move. It is unknown, but it is not random.
+- The **interval** is random. Each new sample produces a new interval — different center, different width.
+- Over many repetitions, about 95% of those random intervals will enclose the fixed point.
+
+The incorrect interpretation — "there is a 95% probability that the true parameter lies inside this interval" — treats the parameter as random and the interval as fixed. That reverses the correct picture. The parameter is fixed; the interval dances around it.
+
+## The dancing intervals
+
+Picture the true population mean $\mu$ as a vertical line drawn on a wall. You stand across the room and throw a lasso. Each throw corresponds to a new sample, and the lasso's loop is the confidence interval. Sometimes the loop lands around the vertical line — the interval catches $\mu$. Sometimes the loop lands to the left or right — the interval misses.
+
+With a 95% confidence level, you expect to catch the line on 95 out of every 100 throws. The 5 misses are not errors in your technique — they are the inevitable consequence of random sampling.
+
+If you could watch 100 intervals stacked vertically on the same plot, you would see most of them crossing the true $\mu$ line, with a few strays that miss entirely. Those strays are not mistakes. They are the 5%.
+
+## The formula for a normal mean
+
+When the population is normal with known variance $\sigma^2$, or when the sample size is large enough for the Central Limit Theorem to kick in, the confidence interval for the mean is:
+
+$$\bar{X} \pm z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}$$
+
+The pieces have clear geometric meanings:
+
+- $\bar{X}$ is the center of the interval — your point estimate.
+- $\sigma/\sqrt{n}$ is the standard error — how much the sample mean typically wanders from the true mean.
+- $z_{\alpha/2}$ is the multiplier that controls the confidence level. For 95%, $z_{0.025} \approx 1.96$. For 99%, $z_{0.005} \approx 2.576$.
+
+The interval extends symmetrically from the estimate by an amount proportional to the standard error. The more your estimate typically wanders (large $\sigma/\sqrt{n}$), the wider the interval needs to be to catch the true value with the specified probability.
+
+## Width, confidence, and sample size
+
+Three forces control the width of the interval:
+
+**Higher confidence = wider interval.** Moving from 95% to 99% confidence replaces $z = 1.96$ with $z = 2.576$. You demand that more of the lassos catch the line, so each lasso must be bigger. There is no free lunch: more confidence costs more width.
+
+**More data = narrower interval.** The standard error $\sigma/\sqrt{n}$ shrinks as $n$ grows. The sample mean becomes a more precise estimator, and the interval tightens around it. To halve the width of the interval, you need four times as much data (because the $\sqrt{n}$ in the denominator means doubling $n$ only shrinks the width by $\sqrt{2}$).
+
+**More variability = wider interval.** A population with large $\sigma$ produces samples that spread more, which makes the sample mean wander more, which forces the interval wider. You cannot reduce this without reducing the population variability itself.
+
+## The t-distribution
+
+When $\sigma$ is unknown (which is almost always the case in practice), you estimate it from the sample using $S$. This adds uncertainty on top of uncertainty. The **t-distribution** accounts for this extra uncertainty by having heavier tails than the normal.
+
+The interval becomes:
+
+$$\bar{X} \pm t_{\alpha/2, \, n-1} \cdot \frac{S}{\sqrt{n}}$$
+
+The critical value $t_{\alpha/2, \, n-1}$ comes from the t-distribution with $n - 1$ degrees of freedom. For small $n$, this value is noticeably larger than the normal $z$ — the interval is wider, reflecting the additional uncertainty from estimating $\sigma$. As $n$ grows, the t-distribution converges to the normal, and the two intervals become identical.
+
+Watch the dancing intervals below. Hit "Add 25 CIs" a few times. Green intervals catch the true mean; red ones miss. Count them — roughly 95 out of 100 will be green. Now change the confidence level to 80% and watch the red intervals multiply.
+
+<CIAnimation client:visible />
+
+## Key insight
+
+> A confidence interval is a lasso thrown at a fixed target. The target does not move — your lasso does. A 95% confidence level means the lasso catches the target on 95% of throws. You can make the lasso bigger (higher confidence) or throw more rope (more data to tighten the loop), but you can never guarantee a catch — there will always be the 5% of throws that miss.
+
+## Practice
+
+1. A sample of 50 light bulbs has a mean lifetime of 1020 hours with a known population standard deviation of 120 hours. Compute a 95% confidence interval for the true mean lifetime. Now compute a 99% interval. How much wider is the 99% interval? Is the extra width worth the extra confidence?
+
+2. You want to estimate the average weight of apples from an orchard. Your scale gives you a sample mean of 150 grams with a sample standard deviation of 20 grams. How many apples do you need to weigh so that the 95% confidence interval has width at most 5 grams? (Hint: set $2 \cdot 1.96 \cdot S/\sqrt{n} \leq 5$ and solve for $n$.)
+
+3. A researcher computes a 95% confidence interval for a mean and gets $[12.3, 15.7]$. A colleague says: "There is a 95% chance the true mean is between 12.3 and 15.7." Explain why this statement is incorrect, and give the correct interpretation using the "dancing intervals" picture.

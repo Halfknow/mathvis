@@ -1,0 +1,97 @@
+---
+title: "Optimization"
+titleZh: "最优化"
+description: "Finding a maximum is finding where the slope changes from uphill to flat to downhill — the derivative crosses zero from above."
+descriptionZh: "找最大值就是找斜率从正变负的地方——导数从上方穿过零点。"
+course: "calculus"
+module: "Function Behavior"
+moduleZh: "函数行为"
+moduleOrder: 2
+lessonOrder: 6
+duration: 20
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "optimization-06"
+    type: "optimization"
+    title: "Optimization Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { OptimizationExplorer } from '../../../components/interactive/calculus/OptimizationExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+You want the best outcome — the most profit, the least cost, the shortest path. Calculus gives you a systematic way to find it: **set the derivative to zero and check**.
+
+## The idea
+
+A smooth function's peaks and valleys are where the tangent line is flat — where $f'(x) = 0$. These points are called **critical points**. Not every critical point is a maximum or minimum, but every maximum and minimum (in the interior) is a critical point.
+
+<InteractiveCanvas
+  title="Optimization Explorer"
+  caption="Drag the point along the curve. When f′ approaches zero, you're near a critical point. The classification (local max/min) appears automatically."
+  aspectRatio="16/9"
+>
+  <OptimizationExplorer client:visible />
+</InteractiveCanvas>
+
+Watch the $f'$ readout as you drag. When it approaches zero, you're near a peak or valley. The second derivative $f''$ tells you which:
+- $f'' < 0$ at the critical point → **local maximum** (dome shape, marked red)
+- $f'' > 0$ at the critical point → **local minimum** (bowl shape, marked green)
+
+## The shortest path: a deeper example
+
+Imagine you need to travel from point $A$ on land to point $B$ in the water. You run faster on land than you swim in water. What's the fastest path?
+
+You might think a straight line — but a straight line spends too much time swimming slowly. You might think: run to the shore closest to $B$, then swim. But that path is unnecessarily long. Calculus finds the sweet spot: the exact crossing point where the tradeoff between distance and speed is optimal. This is the same principle behind Fermat's principle of least time in optics — light itself "chooses" the fastest path, bending as it passes from air into water.
+
+Today, this same idea powers **gradient descent**, the engine behind machine learning. A neural network's "loss" is a surface in high dimensions, and training means rolling downhill to find the lowest point — a minimum. The derivative points downhill; the algorithm follows it. Every time a model improves its predictions, it's solving an optimization problem.
+
+## The optimization recipe
+
+1. **Model**: express the quantity to optimize as a function $f(x)$.
+2. **Differentiate**: compute $f'(x)$.
+3. **Find critical points**: solve $f'(x) = 0$.
+4. **Classify**: use the second derivative test or the sign-change test.
+5. **Check boundaries**: the global optimum might be at the edge of the domain.
+
+## A classic example
+
+A farmer has 100 meters of fence and wants to enclose the largest possible rectangular area against a wall (no fence needed on the wall side).
+
+Let $x$ = width, $y$ = height. The constraint is $2y + x = 100$, so $y = (100 - x)/2$.
+
+Area: $A(x) = x \cdot y = x(100 - x)/2 = 50x - x^2/2$.
+
+<MathBlock expression={"A'(x) = 50 - x = 0 \\implies x = 50"} />
+<MathBlock expression={"A''(x) = -1 < 0 \\implies \\text{local max"} />
+
+The optimal rectangle is 50m wide and 25m tall, giving $A = 1250$ m². The second derivative is negative everywhere — the parabola opens downward, so this is indeed the global maximum.
+
+<KeyInsight>
+To find the optimum, set the derivative to zero and verify the concavity. A negative second derivative confirms a maximum (dome); a positive second derivative confirms a minimum (bowl).
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Find the minimum value of f(x) = x² − 6x + 10."
+  hint="Compute f'(x), set it to zero, and check f''."
+  answer="f'(x) = 2x − 6 = 0 gives x = 3. f''(x) = 2 > 0, so it's a minimum. f(3) = 9 − 18 + 10 = 1. The minimum value is 1."
+/>
+
+<ExerciseBlock number={2}
+  prompt="In the interactive, switch to f(x) = −x² + 4. Where is the maximum, and what is the second derivative there?"
+  hint="The only critical point is at x = 0. Check f''."
+  answer="f'(0) = 0. f''(x) = −2 < 0, confirming a maximum. The peak is at (0, 4). The dome-shaped second derivative is constant and negative."
+/>
+
+<ExerciseBlock number={3}
+  prompt="You have a piece of wire 40 cm long, bent to form a rectangle. What dimensions maximize the area?"
+  hint="If the sides are x and y, the perimeter constraint is 2x + 2y = 40. Express area in terms of one variable."
+  answer="Perimeter: 2x + 2y = 40, so y = 20 − x. Area: A(x) = x(20 − x) = 20x − x². A'(x) = 20 − 2x = 0 gives x = 10. Then y = 10. The optimal shape is a 10 × 10 square with area 100 cm²."
+/>
+
+[Next Lesson →](/courses/calculus/07-related-rates)

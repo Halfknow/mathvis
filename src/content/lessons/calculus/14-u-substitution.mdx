@@ -1,0 +1,96 @@
+---
+title: "u-Substitution"
+titleZh: "换元积分"
+description: "u-Substitution is the chain rule running backwards — spot the inner function, substitute, simplify, integrate."
+descriptionZh: "换元积分是链式法则的逆运算——识别内函数，替换，简化，积分。"
+course: "calculus"
+module: "Techniques of Integration"
+moduleZh: "积分技术"
+moduleOrder: 4
+lessonOrder: 14
+duration: 18
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "substitution-explorer-14"
+    type: "substitution-explorer"
+    title: "Substitution Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { SubstitutionExplorer } from '../../../components/interactive/calculus/SubstitutionExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+The chain rule says: the derivative of $f(g(x))$ is $f'(g(x)) \cdot g'(x)$. u-Substitution says: if you see something that looks like $f'(g(x)) \cdot g'(x)$ inside an integral, you can undo the chain rule. Think of it as a change of coordinates: you translate the integral into a simpler language (the u-world), solve it there, then translate back to x. The key insight is that $du$ carries the derivative information -- it encodes how the old variable stretches and compresses into the new one.
+
+<InteractiveCanvas
+  title="Substitution Explorer"
+  caption="See the three steps of u-substitution: the original integrand (blue), the substituted form (green), and the final result (yellow). Toggle the mapping arrows to see how x maps to u."
+  aspectRatio="16/9"
+>
+  <SubstitutionExplorer client:visible />
+</InteractiveCanvas>
+
+## The method
+
+1. **Choose** $u = g(x)$ — pick the "inner function."
+2. **Compute** $du = g'(x)\, dx$.
+3. **Rewrite** the integral in terms of $u$.
+4. **Integrate** the simpler $u$-integral.
+5. **Substitute back** $u = g(x)$.
+
+## Example 1: $\int 2x \cos(x^2)\, dx$
+
+Spot the pattern: $2x$ is the derivative of $x^2$.
+
+Let $u = x^2$, then $du = 2x\, dx$.
+
+<MathBlock expression={"\\int 2x \\cos(x^2)\\, dx = \\int \\cos(u)\\, du = \\sin(u) + C = \\sin(x^2) + C"} />
+
+The $2x\, dx$ neatly becomes $du$, and the integral simplifies from a complicated expression in $x$ to a basic integral in $u$.
+
+## Example 2: $\int x e^{x^2}\, dx$
+
+Let $u = x^2$, then $du = 2x\, dx$, so $x\, dx = du/2$.
+
+<MathBlock expression={"\\int x e^{x^2}\\, dx = \\frac{1}{2}\\int e^u\\, du = \\frac{1}{2}e^u + C = \\frac{1}{2}e^{x^2} + C"} />
+
+## Example 3: Definite integral $\int_0^1 \frac{x}{1+x^2}\, dx$
+
+Let $u = 1 + x^2$, then $du = 2x\, dx$, so $x\, dx = du/2$. When $x = 0$: $u = 1$. When $x = 1$: $u = 2$.
+
+<MathBlock expression={"\\int_0^1 \\frac{x}{1+x^2}\\, dx = \\frac{1}{2}\\int_1^2 \\frac{du}{u} = \\frac{1}{2}[\\ln u]_1^2 = \\frac{\\ln 2}{2}"} />
+
+Notice: for definite integrals, you change the bounds too. No need to substitute back.
+
+## When u-substitution fails
+
+Not every integral yields to substitution. If you pick $u$ but $du$ doesn't appear in the integrand (or can't be isolated), try a different $u$ or a different technique entirely.
+
+<KeyInsight>
+u-Substitution is the chain rule in reverse. Spot the inner function, let u equal it, and hope its derivative appears somewhere in the integrand. If it does, the integral simplifies.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Evaluate ∫ 3x²(x³ + 1)⁴ dx."
+  hint="Let u = x³ + 1. What is du?"
+  answer="u = x³ + 1, du = 3x² dx. The integral becomes ∫ u⁴ du = u⁵/5 + C = (x³ + 1)⁵/5 + C."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Evaluate ∫₀^{π/2} sin(x) cos(x) dx."
+  hint="Let u = sin(x). Then du = cos(x) dx. Don't forget to change the bounds."
+  answer="u = sin(x), du = cos(x) dx. Bounds: x=0 → u=0, x=π/2 → u=1. ∫₀¹ u du = [u²/2]₀¹ = 1/2."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Why doesn't u-substitution work easily on ∫ x cos(x) dx?"
+  hint="Try u = cos(x). Then du = −sin(x) dx. Does −sin(x) appear in the integrand? Try u = x instead."
+  answer="Neither u = cos(x) nor u = x makes du appear in the integrand. The x and cos(x) aren't connected by a derivative relationship. This integral requires a different technique: integration by parts."
+/>
+
+[Next Lesson →](/courses/calculus/15-integration-by-parts)

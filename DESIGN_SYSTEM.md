@@ -106,6 +106,53 @@ Avoid bounces, overshoots, and stagger animations. Mathematics is calm.
 
 This is what already exists in `src/components/`. When designing a new screen, prefer composing these over inventing new primitives.
 
+### Interactive math components (`interactive/`)
+
+These are **domain-specific visualization widgets** — the core differentiator of MathViz.
+
+#### 2D components (SVG + React)
+
+| Component | Used in lessons | Technology | Description |
+|-----------|----------------|------------|-------------|
+| VectorCanvas | 01 | SVG+React | Draggable 2D vector with coordinate display |
+| VectorAddition | 02 | SVG+React | Head-to-tail vector addition visualization |
+| ScalarMult | 03 | SVG+React | Scalar multiplication with slider |
+| LinearCombo | 06, 08 | SVG+React | Linear combination constructor |
+| SpanExplorer | 07 | SVG+React | Span visualization with independence toggle |
+
+#### 2D components (D3.js)
+
+| Component | Used in lessons | Description |
+|-----------|----------------|-------------|
+| DotProductVis | 04, 05 | Dot product with projection toggle |
+| EigenvectorVis | 22, 30 | Eigenvector/eigenvalue explorer |
+| MatrixTransform2D | 11, 12, 13, 14, 17, 18 | 2D grid transformation with matrix sliders |
+| ProjectionVis | 09 | Vector projection with perpendicular line |
+| BasisChangeVis | 10 | Dual basis grid with coordinate comparison |
+| LinearSystemVis | 16 | Row/column view toggle |
+| NullSpaceVis | 19 | Null space direction highlighting |
+| GramSchmidtVis | 21 | Step-by-step orthogonalization |
+| DiagonalizationVis | 23 | Eigenbasis grid transformation |
+| SVDExplorer | 24 | Unit circle → ellipse SVD animation |
+| FunctionSpaceVis | 28 | Polynomial add/scale/basis visualization |
+| InnerProductVis | 29 | Function inner product with integral shading |
+
+#### 3D components (React Three Fiber)
+
+| Component | Used in lessons | Description |
+|-----------|----------------|-------------|
+| MatrixTransform3D | 25 | 3D grid cube deformation with 3×3 matrix sliders |
+| CrossProductVis | 26 | 3D cross product with parallelogram |
+| NonSquareVis | 27 | 3D↔2D projection/embedding toggle |
+
+**Loading strategy:** All R3F components use `client:visible` for viewport-triggered lazy loading. D3 components render into SVG via `useRef` + `useEffect`.
+
+#### Component reuse pattern
+
+- MatrixTransform2D is reused in **6 lessons** (11-14, 17-18)
+- DotProductVis is reused in **2 lessons** (04-05)
+- Each new component follows the D3 pattern: `useRef<SVGSVGElement>` → `d3.select` → `svg.selectAll('*').remove()` → full repaint
+
 ### UI primitives (`ui/`)
 
 - **Button** — variants: `primary` (filled accent), `secondary` (outlined ink), `ghost` (text only). Sizes: `sm`, `md`, `lg`.

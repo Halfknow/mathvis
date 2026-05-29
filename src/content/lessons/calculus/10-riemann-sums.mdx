@@ -1,0 +1,98 @@
+---
+title: "Riemann Sums"
+titleZh: "黎曼和"
+description: "Slice the area into rectangles, add them up, and watch the approximation sharpen as the slices thin."
+descriptionZh: "把面积切成矩形，加起来，随着切片变薄，近似值越来越精确。"
+course: "calculus"
+module: "From Area to the Integral"
+moduleZh: "从面积到积分"
+moduleOrder: 3
+lessonOrder: 10
+duration: 20
+difficulty: "Beginner"
+interactiveWidgets:
+  - id: "riemann-sum-10"
+    type: "riemann-sum"
+    title: "Riemann Sum Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { RiemannSumExplorer } from '../../../components/interactive/calculus/RiemannSumExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+How do you compute the area under a curve when the shape isn't a simple triangle or rectangle? **Chop it into rectangles.**
+
+## The idea
+
+Divide the interval $[a, b]$ into $n$ equal slices of width $\Delta x = (b-a)/n$. In each slice, measure the function's height at some sample point, and build a rectangle. Add up all the rectangle areas. That sum is your **Riemann sum**.
+
+<MathBlock expression={"S_n = \\sum_{i=1}^{n} f(x_i^*) \\cdot \\Delta x"} />
+
+The sample point $x_i^*$ can be the left endpoint, right endpoint, or midpoint of each sub-interval. Each choice gives a slightly different sum, but they all converge to the same answer as $n \to \infty$.
+
+## Explore the convergence
+
+Drag the `n` slider to increase the number of rectangles. Watch the yellow area fill in the true area under the curve:
+
+<InteractiveCanvas
+  title="Riemann Sum Explorer"
+  caption="Increase n to add more rectangles. Switch between Left, Right, and Midpoint rules. Watch the Riemann sum converge to the exact integral."
+  aspectRatio="16/9"
+>
+  <RiemannSumExplorer client:visible />
+</InteractiveCanvas>
+
+Start with $n = 4$ and see the chunky approximation. Then slide up to $n = 50$ or $n = 200$ — the rectangles become so thin they virtually disappear into the curve. As $n$ grows, the rectangles "melt" into the area: their jagged tops smooth out, the overestimates and underestimates cancel, and the sum converges to the exact answer.
+
+## Three sampling rules
+
+**Left endpoint**: sample $f$ at the left edge of each sub-interval. Overestimates when $f$ is decreasing, underestimates when $f$ is increasing.
+
+**Right endpoint**: sample at the right edge. The bias reverses.
+
+**Midpoint rule**: sample at the center of each sub-interval. This is usually the most accurate for a given $n$, because positive and negative errors partially cancel.
+
+## The convergence
+
+For $f(x) = x^2$ on $[0, 1]$, the exact integral is $1/3$. The Riemann sum with the left endpoint rule and $n$ rectangles is:
+
+<MathBlock expression={"S_n = \\sum_{i=0}^{n-1} \\left(\\frac{i}{n}\\right)^2 \\cdot \\frac{1}{n} = \\frac{1}{n^3} \\sum_{i=0}^{n-1} i^2 = \\frac{(n-1)n(2n-1)}{6n^3}"} />
+
+As $n \to \infty$, this approaches $1/3$. Verify in the interactive: set $n = 200$ and watch the error shrink to near zero.
+
+## What "area under a curve" really means
+
+The Riemann sum gives us the formal definition of the definite integral:
+
+<MathBlock expression={"\\int_{a}^{b} f(x)\\, dx = \\lim_{n \\to \\infty} \\sum_{i=1}^{n} f(x_i^*) \\Delta x"} />
+
+The integral is the limit of Riemann sums. Infinite thin slices collapsing into an exact signed area. This definition made precise what Cauchy had started in the 1820s. **Bernhard Riemann** (1826--1866), one of the most imaginative mathematicians of the 19th century, formalized the integral by specifying exactly what it means for those sums to converge. His version is not the only definition of the integral (Lebesgue would later generalize it), but it is the one that matches geometric intuition most directly: chop the region into strips, add them up, let the strips shrink to zero.
+
+<KeyInsight>
+Slice the area into rectangles and add them up. As the slices thin to zero width, the Riemann sum converges to the exact integral. This is the geometric meaning of ∫.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Compute the left-endpoint Riemann sum for f(x) = x on [0, 4] with n = 4 sub-intervals."
+  hint="The width of each sub-interval is Δx = 1. The left endpoints are x = 0, 1, 2, 3."
+  answer="Sum = f(0)·1 + f(1)·1 + f(2)·1 + f(3)·1 = 0 + 1 + 2 + 3 = 6. The exact integral is ½·4·4 = 8. The left-endpoint sum underestimates for this increasing function."
+/>
+
+<ExerciseBlock number={2}
+  prompt="In the interactive, select f(x) = sin(x) on [0, π]. Set n = 10 and note the midpoint rule sum. Now set n = 100. How many decimal places of accuracy do you gain?"
+  hint="Compare the Riemann sum to the exact value (2.000000)."
+  answer="At n = 10, the midpoint sum is approximately 2.008. At n = 100, it's approximately 2.00008. You gain roughly two decimal places — the midpoint rule error shrinks as 1/n²."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Why does the midpoint rule usually give a better approximation than the left or right endpoint rules?"
+  hint="Think about how the rectangle's height relates to the curve within each sub-interval. Does the midpoint overestimate and underestimate cancel?"
+  answer="The midpoint samples the function at the center of each sub-interval, where the curve is roughly equally above and below the rectangle's top edge. Overestimates and underestimates partially cancel, giving much smaller net error than left or right rules which are consistently biased in one direction."
+/>
+
+[Next Lesson →](/courses/calculus/11-the-definite-integral)

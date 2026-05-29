@@ -36,6 +36,7 @@
     "@types/react-dom": "^19.0.0",
     "@types/three": "^0.169.0",
     "pagefind": "^1.5.2",
+    "playwright": "^1.60.0",
     "typescript": "^5.7.0"
   }
 }

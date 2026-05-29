@@ -1,0 +1,96 @@
+---
+title: "Infinite Series"
+titleZh: "无穷级数"
+description: "An infinite series asks: if you keep adding terms forever, does the total approach a finite number?"
+descriptionZh: "无穷级数问的是：如果你一直加下去，总和会趋近一个有限数吗？"
+course: "calculus"
+module: "Sequences and Series"
+moduleZh: "序列与级数"
+moduleOrder: 6
+lessonOrder: 22
+duration: 18
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "series-explorer-22"
+    type: "series-explorer"
+    title: "Series Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { SeriesExplorer } from '../../../components/interactive/calculus/SeriesExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+An infinite series is a sum: $a_1 + a_2 + a_3 + \cdots = \sum_{n=1}^{\infty} a_n$. The question is never "what's the total?" (you can't add infinitely many numbers). The question is: **does the sequence of partial sums converge?** The harmonic series is the great cautionary tale of calculus. Its terms shrink ($1/n \to 0$), yet the sum diverges. It shrinks too slowly -- the partial sums keep growing, always adding just enough to creep upward forever.
+
+<InteractiveCanvas
+  title="Series Explorer"
+  caption="Toggle between Partial Sums and individual Terms. Increase n to watch the partial sums settle toward a limit — or run away."
+  aspectRatio="16/9"
+>
+  <SeriesExplorer client:visible />
+</InteractiveCanvas>
+
+## Partial sums
+
+Define the $N$-th partial sum:
+
+<MathBlock expression={"S_N = \\sum_{n=1}^{N} a_n = a_1 + a_2 + \\cdots + a_N"} />
+
+The series **converges** if the sequence of partial sums $S_1, S_2, S_3, \ldots$ converges to a finite limit $S$. Otherwise it **diverges**.
+
+## The geometric series
+
+The most important example:
+
+<MathBlock expression={"\\sum_{n=0}^{\\infty} r^n = \\frac{1}{1-r} \\quad \\text{when } |r| < 1"} />
+
+Each term is $r$ times the previous one. When $|r| < 1$, the terms shrink fast enough that the partial sums converge. When $|r| \geq 1$, the terms don't shrink (or grow), and the series diverges.
+
+Example: $1 + \frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \cdots = \frac{1}{1 - 1/2} = 2$.
+
+## The harmonic series — a surprise
+
+<MathBlock expression={"\\sum_{n=1}^{\\infty} \\frac{1}{n} = 1 + \\frac{1}{2} + \\frac{1}{3} + \\frac{1}{4} + \\cdots = \\infty"} />
+
+The terms $1/n$ shrink to zero, but the series still diverges! The terms shrink too slowly. This is the classic counterexample showing that $a_n \to 0$ is **necessary** for convergence but not **sufficient**.
+
+## The divergence test
+
+If $\lim_{n \to \infty} a_n \neq 0$, then $\sum a_n$ **diverges**. Contrapositive: if the series converges, then the terms must go to zero. But terms going to zero doesn't guarantee convergence (harmonic series).
+
+## Telescoping series
+
+Some series simplify dramatically when you expand the partial sums:
+
+<MathBlock expression={"\\sum_{n=1}^{\\infty} \\frac{1}{n(n+1)} = \\sum_{n=1}^{\\infty} \\left(\\frac{1}{n} - \\frac{1}{n+1}\\right)"} />
+
+The partial sum telescopes: $S_N = 1 - \frac{1}{N+1} \to 1$. Almost everything cancels.
+
+<KeyInsight>
+A series converges when its partial sums approach a finite limit. Terms going to zero is necessary but not sufficient — the harmonic series proves it. The geometric series (|r| < 1) is the gold standard of convergent series.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Does the series ∑ (3/5)ⁿ converge? If so, find its sum."
+  hint="This is a geometric series with r = 3/5. Is |r| < 1?"
+  answer="Yes, |3/5| < 1. Sum = 1/(1 − 3/5) = 1/(2/5) = 5/2 = 2.5."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Does ∑ sin(n) converge or diverge?"
+  hint="Apply the divergence test: does sin(n) approach 0 as n → ∞?"
+  answer="sin(n) does not approach 0 as n → ∞ (it oscillates between −1 and 1). By the divergence test, the series diverges."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Show that ∑ 1/[(2n−1)(2n+1)] converges by writing it as a telescoping series."
+  hint="Decompose using partial fractions: 1/[(2n−1)(2n+1)] = A/(2n−1) + B/(2n+1)."
+  answer="1/[(2n−1)(2n+1)] = 1/2 · [1/(2n−1) − 1/(2n+1)]. The partial sum telescopes: S_N = 1/2 · [1 − 1/(2N+1)] → 1/2."
+/>
+
+[Next Lesson →](/courses/calculus/23-convergence-tests)

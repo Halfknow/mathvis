@@ -1,0 +1,102 @@
+---
+title: "L'Hopital's Rule"
+titleZh: "洛必达法则"
+description: "When 0/0 makes you stuck, derivatives rescue you — zoom in on the numerator and denominator's slopes."
+descriptionZh: "当0/0让你卡住时，导数来救场——放大看分子和分母的斜率。"
+course: "calculus"
+module: "Function Behavior"
+moduleZh: "函数行为"
+moduleOrder: 2
+lessonOrder: 8
+duration: 14
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "limit-explorer-08"
+    type: "limit-explorer"
+    title: "L'Hopital's Limit Explorer"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { LimitExplorer } from '../../../components/interactive/calculus/LimitExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+You're evaluating a limit and you get $\frac{0}{0}$ or $\frac{\infty}{\infty}$. Both numerator and denominator are collapsing at the same time. Who wins? **Whoever is collapsing faster loses** — and the derivative measures the speed of collapse.
+
+## The rule
+
+If $\lim_{x \to a} \frac{f(x)}{g(x)}$ produces $\frac{0}{0}$ or $\frac{\pm\infty}{\pm\infty}$, then:
+
+<MathBlock expression={"\\lim_{x \\to a} \\frac{f(x)}{g(x)} = \\lim_{x \\to a} \\frac{f'(x)}{g'(x)}"} />
+
+provided the right-hand limit exists. You replace the functions with their derivatives and try again.
+
+## Why it works
+
+Near $x = a$, both $f(x)$ and $g(x)$ are close to zero. Think of them as lines passing through the origin:
+
+<MathBlock expression={"f(x) \\approx f'(a)(x-a), \\quad g(x) \\approx g'(a)(x-a)"} />
+
+So the ratio simplifies:
+
+<MathBlock expression={"\\frac{f(x)}{g(x)} \\approx \\frac{f'(a)(x-a)}{g'(a)(x-a)} = \\frac{f'(a)}{g'(a)}"} />
+
+The $(x-a)$ factors cancel. The limit depends on the **slopes**, not the values.
+
+## Visualize the cancellation
+
+Return to the Limit Explorer and select $f(x) = \frac{x^2 - 1}{x - 1}$ at $x = 1$. This is a 0/0 form, but the limit exists and equals 2:
+
+<InteractiveCanvas
+  title="L'Hopital's Limit Explorer"
+  caption="Select (x²−1)/(x−1) and watch the limit converge. The function has a removable hole at x = 1, but the limit is 2 — exactly what L'Hopital predicts: 2x/1 at x = 1 = 2."
+  aspectRatio="16/9"
+>
+  <LimitExplorer client:visible />
+</InteractiveCanvas>
+
+## Three examples
+
+**Example 1**: $\lim_{x \to 0} \frac{\sin x}{x} = \frac{0}{0}$. Apply L'Hopital: $\frac{\cos x}{1} \to \frac{1}{1} = 1$.
+
+**Example 2**: $\lim_{x \to \infty} \frac{e^x}{x^2} = \frac{\infty}{\infty}$. Apply once: $\frac{e^x}{2x} = \frac{\infty}{\infty}$. Apply again: $\frac{e^x}{2} = \infty$. Exponential growth always wins.
+
+**Example 3**: $\lim_{x \to 0^+} x \ln x = 0 \cdot (-\infty)$. Rewrite as $\frac{\ln x}{1/x}$, then apply L'Hopital: $\frac{1/x}{-1/x^2} = -x \to 0$.
+
+## When NOT to use L'Hopital
+
+L'Hopital only works for indeterminate forms ($0/0$ or $\infty/\infty$). If the limit is $\frac{3}{0}$, it's not indeterminate — the limit is $\pm\infty$ (or doesn't exist). Don't differentiate blindly; check the form first.
+
+More subtly: **if the limit exists without L'Hopital, don't use it.** For example, $\lim_{x \to 2} \frac{x^2 - 4}{x + 1}$ is just $\frac{0}{3} = 0$ — no need for derivatives. Also beware of **circular reasoning**: if you use L'Hopital to evaluate $\lim_{x \to 0} \frac{\sin x}{x}$ by differentiating to get $\cos x$, you're implicitly assuming you already know the derivative of $\sin x$ — which itself depends on knowing this limit. The logic can eat its own tail.
+
+## A historical note
+
+Guillaume de l'Hopital published this rule in 1696, in what is considered the first textbook on differential calculus, *Analyse des Infiniment Petits pour l'Intelligence des Lignes Courbes*. But the rule was actually discovered by his teacher, **Johann Bernoulli**, as part of a contractual arrangement in which l'Hopital paid Bernoulli for mathematical discoveries and published them under his own name. Bernoulli's priority was only widely recognized in the 20th century.
+
+<KeyInsight>
+When 0/0 or ∞/∞ makes a limit indeterminate, L'Hopital's rule says: replace numerator and denominator with their derivatives. The slopes resolve the tie — whoever is collapsing faster loses.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Evaluate lim(x→0) tan(x) / x using L'Hopital's rule."
+  hint="Check: is this 0/0? tan(0) = 0 and 0 = 0. Yes. Now differentiate numerator and denominator."
+  answer="d/dx tan(x) = sec²(x) = 1/cos²(x). d/dx x = 1. So the limit is 1/cos²(0) = 1/1 = 1."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Evaluate lim(x→∞) (ln x) / x. What does this tell you about the growth rate of ln x compared to x?"
+  hint="This is ∞/∞. Apply L'Hopital."
+  answer="d/dx ln(x) = 1/x. d/dx x = 1. So the limit is (1/x)/1 = 1/x → 0. The logarithm grows, but infinitely slower than x."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Can you use L'Hopital to evaluate lim(x→0) sin(x) / (x + 1)? Why or why not?"
+  hint="Check if the limit is an indeterminate form."
+  answer="No. sin(0)/(0+1) = 0/1 = 0. The limit is not indeterminate — the denominator doesn't approach zero. L'Hopital's rule doesn't apply, and the answer is simply 0."
+/>
+
+[Next Lesson →](/courses/calculus/09-accumulation-and-area)

@@ -1,10 +1,20 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import * as d3 from 'd3';
+import { useAnimatedPreset } from './useAnimatedPreset';
 
 interface VectorAdditionProps {
   width?: number;
   height?: number;
 }
+
+const presetList = [
+  { label: 'Head-to-tail', v1x: 3, v1y: 1, v2x: 1, v2y: 2, parallelogram: false },
+  { label: 'Parallelogram', v1x: 3, v1y: 1, v2x: 1, v2y: 2, parallelogram: true },
+  { label: 'Cancel out', v1x: 2, v1y: 1, v2x: -2, v2y: -1, parallelogram: false },
+  { label: 'Orthogonal', v1x: 3, v1y: 0, v2x: 0, v2y: 2, parallelogram: true },
+  { label: 'Same direction', v1x: 2, v1y: 1, v2x: 1, v2y: 0.5, parallelogram: false },
+  { label: 'Opposite dirs', v1x: 3, v1y: 0, v2x: -1, v2y: 0, parallelogram: false },
+];
 
 export function VectorAddition({ width = 640, height = 400 }: VectorAdditionProps) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -12,6 +22,15 @@ export function VectorAddition({ width = 640, height = 400 }: VectorAdditionProp
   const [v2, setV2] = useState({ x: 1, y: 2 });
   const [dragging, setDragging] = useState<'v1' | 'v2' | null>(null);
   const [showParallelogram, setShowParallelogram] = useState(false);
+  const [activePreset, setActivePreset] = useState<string | null>(null);
+
+  const { applyPreset, animating } = useAnimatedPreset(
+    () => ({ v1x: v1.x, v1y: v1.y, v2x: v2.x, v2y: v2.y }),
+    useCallback((vals) => {
+      setV1({ x: vals.v1x, y: vals.v1y });
+      setV2({ x: vals.v2x, y: vals.v2y });
+    }, []),
+  );
 
   const sum = { x: v1.x + v2.x, y: v1.y + v2.y };
 
@@ -27,8 +46,6 @@ export function VectorAddition({ width = 640, height = 400 }: VectorAdditionProp
     const scale = plotSize / (gridSize * 2);
     const toX = (v: number) => cx + v * scale;
     const toY = (v: number) => cy - v * scale;
-    const fromPx = (px: number) => Math.round(((px - cx) / scale) * 4) / 4;
-    const fromPy = (py: number) => Math.round(((cy - py) / scale) * 4) / 4;
 
     const g = svg.append('g');
 
@@ -102,17 +119,21 @@ export function VectorAddition({ width = 640, height = 400 }: VectorAdditionProp
     // Sum vector (accent, dashed)
     drawArrow(toX(0), toY(0), toX(sum.x), toY(sum.y), 'var(--color-accent)', 3, '8,4');
 
-    // Drag handles
-    const makeHandle = (px: number, py: number, color: string) => {
+    // Drag handles with pointer events
+    const makeHandle = (px: number, py: number, color: string, target: 'v1' | 'v2') => {
       g.append('circle').attr('cx', px).attr('cy', py).attr('r', 10)
         .attr('fill', color).attr('opacity', 0.15)
-        .attr('class', 'cursor-grab');
+        .attr('class', 'cursor-grab')
+        .style('pointer-events', 'all')
+        .on('pointerdown', () => { if (!animating) setDragging(target); });
       g.append('circle').attr('cx', px).attr('cy', py).attr('r', 6)
-        .attr('fill', color).attr('class', 'cursor-grab');
+        .attr('fill', color).attr('class', 'cursor-grab')
+        .style('pointer-events', 'all')
+        .on('pointerdown', () => { if (!animating) setDragging(target); });
     };
 
-    makeHandle(toX(v1.x), toY(v1.y), 'var(--color-vector-blue)');
-    makeHandle(toX(v1.x + v2.x), toY(v1.y + v2.y), 'var(--color-vector-green)');
+    makeHandle(toX(v1.x), toY(v1.y), 'var(--color-vector-blue)', 'v1');
+    makeHandle(toX(v2.x), toY(v2.y), 'var(--color-vector-green)', 'v2');
 
     // Labels
     g.append('text').attr('x', toX(v1.x) + 10).attr('y', toY(v1.y) - 10)
@@ -130,20 +151,22 @@ export function VectorAddition({ width = 640, height = 400 }: VectorAdditionProp
       .attr('font-family', 'var(--font-serif)')
       .text(`a+b = (${sum.x.toFixed(1)}, ${sum.y.toFixed(1)})`);
 
+    // |a+b| display
+    const sumLen = Math.sqrt(sum.x * sum.x + sum.y * sum.y);
+    g.append('text').attr('x', toX(sum.x) + 10).attr('y', toY(sum.y) + 30)
+      .attr('fill', 'var(--color-accent)').attr('font-size', '11px')
+      .attr('font-family', 'var(--font-mono)').attr('opacity', 0.7)
+      .text(`|a+b| = ${sumLen.toFixed(2)}`);
+
     g.append('circle').attr('cx', toX(0)).attr('cy', toY(0)).attr('r', 3).attr('fill', 'var(--color-ink)');
 
-  }, [v1, v2, sum, showParallelogram, width, height]);
+  }, [v1, v2, sum, showParallelogram, width, height, animating]);
 
   useEffect(() => { draw(); }, [draw]);
-
-  const handlePointerDown = (target: 'v1' | 'v2') => {
-    setDragging(target);
-  };
 
   const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!dragging || !svgRef.current) return;
     const rect = svgRef.current.getBoundingClientRect();
-    const svg = d3.select(svgRef.current);
     const padding = 40;
     const cx = width / 2;
     const cy = height / 2;
@@ -164,7 +187,24 @@ export function VectorAddition({ width = 640, height = 400 }: VectorAdditionProp
 
   return (
     <div className="not-prose space-y-3">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap gap-2">
+        {presetList.map((p) => (
+          <button
+            key={p.label}
+            onClick={() => {
+              setActivePreset(p.label);
+              setShowParallelogram(p.parallelogram);
+              applyPreset({ v1x: p.v1x, v1y: p.v1y, v2x: p.v2x, v2y: p.v2y });
+            }}
+            className={`rounded border px-3 py-1 text-xs font-sans font-medium transition-colors ${
+              activePreset === p.label
+                ? 'border-accent bg-accent/10 text-accent'
+                : 'border-rule bg-paper-elevated text-ink-muted hover:border-accent hover:text-accent'
+            }`}
+          >
+            {p.label}
+          </button>
+        ))}
         <button
           onClick={() => setShowParallelogram(!showParallelogram)}
           className={`rounded border px-3 py-1 text-xs font-sans font-medium transition-colors ${
@@ -175,7 +215,6 @@ export function VectorAddition({ width = 640, height = 400 }: VectorAdditionProp
         >
           {showParallelogram ? 'Parallelogram ON' : 'Show parallelogram'}
         </button>
-        <span className="text-xs font-sans text-ink-muted">Drag the blue and green dots to change vectors</span>
       </div>
       <div className="rounded-md border border-rule overflow-hidden" style={{ background: 'var(--color-paper)' }}>
         <svg

@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import * as d3 from 'd3';
+import { useAnimatedPreset } from './useAnimatedPreset';
 
 export function EigenvectorVis({ width = 640, height = 480 }: { width?: number; height?: number }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -8,6 +9,7 @@ export function EigenvectorVis({ width = 640, height = 480 }: { width?: number; 
   const [c, setC] = useState(0);
   const [d, setD] = useState(3);
   const [t, setT] = useState(0);
+  const [activePreset, setActivePreset] = useState<string | null>(null);
 
   const trace = a + d;
   const det = a * d - b * c;
@@ -150,14 +152,32 @@ export function EigenvectorVis({ width = 640, height = 480 }: { width?: number; 
     { label: 'Rotation', a: 0, b: -1, c: 1, d: 0 },
     { label: 'Reflection', a: 1, b: 0, c: 0, d: -1 },
     { label: 'Scale 2x', a: 2, b: 0, c: 0, d: 2 },
+    { label: 'Symmetric', a: 2, b: 1, c: 1, d: 2 },
+    { label: 'Defective', a: 2, b: 1, c: 0, d: 2 },
   ];
+
+  const { applyPreset, animating: presetAnimating } = useAnimatedPreset(
+    () => ({ a, b, c, d, t }),
+    useCallback((vals) => {
+      setA(vals.a); setB(vals.b); setC(vals.c); setD(vals.d); setT(vals.t);
+    }, []),
+  );
+
+  const handlePreset = (p: typeof presets[0]) => {
+    setActivePreset(p.label);
+    applyPreset({ a: p.a, b: p.b, c: p.c, d: p.d, t: 1 });
+  };
 
   return (
     <div className="not-prose space-y-3">
       <div className="flex flex-wrap gap-2">
         {presets.map((p) => (
-          <button key={p.label} onClick={() => { setA(p.a); setB(p.b); setC(p.c); setD(p.d); setT(1); }}
-            className="rounded border border-rule bg-paper-elevated px-3 py-1 text-xs font-sans font-medium text-ink-muted hover:border-accent hover:text-accent transition-colors"
+          <button key={p.label} onClick={() => handlePreset(p)}
+            className={`rounded border px-3 py-1 text-xs font-sans font-medium transition-colors ${
+              activePreset === p.label
+                ? 'border-accent bg-accent/10 text-accent'
+                : 'border-rule bg-paper-elevated text-ink-muted hover:border-accent hover:text-accent'
+            }`}
           >{p.label}</button>
         ))}
       </div>

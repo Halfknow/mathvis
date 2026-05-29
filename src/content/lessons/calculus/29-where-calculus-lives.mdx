@@ -1,0 +1,66 @@
+---
+title: "Where Calculus Lives"
+titleZh: "微积分的应用与展望"
+description: "Calculus is the language of change — physics, engineering, machine learning, economics all speak it fluently."
+descriptionZh: "微积分是变化的语言——物理、工程、机器学习、经济学都在用它流利地表达。"
+course: "calculus"
+module: "Taylor Series and Beyond"
+moduleZh: "泰勒与超越"
+moduleOrder: 7
+lessonOrder: 29
+duration: 16
+difficulty: "Intermediate"
+publishedAt: 2026-05-26
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { MathBlock } from '../../../components/math/Math';
+
+You've traveled from slopes to areas, from derivatives to integrals, from sequences to series. Every idea connected back to the same core: **calculus is the mathematics of continuous change**. Before we see where it lives in the wild, step back and see the whole map at once. The derivative measures instantaneous change. The integral measures total accumulation. The Fundamental Theorem of Calculus connects them -- differentiation and integration are two sides of the same coin. Series approximate functions as infinite polynomials. Differential equations describe how systems evolve over time. Together, these ideas describe the entire physical world. Now let's see where calculus lives in the wild.
+
+## Physics: the original application
+
+Newton invented calculus to describe motion. His second law is a differential equation:
+
+<MathBlock expression={"F = ma = m\\frac{d^2 x}{dt^2}"} />
+
+From this one equation, plus gravity ($F = -mg$), you can derive projectile motion, planetary orbits, and harmonic oscillation. The derivative captures instantaneous velocity and acceleration; the integral recovers position from velocity.
+
+## Machine learning: gradient descent
+
+Every neural network is trained by gradient descent:
+
+<MathBlock expression={"\\theta_{n+1} = \\theta_n - \\alpha \\nabla L(\\theta_n)"} />
+
+The loss function $L$ is a surface in high-dimensional space. The gradient $\nabla L$ points uphill; you step downhill by $-\nabla L$. The learning rate $\alpha$ is the step size. This is literally multivariable calculus in action — partial derivatives, gradients, and optimization, all working together.
+
+## Signal processing: Fourier series
+
+Any periodic signal can be decomposed into sines and cosines:
+
+<MathBlock expression={"f(t) = \\sum_{n=0}^{\\infty} a_n \\cos(n\\omega t) + b_n \\sin(n\\omega t)"} />
+
+This is a Taylor-like idea but with trigonometric building blocks instead of polynomials. Audio compression, image processing, and wireless communication all rely on Fourier analysis — which is built on the convergence theory of infinite series.
+
+## Engineering: differential equations everywhere
+
+- **Heat equation**: $\partial u/\partial t = k \nabla^2 u$ — how temperature spreads through a material.
+- **Wave equation**: $\partial^2 u/\partial t^2 = c^2 \nabla^2 u$ — how sound and light propagate.
+- **Navier-Stokes**: $\rho(\partial \mathbf{v}/\partial t + \mathbf{v} \cdot \nabla \mathbf{v}) = -\nabla p + \mu \nabla^2 \mathbf{v}$ — how fluids flow (still unsolved in general).
+
+## Economics: marginal analysis
+
+The "marginal cost" is the derivative of the cost function. The "marginal revenue" is the derivative of the revenue function. Profit is maximized when marginal cost equals marginal revenue — $MC = MR$ is just $C'(x) = R'(x)$, a calculus optimization problem.
+
+## What comes next
+
+If this course sparked your curiosity, here are natural next steps:
+
+- **Multivariable calculus**: gradients, double/triple integrals, Stokes' theorem
+- **Differential equations**: systems of ODEs, Laplace transforms, phase portraits
+- **Real analysis**: rigorous proofs of everything we saw — limits, continuity, convergence
+- **Numerical methods**: how computers actually compute integrals and solve ODEs
+
+<KeyInsight>
+Calculus is the language of change. Every discipline that deals with continuous quantities — motion, probability, optimization, waves — speaks this language. The derivative captures instantaneous change; the integral captures accumulated effect. Together they describe the entire physical world.
+</KeyInsight>

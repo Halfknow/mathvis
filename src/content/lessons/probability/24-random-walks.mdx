@@ -1,0 +1,104 @@
+---
+title: "Random Walks"
+titleZh: "随机游走"
+description: "A drunkard's path — each step is random, but patterns emerge over thousands of steps."
+descriptionZh: "醉汉的脚步——每一步都是随机的，但数千步后模式浮现。"
+course: "probability"
+module: "Stochastic Processes"
+moduleZh: "随机过程初探"
+moduleOrder: 7
+lessonOrder: 24
+duration: 16
+difficulty: "Advanced"
+---
+
+import { RandomWalkVis } from '../../../components/interactive/probability/RandomWalkVis';
+
+Imagine a drunkard stumbling home. Each step goes either left or right, chosen by a coin flip. The path zigzags — no direction, no plan, no memory of where it has been. And yet, if you watch a thousand such drunkards, a shape emerges. The crowd spreads outward from the starting point like an ink drop in water. Not uniformly, but as a soft bell curve widening with time.
+
+This is the **random walk**, the simplest stochastic process and one of the most important models in all of mathematics. It captures a deep truth: individual randomness is chaotic, but collective randomness is structured.
+
+## The setup
+
+Start at position $S_0 = 0$. At each step, add $+1$ or $-1$ with equal probability:
+
+$$S_n = X_1 + X_2 + \cdots + X_n$$
+
+where each $X_i$ is independent, and $P(X_i = +1) = P(X_i = -1) = 1/2$.
+
+The position after $n$ steps is a random variable. Its value bounces around unpredictably from one realization to the next. But its statistical properties are remarkably clean.
+
+## Expected position and expected distance
+
+The expected position after $n$ steps is:
+
+$$E[S_n] = E[X_1] + \cdots + E[X_n] = 0$$
+
+The walk has no drift. On average, you go nowhere. The coin flips cancel out. But "expected position" and "expected distance from the origin" are very different things.
+
+The variance grows linearly:
+
+$$\text{Var}(S_n) = n$$
+
+so the standard deviation is $\sqrt{n}$. The typical distance from the origin after $n$ steps is about $\sqrt{n}$, not $n$. After 10,000 steps, the walker is typically about 100 steps from the start — not 10,000.
+
+This is the signature of **diffusion**. The spread grows like the square root of time. It is slow. If you double the number of steps, the spread increases by only a factor of $\sqrt{2} \approx 1.41$. The walk fans out, but reluctantly.
+
+Picture it: a bundle of a hundred paths all starting at the same point. At step 10, they form a narrow cloud. At step 100, the cloud has widened. At step 10,000, the cloud is wide and soft, shaped like a bell, with most paths still clustered within a few hundred steps of the origin. A few adventurous paths have wandered far, but they are the exception.
+
+## The scaling law
+
+The relationship $E[|S_n|] \approx \sqrt{n}$ is a scaling law, and it appears everywhere in nature:
+
+- **Brownian motion**: a pollen grain in water, jostled by invisible molecules. Its displacement scales as $\sqrt{t}$.
+- **Stock prices**: in the simplest model (geometric random walk), price fluctuations over a time horizon $t$ have typical size proportional to $\sqrt{t}$. This is why short-term trading is noise-dominated.
+- **Polymer chains**: a long molecule floating in solution folds back on itself. The end-to-end distance of a polymer with $n$ segments scales as $\sqrt{n}$.
+- **Diffusion of heat**: a drop of dye in still water spreads outward. The radius of the colored region grows as $\sqrt{t}$.
+
+All of these are random walks in disguise.
+
+Generate an ensemble of random walks below. Add 50 paths a few times and watch the cloud of paths spread outward. The shaded band shows the theoretical ±√n envelope — most paths stay inside it, but a few adventurers always escape.
+
+<RandomWalkVis client:visible />
+
+## The gambler's ruin
+
+Consider a random walk with **absorbing barriers**. A gambler starts with $a$ dollars and plays against a casino with $b$ dollars. Each round, the gambler wins or loses $1 with equal probability. The game ends when one side goes broke.
+
+The question: what is the probability that the gambler walks away with all the money?
+
+For a fair game (equal win/loss probability), the answer is brutally simple:
+
+$$P(\text{gambler wins}) = \frac{a}{a + b}$$
+
+If the gambler has $10 and the casino has $90, the gambler wins with probability $10/100 = 0.1$. The probability of ruin is proportional to the size of the adversary's bankroll. A random walk with finite barriers always hits a barrier eventually — there is no strategy, no lucky streak, that can hold out forever against a larger opponent.
+
+This is why casinos do not need to cheat. They just need a bigger bankroll. The random walk does the rest.
+
+### The unfair game
+
+If the gambler has a slight disadvantage — say $P(\text{win}) = 0.49$ and $P(\text{loss}) = 0.51$ — the ruin probability becomes dramatically worse:
+
+$$P(\text{ruin}) \approx 1 - \left(\frac{0.49}{0.51}\right)^a$$
+
+for a casino with effectively infinite resources. Even a 1% edge, compounded over thousands of rounds, drives the ruin probability to essentially 1. The house always wins.
+
+## Recurrence in one dimension
+
+A beautiful fact about the one-dimensional random walk: the walker returns to the origin **with probability 1**. Not just once, but infinitely many times. The walk is **recurrent** — it cannot escape its starting point forever. It will always come back.
+
+In two dimensions, the same is true: a random walk on the integer lattice in 2D returns to the origin with probability 1. But in three dimensions and higher, the walk is **transient** — there is a positive probability that it wanders away forever and never returns.
+
+The transition happens because in three dimensions, there is simply too much room to get lost. The surface area of a sphere grows as $r^2$, so the probability of stumbling back to the origin thins out faster than the walk can compensate.
+
+## Key insight
+
+> A random walk spreads like $\sqrt{n}$, not $n$. Individual paths are wild and unpredictable, but the envelope of a thousand paths forms a smooth bell curve widening as the square root of time. This is diffusion — the universal scaling law of undirected randomness.
+
+## Practice
+
+**Exercise 1.** A random walker starts at 0 and takes 400 steps of $+1$ or $-1$ with equal probability. What is the expected position? What is the standard deviation? Use Chebyshev's inequality to bound the probability that the walker is more than 60 steps from the origin after 400 steps.
+
+**Exercise 2.** In the gambler's ruin problem, the gambler starts with $5 and the casino has $15. Each round is fair ($P(\text{win}) = 0.5$). What is the probability the gambler goes broke? Now suppose the casino has infinite resources. Explain in words why the gambler is certain to go broke eventually, even though the game is fair.
+
+**Exercise 3.** A particle undergoes a random walk on the integers starting at 0, taking $+1$ or $-1$ steps with equal probability. Explain why the walk must cross the level $S_n = +10$ infinitely often. (Hint: the walk returns to the origin infinitely often with probability 1, and from the origin, there is a nonzero chance of reaching $+10$ before returning.)

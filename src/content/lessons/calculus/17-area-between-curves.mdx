@@ -1,0 +1,84 @@
+---
+title: "Area Between Curves"
+titleZh: "曲线间面积"
+description: "Subtract the lower function from the upper and integrate — the area is the accumulated height difference."
+descriptionZh: "用上面的函数减去下面的函数然后积分——面积就是高度差的累积。"
+course: "calculus"
+module: "Applications of Integration"
+moduleZh: "积分应用"
+moduleOrder: 5
+lessonOrder: 17
+duration: 16
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "area-between-curves-17"
+    type: "area-between-curves"
+    title: "Area Between Curves"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { AreaBetweenCurvesVis } from '../../../components/interactive/calculus/AreaBetweenCurvesVis';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+The definite integral gives the area under a single curve. What about the area **between** two curves? Simple: subtract. The area between curves is just "top minus bottom" integrated across the interval. At each x-position, measure the vertical gap between the two functions, then let the integral accumulate all those gaps. But be careful when curves cross -- the top and bottom swap roles, and you must split the integral at each crossing.
+
+## The formula
+
+If $f(x) \geq g(x)$ on $[a, b]$, then the area between them is:
+
+<MathBlock expression={"\\text{Area} = \\int_a^b [f(x) - g(x)]\\, dx"} />
+
+The integrand $f(x) - g(x)$ is the vertical gap between the curves at each point. Integrate the gap and you get the total area between them.
+
+<InteractiveCanvas
+  title="Area Between Curves"
+  caption="The yellow region is the area between the two curves. Drag a and b to change the interval. The area readout shows the integral of the difference."
+  aspectRatio="16/9"
+>
+  <AreaBetweenCurvesVis client:visible />
+</InteractiveCanvas>
+
+Switch to "sin vs cos" and notice how the curves cross. Between intersections, sin is above cos; outside those crossings, the relationship flips. The formula only works when you know which function is on top.
+
+## When curves cross
+
+If the curves cross within $[a, b]$, you must split the integral at each crossing point:
+
+<MathBlock expression={"\\text{Area} = \\int_a^c [f(x) - g(x)]\\, dx + \\int_c^b [g(x) - f(x)]\\, dx"} />
+
+The absolute value is implicit: always subtract the lower from the upper.
+
+## Finding the bounds
+
+The bounds $a$ and $b$ are often the intersection points of the two curves. To find them, solve $f(x) = g(x)$.
+
+For $y = \sin(x)$ and $y = \cos(x)$: $\sin(x) = \cos(x)$ when $x = \pi/4 + n\pi$.
+
+<KeyInsight>
+The area between two curves is the integral of the gap between them. Always subtract the lower function from the upper. If they cross, split the integral at each crossing point.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Find the area between y = x and y = x² on [0, 1]."
+  hint="x ≥ x² on [0,1]. Integrate x − x²."
+  answer="∫₀¹ (x − x²) dx = [x²/2 − x³/3]₀¹ = 1/2 − 1/3 = 1/6."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Find the area enclosed by y = sin(x) and y = cos(x) between their first two positive intersection points."
+  hint="They intersect at x = π/4 and x = 5π/4. Determine which is on top in each region."
+  answer="From π/4 to 5π/4, cos(x) < sin(x) at the center (x = π/2), so sin is above cos. Area = ∫_{π/4}^{5π/4} (sin x − cos x) dx = [−cos x − sin x]_{π/4}^{5π/4} = (1/√2 + 1/√2) − (−1/√2 − 1/√2) = 2√2."
+/>
+
+<ExerciseBlock number={3}
+  prompt="Two curves y = x³ and y = x enclose two regions. How would you find the total area of both?"
+  hint="They intersect at x = −1, 0, and 1. The curves cross, so you need to split the integral."
+  answer="Split at x = 0. From −1 to 0: x³ > x, integrate x³ − x. From 0 to 1: x > x³, integrate x − x³. Total = ∫_{−1}^0 (x³ − x) dx + ∫_0^1 (x − x³) dx = (1/2) + (1/2) = 1."
+/>
+
+[Next Lesson →](/courses/calculus/18-volumes-by-slicing)

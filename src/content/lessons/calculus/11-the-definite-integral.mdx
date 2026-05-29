@@ -1,0 +1,107 @@
+---
+title: "The Definite Integral"
+titleZh: "定积分"
+description: "The definite integral is the limit of Riemann sums — infinite thin slices collapsing into an exact signed area."
+descriptionZh: "定积分是黎曼和的极限——无限薄的切片坍缩成精确的有符号面积。"
+course: "calculus"
+module: "From Area to the Integral"
+moduleZh: "从面积到积分"
+moduleOrder: 3
+lessonOrder: 11
+duration: 18
+difficulty: "Intermediate"
+interactiveWidgets:
+  - id: "riemann-sum-11"
+    type: "riemann-sum"
+    title: "Riemann Sum Convergence"
+publishedAt: 2026-05-26
+---
+
+import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+import { RiemannSumExplorer } from '../../../components/interactive/calculus/RiemannSumExplorer';
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock } from '../../../components/math/Math';
+
+We've seen that slicing the area into rectangles and adding them up gives an approximation. Now we take the limit and arrive at the **definite integral**.
+
+## The definition
+
+The definite integral of $f$ from $a$ to $b$ is:
+
+<MathBlock expression={"\\int_{a}^{b} f(x)\\, dx = \\lim_{n \\to \\infty} \\sum_{i=1}^{n} f(x_i^*) \\Delta x"} />
+
+where $\Delta x = (b - a) / n$ and $x_i^*$ is any sample point in the $i$-th sub-interval. As $n$ grows, the Riemann sum approaches a single number: the signed area under $f$ from $a$ to $b$.
+
+## Watch the limit in action
+
+Return to the Riemann Sum Explorer, but now pay attention to the error readout at the bottom. Slide $n$ up and watch the error shrink:
+
+<InteractiveCanvas
+  title="Riemann Sum Convergence"
+  caption="Crank n up to 200. The error drops to near zero — the Riemann sum converges to the exact integral."
+  aspectRatio="16/9"
+>
+  <RiemannSumExplorer client:visible />
+</InteractiveCanvas>
+
+For $f(x) = x^2$ on $[0, 1]$:
+- $n = 4$: sum ≈ 0.2188, error ≈ 0.115
+- $n = 50$: sum ≈ 0.3234, error ≈ 0.010
+- $n = 200$: sum ≈ 0.3329, error ≈ 0.0004
+
+The convergence is relentless. More rectangles → thinner slices → smaller error.
+
+## Properties of the definite integral
+
+The integral inherits properties from the Riemann sum:
+
+**Linearity**: constants pull out, sums split apart.
+
+<MathBlock expression={"\\int_a^b [cf(x) + g(x)]\\,dx = c\\int_a^b f(x)\\,dx + \\int_a^b g(x)\\,dx"} />
+
+Geometrically, linearity means you can stretch the height of a region by a factor $c$ (which stretches the area by $c$), or place two regions side by side and add their areas — both give the same result as integrating the combined function.
+
+**Additivity over intervals**: you can split the integral at any point.
+
+<MathBlock expression={"\\int_a^c f(x)\\,dx = \\int_a^b f(x)\\,dx + \\int_b^c f(x)\\,dx"} />
+
+Additivity means you can cut the region into pieces and add them up. If you know the area from $a$ to $b$ and from $b$ to $c$, the total is just the sum — just like cutting a physical shape into two parts and weighing them separately.
+
+**Reversal**: flipping the bounds negates the integral.
+
+<MathBlock expression={"\\int_b^a f(x)\\,dx = -\\int_a^b f(x)\\,dx"} />
+
+Think of this as traversing the region backwards — the "accumulation direction" reverses, so the sign flips.
+
+## When does the integral exist?
+
+If $f$ is **continuous** on $[a, b]$, then the definite integral exists. This is a powerful guarantee — continuity is enough. The Riemann sums will converge regardless of which sample points you choose.
+
+Discontinuous functions may or may not be integrable. A function with a finite number of jump discontinuities is still integrable. But a function like the Dirichlet function ($f(x) = 1$ if $x$ is rational, $0$ if irrational) is not Riemann integrable.
+
+<KeyInsight>
+The definite integral is the limit of Riemann sums as the slices thin to zero width. It yields a single number — the exact signed area — and it exists for any continuous function. The definite integral turns an infinite problem (adding up infinitely many infinitely thin rectangles) into a finite number: the area.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="Compute the definite integral of f(x) = 3 from x = 1 to x = 5 using the geometric picture."
+  hint="What shape does the area under a constant function form?"
+  answer="The region is a rectangle with width 4 and height 3. Area = 4 × 3 = 12. So ∫₁⁵ 3 dx = 12."
+/>
+
+<ExerciseBlock number={2}
+  prompt="Given that ∫₀² f(x) dx = 5 and ∫₂⁵ f(x) dx = 3, find ∫₀⁵ f(x) dx."
+  hint="Use the additivity property: split the integral at x = 2."
+  answer="∫₀⁵ f(x) dx = ∫₀² f(x) dx + ∫₂⁵ f(x) dx = 5 + 3 = 8."
+/>
+
+<ExerciseBlock number={3}
+  prompt="In the interactive, set f(x) = eˣ on [0,1]. The exact integral is e − 1 ≈ 1.7183. How many rectangles (midpoint rule) do you need for the error to drop below 0.001?"
+  hint="Start with n = 50 and increase gradually. Watch the error readout."
+  answer="At approximately n ≈ 50, the midpoint rule error drops below 0.001. The midpoint rule converges as O(1/n²), so doubling n reduces the error by roughly 4×."
+/>
+
+[Next Lesson →](/courses/calculus/12-the-fundamental-theorem)

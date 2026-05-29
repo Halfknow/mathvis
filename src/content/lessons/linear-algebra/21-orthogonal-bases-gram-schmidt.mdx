@@ -1,0 +1,79 @@
+---
+title: 'Orthogonal Bases and Gram-Schmidt'
+titleZh: '正交基与 Gram-Schmidt'
+description: 'Any basis can be "straightened" into an orthogonal one by repeatedly subtracting projections — one vector at a time.'
+descriptionZh: '任何基都可以通过反复减去投影"扶正"——一次处理一个向量。'
+course: 'linear-algebra'
+module: 'Orthogonality and Decomposition'
+moduleZh: '正交与分解'
+moduleOrder: 5
+lessonOrder: 21
+duration: 20
+difficulty: 'Advanced'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { GramSchmidtVis } from '../../../components/interactive/linear-algebra/GramSchmidtVis';
+import { EigenDecomposition3DCompanion } from '../../../components/interactive/linear-algebra/EigenDecomposition3DCompanion';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# Orthogonal Bases and Gram-Schmidt
+
+Two arrows are easiest to work with when they're perpendicular. Orthogonal bases are "clean" — each direction is independent, measurements don't interfere, and projections are trivial.
+
+But what if your basis vectors aren't perpendicular? The **Gram-Schmidt process** is a systematic way to "straighten" any set of independent vectors into an orthogonal set.
+
+## The idea, in two steps
+
+Start with two non-perpendicular vectors v1 and v2.
+
+**Step 1:** Keep v1. Normalize it to length 1. Call this u1.
+
+**Step 2:** Take v2 and subtract its projection onto u1. What's left is the part of v2 that's perpendicular to u1. Normalize it. Call this u2.
+
+<MathBlock expression={'\\vec{u}_1 = \\frac{\\vec{v}_1}{\\lVert\\vec{v}_1\\rVert}, \\quad \\vec{u}_2 = \\frac{\\vec{v}_2 - (\\vec{v}_2 \\cdot \\vec{u}_1)\\vec{u}_1}{\\lVert\\vec{v}_2 - (\\vec{v}_2 \\cdot \\vec{u}_1)\\vec{u}_1\\rVert}'} />
+
+The key insight: subtracting the projection "cleans" v2 of any component along u1's direction. Only the perpendicular piece survives.
+
+## See the process
+
+Below, click through the steps. Step 1 normalizes v1. Step 2 subtracts the projection (shown as a dashed gray arrow) and reveals the perpendicular remainder.
+
+<GramSchmidtVis client:visible />
+
+## Why orthogonal bases matter
+
+Orthogonal bases simplify everything:
+- **Projection** onto an orthogonal basis doesn't require matrix inversion — just dot products
+- **Least squares** reduces to projecting onto the column space
+- **QR decomposition** is just Gram-Schmidt expressed as a matrix factorization
+- **Fourier series** decomposes functions into an orthogonal basis of sines and cosines
+
+## In three dimensions
+
+Gram-Schmidt in 3D: the faded green v₂ sheds its component along blue v₁, becoming the orthogonal purple u₂. The red right-angle marker confirms orthogonality.
+
+<EigenDecomposition3DCompanion client:visible mode="gram-schmidt" />
+
+<FormulaReadout formulas={[
+  { label: "Gram-Schmidt", expression: "\\vec{u}_k = \\vec{v}_k - \\sum_{j=1}^{k-1} \\text{proj}_{\\vec{u}_j}\\vec{v}_k" },
+]} />
+
+<KeyInsight>
+Gram-Schmidt straightens any basis into an orthogonal one by repeatedly subtracting projections. The result: a set of mutually perpendicular unit vectors that spans the same space.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Apply Gram-Schmidt to v1 = (1, 1) and v2 = (1, 0). Find u1 and u2."
+  hint="Step 1: normalize v1. Step 2: subtract v2's projection onto u1."
+  answer="u1 = (1,1)/√2 ≈ (0.707, 0.707). Projection of v2 onto u1: ((1,0)·(0.707,0.707))*(0.707,0.707) = 0.707*(0.707,0.707) = (0.5, 0.5). v2 - proj = (1,0) - (0.5,0.5) = (0.5, -0.5). u2 = (0.5,-0.5)/|(0.5,-0.5)| = (1/√2, -1/√2). Verify: u1·u2 = 0 ✓"
+/>
+
+---
+
+**Up next:** [Eigenvectors and Eigenvalues →](/courses/linear-algebra/22-eigenvectors-and-eigenvalues)

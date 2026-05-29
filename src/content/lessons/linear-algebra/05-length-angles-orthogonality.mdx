@@ -1,0 +1,113 @@
+---
+title: 'Length, Angles, and Orthogonality'
+titleZh: '长度、角度与正交'
+description: 'The dot product encodes length and angle — and perpendicular vectors always have dot product zero.'
+descriptionZh: '点积编码了长度和角度——而垂直向量的点积永远为零。'
+course: 'linear-algebra'
+module: 'Vectors and Their Language'
+moduleZh: '向量与它的语言'
+moduleOrder: 1
+lessonOrder: 5
+duration: 15
+difficulty: 'Beginner'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { DotProductVis } from '../../../components/interactive/linear-algebra/DotProductVis';
+import { DotProduct3DCompanion } from '../../../components/interactive/linear-algebra/DotProduct3DCompanion';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# Length, Angles, and Orthogonality
+
+Last lesson, we met the dot product — a single number that measures how much two arrows agree in direction. Now let's extract two geometric ideas from it: **how long** an arrow is, and **what angle** two arrows make.
+
+One result will feel like magic: when two arrows are perpendicular, their dot product is exactly zero. This isn't a coincidence — it's the deepest geometric fact hidden inside the dot product.
+
+## Length from the dot product
+
+Dot a vector with itself:
+
+<MathBlock expression={'\\vec{v} \\cdot \\vec{v} = v_1^2 + v_2^2'} />
+
+That's the square of its length. So:
+
+<MathBlock expression={'\\lVert\\vec{v}\\rVert = \\sqrt{\\vec{v} \\cdot \\vec{v}}'} />
+
+The length of an arrow is the square root of its self-dot-product. This is why the dot product is the foundation of all distance and measurement in vector spaces.
+
+## The angle between two arrows
+
+Here's the formula that connects dot product to angle:
+
+<MathBlock expression={'\\vec{a} \\cdot \\vec{b} = \\lVert\\vec{a}\\rVert \\, \\lVert\\vec{b}\\rVert \\cos\\theta'} />
+
+Rearranging:
+
+<MathBlock expression={'\\cos\\theta = \\frac{\\vec{a} \\cdot \\vec{b}}{\\lVert\\vec{a}\\rVert \\, \\lVert\\vec{b}\\rVert}'} />
+
+Three landmarks to remember:
+- **Same direction** ($\theta = 0$): dot product is positive and maximal
+- **Perpendicular** ($\theta = 90°$): dot product is exactly **zero**
+- **Opposite directions** ($\theta = 180°$): dot product is negative and minimal
+
+## See the perpendicularity
+
+Drag the two vectors below. Watch the dot product readout and the angle display. When the arrows are perpendicular, the dot product drops to zero — and the right-angle marker appears.
+
+<DotProductVis client:visible />
+
+## Orthogonality — the most important special case
+
+Two vectors are **orthogonal** when their dot product is zero. This is stronger than "kind of perpendicular" — it's a precise algebraic condition:
+
+<MathBlock expression={'\\vec{a} \\perp \\vec{b} \\quad\\iff\\quad \\vec{a} \\cdot \\vec{b} = 0'} />
+
+Why does this matter? Orthogonal vectors are "clean" — they don't interfere with each other. When you add two perpendicular arrows, the length of the result follows the Pythagorean theorem:
+
+<MathBlock expression={'\\lVert\\vec{a} + \\vec{b}\\rVert^2 = \\lVert\\vec{a}\\rVert^2 + \\lVert\\vec{b}\\rVert^2 \\quad \\text{(when } \\vec{a} \\perp \\vec{b}\\text{)}'} />
+
+This is no accident. Orthogonality is the geometric foundation for projection, basis decomposition, and nearly every application that follows.
+
+## In three dimensions
+
+Orthogonality extends naturally — the red right-angle marker shows that **a** and **b** are perpendicular in 3D too, and their dot product is zero.
+
+<DotProduct3DCompanion client:visible mode="ortho" />
+
+<FormulaReadout formulas={[
+  { label: "3D 长度", expression: "\\|\\vec{v}\\| = \\sqrt{v_1^2 + v_2^2 + v_3^2}" },
+  { label: "正交条件", expression: "\\vec{a} \\perp \\vec{b} \\iff \\vec{a} \\cdot \\vec{b} = a_1 b_1 + a_2 b_2 + a_3 b_3 = 0" },
+]} />
+
+<KeyInsight>
+The dot product encodes both length and angle. When two arrows are perpendicular, their dot product is exactly zero — and this algebraic condition is the foundation for everything from projection to the Pythagorean theorem in higher dimensions.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Vector (3, 4) has length 5 (a 3-4-5 triangle). Verify this using the dot product formula for length."
+  hint="Compute the dot product of (3,4) with itself, then take the square root."
+  answer="3*3 + 4*4 = 9 + 16 = 25. Square root of 25 = 5. The self-dot-product gives length squared."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Is (1, 2) perpendicular to (-4, 2)? Check using the dot product."
+  hint="Two vectors are perpendicular when their dot product is zero."
+  answer="1*(-4) + 2*2 = -4 + 4 = 0. Yes, they are perpendicular. Geometrically: one points upper-right, the other points upper-left — they form a right angle."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Find a vector perpendicular to (3, 1). How many such vectors exist?"
+  hint="You need a vector (x, y) such that 3x + 1y = 0."
+  answer="Any vector (x, y) where y = -3x works: (1, -3), (2, -6), (-1, 3), etc. There are infinitely many — they all point along the same line (the perpendicular direction). The 'perpendicular world' of a 2D vector is always a 1D line."
+/>
+
+---
+
+**Up next:** [Linear Combinations →](/courses/linear-algebra/06-linear-combinations)

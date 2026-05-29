@@ -1,0 +1,141 @@
+---
+title: 'Norms and Distances'
+titleZh: '范数与距离'
+description: 'How we measure length and distance — the many geometries hiding inside vector space.'
+descriptionZh: '如何衡量长度和距离——向量空间中隐藏的多种几何。'
+course: 'linear-algebra'
+module: 'Vectors and Their Language'
+moduleZh: '向量与它的语言'
+moduleOrder: 1
+lessonOrder: 6
+duration: 16
+difficulty: 'Beginner'
+prerequisites:
+  - title: 'Length, Angles, Orthogonality'
+    slug: 'linear-algebra/05-length-angles-orthogonality'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { NormBallVis } from '../../../components/interactive/linear-algebra/NormBallVis';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# Norms and Distances
+
+What does "length" really mean? You have been using the Pythagorean formula — square the components, add them up, take the square root. That gives you the Euclidean length, and it matches the ruler you hold against a page. But it is just **one choice among many**. This lesson is about the other ways to measure length, and why each one carves out a different geometry from the same vector space.
+
+## The L2 norm
+
+The one you already know is the **L2 norm** (pronounced "ell-two"). For a vector v = (v_1, v_2), it is defined as:
+
+<MathBlock expression={'\\|\\vec{v}\\|_2 = \\sqrt{v_1^2 + v_2^2}'} />
+
+This is the straight-line distance from the origin to the tip of the arrow — the distance a bird flies. It comes directly from the dot product: the dot product of a vector with itself is the squared length, so taking the square root recovers the length.
+
+<FormulaReadout formulas={[
+  { label: "L₂ norm", expression: "\\|\\vec{v}\\|_2 = \\sqrt{v_1^2 + v_2^2}" },
+  { label: "via dot product", expression: "\\|\\vec{v}\\|_2 = \\sqrt{\\vec{v} \\cdot \\vec{v}}" },
+]} />
+
+The L2 norm is the "default" because it agrees with physical space — the distance you measure with a ruler. When someone says "the length of a vector" without specifying which norm, they mean this one. The unit ball (the set of all vectors with length exactly 1) is a perfect circle.
+
+## The L1 norm
+
+Now imagine you are walking through a city laid out on a grid. You cannot cut diagonally through buildings — you must walk along the streets, turning only at right angles. The distance you travel is not the straight-line distance. It is the sum of the horizontal and vertical steps:
+
+<MathBlock expression={'\\|\\vec{v}\\|_1 = |v_1| + |v_2|'} />
+
+This is the **L1 norm**, also called the **Manhattan distance** or **taxicab distance**. For the vector (3, 4), the L1 norm is |3| + |4| = 7. The bird would fly 5 units; the taxi drives 7.
+
+<FormulaReadout formulas={[
+  { label: "L₁ norm", expression: "\\|\\vec{v}\\|_1 = |v_1| + |v_2|" },
+  { label: "example", expression: "\\|(3, 4)\\|_1 = |3| + |4| = 7", value: "7" },
+]} />
+
+Why care about a distance that ignores diagonals? Because in high dimensions, the L1 norm has a superpower: it promotes **sparsity**. When you use the L1 norm to penalize a solution (as in LASSO regression), the optimizer tends to drive many coordinates exactly to zero. The result is a vector that is mostly zeros — sparse, interpretable, and cheap to store. The unit ball of the L1 norm is a diamond: a rotated square with its corners on the axes.
+
+## The L-infinity norm
+
+There is one more norm in the family worth knowing now. The **L-infinity norm** ignores all but the largest component:
+
+<MathBlock expression={'\\|\\vec{v}\\|_\\infty = \\max(|v_1|, |v_2|)'} />
+
+For the vector (3, 4), the L-infinity norm is max(|3|, |4|) = 4. It answers the question: "What is the worst-case deviation in any single coordinate?" This makes it useful in numerical analysis, where you want to bound the error of an approximation — you care about the largest error among all components, not the average.
+
+<FormulaReadout formulas={[
+  { label: "L∞ norm", expression: "\\|\\vec{v}\\|_\\infty = \\max(|v_1|, |v_2|)" },
+  { label: "example", expression: "\\|(3, 4)\\|_\\infty = \\max(|3|, |4|) = 4", value: "4" },
+]} />
+
+Think of a king on a chessboard. From any square, the king can move one step in any direction — horizontally, vertically, or diagonally. The number of king-moves to reach a target square is the L-infinity distance. The unit ball is a square aligned with the axes.
+
+## See the unit balls
+
+The shape of the unit ball — the set of all vectors with norm exactly 1 — reveals the geometry of each norm. Drag the point around below and watch how each norm value changes. Toggle the norms on and off to see each unit ball in isolation.
+
+<NormBallVis />
+
+Notice the hierarchy: for any vector, the L-infinity norm is the smallest, the L1 norm is the largest, and the L2 norm sits in between. The unit balls nest inside each other like Russian dolls — the diamond (L1) contains the circle (L2), which contains the square (L-infinity).
+
+## Why different norms matter
+
+The choice of norm changes what "closest" means. Imagine you want to approximate a data point with a simpler model:
+
+- **L2** minimizes the total squared error — every error contributes, large errors are penalized disproportionately. This is **least squares**, the workhorse of statistics.
+- **L1** minimizes the total absolute error and tends to produce **sparse** solutions — many coefficients become exactly zero. This is the **LASSO**, favored when you suspect most variables are irrelevant.
+- **L-infinity** minimizes the **worst-case** error — it cares only about the largest deviation. This is the norm of **robustness** and **minimax** optimization.
+
+Same data, same model class, different norm — different answer. The geometry of the unit ball shapes the solution.
+
+## Triangle inequality
+
+All three norms share a fundamental property: the **triangle inequality**.
+
+<MathBlock expression={'\\|\\vec{a} + \\vec{b}\\| \\leq \\|\\vec{a}\\| + \\|\\vec{b}\\|'} />
+
+The shortcut is never longer than the detour. You already know this from Euclidean geometry — the straight line between two points is the shortest path. Every norm must satisfy this inequality (along with positivity and homogeneity) to earn the name "norm." It is not just a formula — it is the property that makes the whole building stand up.
+
+In fact, any function that satisfies three axioms — (1) positivity (zero only for the zero vector), (2) homogeneity (scaling the vector scales the norm), and (3) the triangle inequality — is a valid norm. The L1, L2, and L-infinity norms are special cases of the **Lp norm** family, parameterized by a single number p between 1 and infinity.
+
+## Connections
+
+The L2 norm connects directly to the dot product you met in lesson 4 — it is the square root of the dot product of a vector with itself. Later, in the lesson on least squares, the L2 norm will power the most widely used approximation method in all of applied mathematics. The choice of norm changes what "closest" means — and therefore changes the best approximation. When you study eigenvalues, you will see norms used to measure how far a matrix is from being diagonal. The geometry you learn here is the foundation for all of it.
+
+<KeyInsight>
+A norm is any function satisfying positivity, homogeneity, and the triangle inequality. The choice of norm changes what "close" means — and therefore what "best approximation" means.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Compute ‖(3, 4)‖₁, ‖(3, 4)‖₂, and ‖(3, 4)‖∞."
+  hint="Apply each formula directly: sum of absolute values, square root of sum of squares, max of absolute values."
+  answer="‖(3,4)‖₁ = |3| + |4| = 7. ‖(3,4)‖₂ = √(9 + 16) = √25 = 5. ‖(3,4)‖∞ = max(|3|, |4|) = 4."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="For the vector (1, 1), which norm (L1, L2, L∞) gives the smallest value? Which gives the largest?"
+  hint="Compute all three: L1 = |1|+|1|, L2 = √(1+1), L∞ = max(|1|,|1|)."
+  answer="‖(1,1)‖₁ = 2, ‖(1,1)‖₂ = √2 ≈ 1.414, ‖(1,1)‖∞ = 1. So L∞ is smallest and L1 is largest. This is the general pattern: L∞ ≤ L2 ≤ L1 for any vector."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Why might the L1 norm be preferred over the L2 norm in sparse regression (LASSO)?"
+  hint="Think about the shape of the L1 unit ball near the axes. What happens when the unit ball presses against a constraint?"
+  answer="The L1 unit ball is a diamond with sharp corners on the axes. When an optimization contour meets this diamond, it is most likely to touch at a corner — where one or more coordinates are exactly zero. This produces sparse solutions. The L2 unit ball (a circle) has no corners, so it almost never produces exact zeros."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Show that ‖v‖∞ ≤ ‖v‖₂ ≤ ‖v‖₁ for any 2D vector v = (v₁, v₂)."
+  hint="Start from the right side. If ‖v‖₁ = |v₁| + |v₂|, how does that compare to √(v₁² + v₂²)? For the left side, note that max(|v₁|, |v₂|)² ≤ v₁² + v₂²."
+  answer="Right inequality: (|v₁| + |v₂|)² = v₁² + v₂² + 2|v₁||v₂| ≥ v₁² + v₂², so |v₁| + |v₂| ≥ √(v₁² + v₂²), i.e., ‖v‖₁ ≥ ‖v‖₂. Left inequality: Let m = max(|v₁|, |v₂|). Then m² ≤ v₁² + v₂², so m ≤ √(v₁² + v₂²), i.e., ‖v‖∞ ≤ ‖v‖₂."
+/>
+
+---
+
+**Up next:** [Linear combinations →](/courses/linear-algebra/vector-spaces/linear-combinations)

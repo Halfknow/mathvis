@@ -80,6 +80,28 @@ Most matrices have a full set of eigenvectors. But some don't. The matrix [[2,1]
 
 Geometrically, this means the transformation has only one "preferred axis." Along the x-axis, vectors are stretched by 2. Everywhere else, vectors are both stretched and shoved sideways. The eigenvector isn't enough to build a complete coordinate system for this transformation — you need a generalized eigenvector to fill the gap.
 
+## Spectral decomposition
+
+For a symmetric matrix (A = Aᵀ), the eigenvectors form an orthonormal basis, and the matrix can be written as a sum of **projection operators** onto its eigen-directions:
+
+<MathBlock expression={'A = \\lambda_1 \\vec{v}_1 \\vec{v}_1^T + \\lambda_2 \\vec{v}_2 \\vec{v}_2^T'} />
+
+Each term is a rank-1 matrix: vᵢvᵢᵀ projects onto the eigenvector's direction, and λᵢ scales the projection. The matrix is completely described by what it does along each eigen-direction — a sum of independent stretches.
+
+This decomposition is the 2D version of what SVD does for any matrix (lesson 27). For symmetric matrices, eigendecomposition and SVD coincide.
+
+## Complex eigenvalues
+
+Not all eigenvalues are real. The rotation matrix [[0,-1],[1,0]] (90° rotation) has characteristic polynomial λ² + 1 = 0, giving λ = ±i. The eigenvalues are purely imaginary.
+
+Geometrically, this makes sense: rotation moves every vector off its line, so no real direction is preserved. The imaginary eigenvalues encode the rotation's "spiraling" nature. For a matrix with complex eigenvalues λ = a ± bi, the transformation involves both rotation (the imaginary part b) and scaling (the real part a). The factor e^{a} controls growth/decay, and the angle arctan(b/a) controls rotation.
+
+## The Gram matrix
+
+The matrix G = AᵀA (called the **Gram matrix**) always has real, non-negative eigenvalues. Its eigenvalues are the squares of the singular values of A: if A has singular values σ₁, σ₂, then G has eigenvalues σ₁², σ₂².
+
+This is the algebraic bridge between eigendecomposition (lesson 25) and SVD (lesson 27): the singular values of A are the square roots of the eigenvalues of AᵀA. The right singular vectors of A are the eigenvectors of AᵀA.
+
 ## In three dimensions
 
 A 3D diagonal matrix stretches the unit circle into a 3D ellipsoid. The colored arrows are eigenvectors — each stays on its axis, stretched by its eigenvalue.
@@ -105,6 +127,12 @@ This idea powers:
 - **Google's PageRank**: The steady-state distribution of web surfing is an eigenvector of the link matrix with eigenvalue 1 — the distribution that doesn't change when you click another link.
 - **Quantum mechanics**: Observable values (energy, momentum, spin) are eigenvalues of Hermitian operators, and the measured states are eigenvectors — the only states that give a definite answer when you measure.
 
+## Connections
+
+Eigenvectors are the natural coordinate system of a transformation. In lesson 26, diagonalization rewrites a matrix in its eigenbasis — making it as simple as a list of stretch factors. In lesson 27, SVD extends this idea to non-square matrices by using two different bases (input and output).
+
+The spectral decomposition A = Σλᵢvᵢvᵢᵀ is the symmetric-matrix version of the SVD's A = Σσᵢuᵢvᵢᵀ. The Gram matrix G = AᵀA is the algebraic bridge: its eigenvectors are the right singular vectors, and its eigenvalues are the squared singular values.
+
 ## Practice
 
 <ExerciseBlock
@@ -126,6 +154,20 @@ This idea powers:
   prompt="A 2×2 matrix has trace = 5 and determinant = 6. Find its eigenvalues without writing the characteristic polynomial."
   hint="Find two numbers that add to 5 and multiply to 6."
   answer="λ₁ + λ₂ = 5 and λ₁ · λ₂ = 6. The two numbers that satisfy this are 2 and 3. So λ₁=2, λ₂=3. The trace-determinant shortcut avoids solving the quadratic entirely."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Write the spectral decomposition of A = [[3,1],[1,3]]. Verify that it equals A."
+  hint="Eigenvalues are 4 and 2. Eigenvectors: v1 = (1,1)/√2, v2 = (1,-1)/√2."
+  answer="A = 4·v₁v₁ᵀ + 2·v₂v₂ᵀ = 4·[[0.5,0.5],[0.5,0.5]] + 2·[[0.5,-0.5],[-0.5,0.5]] = [[2,2],[2,2]] + [[1,-1],[-1,1]] = [[3,1],[1,3]] ✓. The matrix is a weighted sum of projections onto its eigen-directions."
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="The rotation matrix [[cos θ, -sin θ],[sin θ, cos θ]] has eigenvalues cos θ ± i sin θ. For θ = 90°, what are the eigenvalues? What does this tell you geometrically?"
+  hint="cos 90° = 0, sin 90° = 1. So eigenvalues are ±i."
+  answer="Eigenvalues are λ = ±i. They're purely imaginary — no real stretch factor exists. This confirms geometrically that 90° rotation preserves no direction in the real plane. Every vector gets rotated away from its original line."
 />
 
 ---

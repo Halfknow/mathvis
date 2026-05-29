@@ -81,6 +81,18 @@ A system dx/dt = Ax (where A is a matrix) has solutions built from eigenvectors:
 
 Each eigenvector evolves independently, growing or decaying exponentially at a rate determined by its eigenvalue. The geometric picture: the system stretches or shrinks along the eigen-directions, and these directions don't mix.
 
+## SVD and image compression
+
+A 1000×1000 grayscale image is a matrix of pixel values. Its SVD has 1000 singular values. The largest few capture the most important visual structure — edges, gradients, shapes. The smallest singular values encode fine-grained noise that's often invisible to the eye.
+
+Keeping the top 50 singular values (a truncated SVD of rank 50) typically preserves 90%+ of visual quality while reducing storage from 1,000,000 entries to 50 × (1000 + 1000 + 1) ≈ 100,050 — a 10× compression. This is how JPEG compression works in principle (though JPEG uses a different basis — the discrete cosine transform).
+
+## PageRank as eigenvectors
+
+Google's PageRank algorithm is an eigenvector problem in disguise. The web is a directed graph: pages link to other pages. Build a stochastic matrix M where Mᵢⱼ = 1/(out-links from j) if j links to i. The steady-state distribution π satisfies Mπ = π — π is an eigenvector with eigenvalue 1.
+
+The eigenvalue 1 always exists for stochastic matrices. The corresponding eigenvector tells you the long-term probability of being on each page — which is exactly the "importance" ranking. The power method (repeatedly multiply by M) converges to this eigenvector, which is how Google originally computed rankings.
+
 ## In three dimensions
 
 PCA in 3D: the blue data cloud has a dominant direction (red PC1). The eigenvectors of the covariance matrix reveal the "natural axes" of the data.
@@ -96,6 +108,20 @@ PCA in 3D: the blue data cloud has a dominant direction (red PC1). The eigenvect
 Linear algebra is the language of high-dimensional space. Wherever data, transformations, or linear relationships appear — and they appear everywhere — the geometric intuition you've built is the real mechanism at work.
 </KeyInsight>
 
+## The grand connection table
+
+Every module in this course connects to a real-world application:
+
+| Module | Concept | Real-world engine |
+|--------|---------|-------------------|
+| Vectors (1) | Dot product | Attention in transformers, similarity search |
+| Span & basis (2) | Linear independence | Feature selection, dimensionality |
+| Matrices (3) | Transformation | 3D graphics, neural network layers |
+| Linear systems (4) | Ax = b | Circuit analysis, structural engineering |
+| Orthogonality (5) | Eigenvectors, SVD | PCA, compression, PageRank |
+| 3D (6) | Cross product | Computer graphics, physics simulation |
+| Abstract spaces (7) | Inner products | Fourier analysis, quantum mechanics |
+
 ## Practice
 
 <ExerciseBlock
@@ -110,6 +136,20 @@ Linear algebra is the language of high-dimensional space. Wherever data, transfo
   prompt="A 2x2 matrix has eigenvalues 2 and 0.5. What happens if you apply this transformation 100 times to a vector? Which direction dominates?"
   hint="Repeated application multiplies eigenvalues: λⁿ. 2¹⁰⁰ is enormous; 0.5¹⁰⁰ is essentially zero."
   answer="The component along the eigenvalue-2 eigenvector grows exponentially (2¹⁰⁰ ≈ 10³⁰). The component along eigenvalue-0.5 shrinks to essentially zero (0.5¹⁰⁰ ≈ 10⁻³⁰). After many applications, only the dominant eigen-direction survives."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="A web has 3 pages. Page 1 links to 2 and 3. Page 2 links to 3. Page 3 links to 1. Write the transition matrix M. What is the PageRank eigenvector (the steady-state distribution)?"
+  hint="M = [[0, 0, 1], [0.5, 0, 0], [0.5, 1, 0]]. Solve Mπ = π with π₁+π₂+π₃ = 1."
+  answer="M = [[0,0,1],[0.5,0,0],[0.5,1,0]]. Setting Mπ = π: π₁ = π₃, π₂ = 0.5π₁, π₃ = 0.5π₁+π₂. Substituting: π₁ = π₃, π₂ = 0.5π₁. Sum = 1: π₁ + 0.5π₁ + π₁ = 2.5π₁ = 1. So π₁ = 0.4, π₂ = 0.2, π₃ = 0.4. Page 1 and 3 are most important (most linked to)."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt='An image matrix A has singular values 100, 50, 10, 1, 0.1, ... (rapidly decreasing). If you keep only the top 2 singular values, what fraction of total "energy" (sum of σᵢ²) do you retain?'
+  hint="Energy of top 2: 10000 + 2500 = 12500. Total ≥ 12500 + 100 + 1 + ... ≈ 12601."
+  answer="Top 2 energy: 100² + 50² = 12500. Total energy ≥ 12500 + 10² + 1² + 0.1² + ... ≈ 12601. Fraction ≈ 12500/12601 ≈ 99.2%. Just 2 numbers capture 99%+ of the image's visual information."
 />
 
 ---

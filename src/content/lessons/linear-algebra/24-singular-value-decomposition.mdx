@@ -59,6 +59,24 @@ The key geometric difference: eigendecomposition uses the **same coordinate syst
 
 This is why SVD always works: you're free to pick the most natural basis for each side independently. The eigendecomposition insists on one basis for both, which is only possible when the matrix is square and well-behaved.
 
+## Four forms of SVD
+
+The SVD can be written in four equivalent forms, each useful in a different context:
+
+1. **Full SVD**: A = UΣVᵀ where U is m×m, Σ is m×n, V is n×n. All the orthogonal matrices are square. Used in theoretical analysis.
+
+2. **Thin SVD**: Keep only the first r columns of U and V (where r = rank). Σ becomes r×r diagonal. This is what software actually computes — it's more efficient.
+
+3. **Truncated SVD**: Keep only the top k singular values (k < r). Aₖ = Σᵢ₌₁ᵏ σᵢuᵢvᵢᵀ is the best rank-k approximation to A. This is the **Eckart-Young theorem**: no other rank-k matrix is closer to A (in L2 norm). This is the mathematical foundation of lossy compression.
+
+4. **Outer product form**: A = Σᵢ σᵢuᵢvᵢᵀ — the matrix is a sum of rank-1 pieces, each weighted by a singular value. The largest singular values contribute the most "important" rank-1 components. Truncating removes the least important ones.
+
+### The ellipse perspective
+
+From the Iris textbook's geometric viewpoint: the unit circle (all unit input vectors) transforms into an ellipse whose semi-axes have lengths σ₁ and σ₂. The longest semi-axis points along u₁ (the first left singular vector), and it comes from the input direction v₁ (the first right singular vector).
+
+This ellipse is the "fingerprint" of the transformation. Its eccentricity is the condition number κ = σ₁/σ₂. A perfect circle (κ = 1) means the transformation is a pure rotation. A very flat ellipse (κ >> 1) means one direction is massively amplified.
+
 ## The condition number
 
 The ratio κ = σ₁/σ₂ is the **condition number** of the matrix. It measures how "elongated" the ellipse is — how much the transformation distorts the input:
@@ -93,6 +111,12 @@ SVD in 3D: the gray unit circle stretches to the orange ellipse, then rotates to
 SVD decomposes any matrix into three clean pieces: rotate (V), stretch (Σ), rotate again (U). The singular values are always non-negative and reveal the "importance" of each direction. The condition number κ = σ₁/σ₂ measures how much the transformation distorts its input.
 </KeyInsight>
 
+## Connections
+
+SVD is the grand finale of decomposition: it uses orthonormal bases (lesson 24), eigenvectors (lesson 25 — the right singular vectors are eigenvectors of AᵀA), and projection (lesson 10 — each rank-1 term is a projection scaled by σᵢ). PCA (lesson 29) is SVD applied to centered data: the right singular vectors of the data matrix are the principal components.
+
+The four forms of SVD correspond to four levels of approximation: full (exact), thin (efficient), truncated (compressed), outer product (structural). Each form serves a different purpose in theory and computation.
+
 ## Practice
 
 <ExerciseBlock
@@ -114,6 +138,13 @@ SVD decomposes any matrix into three clean pieces: rotate (V), stretch (Σ), rot
   prompt="Matrix A has singular values σ₁ = 10 and σ₂ = 0.1. What is the condition number? Is this matrix well-conditioned or ill-conditioned? What does that mean practically?"
   hint="κ = σ₁/σ₂. A large κ means the transformation is very sensitive to small input changes."
   answer="κ = 10/0.1 = 100. The matrix is severely ill-conditioned. Input errors along the first singular direction get amplified 100× more than along the second direction. In numerical computation, you'd expect to lose about 2 digits of precision (log₁₀(100) = 2)."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt='A 1000×1000 matrix has singular values σ₁=100, σ₂=50, σ₃=20, σ₄=5, and all remaining σᵢ < 0.01. How many singular values would you keep to capture 99% of the "energy" (sum of σᵢ²)?'
+  hint="Total energy = 10000 + 2500 + 400 + 25 + ... ≈ 12925. 99% = 12796."
+  answer="First three singular values: 10000 + 2500 + 400 = 12900. That's already 12900/12925 ≈ 99.8% of total energy. Three out of 1000 singular values capture over 99% — a 333× compression. This is the basis of image compression and recommendation systems."
 />
 
 ---

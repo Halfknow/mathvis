@@ -10,7 +10,7 @@
 动画技术：**D3.js** 做 2D 数学动画，**React Three Fiber** 做 3D 可视化。
 支持中英文（`/` English, `/zh/` 中文）。
 
-**当前状态**：线性代数课程已完成 8 模块 30 课 + 1 符号参考页，18 个交互组件（15 D3 + 3 R3F）。构建输出 89 页（EN+ZH）。微积分 4 课、概率论 4 课为初版。
+**当前状态**：线性代数课程已完成 8 模块 35 课 + 1 符号参考页，23 个交互组件（20 D3 + 3 R3F）。构建输出待验证。微积分 4 课、概率论 4 课为初版。
 
 ## 核心理念
 
@@ -154,10 +154,10 @@ MDX parser interprets `{...}` as JSX before remark-math processes math blocks. F
 | `src/components/learning/` | Domain components (CourseCard, KeyInsight, ExerciseBlock, etc.) |
 | `src/components/animation/` | ManimVideo, InteractiveCanvas |
 | `src/components/interactive/` | Interactive math widgets — see below |
-| `src/components/interactive/linear-algebra/` | 18 components (5 SVG+React, 10 D3.js, 3 R3F) |
+| `src/components/interactive/linear-algebra/` | 23 components (5 SVG+React, 15 D3.js, 3 R3F) |
 | `src/components/math/` | MathBlock, MathInline (KaTeX client-side wrappers) |
 | `src/content/lessons/` | MDX lesson files, organized by course subdirectory |
-| `src/content/lessons/linear-algebra/` | 31 files: 00-notation + 30 lessons (01-30) |
+| `src/content/lessons/linear-algebra/` | 36 files: 00-notation + 35 lessons (01-35) |
 | `src/content/lessons/calculus/` | 4 files: 00-notation + 3 lessons |
 | `src/content/lessons/probability/` | 4 files: 00-notation + 3 lessons |
 | `src/i18n/` | Translation strings and i18n utilities |

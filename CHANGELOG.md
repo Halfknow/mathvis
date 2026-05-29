@@ -6,6 +6,55 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.3.1] — 2026-05-29
+
+### Added — Linear Algebra Depth Optimization (30 → 35 lessons, 18 → 23 components)
+
+Comprehensive deepening of the entire linear algebra curriculum, referencing the Iris Math (鸢尾花数学) open-source textbook series. All 35 lessons now include cross-topic Connections paragraphs and enriched exercises.
+
+**New Lessons (5):**
+
+- `06-norms-and-distances` — L1/L2/L∞ norms, unit balls, triangle inequality, norm equivalence
+- `17-matrix-multiplication-perspectives` — four animated views: row×column, column combo, row combo, outer product sum
+- `23-least-squares-and-regression` — normal equations, projection interpretation, residuals, R²
+- `28-qr-decomposition` — Gram-Schmidt in matrix form, back-substitution, numerical stability
+- `29-principal-component-analysis` — covariance matrix eigenvalues, ellipse perspective, PCA=SVD connection
+
+**New Interactive Components (5):**
+
+- `NormBallVis` (D3) — L1/L2/L∞ unit ball comparison with toggle and draggable point
+- `MatrixMultPerspectives` (D3) — four animated views with selector slider and matrix display
+- `LeastSquaresVis` (D3) — data points, best-fit line, residuals, normal equations, R² readout
+- `QRDecompositionVis` (D3) — 3-step walkthrough (Original→Gram-Schmidt→QR), Q^TQ verification
+- `PCAViz` (D3) — 2D data cloud with covariance ellipse, PC arrows, adjustable correlation
+
+**Deepened Lessons (10 priority + 20 standard):**
+
+Priority deepening (major content expansion):
+- 01 (Vectors): unit vectors, L2 norm preview, ML connections
+- 02 (Addition): vector subtraction, matrix-vector product preview
+- 04 (Dot Product): three perspectives, Cauchy-Schwarz, orthogonality test, attention/PCA connections
+- 14 (Determinant): 3×3 cofactor expansion, six determinant properties
+- 15 (Matrix Mult): identity matrix, associativity, four perspectives preview
+- 16 (Linear Systems): column space and least squares connections
+- 21 (Gram-Schmidt): orthogonal basis simplification, QR preview, numerical stability
+- 22 (Eigenvectors): spectral decomposition, complex eigenvalues, Gram matrix
+- 24 (SVD): four SVD forms, Eckart-Young theorem, ellipse perspective
+- 30 (Applications): SVD image compression, PageRank, grand connection table
+
+Standard deepening (all remaining 20 lessons):
+- Each lesson received a **Connections** paragraph linking to related topics across the curriculum
+- Each lesson received **1 additional exercise** reinforcing cross-topic understanding
+
+### Changed
+
+- All lesson `lessonOrder` values renumbered to accommodate 5 new lessons
+- Module structure updated: Module 1 now 6 lessons, Module 3 now 7 lessons, etc.
+- ROADMAP.md updated with 35-lesson curriculum and 23-component inventory
+- CLAUDE.md updated with current state
+
+---
+
 ## [0.3.0] — 2026-05-06
 
 ### Added — Linear Algebra Curriculum Redesign (15 → 30 lessons, 6 → 18 components)

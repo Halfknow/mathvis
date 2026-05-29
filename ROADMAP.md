@@ -25,7 +25,7 @@
 
 ---
 
-## 二、线性代数课程 — 8 模块 30 课（已完成）
+## 二、线性代数课程 — 8 模块 35 课（已完成）
 
 > 综合四大教学体系重新设计：
 > - **3Blue1Brown** — "矩阵即空间变换"为核心隐喻
@@ -55,7 +55,7 @@ Span → 列空间（"列空间就是列的 span"）
 
 ### 课程大纲
 
-#### 模块 1: 向量与它的语言 (01-05) — 5 课, 75min, Beginner
+#### 模块 1: 向量与它的语言 (01-06) — 6 课, 90min, Beginner
 
 | # | EN Title | ZH Title | 直觉目标 | 组件 |
 |---|----------|----------|---------|------|
@@ -64,78 +64,82 @@ Span → 列空间（"列空间就是列的 span"）
 | 03 | Scalar Multiplication | 标量乘法 | 拉伸或翻转 | ScalarMult |
 | 04 | The Dot Product | 点积 | 两箭头有多少指向同一方向 | DotProductVis |
 | 05 | Length, Angles, Orthogonality | 长度、角度与正交 | 垂直 = 点积为零 | DotProductVis |
+| 06 | Norms and Distances | 范数与距离 | L1/L2/L∞ 范数与单位球 | NormBallVis |
 
-> "你现在知道如何构建箭头和测量它们的关系。下一步：用几根箭头能触及多大空间？"
+> "你现在知道如何构建箭头、测量它们的关系、以及用不同的'尺子'度量空间。下一步：用几根箭头能触及多大空间？"
 
-#### 模块 2: 张成、基与坐标系 (06-10) — 5 课, 84min
+#### 模块 2: 张成、基与坐标系 (07-11) — 5 课, 84min
 
 | # | EN Title | ZH Title | 直觉目标 | 组件 |
 |---|----------|----------|---------|------|
-| 06 | Linear Combinations | 线性组合 | 缩放叠加到达任何点 | LinearCombo |
-| 07 | Span and Linear Independence | Span 与线性无关 | 被困在线上 vs 填满平面 | SpanExplorer |
-| 08 | Basis and Dimension | 基与维数 | 最小独立方向集 | LinearCombo |
-| 09 | Projections | 投影 | 一向量在另一向量上的"影子" | ProjectionVis |
-| 10 | Basis Change | 基变换 | 同一向量在不同基下的坐标 | BasisChangeVis |
+| 07 | Linear Combinations | 线性组合 | 缩放叠加到达任何点 | LinearCombo |
+| 08 | Span and Linear Independence | Span 与线性无关 | 被困在线上 vs 填满平面 | SpanExplorer |
+| 09 | Basis and Dimension | 基与维数 | 最小独立方向集 | LinearCombo |
+| 10 | Projections | 投影 | 一向量在另一向量上的"影子" | ProjectionVis |
+| 11 | Basis Change | 基变换 | 同一向量在不同基下的坐标 | BasisChangeVis |
 
 > "基是空间的坐标系。改变基就是改变网格——但底层空间不变。下一步：当网格本身开始移动呢？"
 
-#### 模块 3: 矩阵即空间变换 (11-15) — 5 课, 94min
+#### 模块 3: 矩阵即空间变换 (12-18) — 7 课, 120min
 
 | # | EN Title | ZH Title | 直觉目标 | 组件 |
 |---|----------|----------|---------|------|
-| 11 | Linear Transformations | 线性变换 | 线保持线、原点不动 | MatrixTransform2D |
-| 12 | Matrices Encode Transformations | 矩阵编码变换 | 列是基向量落到的位置 | MatrixTransform2D |
-| 13 | Matrix-Vector Product | 矩阵向量乘积 | Ax = x 份第一列 + y 份第二列 | MatrixTransform2D |
-| 14 | The Determinant | 行列式 | 变换拉伸或压缩了多少面积 | MatrixTransform2D |
-| 15 | Matrix Multiplication: Four Views | 矩阵乘法四视角 | 复合、行-列点积、列组合、行组合 | MatrixTransform2D |
-
-> "矩阵移动空间。复合链接移动。行列式测量面积变化。但如果变换丢失了信息呢？"
-
-#### 模块 4: 线性方程组与可逆性 (16-20) — 5 课, 90min
-
-| # | EN Title | ZH Title | 直觉目标 | 组件 |
-|---|----------|----------|---------|------|
-| 16 | Linear Systems as Geometry | 线性方程组的几何 | 解 Ax=b 即问：b 在值域中吗？ | LinearSystemVis |
+| 12 | Linear Transformations | 线性变换 | 线保持线、原点不动 | MatrixTransform2D |
+| 13 | Matrices Encode Transformations | 矩阵编码变换 | 列是基向量落到的位置 | MatrixTransform2D |
+| 14 | Matrix-Vector Product | 矩阵向量乘积 | Ax = x 份第一列 + y 份第二列 | MatrixTransform2D |
+| 15 | The Determinant | 行列式 | 变换拉伸或压缩了多少面积 | MatrixTransform2D |
+| 16 | Matrix Multiplication: Four Views | 矩阵乘法四视角 | 复合、行-列点积、列组合、行组合 | MatrixTransform2D |
 | 17 | Inverse Matrices | 逆矩阵 | 逆变换撤销原变换 | MatrixTransform2D |
-| 18 | Column Space | 列空间 | 变换的所有可能输出 | MatrixTransform2D |
-| 19 | Null Space | 零空间 | 变换压碎到零的所有输入 | NullSpaceVis |
-| 20 | Rank and the Four Subspaces | 秩与四子空间 | 四子空间划分输入输出空间 | — |
+| 18 | Matrix Multiplication Perspectives | 矩阵乘法深层视角 | 列组合、行组合、外积和、块乘法 | MatrixMultPerspectives |
 
-> "每个变换有一个值域和一个盲区。当它们平凡时，变换可逆。否则，信息丢失。"
+> "矩阵移动空间。复合链接移动。行列式测量面积变化。四种视角揭示乘法结构。"
 
-#### 模块 5: 正交与分解 (21-24) — 4 课, 82min
+#### 模块 4: 线性方程组与可逆性 (19-24) — 6 课, 108min
 
 | # | EN Title | ZH Title | 直觉目标 | 组件 |
 |---|----------|----------|---------|------|
-| 21 | Orthogonal Bases & Gram-Schmidt | 正交基与 Gram-Schmidt | 反复减去投影"扶正"基 | GramSchmidtVis |
-| 22 | Eigenvectors and Eigenvalues | 特征向量与特征值 | 只拉伸不旋转的特殊方向 | EigenvectorVis |
-| 23 | Diagonalization | 对角化 | 特征基下矩阵变成拉伸因子列表 | DiagonalizationVis |
-| 24 | Singular Value Decomposition | 奇异值分解 | 正交输入基 + 正交输出基 + 拉伸 | SVDExplorer |
+| 19 | Linear Systems as Geometry | 线性方程组的几何 | 解 Ax=b 即问：b 在值域中吗？ | LinearSystemVis |
+| 20 | Column Space | 列空间 | 变换的所有可能输出 | ColumnSpaceVis |
+| 21 | Null Space | 零空间 | 变换压碎到零的所有输入 | NullSpaceVis |
+| 22 | Rank and the Four Subspaces | 秩与四子空间 | 四子空间划分输入输出空间 | — |
+| 23 | Least Squares and Regression | 最小二乘与回归 | 当 Ax=b 无解时的最佳近似 | LeastSquaresVis |
+| 24 | Inverse Matrices (Deep) | 逆矩阵深入 | 高斯-若尔当、存在条件 | MatrixTransform2D |
 
-> "特征向量是方阵变换的骨架。SVD 将此推广到任意矩阵。"
+> "每个变换有一个值域和一个盲区。当无解时，最小二乘找到最接近的投影。"
 
-#### 模块 6: 超越二维 (25-27) — 3 课, 50min — **首次 R3F**
-
-| # | EN Title | ZH Title | 直觉目标 | 组件 |
-|---|----------|----------|---------|------|
-| 25 | 3D Transformations | 三维变换 | 3D 与 2D 完全同理 | MatrixTransform3D (R3F) |
-| 26 | The Cross Product | 叉积 | 平行四边形 + 垂直箭头 | CrossProductVis (R3F) |
-| 27 | Non-Square Matrices | 非方阵 | 3D↔2D 投影/嵌入 | NonSquareVis (R3F) |
-
-#### 模块 7: 抽象向量空间 (28-29) — 2 课, 34min
+#### 模块 5: 正交与分解 (25-30) — 6 课, 110min
 
 | # | EN Title | ZH Title | 直觉目标 | 组件 |
 |---|----------|----------|---------|------|
-| 28 | Functions as Vectors | 函数即向量 | 多项式满足箭头的所有规则 | FunctionSpaceVis |
-| 29 | Inner Product Spaces | 内积空间 | 点积推广到积分和加权和 | InnerProductVis |
+| 25 | Orthogonal Bases & Gram-Schmidt | 正交基与 Gram-Schmidt | 反复减去投影"扶正"基 | GramSchmidtVis |
+| 26 | Eigenvectors and Eigenvalues | 特征向量与特征值 | 只拉伸不旋转的特殊方向 | EigenvectorVis |
+| 27 | Diagonalization | 对角化 | 特征基下矩阵变成拉伸因子列表 | DiagonalizationVis |
+| 28 | Singular Value Decomposition | 奇异值分解 | 正交输入基 + 正交输出基 + 拉伸 | SVDExplorer |
+| 29 | QR Decomposition | QR 分解 | Gram-Schmidt 的矩阵形式 | QRDecompositionVis |
+| 30 | Principal Component Analysis | 主成分分析 | 协方差矩阵特征值 = 数据主方向 | PCAViz |
 
-#### 模块 8: 尾声 (30) — 1 课, 20min
+> "特征向量是方阵变换的骨架。SVD 推广到任意矩阵。QR 和 PCA 是线性代数最强大的应用。"
+
+#### 模块 6: 超越二维 (31-33) — 3 课, 50min — **首次 R3F**
 
 | # | EN Title | ZH Title | 直觉目标 | 组件 |
 |---|----------|----------|---------|------|
-| 30 | Where Linear Algebra Lives | 线性代数在哪里 | PCA、图形学、量子力学 | EigenvectorVis |
+| 31 | 3D Transformations | 三维变换 | 3D 与 2D 完全同理 | MatrixTransform3D (R3F) |
+| 32 | The Cross Product | 叉积 | 平行四边形 + 垂直箭头 | CrossProductVis (R3F) |
+| 33 | Non-Square Matrices | 非方阵 | 3D↔2D 投影/嵌入 | NonSquareVis (R3F) |
 
-### 交互组件总览 (18 个)
+#### 模块 7: 抽象向量空间 (34-35) — 2 课, 34min
+
+| # | EN Title | ZH Title | 直觉目标 | 组件 |
+|---|----------|----------|---------|------|
+| 34 | Functions as Vectors | 函数即向量 | 多项式满足箭头的所有规则 | FunctionSpaceVis |
+| 35 | Inner Product Spaces | 内积空间 | 点积推广到积分和加权和 | InnerProductVis |
+
+#### 模块 8: 尾声 (35) — 已合并至模块 7
+
+> 第 30 课 "Where Linear Algebra Lives" 的应用连接内容已分散融入各课的 Connections 段落。
+
+### 交互组件总览 (23 个)
 
 | 类型 | 组件 | 技术 | 复用课程数 |
 |------|------|------|-----------|
@@ -143,6 +147,8 @@ Span → 列空间（"列空间就是列的 span"）
 | 2D | DotProductVis, EigenvectorVis, MatrixTransform2D | D3.js | 3-6 |
 | 2D | ProjectionVis, BasisChangeVis, LinearSystemVis, NullSpaceVis | D3.js | 1 |
 | 2D | GramSchmidtVis, DiagonalizationVis, SVDExplorer | D3.js | 1 |
+| 2D | NormBallVis, MatrixMultPerspectives, LeastSquaresVis | D3.js | 1 |
+| 2D | ColumnSpaceVis, QRDecompositionVis, PCAViz | D3.js | 1 |
 | 2D | FunctionSpaceVis, InnerProductVis | D3.js | 1 |
 | 3D | MatrixTransform3D, CrossProductVis, NonSquareVis | R3F | 1 |
 
@@ -261,10 +267,11 @@ Span → 列空间（"列空间就是列的 span"）
 - **v0.1.0** — 项目脚手架 + 首课 + 设计系统
 - **v0.2.0** — i18n 多语言 + 微积分/概率论初版 + Pagefind 搜索
 - **v0.3.0** — 线性代数课程全面重设计：15 课 → 30 课，18 个交互组件
+- **v0.3.1** — 线性代数深度优化：30 课 → 35 课，18 → 23 个交互组件，全部课程深化
 
 ### 版本计划
 
-- **v0.4** — 浏览器测试 + 缺失组件补全 (MatrixCompositionVis, ColumnSpaceVis, FourSubspacesVis)
+- **v0.4** — 浏览器测试 + QuadraticFormVis 组件
 - **v0.5** — 微积分扩展至 12 课
 - **v0.6** — 概率论扩展至 27 课 (8 模块) ✅
 - **v0.7** — 跨课程集成 (统一符号表、前置课链接、进度追踪)
@@ -308,10 +315,10 @@ MathViz 是一个开源的个人学习项目。如果你也正在学这三门数
 
 ## 七、当下最该做的事
 
-**浏览器测试所有 30+27 课 + 18 个交互组件。** 构建已通过（189 页），但每个组件需要在实际浏览器中验证功能正确性。重点关注：
+**浏览器测试所有 35+27 课 + 23 个交互组件。** 构建需验证通过。重点关注：
 
 1. R3F 3D 组件的移动端性能（MatrixTransform3D, CrossProductVis, NonSquareVis）
 2. 所有课程导航链接是否正确连接
 3. D3 组件在 dark mode 下的可读性
-4. 补全 3 个缺失组件：MatrixCompositionVis (15)、ColumnSpaceVis (18)、FourSubspacesVis (20)
+4. QuadraticFormVis (D3+R3F) 组件开发 — 二次型等高线 + 抛物面
 5. 概率论交互组件开发（20 个计划组件，目前仅 NormalDistribution 已实现）

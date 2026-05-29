@@ -1,0 +1,161 @@
+---
+title: 'Principal Component Analysis'
+titleZh: '主成分分析'
+description: 'Find the natural axes of your data — the directions where variation is largest — using eigenvectors of the covariance matrix.'
+descriptionZh: '用协方差矩阵的特征向量找出数据的自然坐标轴——变异最大的方向。'
+course: 'linear-algebra'
+module: 'Orthogonality and Decomposition'
+moduleZh: '正交与分解'
+moduleOrder: 5
+lessonOrder: 29
+duration: 20
+difficulty: 'Advanced'
+prerequisites:
+  - title: 'Eigenvectors and Eigenvalues'
+    slug: 'linear-algebra/22-eigenvectors-and-eigenvalues'
+  - title: 'Singular Value Decomposition'
+    slug: 'linear-algebra/24-singular-value-decomposition'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { PCAViz } from '../../../components/interactive/linear-algebra/PCAViz';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# Principal Component Analysis
+
+High-dimensional data has too many variables. Most of them are correlated, redundant, or noisy. Imagine measuring 100 features of each flower in a dataset — petal length, petal width, sepal length, sepal width, and 96 more. Do you really need all 100? Almost certainly not.
+
+**PCA** finds the few directions that carry the most information — the "principal components" of your data. It rotates your coordinate system until the first axis points along the direction where the data is most spread out, the second axis points along the next most spread direction (perpendicular to the first), and so on. Most of the time, the first two or three axes capture almost everything.
+
+## The covariance matrix
+
+Before we can find these directions, we need to measure how the variables relate to each other. That is what the **covariance matrix** does.
+
+Start with an n x p data matrix X, where each row is one observation and each column is one variable. Subtract the mean of each column so the data is centered at the origin. Call this centered matrix X-bar.
+
+<MathBlock expression={'\\text{Cov}(X) = \\frac{1}{n-1}\\,\\bar{X}^{\\!T}\\bar{X}'} />
+
+The covariance matrix is p x p — one row and column per variable. Its entries tell you:
+
+- **Diagonal** (i, i): the variance of variable i — how much it spreads on its own.
+- **Off-diagonal** (i, j): the covariance of variables i and j — how they move together. Positive means they tend to increase together; negative means one goes up when the other goes down; zero means they are uncorrelated.
+
+If two variables are almost perfectly correlated, one of them is redundant. The covariance matrix encodes exactly this redundancy.
+
+## The eigenvalue connection
+
+Here is where eigenvectors enter. The eigenvectors of Cov(X) are the **directions of maximum variance** in the data. The eigenvalues tell you how much variance each direction captures.
+
+The eigenvector with the **largest** eigenvalue points along the direction where the data cloud is most "spread out" — the longest axis of the data ellipse. That direction is called **PC1** (the first principal component).
+
+The eigenvector with the second-largest eigenvalue points along the next most spread direction, perpendicular to PC1. That is **PC2**. And so on.
+
+Why does this work? Because Cov(X) is a symmetric, positive semi-definite matrix. That guarantees:
+
+1. All eigenvalues are real and non-negative (variance is never negative).
+2. The eigenvectors are orthogonal (the principal components are perpendicular).
+3. The eigenvectors form a complete basis — together they span the entire space of variables.
+
+This is not a coincidence. The covariance matrix is symmetric precisely because variance has no preferred direction — Cov(X, Y) = Cov(Y, X). Symmetry gives us orthogonal eigenvectors, and orthogonal eigenvectors give us a clean, non-redundant set of new axes.
+
+## See the components
+
+Below is a cloud of data points generated from two correlated variables. Drag the correlation slider and watch the ellipse rotate. The red arrow (PC1) always points along the longest axis — the direction of maximum spread.
+
+<PCAViz client:visible />
+
+When the correlation is zero, the data cloud is a circle and the two principal components are equally important — neither direction carries more information than the other. As the correlation increases, the cloud stretches into an ellipse. PC1 aligns with the long axis, capturing more and more of the total variance. At high correlation, PC1 alone tells you almost everything.
+
+## The ellipse perspective
+
+Think of your centered data as a cloud of points. The covariance matrix defines an **ellipse** (in 2D) or an **ellipsoid** (in higher dimensions) that captures the shape of this cloud:
+
+- The semi-axes of the ellipse have lengths equal to the square roots of the eigenvalues.
+- The semi-axes point in the directions of the eigenvectors.
+
+PCA is simply a rotation of your coordinate system to align with this ellipse. After the rotation, the first coordinate measures spread along the longest axis, the second coordinate measures spread along the next axis, and so on.
+
+In this new coordinate system, the variables (principal components) are **uncorrelated** — the covariance matrix becomes diagonal. Each principal component captures a distinct, non-overlapping piece of information.
+
+## Dimensionality reduction
+
+The real power of PCA is throwing things away. Once you have the principal components, sort them by eigenvalue (largest first). Keep only the top k components and discard the rest.
+
+<MathBlock expression={'X_{\\text{pca}} = \\bar{X}\\,V_k'} />
+
+Here V_k is the matrix whose columns are the top k eigenvectors. The projection X_pca is a lower-dimensional representation of your data.
+
+How much information do you keep? The **fraction of variance captured** by the top k components is:
+
+<MathBlock expression={'\\frac{\\sum_{i=1}^{k} \\lambda_i}{\\sum_{i=1}^{p} \\lambda_i}'} />
+
+If PC1 captures 90% of the variance, you can reduce from 100 dimensions to 1 while keeping 90% of the information. In practice, many real-world datasets have this property — a few directions carry most of the signal, and the rest is noise.
+
+The tradeoff: you lose the directions with small variance. If those directions contained something important (a rare but critical pattern), PCA will discard it. PCA always prioritizes the dominant pattern.
+
+## PCA = SVD of centered data
+
+There is a cleaner way to compute PCA that avoids forming the covariance matrix at all. Take the SVD of the centered data matrix:
+
+<MathBlock expression={'\\bar{X} = U \\Sigma V^T'} />
+
+The right singular vectors V are exactly the principal components — the eigenvectors of the covariance matrix. The singular values relate to the eigenvalues by a simple scaling:
+
+<MathBlock expression={'\\sigma_i^2 = (n-1)\\,\\lambda_i'} />
+
+This is numerically more stable than computing Cov(X) and then finding its eigenvectors, especially when p is large. In practice, every serious PCA implementation uses SVD under the hood.
+
+This is where eigendecomposition and SVD finally meet real data. The SVD decomposes the data matrix itself; the eigendecomposition decomposes the covariance matrix derived from it. Both give you the same principal components — the SVD just gets there more directly.
+
+<FormulaReadout formulas={[
+  { label: "Covariance matrix", expression: "\\text{Cov}(X) = \\frac{1}{n-1}\\bar{X}^T\\bar{X}" },
+  { label: "PCA projection", expression: "X_{\\text{pca}} = \\bar{X} V_k" },
+  { label: "Variance captured", expression: "\\frac{\\sum_{i=1}^k \\lambda_i}{\\sum_{i=1}^p \\lambda_i}" },
+  { label: "SVD connection", expression: "\\bar{X} = U\\Sigma V^T,\\quad \\sigma_i^2 = (n-1)\\lambda_i" },
+]} />
+
+## Connections
+
+PCA ties together everything in this module. The **covariance matrix** measures how variables co-vary — pure statistics. Its **eigenvectors** (lesson 22) are the principal components — pure linear algebra. The **SVD** (lesson 24) computes them more stably — numerical linear algebra. The **projection** onto a lower-dimensional subspace is the same operation we saw with projections (lesson 9) and basis change (lesson 10).
+
+PCA is the most widely used dimensionality reduction technique in science and engineering. In image processing, it finds the "eigenfaces" that capture the main modes of variation in facial images. In finance, it finds the few factors that drive stock returns. In genetics, it reveals population structure hidden in thousands of DNA markers. Everywhere you have high-dimensional data, PCA is the first tool you reach for.
+
+<KeyInsight>
+PCA rotates your data to align with its natural axes — the directions of maximum variance. The eigenvectors of the covariance matrix are these axes, and the eigenvalues tell you how much each one matters. Keep the top few and discard the rest: that is dimensionality reduction.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="A 2x2 covariance matrix has eigenvalues 8 and 2. What fraction of variance does PC1 capture? If you keep only PC1, how much information do you lose?"
+  hint="The total variance is the sum of all eigenvalues. The fraction captured by PC1 is the ratio."
+  answer="Total variance = 8 + 2 = 10. PC1 captures 8/10 = 80%. You lose 20% of the variance by discarding PC2."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="You have 50 observations of 3 variables. After centering, you compute the SVD of the 50x3 matrix X-bar and get singular values 10, 3, and 1. What are the eigenvalues of the covariance matrix? What fraction of variance do the first two PCs capture?"
+  hint="Use the relation sigma_i^2 = (n-1) * lambda_i. Here n = 50, so n-1 = 49."
+  answer="Eigenvalues: lambda_1 = 100/49 = 2.04, lambda_2 = 9/49 = 0.18, lambda_3 = 1/49 = 0.02. Total variance = 2.24. First two PCs capture (2.04 + 0.18)/2.24 = 98.9% of the variance. Keeping just two dimensions is almost lossless."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Your data has two variables with correlation 0.95. Describe the shape of the data cloud. Where does PC1 point? Roughly what fraction of variance does it capture?"
+  hint="High correlation means the cloud is a very elongated ellipse. PC1 points along the long axis."
+  answer="The cloud is a very narrow, elongated ellipse tilted at roughly 45 degrees (since both variables are equally correlated). PC1 points along the long axis. The variance captured is approximately 1 + r / 2 = (1 + 0.95)/2 = 0.975, so about 97.5%. You could replace the two variables with a single principal component and lose almost no information."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Explain why PCA always produces uncorrelated components. What property of the covariance matrix guarantees this?"
+  hint="Think about the eigenvectors of a symmetric matrix. What is special about them?"
+  answer="The covariance matrix is symmetric. Eigenvectors of a symmetric matrix are always orthogonal. When you project data onto orthogonal directions, the resulting components have zero covariance — they are uncorrelated. This is the whole point: PCA decorrelates your variables. The covariance matrix in the new coordinates is diagonal."
+/>
+
+---
+
+**Up next:** [Where Linear Algebra Lives →](/courses/linear-algebra/30-where-linear-algebra-lives)

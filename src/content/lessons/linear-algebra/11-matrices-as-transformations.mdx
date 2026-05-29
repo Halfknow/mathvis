@@ -78,6 +78,8 @@ The same idea applies to 3x3 matrices — the unit cube (terracotta) deforms int
 A matrix is a transformation of space. Its columns tell you where the basis vectors land — and every other vector follows the same linear rule. The determinant reveals area scaling, orientation, and invertibility in a single number.
 </KeyInsight>
 
+**Connections.** The "matrix as transformation" perspective is the single most important shift in linear algebra. It unifies everything: matrix multiplication is composition (lesson 16), the determinant is area scaling (lesson 15), eigenvectors are directions the transformation respects (lesson 25), and SVD decomposes any transformation into rotate-stretch-rotate (lesson 27).
+
 ## The key property: linearity
 
 Matrix transformations are **linear**: they preserve the structure of vector arithmetic. In geometric terms:
@@ -109,6 +111,13 @@ Linearity means the transformation of any vector is completely determined by whe
   prompt="Matrix A has columns (1,0) and (1,1). Matrix B has columns (0,-1) and (1,0). First apply A (shear), then apply B (90° rotation). Where does (1,0) end up after both transformations?"
   hint="Apply A first: A(1,0) = 1·(1,0) + 0·(1,1) = (1,0). Then apply B: B(1,0) = 1·(0,-1) + 0·(1,0) = (0,-1)."
   answer="(1,0) → A gives (1,0) → B gives (0,-1). The composition BA sends (1,0) to (0,-1). Composing transformations means applying them in sequence: the last one written acts first on the vector."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="What transformation does the matrix [[0, 1], [-1, 0]] represent? Apply it to the basis vectors e1 = (1,0) and e2 = (0,1) to find out."
+  hint="Column 1 is where e1 lands, column 2 is where e2 lands. Track how the basis arrows rotate."
+  answer="e1 = (1,0) lands at (0,-1) — pointing straight down. e2 = (0,1) lands at (1,0) — pointing right. Both arrows have rotated 90° clockwise. This is a 90° clockwise rotation. The determinant = 0*0 - 1*(-1) = 1, confirming area is preserved."
 />
 
 ---

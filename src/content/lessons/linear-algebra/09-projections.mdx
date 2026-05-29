@@ -69,6 +69,8 @@ Projection in 3D works identically — **b** drops perpendicularly onto **a**'s 
 Projection splits a vector into "the part along a direction" and "the part perpendicular to it." The formula is just the dot product divided by the self-dot-product, times the direction vector.
 </KeyInsight>
 
+**Connections.** Projection is the geometric key to least squares (lesson 23): when Ax=b has no solution, projecting b onto Col(A) gives the best approximation. Gram-Schmidt (lesson 24) is repeated projection — subtract the projection to get the perpendicular piece. In machine learning, every regression model projects data onto a lower-dimensional subspace.
+
 ## Practice
 
 <ExerciseBlock
@@ -90,6 +92,13 @@ Projection splits a vector into "the part along a direction" and "the part perpe
   prompt="Decompose (5, 3) into the part along (2, 1) and the part perpendicular to it."
   hint="Find the projection scalar first: a.b / a.a."
   answer="scalar = (5*2 + 3*1) / (2*2 + 1*1) = 13/5 = 2.6. Projection = 2.6*(2,1) = (5.2, 2.6). Perpendicular part = (5,3) - (5.2,2.6) = (-0.2, 0.4). Check: (5.2,2.6) . (-0.2,0.4) = -1.04 + 1.04 = 0. Perpendicular! ✓"
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Project the vector (4, 3) onto the line through (1, 0). What is the perpendicular component? Verify that the two components are orthogonal."
+  hint="Compute the projection, then subtract from the original. Check the dot product of the two pieces."
+  answer="scalar = (4*1 + 3*0) / (1*1 + 0*0) = 4. Projection = 4*(1,0) = (4,0). Perpendicular component = (4,3) - (4,0) = (0,3). Check: (4,0) . (0,3) = 0. Orthogonal. The projection onto the x-axis is just the x-component, and the perpendicular piece is the y-component."
 />
 
 ---

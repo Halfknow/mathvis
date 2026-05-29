@@ -1,0 +1,142 @@
+---
+title: 'QR Decomposition'
+titleZh: 'QR 分解'
+description: 'Gram-Schmidt written as a matrix factorization — the numerically stable way to solve linear systems.'
+descriptionZh: 'Gram-Schmidt 写成矩阵分解——数值稳定地求解线性方程组的方法。'
+course: 'linear-algebra'
+module: 'Orthogonality and Decomposition'
+moduleZh: '正交与分解'
+moduleOrder: 5
+lessonOrder: 28
+duration: 18
+difficulty: 'Advanced'
+prerequisites:
+  - title: 'Orthogonal Bases and Gram-Schmidt'
+    slug: 'linear-algebra/24-orthogonal-bases-gram-schmidt'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { QRDecompositionVis } from '../../../components/interactive/linear-algebra/QRDecompositionVis';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# QR Decomposition
+
+You've seen Gram-Schmidt straighten a basis into an orthogonal one — subtracting projections one at a time until every vector stands perpendicular. That process is elegant, but it lives in the world of "vectors and operations."
+
+Here's the deeper view: **Gram-Schmidt is a matrix factorization in disguise.** Every matrix A with independent columns can be factored as A = QR, where Q is the orthonormal basis Gram-Schmidt produces and R records exactly how to rebuild the original columns from Q. The payoff is enormous — this single equation gives a numerically stable way to solve linear systems, compute least squares, and find eigenvalues.
+
+## The factorization
+
+Take a matrix A with independent columns. Write:
+
+<MathBlock expression={'A = QR'} />
+
+Two pieces:
+
+- **Q** has orthonormal columns — these are the unit vectors Gram-Schmidt produces. Think of Q as the "clean directions."
+- **R** is upper triangular — these are the coefficients that rebuild A's columns from Q's columns. Think of R as the "recipe."
+
+Why is R upper triangular? Because Gram-Schmidt builds each new orthogonal direction using only the *previous* vectors. The second column of A depends on q1 and q2 but not q3. The third column depends on q1, q2, and q3 but not q4. This one-way dependency is exactly what makes R upper triangular — zeros below the diagonal.
+
+## See the factorization
+
+Below, drag the vectors a1 and a2 to change matrix A. Watch how Q and R update in real time. Q's columns are always unit length and perpendicular; R records the dot products that reconstruct A from Q.
+
+<QRDecompositionVis client:visible />
+
+## How R captures Gram-Schmidt
+
+The k-th column of A is a linear combination of the first k columns of Q:
+
+<MathBlock expression={'\\mathbf{a}_k = r_{1k}\\,\\mathbf{q}_1 + r_{2k}\\,\\mathbf{q}_2 + \\cdots + r_{kk}\\,\\mathbf{q}_k'} />
+
+The coefficients are dot products. Since Q's columns are orthonormal, taking the dot product of both sides with <MathInline expression={'\\mathbf{q}_i'} /> picks out exactly one term:
+
+<MathBlock expression={'r_{ik} = \\mathbf{q}_i \\cdot \\mathbf{a}_k'} />
+
+In matrix form this is beautifully compact:
+
+<MathBlock expression={'R = Q^T A'} />
+
+The upper-triangular structure of R is a direct consequence of Gram-Schmidt's sequential construction. When you compute <MathInline expression={'r_{ik} = \\mathbf{q}_i \\cdot \\mathbf{a}_k'} /> for i > k, you get zero — because <MathInline expression={'\\mathbf{a}_k'} /> has already been cleaned of any component along <MathInline expression={'\\mathbf{q}_i'} />. The zeros below the diagonal aren't coincidental; they're the signature of an orthogonalization process.
+
+## Solving Ax = b via QR
+
+Here is where QR earns its keep. To solve Ax = b:
+
+**Step 1: Compute QR.** Factor A into Q and R.
+
+**Step 2: Transform the system.** Substitute A = QR:
+
+<MathBlock expression={'QR\\mathbf{x} = \\mathbf{b}'} />
+
+Multiply both sides by <MathInline expression={'Q^T'} />. Because Q has orthonormal columns, <MathInline expression={'Q^T Q = I'} />, so the left side simplifies:
+
+<MathBlock expression={'R\\mathbf{x} = Q^T \\mathbf{b}'} />
+
+**Step 3: Back-substitute.** R is upper triangular, so solve from the bottom row up. No matrix inversion. No Gaussian elimination. Just dot products and back-substitution.
+
+This is faster and more stable than computing <MathInline expression={'A^{-1}'} />. For least squares problems (when A is tall and thin), the same approach gives the normal equations in their most stable form: <MathInline expression={'R\\mathbf{x} = Q^T \\mathbf{b}'} />.
+
+## Numerical stability
+
+Classical Gram-Schmidt — the version that subtracts all projections at once — loses orthogonality in finite-precision arithmetic. The rounding errors accumulate, and the computed Q drifts away from being truly orthogonal. For a 10x10 matrix, the loss can be visible. For a 100x100 matrix, it's catastrophic.
+
+**Modified Gram-Schmidt** fixes this by subtracting projections one at a time, updating after each step. It's the same mathematics but reorganized to minimize rounding error.
+
+In practice, numerical software goes further. **Householder reflections** — the method used by LAPACK, NumPy, and MATLAB — doesn't build Q column by column at all. Instead it reflects the entire matrix through a sequence of carefully chosen mirrors, sweeping A into upper-triangular form. The result is the same A = QR, but the orthogonality of Q is preserved to machine precision.
+
+The key takeaway: when you call `numpy.linalg.lstsq` or `numpy.linalg.solve`, QR decomposition is doing the heavy lifting internally. You don't see it, but it's there — making sure your answer has as many correct digits as possible.
+
+<FormulaReadout formulas={[
+  { label: "QR 分解", expression: "A = QR" },
+  { label: "R 的计算", expression: "R = Q^T A" },
+  { label: "R 的元素", expression: "r_{ij} = \\mathbf{q}_i \\cdot \\mathbf{a}_j" },
+  { label: "求解线性系统", expression: "R\\mathbf{x} = Q^T \\mathbf{b}" },
+]} />
+
+## Connections
+
+QR decomposition connects the abstract Gram-Schmidt process to practical computation. It's the bridge between "here's how to orthogonalize vectors by hand" and "here's how a computer solves linear systems without losing accuracy."
+
+QR is also the backbone of the **QR algorithm** for computing eigenvalues — widely regarded as one of the most important numerical algorithms in linear algebra. The idea is deceptively simple: factor A = QR, then form A' = RQ, then repeat. The sequence converges to a matrix whose eigenvalues sit on the diagonal. Without QR decomposition, there would be no reliable way to compute eigenvalues of large matrices.
+
+<KeyInsight>
+QR decomposition captures Gram-Schmidt as a matrix equation A = QR. The orthonormal columns of Q and the triangular R give a numerically stable way to solve linear systems and least squares problems — no matrix inversion required.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Apply QR decomposition to A = [[1,1],[1,0]]. Find Q and R."
+  hint="Apply Gram-Schmidt to the columns a1 = (1,1) and a2 = (1,0). Then R = Q^T A."
+  answer="Gram-Schmidt: q1 = (1,1)/sqrt(2), proj of a2 onto q1 is ((1,0)·(1,1)/sqrt(2)) * (1,1)/sqrt(2) = (1/sqrt(2))(1,1)/sqrt(2) = (1/2, 1/2). So q2_raw = (1,0) - (1/2,1/2) = (1/2,-1/2), q2 = (1,-1)/sqrt(2). Q = (1/sqrt(2))[[1,1],[1,-1]]. R = Q^T A = (1/sqrt(2))[[1,1],[1,-1]] [[1,1],[1,0]] = [[sqrt(2), 1/sqrt(2)],[0, 1/sqrt(2)]]. Verify: QR = Q · R = A."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Using your QR decomposition from exercise 1, solve Ax = b where b = (3, 1)."
+  hint="Compute Q^T b, then solve Rx = Q^T b by back-substitution."
+  answer="Q^T b = (1/sqrt(2))[[1,1],[1,-1]](3,1) = (1/sqrt(2))(4, 2) = (2sqrt(2), sqrt(2)). Now solve Rx = (2sqrt(2), sqrt(2)) where R = [[sqrt(2), 1/sqrt(2)],[0, 1/sqrt(2)]]. From row 2: (1/sqrt(2))x2 = sqrt(2), so x2 = 2. From row 1: sqrt(2)x1 + (1/sqrt(2))(2) = 2sqrt(2), so sqrt(2)x1 = 2sqrt(2) - sqrt(2), x1 = 1. Answer: x = (1, 2)."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Why is R upper triangular rather than, say, lower triangular? Connect this to how Gram-Schmidt works."
+  hint="Think about which q-vectors each column of A depends on during Gram-Schmidt."
+  answer="Gram-Schmidt processes columns sequentially. The k-th column a_k is orthogonalized using only q1, q2, ..., qk. It never depends on future vectors q_{k+1}, q_{k+2}, etc. This means r_{ik} = 0 for i > k — the entries below the diagonal are all zero. R is upper triangular because Gram-Schmidt only looks backward, never forward."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Why is solving Ax = b via QR (solve Rx = Q^T b by back-substitution) preferred over computing A^{-1} directly?"
+  hint="Consider numerical stability: what happens to A^{-1} when A is close to singular?"
+  answer="Three reasons: (1) No matrix inversion — computing A^{-1} amplifies rounding errors, especially when A is ill-conditioned. (2) Back-substitution on a triangular system is O(n^2) and numerically stable, while matrix inversion is O(n^3) and can lose significant precision. (3) For least squares (overdetermined systems), A^{-1} doesn't even exist, but QR works perfectly: Rx = Q^T b gives the best approximation in the column space of A."
+/>
+
+---
+
+**Up next:** [Functions as Vectors →](/courses/linear-algebra/28-functions-as-vectors)

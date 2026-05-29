@@ -52,6 +52,12 @@ Vector addition has a few configurations worth recognizing instantly:
 - **Orthogonal**: Try "Orthogonal." When the arrows are perpendicular, the Pythagorean theorem kicks in: |**a** + **b**|² = |**a**|² + |**b**|². The sum arrow is the hypotenuse of the right triangle formed by **a** and **b**.
 - **Opposite directions**: Try "Opposite dirs." When the arrows point opposite ways but have different lengths, the sum points in the direction of the longer arrow, with length equal to the difference.
 
+### Vector subtraction
+
+Subtraction is addition in disguise: **a - b = a + (-b)**. Geometrically, draw b reversed (rotated 180°), then add head-to-tail. The result points from b's tip to a's tip — the "displacement from b to a."
+
+This is useful when you need to measure the gap between two points. If point P is at position vector p and point Q is at position vector q, then q - p is the arrow from P to Q. Subtraction reveals *relative position*.
+
 ## In three dimensions
 
 Head-to-tail works in 3D just as in 2D. The blue arrow is **a**, the green arrow continues from its tip, and the red arrow is the sum.
@@ -65,6 +71,12 @@ Head-to-tail works in 3D just as in 2D. The blue arrow is **a**, the green arrow
 <KeyInsight>
 Vector addition is stacking displacements: walk along one arrow, then along the other. The sum is the shortcut from start to finish. Commutativity means the order of walks does not matter.
 </KeyInsight>
+
+## Connections
+
+Head-to-tail addition is exactly what happens inside every matrix-vector product. When you compute Ax = x₁c₁ + x₂c₂, you're doing two weighted walks — x₁ steps along c₁'s direction, then x₂ steps along c₂'s direction. The result lands at the linear combination. Lesson 7 will make this explicit.
+
+The triangle inequality ‖a+b‖ ≤ ‖a‖+‖b‖ you explored in exercise 3 is not just about vectors — it's the foundation of all distance-based reasoning in analysis, probability, and machine learning.
 
 ## When coordinates arrive
 
@@ -95,6 +107,13 @@ This formula is just the head-to-tail picture written in numbers. **The geometry
   prompt="Vector **a** has length 3 and vector **b** has length 4. What are the minimum and maximum possible lengths of **a** + **b**? (This is the **triangle inequality**.)"
   hint="Think about the extreme cases: same direction and opposite directions."
   answer="Minimum: |3 - 4| = 1 (opposite directions, they almost cancel). Maximum: 3 + 4 = 7 (same direction, lengths add). For any angle in between, |**a** + **b**| falls between 1 and 7."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Compute a + b and a - b for a = (2, -1) and b = (-3, 4). What is the angle between a+b and a-b?"
+  hint="a + b = (-1, 3). a - b = (5, -5). Compute the dot product."
+  answer="a + b = (-1, 3). a - b = (5, -5). Dot product: (-1)(5) + (3)(-5) = -5 - 15 = -20. The angle is obtuse (dot product is negative). In fact, a+b and a-b are always perpendicular when ‖a‖ = ‖b‖."
 />
 
 ---

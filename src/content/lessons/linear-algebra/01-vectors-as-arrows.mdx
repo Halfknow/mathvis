@@ -61,6 +61,16 @@ There is one arrow that breaks the rule. The **zero vector** has no direction at
 
 This might seem like a technicality, but the zero vector is the additive identity of the vector space: adding it to any vector leaves that vector unchanged, just as adding zero to a number does nothing. It is the "do nothing" displacement — you walk zero steps in zero directions and end up exactly where you started.
 
+## Unit vectors
+
+Every nonzero vector v hides a direction and a magnitude inside it. **Dividing by length** extracts the direction alone:
+
+The unit vector û = v/‖v‖ points in the same direction as v but has length exactly 1. It's the "pure direction" extracted from v — all direction, no magnitude.
+
+Why does this matter? Because many formulas simplify when vectors have length 1. The dot product of two unit vectors gives you cos θ directly — no division by lengths needed. Projections, reflections, and rotations all become cleaner with unit vectors.
+
+Think of it this way: v carries *how far* and *which way*. û carries only *which way*. When you need to compare directions without being distracted by magnitude, normalize first.
+
 ## Drag it yourself
 
 Below is the same idea, but interactive. Grab any of the arrows and slide it around. Or try the preset buttons to see special vectors animate into place.
@@ -101,6 +111,12 @@ The same idea extends to 3D — a vector is still an arrow defined by direction 
 A vector is the **equivalence class** of all arrows with the same direction and length. The zero vector is the unique arrow with no direction.
 </KeyInsight>
 
+## Connections
+
+The length ‖v‖ you just met is the **L2 norm** — the default way to measure "how long." In lesson 6, you'll see that there are other norms (L1, L∞) that measure length differently, each revealing a different geometry. The choice of norm changes what "close" means — and that choice matters in machine learning, where L1 regularization produces sparse solutions while L2 produces smooth ones.
+
+The unit vector û = v/‖v‖ is the foundation for projection (lesson 10) and Gram-Schmidt orthogonalization (lesson 24). Every orthonormal basis is built from unit vectors.
+
 ## When coordinates enter
 
 With a starting point fixed at the origin, the arrow's tip lands at its components:
@@ -132,6 +148,20 @@ Notice the order: **geometry first, numbers second**.
   prompt="Vector v has length 5. What is the length of -v? What is the length of 2v?"
   hint="Negating flips direction, scaling changes magnitude."
   answer="|-v| = 5 (direction flips, length stays the same). |2v| = 10 (scaling by 2 doubles the length)."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Compute the unit vector in the direction of (3, 4). Verify its length is exactly 1."
+  hint="Divide each component by the length ‖(3,4)‖ = 5."
+  answer="û = (3/5, 4/5) = (0.6, 0.8). Check: √(0.36 + 0.64) = √1 = 1. ✓"
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="Can two different vectors have the same unit vector? Can a unit vector have length 0?"
+  hint="Think about what 'unit vector' means — same direction, length 1."
+  answer="Yes — any two vectors pointing in the same direction (like (2,3) and (4,6)) produce the same unit vector (2,3)/√13. Only the zero vector has no unit vector, because its length is 0 and you can't divide by zero."
 />
 
 ---

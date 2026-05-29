@@ -79,6 +79,54 @@ The dot product measures how much two arrows agree in direction — positive mea
   answer="Any scalar multiple of (-4, 3) works, since 3(-4) + 4(3) = 0. Infinitely many vectors are perpendicular to (3, 4) — they all lie along the same line, pointing in opposite directions. In 2D, the perpendicular family is always a line."
 />
 
+## Three ways to read the dot product
+
+The dot product has three equivalent definitions, and each one is the "right" one in a different context:
+
+1. **Geometric**: a·b = ‖a‖‖b‖cos θ — the product of magnitudes times the cosine of the angle between them. This tells you about alignment.
+
+2. **Algebraic**: a·b = a₁b₁ + a₂b₂ — the sum of component-wise products. This is what you compute.
+
+3. **Projection**: a·b = ‖a‖ × (component of b along a) — the length of a times the projection of b onto a. This measures how much of b lives in a's direction.
+
+All three give the same number. The geometric definition reveals the angle, the algebraic definition is what you compute, and the projection definition is the one that powers everything in machine learning.
+
+## The Cauchy-Schwarz inequality
+
+One of the most important inequalities in all of mathematics:
+
+The absolute value of the dot product never exceeds the product of lengths: |a·b| ≤ ‖a‖‖b‖, with equality if and only if a and b point in the same (or opposite) direction.
+
+Geometrically: since cos θ ranges from -1 to 1, the dot product a·b = ‖a‖‖b‖cos θ is bounded by ‖a‖‖b‖. The maximum alignment is parallel, the minimum is anti-parallel.
+
+This inequality is the reason why correlation coefficients are between -1 and 1, why Heisenberg's uncertainty principle holds, and why you can bound the error in approximations.
+
+## Orthogonality as a test
+
+The dot product is the **algebraic test for perpendicularity**: a·b = 0 if and only if a and b are perpendicular (or one is zero). No angles needed — just compute a sum and check if it's zero.
+
+This is why "orthogonal" and "dot product equals zero" are interchangeable. In higher dimensions, where you can't just look at an angle, the dot product is the *only* practical way to check perpendicularity.
+
+## Connections
+
+The dot product is the foundation for everything in module 5: projection (lesson 10) is built from dot products, Gram-Schmidt (lesson 24) repeatedly computes dot products to subtract projections, and PCA (lesson 29) measures variance through dot products. The Cauchy-Schwarz inequality underpins all of these — it guarantees that projections are always smaller than the original vector.
+
+In machine learning, attention mechanisms in transformers compute dot products between query and key vectors. "How aligned is this query with that key?" is literally a dot product question — the same geometric operation you see here.
+
+<ExerciseBlock
+  number={3}
+  prompt="Verify the Cauchy-Schwarz inequality for a = (3, 1) and b = (1, 4). Compute |a·b| and ‖a‖‖b‖ separately."
+  hint="a·b = 3+4 = 7. ‖a‖ = √10, ‖b‖ = √17."
+  answer="a·b = 7. ‖a‖‖b‖ = √10 × √17 = √170 ≈ 13.04. |7| ≤ 13.04 ✓. The inequality holds — the vectors are not parallel."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Find a nonzero vector perpendicular to (2, 3). How many such vectors exist?"
+  hint="Two vectors are perpendicular when their dot product equals zero."
+  answer="Any vector (x, y) with 2x + 3y = 0 works. One solution: (3, -2). Another: (-3, 2). There are infinitely many — they all point along the same line, just with different lengths and directions. Every nonzero vector has exactly one perpendicular direction (a line through the origin)."
+/>
+
 ---
 
 **Up next:** [Length, Angles, Orthogonality →](/courses/linear-algebra/05-length-angles-orthogonality)

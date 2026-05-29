@@ -1,0 +1,149 @@
+---
+title: 'Matrix Multiplication: Four Perspectives'
+titleZh: '矩阵乘法的四个视角'
+description: 'The same product, seen four different ways — each one illuminates a different facet of what multiplication means.'
+descriptionZh: '同一次乘法，四种不同的看法——每一种都照亮了乘法含义的不同侧面。'
+course: 'linear-algebra'
+module: 'Matrices as Space Transformations'
+moduleZh: '矩阵即空间变换'
+moduleOrder: 3
+lessonOrder: 17
+duration: 20
+difficulty: 'Intermediate'
+prerequisites:
+  - title: 'Matrix Multiplication'
+    slug: 'linear-algebra/16-matrix-multiplication'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { MatrixMultPerspectives } from '../../../components/interactive/linear-algebra/MatrixMultPerspectives';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# Matrix Multiplication: Four Perspectives
+
+You know matrix multiplication as composing transformations. But the same product **AB** can be read four entirely different ways — and each perspective unlocks a different understanding of linear algebra.
+
+The formula you memorized — row times column — is only one of those four faces. It tells you *how to compute*, but not *what is happening*. The other three perspectives reveal the column structure, the row structure, and the rank-1 skeleton hiding inside every product.
+
+## See it four ways
+
+The widget below lets you switch between all four perspectives on the same product AB. Drag the sliders to change A and B, then click each perspective tab to see which parts of each matrix contribute to the result.
+
+<MatrixMultPerspectives client:visible />
+
+## Perspective 1: Row × Column (dot product)
+
+This is the one you learned first. To get entry (i, j) of the product AB, take row i of A and dot it with column j of B:
+
+<MathBlock expression={'(AB)_{ij} = \sum_{k=1}^{n} a_{ik} \, b_{kj} = \text{row}_i(A) \cdot \text{col}_j(B)'} />
+
+Each entry is a single number — a dot product. For 2×2 matrices, you compute four dot products and you're done.
+
+This perspective is the "how to compute" view. It is the most mechanical and the most useful for hand calculation. But it hides the geometric story. The dot product tells you *what number goes in the box*, not *why that number is there*.
+
+## Perspective 2: Column combination
+
+Column j of AB equals A times column j of B:
+
+<MathBlock expression={'\text{col}_j(AB) = A \cdot \text{col}_j(B)'} />
+
+This is the "what happens to each column" view. Each column of the product is the full transformation A applied to the corresponding column of B. Think of it this way: the columns of B are input vectors, and the columns of AB are where those vectors land after transformation A.
+
+This perspective makes something important visible: **multiplying A by a vector x is a linear combination of A's columns**. When x = col_j(B), the weights for that linear combination are the entries of B's j-th column.
+
+So AB is really just "apply A to every column of B, one at a time." The product is built column by column.
+
+## Perspective 3: Row combination
+
+Row i of AB equals row i of A times B:
+
+<MathBlock expression={'\text{row}_i(AB) = \text{row}_i(A) \cdot B'} />
+
+This is the mirror image of Perspective 2, but now we see the row structure. Each row of the product comes from a single row of A reaching across all of B.
+
+Why does this matter? Because the **row space** of AB lives inside the row space of B. Every row of AB is a linear combination of B's rows — the coefficients come from the corresponding row of A. This perspective makes rank properties visible: if B has rank 1, then AB has rank at most 1, because every row of AB is a combination of just one independent row direction.
+
+## Perspective 4: Outer product sum
+
+The entire product AB is a sum of rank-1 matrices:
+
+<MathBlock expression={'AB = \sum_{k=1}^{n} \text{col}_k(A) \cdot \text{row}_k(B)'} />
+
+Each term in this sum is an **outer product** — a column of A (height n) times a row of B (width p) — which produces an n×p matrix of rank 1. The full product is the sum of these rank-1 pieces.
+
+This is the deepest perspective. It says: *every matrix product is built from rank-1 bricks*. Each brick is one column of A paired with one row of B. Stack enough of them and you get the full product.
+
+This form is the algebraic backbone of the **Singular Value Decomposition** (SVD). The SVD writes any matrix A as:
+
+<MathBlock expression={'A = \sum_{i} \sigma_i \, \mathbf{u}_i \, \mathbf{v}_i^T'} />
+
+That is exactly the outer product sum form — each term is a scaled rank-1 matrix. The SVD just chooses the *best* rank-1 pieces (the ones that capture the most information) and orders them by importance.
+
+<FormulaReadout formulas={[
+  { label: 'Row x Column', expression: '(AB)_{ij} = \sum_k a_{ik} b_{kj}' },
+  { label: 'Column Combo', expression: '\text{col}_j(AB) = A \cdot \text{col}_j(B)' },
+  { label: 'Row Combo', expression: '\text{row}_i(AB) = \text{row}_i(A) \cdot B' },
+  { label: 'Outer Product Sum', expression: 'AB = \sum_{k} \text{col}_k(A)\,\text{row}_k(B)^T' },
+]} />
+
+## Block matrix multiplication
+
+There is a fifth perspective that is less about algebra and more about engineering. If you partition A and B into blocks (sub-matrices), you can multiply them block-by-block using the same rules:
+
+<MathBlock expression={'\begin{pmatrix} A_{11} & A_{12} \\ A_{21} & A_{22} \end{pmatrix} \begin{pmatrix} B_{11} & B_{12} \\ B_{21} & B_{22} \end{pmatrix} = \begin{pmatrix} A_{11}B_{11}+A_{12}B_{21} & A_{11}B_{12}+A_{12}B_{22} \\ A_{21}B_{11}+A_{22}B_{21} & A_{21}B_{12}+A_{22}B_{22} \end{pmatrix}'} />
+
+Each "entry" in the block product is itself a matrix product. The blocks just have to have compatible dimensions — the number of columns of A_{ik} must match the number of rows of B_{kj}.
+
+This is not a new algebraic insight so much as a computational strategy. Block multiplication is how **BLAS** (Basic Linear Algebra Subprograms) libraries achieve high performance on modern hardware: they break large matrices into cache-friendly blocks and multiply block-by-block, keeping data in fast memory as long as possible. It is also how you reason about structured matrices — block diagonal, block triangular, and Kronecker products all become natural when you think in blocks.
+
+## When to use which perspective
+
+Different situations call for different lenses:
+
+- **Computing by hand** — use Perspective 1 (row × column). It is systematic and catches arithmetic mistakes easily.
+- **Understanding what Ax means** — use Perspective 2 (column combination). Ax is a linear combination of A's columns, weighted by the entries of x. This is why the column space matters.
+- **Reasoning about row space and rank** — use Perspective 3 (row combination). Every row of AB is a combination of B's rows, so the row space of AB is trapped inside the row space of B.
+- **Understanding rank, SVD, and low-rank approximation** — use Perspective 4 (outer product sum). Every product is a sum of rank-1 pieces. Drop the small pieces and you get a low-rank approximation — that is the SVD in a nutshell.
+- **Optimizing computation** — use block multiplication. It matches how computers actually move data through memory hierarchies.
+
+Perspective 2 connects directly to the column-space picture from [Matrix Multiplication](/courses/linear-algebra/16-matrix-multiplication): multiplying A by a vector is taking a linear combination of A's columns. Perspective 4 is the algebraic backbone of the SVD — every matrix is a sum of rank-1 pieces, and the SVD simply picks the most important ones. Block multiplication is how numerical libraries like BLAS achieve high throughput on modern hardware, breaking large matrices into cache-friendly chunks.
+
+<KeyInsight>
+Matrix multiplication has four faces: dot product (entry-by-entry), column combination, row combination, and outer product sum. Each reveals different structure. The outer product form AB = Σ col_k(A) row_k(B) is the algebraic key to SVD.
+</KeyInsight>
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Let A = [[1,2],[3,4]] and B = [[5,6],[7,8]]. Compute AB using Perspective 2: compute each column of AB separately as A times the corresponding column of B. Verify that col₁(AB) = 5·col₁(A) + 7·col₂(A)."
+  hint="col₁(B) = [5,7]. Multiply A by this column: A·[5,7] = 5·[1,3] + 7·[2,4]."
+  answer="col₁(AB) = [5+14, 15+28] = [19,43]. col₂(AB) = [6+16, 18+32] = [22,50]. So AB = [[19,22],[43,50]]."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Using the same A and B, verify Perspective 3: compute row₁(AB) as row₁(A)·B. row₁(A) = [1,2]. Check that [1,2]·[[5,6],[7,8]] gives the first row of your answer from Exercise 1."
+  hint="row₁(A)·B = 1·row₁(B) + 2·row₂(B) = 1·[5,6] + 2·[7,8] = [5+14, 6+16]."
+  answer="row₁(AB) = [19,22]. This matches the first row of AB = [[19,22],[43,50]]. Perspective 3 confirmed."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Using the same A and B, express AB as an outer product sum (Perspective 4): AB = col₁(A)·row₁(B) + col₂(A)·row₂(B). Compute each rank-1 matrix and verify they sum to AB."
+  hint="col₁(A) = [1,3], row₁(B) = [5,6]. Their outer product is [[5,6],[15,18]]. col₂(A) = [2,4], row₂(B) = [7,8]. Their outer product is [[14,16],[28,32]]."
+  answer="Rank-1 term 1 = [[5,6],[15,18]]. Rank-1 term 2 = [[14,16],[28,32]]. Sum = [[19,22],[43,50]] = AB. Each term has rank 1 (every row is a multiple of every other row)."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="If A is 3×2 and B is 2×4, what is the maximum possible rank of AB? Use Perspective 4 (outer product sum) to justify your answer."
+  hint="AB = col₁(A)·row₁(B) + col₂(A)·row₂(B). How many rank-1 terms are there in the sum?"
+  answer="AB is a sum of exactly 2 rank-1 matrices (one for each column of A = each row of B). The sum of k rank-1 matrices has rank at most k, so rank(AB) ≤ 2. More generally, rank(AB) ≤ min(rank(A), rank(B))."
+/>
+
+---
+
+**Up next:** [Matrix multiplication rules →](/courses/linear-algebra/18-matrix-multiplication-rules)

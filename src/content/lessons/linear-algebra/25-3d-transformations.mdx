@@ -63,6 +63,8 @@ The third column (0, 0, 1) shows that e3 stays put — the z-axis is the rotatio
 3D transformations follow the same rules as 2D — columns are destinations, determinant measures volume scaling, and eigenvectors are the "unchanged directions." The only new complexity is that rotation happens around an axis, not a point.
 </KeyInsight>
 
+**Connections.** 3D transformations are the engine of computer graphics. Every frame, the GPU multiplies millions of vertices by a series of 4x4 matrices (using homogeneous coordinates for translations). Euler angles (rotate around X, then Y, then Z) give an intuitive interface, but quaternions avoid gimbal lock. The determinant of the 3x3 submatrix tells you if the object is "inside-out" (negative determinant = reflection).
+
 ## Practice
 
 <ExerciseBlock
@@ -77,6 +79,13 @@ The third column (0, 0, 1) shows that e3 stays put — the z-axis is the rotatio
   prompt="A 3D rotation matrix always has det = 1 and one eigenvalue = 1. Why?"
   hint="Rotation doesn't change volumes. And one direction doesn't move..."
   answer="Rotation preserves volume (no stretching or compression), so det = 1. The rotation axis itself doesn't move — vectors along it stay put — so λ = 1 is always an eigenvalue, with the rotation axis as its eigenvector."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="The 3D rotation matrix around the z-axis by angle theta is [[cos theta, -sin theta, 0],[sin theta, cos theta, 0],[0, 0, 1]]. Verify that its determinant is 1 (area preserved) and that (0, 0, 1) is an eigenvector with eigenvalue 1."
+  hint="For the determinant, expand along the third row. For the eigenvector, multiply the matrix by (0,0,1) and see what you get."
+  answer="det = 1*(cos^2 theta + sin^2 theta) = 1*1 = 1. Volume is preserved. Multiplying by (0,0,1): the third column is (0,0,1), so the result is exactly (0,0,1). Eigenvalue 1 confirmed. The z-axis is the rotation axis — it doesn't move."
 />
 
 ---

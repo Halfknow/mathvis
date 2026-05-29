@@ -59,6 +59,8 @@ Switch between projection (3D→2D) and embedding (2D→3D). Drag to rotate the 
 Non-square matrices change dimensions. Wide matrices project from higher to lower dimensions. Tall matrices embed from lower to higher. The column picture — Ax as a linear combination — works exactly the same way.
 </KeyInsight>
 
+**Connections.** Non-square matrices change dimensions — they're projections (tall matrices, m > n) or embeddings (wide matrices, m < n). SVD (lesson 24) handles them gracefully: the singular values tell you how much information survives the dimension change. In machine learning, feature matrices are typically non-square (many samples, few features), and the pseudoinverse provides the least-squares solution.
+
 ## Practice
 
 <ExerciseBlock
@@ -73,6 +75,13 @@ Non-square matrices change dimensions. Wide matrices project from higher to lowe
   prompt="Can a 2x3 matrix be invertible? Why or why not?"
   hint="Invertibility means you can undo the transformation. Can you recover 3D information from a 2D output?"
   answer="No. A 2x3 matrix maps 3D to 2D, losing one dimension of information. Many different 3D inputs produce the same 2D output (the null space is at least 1-dimensional). You can't uniquely reverse it."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="The matrix [[1,0],[0,1],[0,0]] embeds R^2 into R^3. What is its rank? What does the output look like geometrically? Compute its SVD (hint: it's already almost in SVD form)."
+  hint="The columns are (1,0,0) and (0,1,0). How many are linearly independent? Where do all outputs live?"
+  answer="Rank = 2 (both columns are linearly independent). The output is the xy-plane in R^3 — a 2D subspace. For SVD: A = U * Sigma * V^T. Here V = I (2x2), Sigma = [[1,0],[0,1],[0,0]], and U = I (3x3). It's already in SVD form — the singular values are both 1, confirming no distortion in the embedding."
 />
 
 ---

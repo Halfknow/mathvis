@@ -70,6 +70,8 @@ Every geometric idea from the arrow world transfers to the function world.
 The inner product generalizes the dot product to any vector space — functions, sequences, polynomials. It gives length, angle, and orthogonality, and with them: projection, decomposition, and best approximation.
 </KeyInsight>
 
+**Connections.** The L^2 inner product <f,g> = integral of f(x)g(x)dx generalizes the dot product to functions. Two functions are "orthogonal" when their inner product is zero — just like perpendicular vectors. Fourier series is orthogonal expansion: f(x) = sum of <f, phi_n> * phi_n where phi_n are sines and cosines. This is Parseval's identity for functions: ||f||^2 = sum of |<f, phi_n>|^2.
+
 ## Practice
 
 <ExerciseBlock
@@ -84,6 +86,13 @@ The inner product generalizes the dot product to any vector space — functions,
   prompt="Why is the Fourier basis (sin nx, cos mx) orthogonal on [0, 2π]?"
   hint="Compute the integral of sin(nx)*cos(mx) over a full period."
   answer="∫₀²π sin(nx)cos(mx)dx = 0 for all n, m. Similarly ∫₀²π sin(nx)sin(mx)dx = 0 when n ≠ m. These integrals vanish because the positive and negative lobes of the product cancel exactly over a complete period."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Compute the inner product of x and x^2 on [0,1]: integral from 0 to 1 of x * x^2 dx. Are x and x^2 orthogonal on [0,1]? What about on [-1,1]?"
+  hint="Evaluate the integral of x^3 on each interval. For [-1,1], notice the symmetry."
+  answer="On [0,1]: integral of x^3 dx = x^4/4 evaluated 0 to 1 = 1/4. Not zero, so x and x^2 are NOT orthogonal on [0,1]. On [-1,1]: integral of x^3 dx = x^4/4 evaluated -1 to 1 = 1/4 - 1/4 = 0. They ARE orthogonal on [-1,1]! The odd function x^3 cancels perfectly over the symmetric interval. This is why the Legendre polynomials (orthogonal on [-1,1]) are preferred for many applications."
 />
 
 ---

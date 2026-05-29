@@ -77,6 +77,8 @@ If the triple product is zero, the three vectors lie in the same plane — they 
 The cross product builds a perpendicular arrow whose length equals the parallelogram area. The triple product a · (b × c) connects it to the determinant — the signed volume of the parallelepiped. Together, they link area, volume, and orientation in one formula.
 </KeyInsight>
 
+**Connections.** The cross product a x b is a determinant in disguise: the 3x3 matrix [[i,j,k],[a1,a2,a3],[b1,b2,b3]] has determinant equal to a x b. The scalar triple product a . (b x c) = det[a b c] gives the signed volume of the parallelepiped — it's positive if (a,b,c) form a right-handed system. Surface normals in computer graphics are computed via cross products of edge vectors.
+
 ## Practice
 
 <ExerciseBlock
@@ -98,6 +100,13 @@ The cross product builds a perpendicular arrow whose length equals the parallelo
   prompt="Compute the scalar triple product (1,0,0) · ((0,1,0) x (0,0,1)). What does the result mean?"
   hint="First compute the cross product, then dot with (1,0,0)."
   answer="(0,1,0) x (0,0,1) = (1,0,0). Then (1,0,0) · (1,0,0) = 1. The volume of the unit cube is 1 — which is the determinant of the identity matrix. This confirms that the three standard basis vectors span a unit cube."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Compute (1,0,0) x (0,1,0). Verify it's perpendicular to both inputs. Compute the scalar triple product (1,0,0) . ((0,1,0) x (0,0,1)). What does this tell you?"
+  hint="For perpendicularity, check that the dot product with each input is zero."
+  answer="(1,0,0) x (0,1,0) = (0,0,1). Dot with (1,0,0) = 0. Dot with (0,1,0) = 0. Perpendicular to both. The scalar triple product (1,0,0) . ((0,1,0) x (0,0,1)) = (1,0,0) . (1,0,0) = 1. This is the determinant of the identity matrix — the unit cube has volume 1, confirming the standard basis is right-handed."
 />
 
 ---

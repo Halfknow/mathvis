@@ -66,6 +66,8 @@ The null space of D is the constant functions — the polynomials whose derivati
 Functions are vectors: you add them, scale them, and decompose them into bases. Differentiation, integration, and other operations are linear transformations on function spaces. The same theorems that govern arrows govern functions.
 </KeyInsight>
 
+**Connections.** Functions form an infinite-dimensional vector space — but the same rules apply. Polynomials add like vectors, scalars multiply them, and linear combinations generate new functions. Fourier analysis decomposes functions into an orthogonal basis of sines and cosines — Gram-Schmidt (lesson 24) in infinite dimensions. This is why the abstract vector space concept matters: the same algebra works whether your vectors are arrows, arrays, or functions.
+
 ## Practice
 
 <ExerciseBlock
@@ -80,6 +82,13 @@ Functions are vectors: you add them, scale them, and decompose them into bases. 
   prompt="What is the null space of the differentiation operator on polynomials of degree ≤ 3?"
   hint="Which polynomials have derivative zero?"
   answer="Only the constant polynomials: a + 0x + 0x² + 0x³. The null space is 1-dimensional (spanned by the constant 1). Geometrically: only flat functions don't change under differentiation."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Show that {1, x, x^2} is linearly independent in the vector space of polynomials. Hint: if a + bx + cx^2 = 0 for all x, what must a, b, c be?"
+  hint="A polynomial that is zero at every point must have all zero coefficients. Try evaluating at specific x values."
+  answer="If a + bx + cx^2 = 0 for all x, then: at x=0, a = 0. At x=1, b + c = 0. At x=-1, -b + c = 0. From the last two: 2c = 0, so c = 0, then b = 0. All coefficients must be zero, so the set is linearly independent. This means no polynomial in the set can be written as a combination of the others."
 />
 
 ---

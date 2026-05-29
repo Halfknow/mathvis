@@ -94,7 +94,7 @@ There is a fifth perspective that is less about algebra and more about engineeri
 
 <MathBlock expression={'\begin{pmatrix} A_{11} & A_{12} \\ A_{21} & A_{22} \end{pmatrix} \begin{pmatrix} B_{11} & B_{12} \\ B_{21} & B_{22} \end{pmatrix} = \begin{pmatrix} A_{11}B_{11}+A_{12}B_{21} & A_{11}B_{12}+A_{12}B_{22} \\ A_{21}B_{11}+A_{22}B_{21} & A_{21}B_{12}+A_{22}B_{22} \end{pmatrix}'} />
 
-Each "entry" in the block product is itself a matrix product. The blocks just have to have compatible dimensions — the number of columns of A_{ik} must match the number of rows of B_{kj}.
+Each "entry" in the block product is itself a matrix product. The blocks just have to have compatible dimensions — the number of columns of A_ik must match the number of rows of B_kj.
 
 This is not a new algebraic insight so much as a computational strategy. Block multiplication is how **BLAS** (Basic Linear Algebra Subprograms) libraries achieve high performance on modern hardware: they break large matrices into cache-friendly blocks and multiply block-by-block, keeping data in fast memory as long as possible. It is also how you reason about structured matrices — block diagonal, block triangular, and Kronecker products all become natural when you think in blocks.
 

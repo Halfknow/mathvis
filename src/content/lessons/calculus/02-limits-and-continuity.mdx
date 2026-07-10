@@ -18,10 +18,14 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { LimitExplorer } from '../../../components/interactive/calculus/LimitExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
 The derivative is defined as a **limit**. Before we can use that definition, we need to understand what limits are and when they exist.
 
@@ -51,6 +55,44 @@ The formal definition says: for any tolerance ε > 0 you choose, there exists a 
 
 Try switching to `|x|/x` or `sin(1/x)` — watch what happens when the limit doesn't exist. The function can't stay inside the green band no matter how wide you make it.
 
+### A complete epsilon-delta proof
+
+Let's prove that <MathInline expression={"\\lim_{x \\to 3} (2x + 1) = 7"} /> from the definition. We must show: for any $\varepsilon > 0$, there exists $\delta > 0$ such that $|x - 3| < \delta$ implies $|2x + 1 - 7| < \varepsilon$.
+
+**Scratch work:** $|2x + 1 - 7| = |2x - 6| = 2|x - 3|$. We want $2|x - 3| < \varepsilon$, so choose $\delta = \varepsilon/2$.
+
+**Proof:** Given $\varepsilon > 0$, let $\delta = \varepsilon/2$. Then whenever $0 < |x - 3| < \delta$:
+
+$<MathInline expression={"|2x + 1 - 7| = 2|x - 3| < 2\\delta = 2 \\cdot \\frac{\\varepsilon}{2} = \\varepsilon \\qquad \\blacksquare"} />$
+
+The structure is always the same: find the relationship between $|f(x) - L|$ and $|x - a|$, then choose $\delta$ to make the final expression fit inside $\varepsilon$.
+
+## The Squeeze Theorem
+
+When a function is trapped between two others that converge to the **same** limit, the trapped function is squeezed to that limit too.
+
+<MathBlock expression={"\\text{If } g(x) \\leq f(x) \\leq h(x) \\text{ near } a, \\text{ and } \\lim_{x \\to a} g(x) = \\lim_{x \\to a} h(x) = L, \\text{ then } \\lim_{x \\to a} f(x) = L"} />
+
+### The fundamental trigonometric limit
+
+The Squeeze Theorem proves the most important trig limit in calculus:
+
+<MathBlock expression={"\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1"} />
+
+The geometric argument: for a small angle $x$ (in radians), draw the unit circle. The area of the triangle with angle $x$ satisfies $\sin x \leq x \leq \tan x$ (the triangle sits inside the sector, which sits inside the larger triangle). Dividing by $\sin x$:
+
+$<MathInline expression={"\\cos x \\leq \\frac{\\sin x}{x} \\leq 1"} />$
+
+As $x \to 0$, $\cos x \to 1$, so both bounds squeeze <MathInline expression={"\\frac{\\sin x}{x}"} /> to $1$.
+
+This result is **not circular** — it's proved geometrically from the unit circle, not from L'Hôpital's rule (which would require knowing the derivative of $\sin x$, which itself requires this limit). We resolve this in lesson 08.
+
+<FormulaReadout formulas={[
+  { label: "极限定义", expression: "\\lim_{x \\to a} f(x) = L \\iff \\forall\\, \\varepsilon>0,\\ \\exists\\, \\delta>0:\\ 0<|x-a|<\\delta \\Rightarrow |f(x)-L|<\\varepsilon" },
+  { label: "夹逼定理", expression: "g(x) \\leq f(x) \\leq h(x),\\ \\lim g = \\lim h = L \\implies \\lim f = L" },
+  { label: "基本三角极限", expression: "\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1" },
+]} />
+
 ## When does a limit exist?
 
 A limit exists when the function approaches the same value from **both sides**:
@@ -70,10 +112,20 @@ Common situations where limits fail:
 A function is **continuous** at $x = a$ if three conditions hold:
 
 1. $f(a)$ is defined
-2. $\lim_{x \to a} f(x)$ exists
-3. $\lim_{x \to a} f(x) = f(a)$
+2. <MathInline expression={"\\lim_{x \\to a} f(x)"} /> exists
+3. <MathInline expression={"\\lim_{x \\to a} f(x) = f(a)"} />
 
 Informally: you can draw the graph without lifting your pen. Polynomials, exponentials, and trigonometric functions are continuous everywhere on their domains.
+
+## Theorem: The Intermediate Value Theorem (IVT)
+
+If $f$ is continuous on $[a, b]$ and $N$ is any number between $f(a)$ and $f(b)$, then there exists at least one $c$ in $(a, b)$ such that $f(c) = N$.
+
+<MathBlock expression={"f \\text{ continuous on } [a,b],\\ f(a) < N < f(b) \\implies \\exists\\, c \\in (a,b):\\ f(c) = N"} />
+
+Geometrically: a continuous curve cannot jump over a value. If the temperature at noon is 20° and at 3 PM is 25°, then at some moment between noon and 3 PM the temperature was exactly 23° — it had to pass through every intermediate value. The IVT is the reason you can always find a root of a continuous function that changes sign: if $f(a) < 0$ and $f(b) > 0$, then $f$ crosses zero somewhere in between.
+
+The IVT underpins **bisection methods** in numerical analysis — the algorithm that repeatedly halves an interval to locate roots. It is also why binary search works: a sorted array is "continuous" in the discrete sense.
 
 ## Why limits matter for derivatives
 
@@ -84,8 +136,14 @@ The derivative is defined as:
 This limit only makes sense if the function is continuous at $x$. In fact, **differentiability implies continuity** — if $f'(a)$ exists, then $f$ is continuous at $a$. The converse is not true: $|x|$ is continuous at $0$ but not differentiable there (the left and right derivatives disagree).
 
 <KeyInsight>
-Limits let us talk about behavior at the boundary — what happens as we approach a point, even if the point itself is undefined or discontinuous. The epsilon-delta picture turns "arbitrarily close" into something precise and visual.
+Limits let us talk about behavior at the boundary — what happens as we approach a point, even if the point itself is undefined or discontinuous. The epsilon-delta picture turns "arbitrarily close" into something precise and visual. The IVT guarantees that continuous functions pass through every intermediate value, and the Squeeze Theorem proves the fundamental trig limit without circular reasoning.
 </KeyInsight>
+
+## Connections
+
+The limit is the logical foundation on which the entire derivative machinery rests. In the [previous lesson](/courses/calculus/01-what-is-a-derivative), we defined the derivative as <MathInline expression={"\\lim_{h \\to 0} \\frac{f(x+h)-f(x)}{h}"} /> — here we justified that the limit exists and made the word "approaches" precise. The Squeeze Theorem result <MathInline expression={"\\lim_{x\\to 0} \\sin(x)/x = 1"} /> is essential for deriving the derivatives of trigonometric functions in [lesson 03](/courses/calculus/03-differentiation-rules), and it prevents circular reasoning when we meet L'Hôpital's rule in [lesson 08](/courses/calculus/08-lhopitals-rule).
+
+The IVT connects forward to the **Mean Value Theorem** (a natural extension appearing in curve sketching, lesson 05) and to **root-finding algorithms** used throughout numerical analysis and computer graphics. The idea of "trapping" a value between two bounds reappears in the Squeeze Theorem's cousin: the comparison and ratio tests for series convergence (lesson 23).
 
 ## Practice
 
@@ -107,4 +165,30 @@ Limits let us talk about behavior at the boundary — what happens as we approac
   answer="Yes to both. f(3) = 9, lim(x→3) f(x) = 9, and f'(3) = 6. Polynomials are both continuous and differentiable at every point."
 />
 
-[Next Lesson →](/courses/calculus/03-differentiation-rules)
+<ExerciseBlock number={4}
+  prompt="Prove that lim_{x→5} (3x − 2) = 13 using the epsilon-delta definition."
+  hint="Find |f(x) − L| in terms of |x − 5|, then choose δ."
+  answer="|3x − 2 − 13| = |3x − 15| = 3|x − 5|. Given ε > 0, choose δ = ε/3. Then |x − 5| < δ implies 3|x − 5| < 3δ = ε. The limit is 13."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Use the Squeeze Theorem to find lim_{x→0} x² · sin(1/x)."
+  hint="What are the bounds on sin(1/x)? Multiply them by x²."
+  answer="Since −1 ≤ sin(1/x) ≤ 1, we have −x² ≤ x²·sin(1/x) ≤ x². Both −x² and x² approach 0 as x → 0. By the Squeeze Theorem, lim_{x→0} x²·sin(1/x) = 0. The function oscillates infinitely fast near 0, but the amplitude shrinks to zero fast enough to squeeze it."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Does the equation x⁵ − 3x + 1 = 0 have a root between x = 0 and x = 1? Justify your answer."
+  hint="Evaluate f(0) and f(1). Is f continuous? What does the IVT say?"
+  answer="f(x) = x⁵ − 3x + 1 is a polynomial (continuous everywhere). f(0) = 1 > 0 and f(1) = 1 − 3 + 1 = −1 < 0. Since f is continuous on [0, 1] and changes sign, the IVT guarantees a root c in (0, 1) with f(c) = 0. This is how bisection root-finding starts."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Explain why using L'Hôpital's rule to prove lim_{x→0} sin(x)/x = 1 would be circular reasoning. What should you use instead?"
+  hint="To apply L'Hôpital, you need the derivative of sin(x). How is that derivative derived?"
+  answer="L'Hôpital's rule says lim sin(x)/x = lim cos(x)/1 = 1. But computing the derivative of sin(x) requires the limit lim_{h→0} sin(h)/h = 1 (from the definition of derivative). So using L'Hôpital to prove this limit assumes the result you're trying to prove. The correct approach is the Squeeze Theorem with the geometric unit-circle argument (sin x ≤ x ≤ tan x), which proves the limit without any derivative."
+/>
+
+---
+
+**Up next:** [Differentiation Rules](/courses/calculus/03-differentiation-rules)

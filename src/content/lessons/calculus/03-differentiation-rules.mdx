@@ -18,12 +18,16 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { DerivativeSlope } from '../../../components/interactive/calculus/DerivativeSlope';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-Computing every derivative from the limit definition is tedious. Fortunately, a small set of rules lets us differentiate almost any function you'll encounter. Think of these rules as the alphabet of calculus — every derivative you'll ever compute, no matter how complicated the function looks, is built by combining these five rules in the right order.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+Computing every derivative from the limit definition is tedious. Fortunately, a small set of rules lets us differentiate almost any function you'll encounter. Think of these rules as the alphabet of calculus — every derivative you'll ever compute, no matter how complicated the function looks, is built by combining these six rules in the right order.
 
 ## Verify the rules visually
 
@@ -49,21 +53,27 @@ This works for any real exponent — positive, negative, or fractional. The powe
 
 **Examples:**
 - $(x^3)' = 3x^2$
-- $(x^{-2})' = -2x^{-3}$
-- $(\sqrt{x})' = (x^{1/2})' = \frac{1}{2}x^{-1/2}$
+- <MathInline expression={"(x^{-2})' = -2x^{-3}"} />
+- <MathInline expression={"(\\sqrt{x})' = (x^{1/2})' = \\frac{1}{2}x^{-1/2}"} />
+
+The geometric intuition: $x^n$ curves upward (for $n > 1$), and the power rule says the slope at height $x^n$ is proportional to <MathInline expression={"x^{n-1}"} /> — exactly one power lower. The derivative "shifts the exponent down by one and brings it out front as a multiplier."
 
 ## The sum and constant rules
 
-<MathBlock expression={"[cf(x)]' = c \\cdot f'(x)"} />
-<MathBlock expression={"[f(x) + g(x)]' = f'(x) + g'(x)"} />
+<MathBlock expression={"\frac{d}{dx}[c\,f(x)] = c\,f\'(x)"} />
+<MathBlock expression={"\frac{d}{dx}[f(x) + g(x)] = f\'(x) + g\'(x)"} />
 
 Constants multiply through, and derivatives distribute over addition. These two rules mean you can differentiate any polynomial term-by-term.
+
+The sum rule is deeper than it looks: it says **differentiation is a linear operator**. This is the same linearity property that defines matrix-vector multiplication in linear algebra — $T(f + g) = T(f) + T(g)$ and $T(cf) = c\,T(f)$. In fact, the derivative *is* a linear transformation on the vector space of differentiable functions.
 
 ## The product rule
 
 <MathBlock expression={"[f(x) \\cdot g(x)]' = f'(x)g(x) + f(x)g'(x)"} />
 
 "First times derivative of second, plus second times derivative of first." This is essential whenever two functions are multiplied together — like $x^2 \sin(x)$.
+
+### The geometric picture
 
 There's a geometric picture that makes this formula feel natural. Imagine a rectangle whose sides have lengths $u(x)$ and $v(x)$. The area is $uv$. Now nudge each side by a tiny amount: $u$ grows by $du$ and $v$ grows by $dv$. The new area is $(u + du)(v + dv) = uv + u\,dv + v\,du + du\,dv$. The change in area consists of two thin strips ($u\,dv$ and $v\,du$) plus a tiny corner square ($du\,dv$) that vanishes as the nudges shrink to zero. What's left is exactly the product rule: $d(uv) = u\,dv + v\,du$.
 
@@ -73,15 +83,51 @@ There's a geometric picture that makes this formula feel natural. Imagine a rect
 
 The chain rule handles **composed functions** — functions nested inside other functions. You differentiate the outer function, then multiply by the derivative of the inner function. We'll explore this visually in the [next lesson](/courses/calculus/04-visualizing-the-chain-rule).
 
+The chain rule is the most important rule for machine learning — it is the mathematical engine of **backpropagation**, the algorithm that trains neural networks. Every layer of a neural network is a function composition; backpropagation applies the chain rule repeatedly to compute how each parameter affects the final loss.
+
 ## The quotient rule
 
 <MathBlock expression={"\\left[\\frac{f(x)}{g(x)}\\right]' = \\frac{f'(x)g(x) - f(x)g'(x)}{[g(x)]^2}"} />
 
-While useful, the quotient rule is just the product rule applied to $f(x) \cdot [g(x)]^{-1}$ combined with the chain rule. Many people prefer to rewrite quotients as products to avoid memorizing this formula.
+While useful, the quotient rule is just the product rule applied to <MathInline expression={"f(x) \\cdot [g(x)]^{-1}"} /> combined with the chain rule. Many people prefer to rewrite quotients as products to avoid memorizing this formula.
+
+A mnemonic that works: **"Low D-High minus High D-Low, over Low squared"** — where D-High means derivative of the numerator.
+
+## Implicit differentiation
+
+Sometimes a function is defined implicitly — not as $y = f(x)$ but as a relation like $x^2 + y^2 = 1$ (the unit circle). You can still find $dy/dx$ without solving for $y$ explicitly. Differentiate both sides with respect to $x$, treating $y$ as a function of $x$ and applying the chain rule:
+
+<MathBlock expression={"\\frac{d}{dx}[x^2 + y^2] = \\frac{d}{dx}[1] \\implies 2x + 2y \\cdot \\frac{dy}{dx} = 0 \\implies \\frac{dy}{dx} = -\\frac{x}{y}"} />
+
+Implicit differentiation is how you find slopes on curves that aren't functions (like circles, ellipses, and implicitly defined surfaces). It's also the foundation of **Lagrange multipliers** in multivariable optimization.
+
+<FormulaReadout formulas={[
+  { label: "幂法则", expression: "(x^n)' = n\\,x^{n-1}" },
+  { label: "乘积法则", expression: "(fg)' = f'g + fg'" },
+  { label: "链式法则", expression: "[f(g(x))]' = f'(g(x)) \\cdot g'(x)" },
+  { label: "商法则", expression: "\\left(\\frac{f}{g}\\right)' = \\frac{f'g - fg'}{g^2}" },
+]} />
+
+## The six rules in one table
+
+| Rule | Formula | When to use |
+|---|---|---|
+| Power | <MathInline expression={"(x^n)' = nx^{n-1}"} /> | Polynomials, roots, negative powers |
+| Constant multiple | $(cf)' = cf'$ | Scaling a function |
+| Sum | $(f + g)' = f' + g'$ | Adding functions |
+| Product | $(fg)' = f'g + fg'$ | Multiplying functions |
+| Quotient | $(f/g)' = (f'g - fg')/g^2$ | Dividing functions |
+| Chain | $(f \circ g)' = (f' \circ g) \cdot g'$ | Composing functions |
 
 <KeyInsight>
-The five rules — power, sum, product, quotient, and chain — compose like LEGO blocks. Any function built from these operations can be differentiated mechanically by applying the right rule at each step.
+The six rules — power, constant multiple, sum, product, quotient, and chain — compose like LEGO blocks. Any function built from these operations can be differentiated mechanically by applying the right rule at each step. The derivative is a linear operator (sum and constant rules), and the chain rule is the engine that connects them through composition.
 </KeyInsight>
+
+## Connections
+
+The differentiation rules turn the limit definition from [lesson 01](/courses/calculus/01-what-is-a-derivative) into practical, mechanical tools. The chain rule is explored visually in [lesson 04](/courses/calculus/04-visualizing-the-chain-rule), and it becomes the backbone of **backpropagation** in neural networks — each layer composes with the next, and the chain rule propagates gradients backward through the entire network.
+
+The sum rule reveals that differentiation is a **linear transformation** — a direct bridge to linear algebra. The product rule generalizes to the **Leibniz rule** for higher derivatives, and the implicit differentiation technique connects forward to **partial derivatives** and **gradient vectors** in multivariable calculus. These rules also reappear in reverse during integration (lessons 14–16): integration by substitution is the chain rule "undone," and integration by parts is the product rule "undone."
 
 ## Practice
 
@@ -103,4 +149,30 @@ The five rules — power, sum, product, quotient, and chain — compose like LEG
   answer="The derivative of eˣ is eˣ itself — the function is its own slope-at-each-point machine. The blue and green curves perfectly overlap because f(x) = f'(x) for every x."
 />
 
-[Next Lesson →](/courses/calculus/04-visualizing-the-chain-rule)
+<ExerciseBlock number={4}
+  prompt="Differentiate f(x) = (x³ + 1)⁵ using the chain rule."
+  hint="Outer function is u⁵, inner function is u = x³ + 1."
+  answer="Outer derivative: 5u⁴. Inner derivative: 3x². Chain rule: f'(x) = 5(x³ + 1)⁴ · 3x² = 15x²(x³ + 1)⁴. Notice we never had to expand (x³ + 1)⁵ — the chain rule avoids that entirely."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Find dy/dx for the circle x² + y² = 25 using implicit differentiation. What is the slope at the point (3, 4)?"
+  hint="Differentiate both sides with respect to x, treating y as a function of x. Remember d(y²)/dx = 2y · dy/dx by the chain rule."
+  answer="2x + 2y(dy/dx) = 0, so dy/dx = −x/y. At (3, 4): dy/dx = −3/4. The tangent line at (3, 4) on the circle of radius 5 has slope −3/4."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Differentiate f(x) = sin(x)/eˣ using the quotient rule. Verify by rewriting it as sin(x) · e⁻ˣ and using the product rule."
+  hint="Quotient: (f'g − fg')/g². Product: use sin(x) · e⁻ˣ with the chain rule on e⁻ˣ."
+  answer="Quotient rule: f'(x) = [cos(x)·eˣ − sin(x)·eˣ]/e²ˣ = (cos x − sin x)/eˣ. Product rule on sin(x)·e⁻ˣ: f'(x) = cos(x)·e⁻ˣ + sin(x)·(−e⁻ˣ) = (cos x − sin x)/eˣ. Both methods agree — the quotient rule is just the product rule in disguise."
+/>
+
+<ExerciseBlock number={7}
+  prompt="A neural network layer computes y = σ(Wx + b), where σ is the sigmoid function and W, b are parameters. Using the chain rule, write dy/dW in terms of the intermediate quantities. (Treat x and b as constants.)"
+  hint="Let u = Wx + b, so y = σ(u). Apply the chain rule: dy/dW = dy/du · du/dW."
+  answer="dy/du = σ'(u) and du/dW = x. So dy/dW = σ'(u) · x. In a deep network, backpropagation chains this across every layer — the gradient of the final loss with respect to weights in layer k is a product of derivatives through all subsequent layers. This is exactly why the chain rule is the most important differentiation rule in machine learning."
+/>
+
+---
+
+**Up next:** [Visualizing the Chain Rule](/courses/calculus/04-visualizing-the-chain-rule)

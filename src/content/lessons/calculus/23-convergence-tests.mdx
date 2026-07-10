@@ -1,8 +1,8 @@
 ---
 title: "Convergence Tests"
 titleZh: "收敛判别法"
-description: "A toolkit of tests — ratio, root, comparison, integral — each one catches series that others miss."
-descriptionZh: "一套判别工具——比值法、根值法、比较法、积分法——每种方法能捕获其他方法遗漏的级数。"
+description: "A toolkit of tests — ratio, root, comparison, integral, alternating — each one catches series that others miss."
+descriptionZh: "一套判别工具——比值法、根值法、比较法、积分法、交错级数法——每种方法能捕获其他方法遗漏的级数。"
 course: "calculus"
 module: "Sequences and Series"
 moduleZh: "序列与级数"
@@ -18,12 +18,16 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { ConvergenceTestExplorer } from '../../../components/interactive/calculus/ConvergenceTestExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-How do you determine whether a series converges? You run through a sequence of tests, each designed to handle different types of series. No single test catches all series. The ratio test is the workhorse for factorials and exponentials. The comparison test is the workhorse for polynomials. The integral test connects series back to areas -- it translates "does the sum converge?" into "does the area under the curve run out?"
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+Determining whether a series converges is not a single problem but a *family* of problems, and there is no universal test — each one catches series that the others miss. The art is knowing which test to reach for. The [divergence test](/courses/calculus/22-infinite-series) rules out the obvious failures; the **ratio test** is the workhorse for factorials and exponentials; the **comparison and integral tests** handle polynomials; and for series with alternating signs, the **Alternating Series Test** opens up a whole new world — series that converge *only because of cancellation*, not because of size. This last phenomenon, **conditional convergence**, is one of the most surprising ideas in calculus: rearranging the terms of such a series can change its sum to anything you like.
 
 <InteractiveCanvas
   title="Convergence Test Explorer"
@@ -33,70 +37,203 @@ How do you determine whether a series converges? You run through a sequence of t
   <ConvergenceTestExplorer client:visible />
 </InteractiveCanvas>
 
-## The test flowchart
+## The decision flowchart
 
-1. **Divergence test**: Does $a_n \to 0$? If not, the series diverges. Stop.
-2. **Is it a p-series?** $\sum 1/n^p$ converges if $p > 1$.
-3. **Is it geometric?** $\sum r^n$ converges if $|r| < 1$.
-4. **Comparison test**: Compare to a known convergent/divergent series.
-5. **Ratio test**: Compute $\lim |a_{n+1}/a_n|$. If $< 1$, converges. If $> 1$, diverges.
-6. **Root test**: Compute $\lim \sqrt[n]{|a_n|}$. Same thresholds.
-7. **Integral test**: If $f(n) = a_n$ for a positive decreasing $f$, then $\sum a_n$ and $\int_1^\infty f(x)\, dx$ converge or diverge together.
+When you meet a series, walk through this checklist in roughly this order:
+
+1. **Divergence test:** does $a_n \to 0$? If not, the series diverges. Stop.
+2. **Recognize a known form?** Geometric ($\sum r^n$, $|r|<1$) or p-series ($\sum 1/n^p$, $p > 1$) — done immediately.
+3. **Alternating signs?** Try the **Alternating Series Test** (below).
+4. **Factorials, exponentials, or $n$-th powers?** Try the **ratio test** or **root test**.
+5. **Polynomial-like or rational function of $n$?** Try the **comparison test** or **limit comparison test**.
+6. **Positive decreasing function of $n$ that integrates cleanly?** Try the **integral test**.
+
+The flowchart is a strategy, not an algorithm — sometimes you backtrack and try a second test. The skills this lesson builds: recognizing which family a series belongs to, and matching it to the right test.
 
 ## The ratio test — the workhorse
 
+## Theorem: The Ratio Test
+
+For a series $\sum a_n$ with nonzero terms, compute:
+
 <MathBlock expression={"L = \\lim_{n \\to \\infty} \\left| \\frac{a_{n+1}}{a_n} \\right|"} />
 
-- $L < 1$: **converges absolutely**
-- $L > 1$: **diverges**
-- $L = 1$: **inconclusive** (try another test)
+- $L < 1$: the series **converges absolutely**
+- $L > 1$ (including $L = \infty$): the series **diverges**
+- $L = 1$: the test is **inconclusive** — try something else
 
-The ratio test excels at series with factorials, exponentials, and powers of $n$.
+**Why $L = 1$ is inconclusive:** the ratio test measures how fast consecutive terms shrink. $L = 1$ means the terms are asymptotically a fixed ratio apart, which happens for *both* convergent ($\sum 1/n^2$, $L = 1$) and divergent ($\sum 1/n$, $L = 1$) series. The test cannot distinguish them — fall back to comparison or integral tests.
 
-### Example: $\sum n!/n^n$
+**Example:** <MathInline expression={"\\sum_{n=1}^{\\infty} \\frac{n!}{n^n}"} />. Compute:
 
-<MathBlock expression={"\\frac{a_{n+1}}{a_n} = \\frac{(n+1)!/(n+1)^{n+1}}{n!/n^n} = \\frac{n^n}{(n+1)^n} = \\left(\\frac{n}{n+1}\\right)^n = \\left(1 - \\frac{1}{n+1}\\right)^n \\to e^{-1} < 1"} />
+<MathBlock expression={"\\frac{a_{n+1}}{a_n} = \\frac{(n+1)! / (n+1)^{n+1}}{n! / n^n} = \\frac{(n+1) \\cdot n^n}{(n+1)^{n+1}} = \\left(\\frac{n}{n+1}\\right)^n = \\left(1 - \\frac{1}{n+1}\\right)^n \\to e^{-1} \\approx 0.368 < 1"} />
 
-Converges. The terms shrink super-exponentially.
+Converges absolutely. The terms shrink faster than a geometric series with ratio $1/e$.
 
-## The comparison test
+## Theorem: The Root Test
 
-If $0 \leq a_n \leq b_n$ and $\sum b_n$ converges, then $\sum a_n$ converges. Conversely, if $a_n \geq b_n \geq 0$ and $\sum b_n$ diverges, then $\sum a_n$ diverges.
+For a series $\sum a_n$, compute:
 
-### Example: $\sum 1/(n^2 + n)$
+<MathBlock expression={"L = \\lim_{n \\to \\infty} \\sqrt[n]{|a_n|}"} />
 
-Since $\frac{1}{n^2 + n} < \frac{1}{n^2}$ and $\sum 1/n^2$ converges (p-series with $p = 2 > 1$), the series converges by comparison.
+- $L < 1$: the series **converges absolutely**
+- $L > 1$: the series **diverges**
+- $L = 1$: **inconclusive**
 
-## The integral test
+The root test compares each term to $L^n$ — a geometric series. It is more powerful than the ratio test in principle (it always works when the ratio test does), but the limit is often harder to compute. **Use the root test when the $n$-th power dominates** (terms like $n^n$, <MathInline expression={"2^{n^2}"} />, or expressions where the whole term is raised to the $n$-th power); **use the ratio test when factorials or successive multiplications dominate** (terms like $n!$, $r^n / n!$).
 
-If $f$ is continuous, positive, and decreasing on $[1, \infty)$, then:
+## The comparison tests — for polynomial-like series
 
-<MathBlock expression={"\\sum_{n=1}^{\\infty} a_n \\text{ converges} \\iff \\int_1^{\\infty} f(x)\\, dx \\text{ converges}"} />
+## Theorem: (Direct) Comparison Test
 
-This is why the harmonic series diverges: $\int_1^\infty \frac{1}{x}\, dx = \ln x \Big|_1^\infty = \infty$. And $\sum 1/n^2$ converges: $\int_1^\infty \frac{1}{x^2}\, dx = 1$.
+Suppose $0 \le a_n \le b_n$ for all $n$ sufficiently large. Then:
+- If $\sum b_n$ converges, then $\sum a_n$ converges. (A smaller series is squeezed by a convergent larger one.)
+- If $\sum a_n$ diverges, then $\sum b_n$ diverges. (A larger series is dragged along by a divergent smaller one.)
+
+## Theorem: Limit Comparison Test
+
+If $a_n > 0$, $b_n > 0$, and <MathInline expression={"\\lim_{n \\to \\infty} \\frac{a_n}{b_n} = c"} /> with $0 < c < \infty$, then $\sum a_n$ and $\sum b_n$ either **both converge** or **both diverge**.
+
+The limit comparison test is usually easier: pick a simpler series $\sum b_n$ of comparable size (typically a p-series) and check that the ratio tends to a positive finite constant. **Example:** <MathInline expression={"\\sum \\frac{1}{n^2 + n}"} />. Compare to <MathInline expression={"\\sum \\frac{1}{n^2}"} />: <MathInline expression={"\\lim \\frac{1/(n^2+n)}{1/n^2} = \\lim \\frac{n^2}{n^2+n} = 1"} />. Since $\sum 1/n^2$ converges ($p = 2$), the original series converges too.
+
+## Theorem: The Integral Test
+
+If $f$ is continuous, positive, and decreasing on $[1, \infty)$ with $f(n) = a_n$, then:
+
+<MathBlock expression={"\\sum_{n=1}^{\\infty} a_n \\text{ converges} \\iff \\int_{1}^{\\infty} f(x)\\, dx \\text{ converges}"} />
+
+**Hypotheses:** $f$ continuous, positive, decreasing. **Conclusion:** series and integral converge or diverge together (but their *values* are not equal — only their convergence status).
+
+This is why the harmonic series diverges: <MathInline expression={"\\int_1^\\infty \\frac{1}{x}\\, dx = \\ln x \\big|_1^\\infty = \\infty"} />. And why $\sum 1/n^2$ converges: <MathInline expression={"\\int_1^\\infty \\frac{1}{x^2}\\, dx = 1"} />. Geometrically, the integral test says the series is a left/right Riemann sum of $f$, so the sum and the integral trap each other — they must agree on convergence. This is the same [p-test](/courses/calculus/11-the-definite-integral) threshold $p = 1$ in discrete clothing.
+
+## Absolute vs conditional convergence — the deep distinction
+
+This is the most important conceptual divide in the whole subject.
+
+A series $\sum a_n$ **converges absolutely** if $\sum |a_n|$ converges. It **converges conditionally** if $\sum a_n$ converges but $\sum |a_n|$ diverges.
+
+## Theorem: Absolute convergence implies convergence
+
+If $\sum |a_n|$ converges, then $\sum a_n$ converges.
+
+**Why this matters:** absolute convergence is a *stronger* condition. It lets you treat the series almost like a finite sum — you can rearrange terms, regroup them, split the series — and the sum is unchanged. Conditional convergence is fragile: rearranging terms can change the sum, or even make it diverge.
+
+**Riemann's Rearrangement Theorem** (a shock): if $\sum a_n$ converges conditionally, then for *any* target <MathInline expression={"L \\in \\mathbb{R} \\cup \\{\\pm\\infty\\}"} /> there is a rearrangement of the terms whose sum is $L$. The positive terms alone diverge to $+\infty$ and the negative terms alone diverge to $-\infty$, so by cherry-picking you can steer the running total to any destination. This is why absolute convergence is the "safe" mode — it is exactly what prevents this pathology.
+
+**Example:** the alternating harmonic series <MathInline expression={"\\sum_{n=1}^{\\infty} \\frac{(-1)^{n+1}}{n} = 1 - \\frac12 + \\frac13 - \\frac14 + \\cdots"} /> converges (by the AST below) to $\ln 2 \approx 0.693$. But <MathInline expression={"\\sum |(-1)^{n+1}/n| = \\sum 1/n"} /> diverges. So the alternating harmonic series is **conditionally convergent** — and indeed Riemann's theorem guarantees that by rearranging its terms you can make it sum to anything.
+
+## The Alternating Series Test (Leibniz)
+
+For series whose signs alternate, a separate test applies that can prove convergence even when the absolute series diverges.
+
+## Theorem: Alternating Series Test (Leibniz)
+
+A series of the form <MathInline expression={"\\sum_{n=1}^{\\infty} (-1)^{n+1} b_n"} /> (with $b_n > 0$) converges if both:
+1. <MathInline expression={"b_{n+1} \\le b_n"} /> for all $n$ sufficiently large (the magnitudes are **eventually decreasing**), and
+2. <MathInline expression={"\\lim_{n \\to \\infty} b_n = 0"} />.
+
+**Hypotheses:** alternating sign, decreasing magnitude, terms → 0. **Conclusion:** convergence (typically conditional, since $\sum b_n$ often diverges).
+
+**Intuition:** the partial sums oscillate, but each swing is *smaller* than the last, so they spiral inward toward a limit — exactly the [monotone convergence](/courses/calculus/21-sequences) idea applied to the even and odd partial sums separately. The alternating harmonic series satisfies both conditions ($1/n$ is decreasing and → 0), so it converges — to $\ln 2$.
+
+## Theorem: Leibniz error bound for alternating series
+
+If <MathInline expression={"\\sum (-1)^{n+1} b_n"} /> satisfies the AST conditions, then the error from truncating after $N$ terms is bounded by the first omitted term:
+
+<MathBlock expression={"\\left| \\, S - S_N \\, \\right| \\le b_{N+1}"} />
+
+where $S$ is the true sum and $S_N$ is the $N$-th partial sum. Moreover, $S - S_N$ has the same sign as the first omitted term.
+
+This is one of the most useful bounds in all of numerical analysis. To approximate $\ln 2$ to within $0.001$ using the alternating harmonic series, you need <MathInline expression={"b_{N+1} = 1/(N+1) < 0.001"} />, i.e. at least 999 terms. The bound is *guaranteed* — no estimating unknown derivatives, no hidden constants. Just count terms until the next one is small enough.
+
+<FormulaReadout formulas={[
+  { label: "比值判别法", expression: "L = \\lim_{n\\to\\infty}\\left|\\frac{a_{n+1}}{a_n}\\right|: \\; L<1 \\text{ 绝对收敛},\\; L>1 \\text{ 发散}" },
+  { label: "根值判别法", expression: "L = \\lim_{n\\to\\infty}\\sqrt[n]{|a_n|}: \\; L<1 \\text{ 绝对收敛},\\; L>1 \\text{ 发散}" },
+  { label: "绝对收敛 ⇒ 收敛", expression: "\\sum |a_n| \\text{ 收敛} \\;\\Longrightarrow\\; \\sum a_n \\text{ 收敛}" },
+  { label: "莱布尼茨误差界", expression: "|S - S_N| \\le b_{N+1} \\text{（第一个被略去的项）}" },
+]} />
+
+## When each test applies — a summary table
+
+| Series looks like... | Try this test first |
+|----------------------|---------------------|
+| rⁿ, geometric | Geometric series formula (converges if \|r\| < 1) |
+| 1/nᵖ, p-series | p-series test (converges if p > 1) |
+| factorial n!, rⁿ/n!, nⁿ | **Ratio test** |
+| whole term to the n-th power, aⁿ polynomials | **Root test** |
+| rational function of n, 1/(n² + n) | **Comparison / Limit comparison** |
+| positive, decreasing, integrable | **Integral test** |
+| alternating sign (−1)ⁿ bₙ | **Alternating Series Test** |
+
+## The many faces of convergence tests
+
+- **Numerical analysis:** the Leibniz error bound is the foundation of rigorous approximation — it tells you *exactly* how many terms you need for a given accuracy, with no estimation of unknowns.
+- **Probability:** normalizing constants for distributions and moment generating functions are validated by ratio/root tests on their defining series.
+- **Combinatorics and generating functions:** the radius of convergence of a generating function (computed by the ratio test) reveals the asymptotic growth rate of the underlying combinatorial sequence.
+- **Physics:** perturbation series in quantum mechanics and statistical mechanics converge or diverge depending on which test applies — and a divergent perturbation series can still be "resummed" to give physical answers.
+
+## Modern applications
+
+In **machine learning and optimization**, the **ratio test** directly motivates the convergence analysis of iterative algorithms: if the error $e_n$ of an iterative method satisfies <MathInline expression={"|e_{n+1}/e_n| \\to L < 1"} />, the method converges *linearly* with rate $L$. Newton's method has <MathInline expression={"|e_{n+1}/e_n| \\to 0"} /> (quadratic convergence — faster than any linear rate), which is why it is so prized. The ratio test is, in disguise, the definition of "linear convergence rate."
+
+In **Bayesian statistics**, the **alternating series** structure appears in Gibbs sampling and other Markov Chain Monte Carlo methods: the series of corrections to the posterior often alternates in sign, and the Leibniz bound tells you when you can stop sampling.
+
+In **physics**, Feynman's perturbation series for quantum electrodynamics is, by most accounts, *asymptotically divergent* — it fails every convergence test past a certain order, yet its first few terms give the most accurate predictions in all of science. The convergence tests of this lesson are precisely the tools that diagnose when "summing more terms" stops helping.
 
 <KeyInsight>
-No single test handles all series. Start with the divergence test, check for p-series and geometric series, then use comparison, ratio, or integral tests. The ratio test is the most versatile for series with factorials and exponentials.
+No single test handles all series — run the decision flowchart. The ratio and root tests (L < 1 ⇒ absolutely convergent, L > 1 ⇒ divergent, L = 1 inconclusive) handle factorials, exponentials, and n-th powers. Comparison and integral tests handle polynomial-like series, and the integral test is what proves the p-series threshold p = 1. The deep distinction is absolute vs conditional convergence: ∑|aₙ| converging guarantees ∑aₙ converges AND immunity to rearrangement, while conditionally convergent series (like the alternating harmonic series ∑(−1)ⁿ⁺¹/n = ln 2) can be rearranged to sum to anything. The Alternating Series Test proves convergence for alternating series with decreasing magnitudes → 0, and its Leibniz error bound |S − S_N| ≤ b(N+1) gives a free, rigorous accuracy guarantee from the first omitted term.
 </KeyInsight>
+
+## Connections
+
+This lesson equips the [infinite series](/courses/calculus/22-infinite-series) of the previous lesson with a complete toolkit for deciding convergence. The integral test ties series back to the [definite and improper integrals](/courses/calculus/11-the-definite-integral) of the integration module — the same p-test threshold $p = 1$ appears in both forms. The ratio and root tests are the machinery that will determine the **radius of convergence** of a [power series](/courses/calculus/24-power-series) in the next lesson, and the absolute-convergence distinction determines whether a [Taylor series](/courses/calculus/26-taylor-series) can be manipulated (differentiated, integrated, rearranged) freely. The Alternating Series Test and its error bound are the rigorous backbone of the polynomial approximations in [Taylor polynomials](/courses/calculus/25-taylor-polynomials).
+
+Across disciplines, "does this sum converge, and how fast?" is the universal question whenever infinitely many small contributions accumulate: perturbation series in physics, error series in numerical analysis, sampling series in statistics, and the iteration sequences of every optimization algorithm. The tests of this lesson are the diagnostic toolkit that answers it.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Apply the ratio test to ∑ n³/2ⁿ. Does the series converge?"
-  hint="Compute |a_{n+1}/a_n| = (n+1)³/2^{n+1} · 2ⁿ/n³."
-  answer="a_{n+1}/a_n = (n+1)³/(2n³) → 1/2 < 1. The series converges by the ratio test."
+  prompt="Apply the ratio test to ∑ n³/2ⁿ. Does the series converge? What kind of convergence (absolute or conditional)?"
+  hint="Compute |a_{n+1}/a_n| = (n+1)³/2^{n+1} · 2ⁿ/n³ = (1/2)((n+1)/n)³."
+  answer="a_{n+1}/a_n = [(n+1)³/2^{n+1}] / [n³/2ⁿ] = (1/2) · ((n+1)/n)³ → 1/2 < 1. By the ratio test, the series converges. Since the ratio test conclusion is *absolute* convergence (it uses |a_{n+1}/a_n|), the series converges absolutely. All-positive series that converge do so absolutely — conditional convergence requires sign cancellation."
 />
 
 <ExerciseBlock number={2}
-  prompt="Does ∑ 1/(n ln n) converge or diverge? (Start from n = 2.)"
-  hint="Use the integral test with f(x) = 1/(x ln x)."
-  answer="∫₂^∞ dx/(x ln x) = ∫₂^∞ d(ln x)/ln x = [ln(ln x)]₂^∞ = ∞. The integral diverges, so by the integral test, the series also diverges."
+  prompt="Classify each series as absolutely convergent, conditionally convergent, or divergent: (a) ∑ (−1)ⁿ/n², (b) ∑ (−1)ⁿ/n, (c) ∑ (−1)ⁿ (n=1,2,...)."
+  hint="For each, first check ∑|aₙ|. If it converges, the series is absolutely convergent. If ∑|aₙ| diverges but ∑aₙ converges, it is conditionally convergent. Use p-series and the AST."
+  answer="(a) ∑|(−1)ⁿ/n²| = ∑ 1/n² converges (p-series, p = 2 > 1), so ∑ (−1)ⁿ/n² is **absolutely convergent** (and hence convergent). (b) ∑|(−1)ⁿ/n| = ∑ 1/n diverges (harmonic), but the AST applies (1/n decreasing → 0), so ∑ (−1)ⁿ/n **converges conditionally** — this is the alternating harmonic series summing to −ln 2. (c) The terms (−1)ⁿ do not tend to 0, so by the divergence test ∑ (−1)ⁿ **diverges**. The three series illustrate all three categories."
 />
 
 <ExerciseBlock number={3}
-  prompt="The ratio test gives L = 1 for ∑ 1/n² and ∑ 1/n. One converges, one diverges. Why is the ratio test inconclusive when L = 1?"
-  hint="The ratio test measures how fast consecutive terms change. When L = 1, the terms shrink at exactly the 'boundary' rate."
-  answer="When L = 1, the ratio a_{n+1}/a_n → 1, meaning consecutive terms are roughly equal in size. The series is on the boundary between convergence and divergence — like p-series where p = 1 diverges but p = 1.001 converges. The ratio test can't distinguish these borderline cases."
+  prompt="How many terms of the alternating harmonic series ∑_{n=1}^∞ (−1)^{n+1}/n are needed to approximate ln 2 to within 0.001? Use the Leibniz error bound."
+  hint="The Leibniz bound says the error after N terms is at most b_{N+1} = 1/(N+1). Find N such that 1/(N+1) < 0.001."
+  answer="The Leibniz error bound gives |S − S_N| ≤ b_{N+1} = 1/(N+1). We need 1/(N+1) < 0.001 = 1/1000, i.e. N + 1 > 1000, i.e. N ≥ 1000. So 1000 terms suffice to approximate ln 2 ≈ 0.6931 to within 0.001. This is the power of the Leibniz bound — a guaranteed accuracy from a simple count, no estimation of unknown derivatives required. (The downside: 1000 terms is a lot — the harmonic-like decay is slow. A smarter series for ln 2 converges much faster.)"
 />
 
-[Next Lesson →](/courses/calculus/24-power-series)
+<ExerciseBlock number={4}
+  prompt="Determine whether ∑_{n=1}^∞ (−1)^n · n/(n² + 1) converges absolutely, conditionally, or diverges."
+  hint="First check ∑ n/(n²+1): use limit comparison with ∑ 1/n. Then check whether the AST applies to the alternating version."
+  answer="Absolute convergence? Compare ∑ n/(n²+1) to ∑ 1/n: lim [n/(n²+1)] / [1/n] = lim n²/(n²+1) = 1. Since ∑ 1/n diverges (harmonic), ∑ n/(n²+1) diverges by limit comparison. So the series does NOT converge absolutely. AST check: let bₙ = n/(n²+1). Is bₙ decreasing eventually? For n ≥ 1, bₙ = n/(n²+1), and b_{n+1} < bₙ once n is large enough (the derivative of x/(x²+1) is (1−x²)/(x²+1)², negative for x > 1). And bₙ → 0. So the AST applies: the alternating series converges. Since it converges but not absolutely, it is **conditionally convergent**."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Does ∑_{n=2}^∞ 1/(n ln n) converge or diverges? Use the integral test."
+  hint="Use f(x) = 1/(x ln x). Compute ∫₂^∞ dx/(x ln x) via the substitution u = ln x."
+  answer="Let f(x) = 1/(x ln x), continuous, positive, decreasing for x ≥ 2. Compute ∫₂^∞ dx/(x ln x). Substitute u = ln x, du = dx/x: ∫_{ln 2}^∞ du/u = [ln u]_{ln 2}^∞ = ∞. The integral diverges, so by the integral test the series ∑ 1/(n ln n) also diverges. Note the ratio test gives L = 1 here (inconclusive) — the integral test is the right tool for series that shrink just slightly faster than 1/n. This series is 'barely' divergent, even slower than the harmonic."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Apply the root test to ∑_{n=1}^∞ (n/(2n+1))^n. Does it converge?"
+  hint="Compute the n-th root of |a_n|: lim √[n]{(n/(2n+1))^n} = lim n/(2n+1)."
+  answer="√[n]{|a_n|} = √[n]{(n/(2n+1))^n} = n/(2n+1) → 1/2 as n → ∞. Since L = 1/2 < 1, the root test gives absolute convergence. Notice the ratio test would be awkward here — the whole term is raised to the n-th power, which is exactly when the root test shines. The root test is often easier when the n-th power is 'on the outside.'"
+/>
+
+<ExerciseBlock number={7}
+  prompt="State Riemann's Rearrangement Theorem and apply its logic to the alternating harmonic series ∑_{n=1}^∞ (−1)^{n+1}/n = ln 2. Describe (qualitatively) how you would rearrange its terms to make the sum equal to 2 instead."
+  hint="The theorem says any conditionally convergent series can be rearranged to converge to any prescribed real number (or ±∞). The idea: take positive terms until you exceed the target, then negative terms until you drop below, and repeat."
+  answer="Riemann's Rearrangement Theorem: if ∑ aₙ converges conditionally, then for any target L ∈ ℝ (or ±∞) there exists a rearrangement ∑ a_{σ(n)} whose sum is L. The mechanism: in a conditionally convergent series, the positive terms alone diverge to +∞ and the negative terms alone diverge to −∞. To hit target 2: take positive terms 1 + 1/3 + 1/5 + ··· until the partial sum first exceeds 2. Then add one negative term (−1/2), dropping back below 2. Then add more positive terms until you exceed 2 again. Add one negative term. Repeat forever. Because the terms → 0, the oscillations shrink, and the partial sums converge to exactly 2. This works for any target — conditional convergence means the sum depends on the order of summation, a profound break from finite-addition intuition. Absolute convergence is precisely the condition that prevents this pathology."
+/>
+
+---
+
+**Up next:** [Power Series](/courses/calculus/24-power-series)

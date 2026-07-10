@@ -12,6 +12,13 @@ duration: 16
 difficulty: "Beginner"
 ---
 
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
 Imagine you are at a restaurant. The menu has 3 appetizers, 4 main courses, and 2 desserts. How many different complete meals can you build?
 
 You could try listing them all — appetizer 1 with main 1 with dessert 1, then appetizer 1 with main 1 with dessert 2, and so on. That works, but it gets painful fast. Add a fourth course with 5 options and suddenly you are staring at 120 combinations. What we need is a *system* — a way to count without missing anything and without double-counting.
@@ -24,11 +31,11 @@ Here is the key insight behind all of counting: **when choices are independent, 
 
 Think of it as a tree. At the first branch, you pick an appetizer — 3 ways to go. At the second branch, you pick a main — 4 ways to go from *each* of those 3 branches. At the third branch, you pick a dessert — 2 ways from *each* of those. The branches split and split again.
 
-$$3 \times 4 \times 2 = 24 \text{ meals}$$
+$<MathInline expression={"3 \\times 4 \\times 2 = 24 \\text{ meals}"} />$
 
 The tree picture is what makes this click. You are not adding branches — you are multiplying because each new choice multiplies the number of paths so far. If you add a fourth course with 5 options, the tree grows by a factor of 5:
 
-$$3 \times 4 \times 2 \times 5 = 120 \text{ meals}$$
+$<MathInline expression={"3 \\times 4 \\times 2 \\times 5 = 120 \\text{ meals}"} />$
 
 This is the **multiplication principle**: if a task has $r$ stages, and stage $i$ has $n_i$ choices regardless of what was picked before, then the total number of outcomes is $n_1 \times n_2 \times \cdots \times n_r$.
 
@@ -40,17 +47,17 @@ Five runners cross the finish line. Gold, silver, bronze go to the top three. Ho
 
 Picture three empty slots on a podium:
 
-$$\underline{\quad} \quad \underline{\quad} \quad \underline{\quad}$$
+$<MathInline expression={"\\underline{\\quad} \\quad \\underline{\\quad} \\quad \\underline{\\quad}"} />$
 
 For the first slot (gold), any of the 5 runners could be there. Once gold is decided, 4 runners remain for silver. Once silver is decided, 3 runners remain for bronze.
 
-$$5 \times 4 \times 3 = 60 \text{ medal arrangements}$$
+$<MathInline expression={"5 \\times 4 \\times 3 = 60 \\text{ medal arrangements}"} />$
 
 This is a **permutation** — an arrangement where order matters. Getting gold is not the same as getting bronze, so the arrangement "Alice, Bob, Carol" is different from "Carol, Alice, Bob."
 
 The general pattern: arranging $k$ objects selected from $n$ total gives:
 
-$$P(n, k) = n \times (n-1) \times (n-2) \times \cdots \times (n-k+1) = \frac{n!}{(n-k)!}$$
+$<MathInline expression={"P(n, k) = n \\times (n-1) \\times (n-2) \\times \\cdots \\times (n-k+1) = \\frac{n!}{(n-k)!}"} />$
 
 When $k = n$ — arranging all $n$ objects — this simplifies to $n!$ (n factorial). Five runners in all five positions: $5! = 5 \times 4 \times 3 \times 2 \times 1 = 120$ orderings.
 
@@ -64,19 +71,25 @@ Start with what we know. The number of *ordered* pairs from 5 people is:
 
 $$5 \times 4 = 20$$
 
-But every pair of people was counted twice — once as Alice-then-Bob, once as Bob-then-Alice. The 20 ordered pairs overcount by a factor of 2. So divide:
+But every pair of people was counted twice — once as Alice-then-Bob, once as Bob-and-Alice. The 20 ordered pairs overcount by a factor of 2. So divide:
 
-$$\frac{20}{2} = 10 \text{ teams}$$
+$<MathInline expression={"\\frac{20}{2} = 10 \\text{ teams}"} />$
 
 This is the core idea behind **combinations**. Start with permutations, then divide away the overcounting.
 
 For choosing $k$ objects from $n$ when order does not matter, each group of $k$ objects was counted $k!$ times (once for each possible ordering of that group). So divide:
 
-$$C(n, k) = \binom{n}{k} = \frac{n!}{k! \times (n-k)!}$$
+$<MathInline expression={"C(n, k) = \\binom{n}{k} = \\frac{n!}{k! \\times (n-k)!}"} />$
 
-The notation $\binom{n}{k}$ is read "n choose k." It counts the number of ways to grab $k$ items from a pile of $n$, where the grab-bag is what matters, not the sequence in which you grabbed them.
+The notation <MathInline expression={"\\binom{n}{k}"} /> is read "n choose k." It counts the number of ways to grab $k$ items from a pile of $n$, where the grab-bag is what matters, not the sequence in which you grabbed them.
 
 Why does $k!$ appear in the denominator? Because $k$ objects can be arranged in $k!$ ways. The permutation counted every one of those arrangements separately. Dividing by $k!$ collapses them back into a single group.
+
+<FormulaReadout formulas={[
+  { label: "排列 (选 k 个有序)", expression: "P(n,k) = \\frac{n!}{(n-k)!}" },
+  { label: "组合 (选 k 个无序)", expression: "\\binom{n}{k} = \\frac{n!}{k!(n-k)!}" },
+  { label: "乘法原理", expression: "|A_1 \\times \\cdots \\times A_r| = |A_1| \\cdots |A_r|" },
+]} />
 
 ## Connecting counting to probability
 
@@ -90,24 +103,120 @@ What about drawing 2 hearts from a full deck? Now you need combinations.
 
 Total ways to choose 2 cards from 52:
 
-$$\binom{52}{2} = \frac{52!}{2! \times 50!} = \frac{52 \times 51}{2} = 1326$$
+$<MathInline expression={"\\binom{52}{2} = \\frac{52!}{2! \\times 50!} = \\frac{52 \\times 51}{2} = 1326"} />$
 
 Favorable ways (both are hearts, chosen from 13):
 
-$$\binom{13}{2} = \frac{13!}{2! \times 11!} = \frac{13 \times 12}{2} = 78$$
+$<MathInline expression={"\\binom{13}{2} = \\frac{13!}{2! \\times 11!} = \\frac{13 \\times 12}{2} = 78"} />$
 
-$$P(\text{two hearts}) = \frac{78}{1326} = \frac{1}{17}$$
+$<MathInline expression={"P(\\text{two hearts}) = \\frac{78}{1326} = \\frac{1}{17}"} />$
 
 The counting is the hard part. Once you have the numerator and denominator, the probability is just division.
 
-## Key insight
+## The inclusion-exclusion principle
 
-> Counting is not about memorizing formulas — it is about seeing the structure. Permutations count sequences (the slots shrink). Combinations count groups (each group was overcounted by every possible reordering). The multiplication principle is the engine underneath both.
+Sometimes counting is easier by subtraction than by direct enumeration. The **inclusion-exclusion principle** generalizes Rule 3 from the previous lesson:
+
+$$|A \cup B| = |A| + |B| - |A \cap B|$$
+
+For three sets: $|A \cup B \cup C| = |A| + |B| + |C| - |A \cap B| - |A \cap C| - |B \cap C| + |A \cap B \cap C|$.
+
+The pattern alternates: add singles, subtract pairs, add triples, subtract quadruples, and so on. Each overlap corrects the double- (or triple-) counting from the previous step.
+
+### Example: numbers divisible by 2 or 3
+
+How many integers from 1 to 100 are divisible by 2 or 3?
+
+- Divisible by 2: $\lfloor 100/2 \rfloor = 50$
+- Divisible by 3: $\lfloor 100/3 \rfloor = 33$
+- Divisible by both (i.e., by 6): $\lfloor 100/6 \rfloor = 16$
+
+$$50 + 33 - 16 = 67$$
+
+Without subtracting the overlap, we'd count the multiples of 6 twice.
+
+## Combinatorial identities
+
+A few identities that show up everywhere:
+
+**Pascal's identity** (the recurrence behind Pascal's triangle):
+
+$<MathInline expression={"\\binom{n}{k} = \\binom{n-1}{k-1} + \\binom{n-1}{k}"} />$
+
+Read it as: to choose $k$ from $n$, either include a specific element (then choose $k-1$ from the remaining $n-1$) or exclude it (then choose $k$ from the remaining $n-1$).
+
+**The sum rule** (the total number of subsets):
+
+$<MathInline expression={"\\sum_{k=0}^{n} \\binom{n}{k} = 2^n"} />$
+
+Every element is either in or out of a subset — $n$ binary choices give $2^n$ subsets.
+
+**Symmetry:**
+
+$<MathInline expression={"\\binom{n}{k} = \\binom{n}{n-k}"} />$
+
+Choosing which $k$ to include is the same as choosing which $n-k$ to exclude.
+
+<FormulaReadout formulas={[
+  { label: "Pascal 恒等式", expression: "\\binom{n}{k} = \\binom{n-1}{k-1} + \\binom{n-1}{k}" },
+  { label: "子集总数", expression: "\\sum_{k=0}^{n} \\binom{n}{k} = 2^n" },
+  { label: "对称性", expression: "\\binom{n}{k} = \\binom{n}{n-k}" },
+]} />
+
+<KeyInsight>
+Counting is not about memorizing formulas — it is about seeing the structure. Permutations count sequences (the slots shrink). Combinations count groups (each group was overcounted by every possible reordering). The multiplication principle is the engine underneath both. When direct counting is hard, use inclusion-exclusion to add and subtract overlaps.
+</KeyInsight>
+
+## Connections
+
+Counting is the computational backbone of the **classical interpretation** of probability from [lesson 01](/courses/probability/01-what-is-probability) — the $k/n$ ratio requires counting favorable and total outcomes. The binomial coefficient <MathInline expression={"\\binom{n}{k}"} /> reappears in the **binomial distribution** (lesson 07), where it counts the number of ways to get $k$ successes in $n$ trials. Pascal's identity is the reason the binomial distribution has its characteristic bell-like shape.
+
+The inclusion-exclusion principle generalizes Rule 3 from lesson 01 and connects forward to **independent events** (lesson 13), where inclusion-exclusion simplifies to multiplication. In machine learning, combinatorial counting underpins **feature selection** (choosing which $k$ features from $n$ candidates) and the analysis of **model complexity**. The factorial $n!$ also appears in the definition of **entropy** in information theory — the number of distinguishable states of a system.
 
 ## Practice
 
-1. A password must be exactly 4 characters long. Each character is a lowercase letter (a–z). How many possible passwords are there? What if the password must contain 4 *different* letters?
+<ExerciseBlock number={1}
+  prompt="A password must be exactly 4 characters long. Each character is a lowercase letter (a–z). How many possible passwords are there? What if the password must contain 4 different letters?"
+  hint="With repetition: multiplication principle. Without repetition: permutations."
+  answer="With repetition: 26⁴ = 456,976. Without repetition (4 different letters): P(26,4) = 26 × 25 × 24 × 23 = 358,800. The first is the multiplication principle (26 choices each stage); the second is a permutation (slots shrink)."
+/>
 
-2. A committee of 3 people is chosen from a group of 8. Two of the 8 are siblings. How many committees include both siblings? How many exclude at least one of them?
+<ExerciseBlock number={2}
+  prompt="A committee of 3 people is chosen from a group of 8. Two of the 8 are siblings. How many committees include both siblings? How many exclude at least one of them?"
+  hint="If both siblings are on the committee, you need to choose 1 more from the remaining 6. Use the complement for 'exclude at least one.'"
+  answer="Both siblings included: choose 1 more from the remaining 6, so C(6,1) = 6 committees. Total committees: C(8,3) = 56. Exclude at least one sibling: 56 − 6 = 50. Alternatively: committees with neither sibling = C(6,3) = 20; with exactly one = 2 × C(6,2) = 30; total 50."
+/>
 
-3. A lock has 3 dials, each showing digits 0–9. The lock opens with one specific combination. Someone tries a random combination — what is the probability it opens? What changes if no two dials can show the same digit?
+<ExerciseBlock number={3}
+  prompt="A lock has 3 dials, each showing digits 0–9. The lock opens with one specific combination. Someone tries a random combination — what is the probability it opens? What changes if no two dials can show the same digit?"
+  hint="With repetition: 10³ total. Without: P(10,3) total."
+  answer="With repetition: 10³ = 1000 combinations, so P(open) = 1/1000. Without repetition: P(10,3) = 10 × 9 × 8 = 720 combinations, so P(open) = 1/720 ≈ 0.00139. Removing the repetition constraint makes the correct combination slightly more likely (fewer total possibilities)."
+/>
+
+<ExerciseBlock number={4}
+  prompt="How many integers from 1 to 200 are divisible by 3 or 7? Use inclusion-exclusion."
+  hint="Divisible by 3: ⌊200/3⌋. Divisible by 7: ⌊200/7⌋. Divisible by both = divisible by 21: ⌊200/21⌋."
+  answer="Divisible by 3: ⌊200/3⌋ = 66. Divisible by 7: ⌊200/7⌋ = 28. Divisible by both (i.e., by 21): ⌊200/21⌋ = 9. By inclusion-exclusion: 66 + 28 − 9 = 85. There are 85 integers from 1 to 200 divisible by 3 or 7."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Verify Pascal's identity for n = 5, k = 2: show that C(5,2) = C(4,1) + C(4,2)."
+  hint="Compute each binomial coefficient directly."
+  answer="C(5,2) = 5!/(2!·3!) = 10. C(4,1) = 4. C(4,2) = 6. So C(4,1) + C(4,2) = 4 + 6 = 10 = C(5,2). ✓ Geometrically: choosing 2 from {A,B,C,D,E} either includes E (then choose 1 from {A,B,C,D} = 4 ways) or excludes E (choose 2 from {A,B,C,D} = 6 ways). 4 + 6 = 10."
+/>
+
+<ExerciseBlock number={6}
+  prompt="A poker hand is 5 cards from a standard 52-card deck. How many ways to get a flush (all 5 cards the same suit)? What is P(flush)?"
+  hint="Choose a suit (4 ways), then choose 5 cards from the 13 of that suit."
+  answer="Ways to get a flush: 4 × C(13,5) = 4 × 1287 = 5148. Total 5-card hands: C(52,5) = 2,598,960. P(flush) = 5148/2598960 ≈ 0.00198, about 1 in 505. This is why a flush is rare in poker — and why counting is the foundation of all poker odds."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Prove the identity Σ C(n,k) = 2ⁿ by interpreting both sides combinatorially. (Hint: the right side counts all subsets of an n-element set.)"
+  hint="C(n,k) counts subsets of size k. Sum over all k from 0 to n."
+  answer="C(n,k) counts the number of subsets of size exactly k. Summing from k = 0 to n counts subsets of every possible size — i.e., all subsets. Each of the n elements is independently in or out of a subset, giving 2 × 2 × ... × 2 = 2ⁿ subsets. Both sides count the same thing (all subsets), so they are equal. This is a 'double counting' proof — the most elegant technique in combinatorics."
+/>
+
+---
+
+**Up next:** [Conditional Probability →](/courses/probability/03-conditional-probability)

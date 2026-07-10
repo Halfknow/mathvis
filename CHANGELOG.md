@@ -6,6 +6,65 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.4.0] — 2026-07-10
+
+### Added — Calculus & Probability Depth Optimization (56 lessons deepened)
+
+Comprehensive deepening of the entire calculus (29 lessons) and probability (27 lessons) curricula, aligning content depth with authoritative textbooks:
+
+- **Calculus**: Stewart (standard) + Spivak/Apostol (rigorous theorems) + 3Blue1Brown (intuition) + modern applications (gradient descent, backpropagation, Fourier analysis)
+- **Probability**: Chan "Intro to Probability for Data Science" + Casella-Berger (mathematical statistics) + Pishro-Nik (stochastic processes) + modern applications (cross-entropy loss, MCMC, diffusion models)
+
+All 56 lessons now follow the gold-standard template established by the linear algebra course (v0.3.1).
+
+**Structural upgrades (applied to all 56 lessons):**
+
+- `<FormulaReadout>` component — 2-4 key formula summary cards per lesson (Chinese labels)
+- `## Connections` section — explicit backward/forward lesson linkage + cross-disciplinary applications
+- Formal `## Theorem: NAME` blocks — hypotheses, conclusion, and intuition for 46 lessons
+- `<ExerciseBlock>` expanded from 3 → 6-7 exercises — escalating difficulty: concept → compute → application → proof/explain
+- `**Up next:**` navigation links restored across all lessons
+
+**Major content additions — Calculus:**
+
+- IVT (Intermediate Value Theorem), Squeeze Theorem, formal epsilon-delta proofs (lesson 02)
+- Differentiability ⟹ continuity theorem, gradient descent as best linear approximation (lesson 01)
+- Implicit differentiation, backpropagation = chain rule, multivariable chain rule preview (lessons 03-04)
+- First/Second Derivative Tests, Extreme Value Theorem (lessons 05-06)
+- L'Hôpital formal conditions, sin(x)/x circular reasoning resolved (lesson 08)
+- Darboux integrals, improper integrals (Type I & II), p-test (lessons 10-11)
+- FTC Part 1 & 2 as formal named theorems + MVT-based proof sketch (lesson 12)
+- LIATE heuristic, cyclic integration by parts (lesson 15)
+- Absolute vs conditional convergence, Alternating Series Test + Leibniz error bound (lesson 23)
+- Taylor's Theorem with Lagrange remainder + worked error-bound example (lesson 25)
+- Picard-Lindelöf existence/uniqueness theorem, stability analysis (lesson 27)
+- Partial derivatives, gradient, directional derivatives, steepest ascent (lesson 28)
+
+**Major content additions — Probability:**
+
+- Measure-theoretic intuition (σ-algebra), Kolmogorov axioms formalized (lesson 01)
+- Inclusion-exclusion principle, Pascal's identity, birthday problem (lesson 02)
+- Law of Total Probability as formal theorem, prosecutor's fallacy (lesson 03)
+- Naive Bayes classifier, odds form of Bayes, Beta-Binomial conjugate preview (lesson 04)
+- Jensen's Inequality (convexity/concavity) — previously absent (lesson 06)
+- Memoryless property of exponential, Poisson-as-limit-of-Binomial (lessons 07-08)
+- Gaussian mixture models, covariance matrix geometry (lesson 10)
+- Correlation = cosine similarity (linear algebra connection), Cauchy-Schwarz bound (lesson 12)
+- Uncorrelated ≠ independent counterexample (lesson 13)
+- Chernoff/Hoeffding bounds — exponential-strength concentration (lesson 14)
+- Moment generating functions (MGFs) as CLT proof tool, Berry-Esseen bound (lesson 16)
+- Method of moments, bias-variance decomposition (lesson 17)
+- Fisher information, Cramér-Rao lower bound, cross-entropy = MLE (lesson 18)
+- t-distribution for small samples (lesson 19)
+- Multiple testing problem, Bonferroni correction (lesson 20)
+- Exponential family, MCMC (Metropolis-Hastings), variational inference/ELBO (lesson 23)
+- Detailed balance/reversibility, ergodic theorem, HMMs, PageRank (lesson 25)
+- Information theory: entropy, KL divergence, mutual information (lesson 27)
+
+**Build verification:** `bun run build` passes with 199 pages, 20,714 indexed words (up from 14,680).
+
+---
+
 ## [0.3.1] — 2026-05-29
 
 ### Added — Linear Algebra Depth Optimization (30 → 35 lessons, 18 → 23 components)

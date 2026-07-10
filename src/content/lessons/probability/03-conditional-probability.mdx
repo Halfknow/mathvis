@@ -14,6 +14,12 @@ difficulty: "Beginner"
 
 import { ConditionalProbVis } from '../../../components/interactive/probability/ConditionalProbVis';
 
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
 You get a phone call from your doctor. The test came back positive.
 
 Your stomach drops. But before you panic, there is a question hiding inside the result: *given* that the test is positive, what is the actual chance you have the disease? That number is almost always smaller than people think.
@@ -22,11 +28,11 @@ This is conditional probability. Every time you learn something new — a test r
 
 ## The shrinking sample space
 
-Imagine the sample space $\Omega$ as a big rectangle. Every point inside is a possible outcome. Now someone tells you: "event $B$ happened." Visually, you throw away everything outside $B$. The region $B$ becomes your new world. Your new sample space.
+Imagine the sample space $\Omega$ as a big rectangle. Every point inside is a possible outcome. Now someone tells you: "event $B$ happened." Visically, you throw away everything outside $B$. The region $B$ becomes your new world. Your new sample space.
 
 Inside that smaller world, you ask: what is the probability of $A$? You only count the part of $A$ that still exists — the overlap $A \cap B$. Then you divide by the size of your new world, $B$.
 
-$$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$
+$<MathInline expression={"P(A \\mid B) = \\frac{P(A \\cap B)}{P(B)}"} />$
 
 Read the vertical bar as "given." The formula says: of all the outcomes in $B$, what fraction also lie in $A$?
 
@@ -61,6 +67,22 @@ $$P(A \cap B \cap C) = P(A) \cdot P(B \mid A) \cdot P(C \mid A \cap B)$$
 Picture a tree. At the trunk, the full sample space. The first branch splits into $A$ and not-$A$. If you follow the $A$ branch, the world has already narrowed — now you split into $B$ and not-$B$, but only inside $A$. Each branch narrows further. The probability at any leaf is the product of probabilities along the path that got you there.
 
 This tree metaphor is one of the most useful tools in all of probability. Whenever you see the word "given" or "then," draw a tree.
+
+## Theorem: The Law of Total Probability
+
+If $B_1, B_2, \ldots, B_n$ partition the sample space (they are mutually exclusive and collectively exhaustive), then for any event $A$:
+
+$<MathInline expression={"P(A) = \\sum_{i=1}^{n} P(A \\mid B_i) \\cdot P(B_i)"} />$
+
+This says: to find the probability of $A$, decompose it by *how* $A$ can happen. Each pathway $B_i$ has its own probability $P(B_i)$, and within that pathway, $A$ occurs with probability $P(A \mid B_i)$. Sum over all pathways.
+
+Geometrically: the rectangle $A$ is sliced into pieces by the partition <MathInline expression={"\\{B_i\\}"} />. The total area of $A$ is the sum of the areas of its slices. This theorem is the engine that makes Bayes' theorem work — it computes the denominator $P(E)$ by summing over all hypotheses.
+
+<FormulaReadout formulas={[
+  { label: "条件概率定义", expression: "P(A \\mid B) = \\frac{P(A \\cap B)}{P(B)}" },
+  { label: "乘法法则", expression: "P(A \\cap B) = P(A \\mid B) \\cdot P(B)" },
+  { label: "全概率公式", expression: "P(A) = \\sum_i P(A \\mid B_i) \\cdot P(B_i)" },
+]} />
 
 ## Independence as a special case
 
@@ -105,7 +127,7 @@ Imagine 10,000 people taking the test.
 
 **Positive tests that are actually sick:** 99
 
-$$P(\text{disease} \mid \text{positive}) = \frac{99}{594} = \frac{1}{6} \approx 16.7\%$$
+$<MathInline expression={"P(\\text{disease} \\mid \\text{positive}) = \\frac{99}{594} = \\frac{1}{6} \\approx 16.7\\%"} />$
 
 Sixteen percent. Despite a seemingly excellent test, a positive result only means a one-in-six chance of disease. The reason: the disease is rare. Those 495 false positives from the huge healthy population overwhelm the 99 true positives.
 
@@ -115,32 +137,78 @@ This is why doctors order confirmatory tests. The second test, conditioned on th
 
 Using the conditional probability formula:
 
-$$P(\text{disease} \mid \text{positive}) = \frac{P(\text{positive} \mid \text{disease}) \cdot P(\text{disease})}{P(\text{positive})}$$
+$<MathInline expression={"P(\\text{disease} \\mid \\text{positive}) = \\frac{P(\\text{positive} \\mid \\text{disease}) \\cdot P(\\text{disease})}{P(\\text{positive})}"} />$
 
 The denominator expands by the law of total probability:
 
-$$P(\text{positive}) = P(\text{positive} \mid \text{disease}) \cdot P(\text{disease}) + P(\text{positive} \mid \text{no disease}) \cdot P(\text{no disease})$$
+$<MathInline expression={"P(\\text{positive}) = P(\\text{positive} \\mid \\text{disease}) \\cdot P(\\text{disease}) + P(\\text{positive} \\mid \\text{no disease}) \\cdot P(\\text{no disease})"} />$
 
-$$P(\text{positive}) = 0.99 \times 0.01 + 0.05 \times 0.99 = 0.0099 + 0.0495 = 0.0594$$
+$<MathInline expression={"P(\\text{positive}) = 0.99 \\times 0.01 + 0.05 \\times 0.99 = 0.0099 + 0.0495 = 0.0594"} />$
 
-$$P(\text{disease} \mid \text{positive}) = \frac{0.0099}{0.0594} = \frac{1}{6}$$
+$<MathInline expression={"P(\\text{disease} \\mid \\text{positive}) = \\frac{0.0099}{0.0594} = \\frac{1}{6}"} />$
 
 Same answer. The tree just makes the counting visible.
 
-## Key insight
+### The prosecutor's fallacy
 
-> Conditional probability is not a new kind of probability — it is the same probability, measured inside a smaller world. When information arrives, the sample space shrinks, and every calculation adapts to that smaller world.
+The medical test illustrates a famous error: confusing <MathInline expression={"P(\\text{evidence} \\mid \\text{hypothesis})"} /> with <MathInline expression={"P(\\text{hypothesis} \\mid \\text{evidence})"} />. A prosecutor argues: "The chance of this DNA match given the defendant is innocent is 1 in a million — so the defendant is almost certainly guilty." But this flips the conditional. The relevant question is <MathInline expression={"P(\\text{innocent} \\mid \\text{match})"} />, which depends on the prior <MathInline expression={"P(\\text{innocent})"} /> — how many other people could have left the DNA. In a city of 10 million, a 1-in-a-million match yields ~10 suspects, so <MathInline expression={"P(\\text{this defendant is guilty} \\mid \\text{match})"} /> could be much less than 1. This is exactly Bayes' theorem in action.
+
+<KeyInsight>
+Conditional probability is not a new kind of probability — it is the same probability, measured inside a smaller world. When information arrives, the sample space shrinks, and every calculation adapts to that smaller world. The law of total probability decomposes an event into pathways; the multiplication rule chains conditions through a tree.
+</KeyInsight>
+
+## Connections
+
+Conditional probability is the bridge from the **axioms** of [lesson 01](/courses/probability/01-what-is-probability) to **Bayes' theorem** in [lesson 04](/courses/probability/04-bayes-theorem). The multiplication rule $P(A \cap B) = P(A|B) \cdot P(B)$ is the algebraic fact that, when read in both directions, produces Bayes' theorem. The law of total probability is the denominator of every Bayesian update.
+
+Independence (the special case $P(A|B) = P(A)$) connects forward to [lesson 13](/courses/probability/13-independence), where we explore how joint distributions factor for independent variables. The tree-chaining technique reappears in **Markov chains** (lesson 25), where each step depends only on the previous — a form of conditional probability called the Markov property. The prosecutor's fallacy connects to **hypothesis testing** (lesson 20), where the distinction between <MathInline expression={"P(\\text{data} | H_0)"} /> and <MathInline expression={"P(H_0 | \\text{data})"} /> is the crux of the frequentist vs Bayesian debate.
+
+In machine learning, conditional probability is the foundation of **generative models** — a model specifies <MathInline expression={"P(\\text{output} | \\text{input})"} />, and training adjusts this conditional distribution. Naive Bayes classifiers (lesson 04) assume conditional independence of features given the class.
 
 ## Practice
 
-**Exercise 1.** A fair coin is flipped twice. Given that at least one of the flips is heads, what is the probability that both are heads?
+<ExerciseBlock number={1}
+  prompt="A fair coin is flipped twice. Given that at least one of the flips is heads, what is the probability that both are heads?"
+  hint="Write out the four equally likely outcomes: HH, HT, TH, TT. Cross out the ones impossible once you know 'at least one is heads.' Count what remains."
+  answer="The four outcomes: HH, HT, TH, TT, each with probability 1/4. 'At least one heads' eliminates TT. Remaining: HH, HT, TH. Of these three equally likely outcomes, only HH has both heads. So P(both heads | at least one heads) = 1/3. The common wrong answer is 1/2 — people forget that HT and TH are distinct outcomes."
+/>
 
-*Hint:* Write out the four equally likely outcomes. Cross out the ones that are impossible once you know "at least one is heads." Count what remains.
+<ExerciseBlock number={2}
+  prompt="A bag contains 4 red marbles and 6 blue marbles. You draw two marbles without replacement. Given that the first marble is red, what is the probability that the second is also red?"
+  hint="After removing one red marble, the bag is a different place. How many red marbles remain? How many total?"
+  answer="After drawing one red marble, 3 red and 6 blue remain (9 total). P(second red | first red) = 3/9 = 1/3. Compare to P(second red) without conditioning = 4/10 = 2/5. Knowing the first was red lowered the probability — the events are dependent (negatively correlated)."
+/>
 
-**Exercise 2.** A bag contains 4 red marbles and 6 blue marbles. You draw two marbles without replacement. Given that the first marble is red, what is the probability that the second is also red?
+<ExerciseBlock number={3}
+  prompt="In a certain town, 60% of days are cloudy. On cloudy days, it rains 40% of the time. On clear days, it rains only 10% of the time. You look outside and see rain. What is the probability that it was cloudy?"
+  hint="Use the multiplication rule to find P(cloudy and rain) and P(clear and rain). Then compute P(cloudy | rain) using the definition of conditional probability."
+  answer="P(cloudy ∩ rain) = P(rain | cloudy)·P(cloudy) = 0.40 × 0.60 = 0.24. P(clear ∩ rain) = P(rain | clear)·P(clear) = 0.10 × 0.40 = 0.04. P(rain) = 0.24 + 0.04 = 0.28 (law of total probability). P(cloudy | rain) = 0.24/0.28 = 6/7 ≈ 85.7%. This is Bayes' theorem in disguise — we'll formalize it in lesson 04."
+/>
 
-*Hint:* After removing one red marble, the bag is a different place. How many red marbles remain? How many total marbles?
+<ExerciseBlock number={4}
+  prompt="Use the law of total probability: a factory has three machines producing 50%, 30%, and 20% of the output, with defect rates 2%, 4%, and 5% respectively. What is the overall defect rate?"
+  hint="P(defect) = Σ P(defect | machine_i) · P(machine_i)."
+  answer="P(defect) = 0.02×0.50 + 0.04×0.30 + 0.05×0.20 = 0.01 + 0.012 + 0.01 = 0.032 = 3.2%. The overall defect rate is a weighted average of the individual rates, weighted by production share."
+/>
 
-**Exercise 3.** In a certain town, 60% of days are cloudy. On cloudy days, it rains 40% of the time. On clear days, it rains only 10% of the time. You look outside and see rain. What is the probability that it was cloudy?
+<ExerciseBlock number={5}
+  prompt="Events A and B are independent. If P(A) = 0.3 and P(B) = 0.4, find P(A ∩ B), P(A | B), and P(A ∪ B)."
+  hint="For independent events, P(A ∩ B) = P(A)·P(B) and P(A | B) = P(A)."
+  answer="P(A ∩ B) = 0.3 × 0.4 = 0.12. P(A | B) = P(A) = 0.3 (independence means conditioning doesn't change the probability). P(A ∪ B) = P(A) + P(B) − P(A ∩ B) = 0.3 + 0.4 − 0.12 = 0.58."
+/>
 
-*Hint:* Use the multiplication rule to find $P(\text{cloudy and rain})$ and $P(\text{clear and rain})$. Then compute $P(\text{cloudy} \mid \text{rain})$ using the definition of conditional probability.
+<ExerciseBlock number={6}
+  prompt="The 'Monty Hall' setup: 3 doors, one car, two goats. You pick door 1. The host opens door 3 (goat). Using conditional probability, find P(car behind door 2 | host opened door 3) and P(car behind door 1 | host opened door 3)."
+  hint="The host knows where the car is and always reveals a goat. His choice is informative. P(host opens 3 | car at door i) differs for each i."
+  answer="P(host opens 3 | car at 1) = 1/2 (he picks randomly between doors 2 and 3). P(host opens 3 | car at 2) = 1 (he must open 3). P(host opens 3 | car at 3) = 0 (can't open the car door). Priors: P(car at i) = 1/3 each. P(host opens 3) = (1/2)(1/3) + (1)(1/3) + (0)(1/3) = 1/2. P(car at 2 | opens 3) = (1·1/3)/(1/2) = 2/3. P(car at 1 | opens 3) = (1/2·1/3)/(1/2) = 1/3. Switching wins 2/3 of the time."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Prove that if P(A | B) > P(A), then P(B | A) > P(B). (This says: if B makes A more likely, then A makes B more likely — dependence is symmetric.)"
+  hint="Start from P(A | B) > P(A). Write both sides using the definition of conditional probability."
+  answer="P(A | B) > P(A) means P(A ∩ B)/P(B) > P(A), so P(A ∩ B) > P(A)·P(B). Now P(B | A) = P(A ∩ B)/P(A) > P(A)·P(B)/P(A) = P(B). So P(B | A) > P(B). The inequality is symmetric: positive correlation goes both ways. This is why 'B causes A' and 'A causes B' are statistically indistinguishable from correlation alone — a core lesson in causal inference."
+/>
+
+---
+
+**Up next:** [Bayes' Theorem →](/courses/probability/04-bayes-theorem)

@@ -18,10 +18,14 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { ChainRuleExplorer } from '../../../components/interactive/calculus/ChainRuleExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
 ## A conveyor belt for functions
 
@@ -59,7 +63,7 @@ The inner function is $g(x) = x^2$ with $g'(x) = 2x$. The outer function is $f(u
 
 <MathBlock expression={"h'(x) = \\cos(x^2) \\cdot 2x"} />
 
-**Example 2: $h(x) = e^{3x}$**
+**Example 2: <MathInline expression={"h(x) = e^{3x}"} />**
 
 Inner: $g(x) = 3x$, $g'(x) = 3$. Outer: $f(u) = e^u$, $f'(u) = e^u$.
 
@@ -71,15 +75,51 @@ This is where the chain rule really shines. Expanding this cubic would be painfu
 
 <MathBlock expression={"h'(x) = 3(x^2+1)^2 \\cdot 2x = 6x(x^2+1)^2"} />
 
+### Nested chains: peeling the onion
+
+When functions are deeply nested — like <MathInline expression={"h(x) = \\sin(e^{x^2})"} /> — you peel off layers from the outside in. The derivative is a product of one factor per layer:
+
+<MathBlock expression={"\\frac{d}{dx}\\sin(e^{x^2}) = \\cos(e^{x^2}) \\cdot e^{x^2} \\cdot 2x"} />
+
+Three nested functions, three factors multiplied together. Each factor is the derivative of one layer, evaluated at the output of everything inside it.
+
+<FormulaReadout formulas={[
+  { label: "链式法则", expression: "\\frac{d}{dx} f(g(x)) = f'(g(x)) \\cdot g'(x)" },
+  { label: "三层嵌套", expression: "\\frac{d}{dx} f(g(h(x))) = f'(g(h(x))) \\cdot g'(h(x)) \\cdot h'(x)" },
+  { label: "Leibniz 记号", expression: "\\frac{dy}{dx} = \\frac{dy}{du} \\cdot \\frac{du}{dx}" },
+]} />
+
+## The multivariable preview
+
+The chain rule extends naturally to functions of several variables. If $z = f(x, y)$ where $x = x(t)$ and $y = y(t)$, then:
+
+<MathBlock expression={"\\frac{dz}{dt} = \\frac{\\partial f}{\\partial x} \\frac{dx}{dt} + \\frac{\\partial f}{\\partial y} \\frac{dy}{dt}"} />
+
+This is the **multivariable chain rule** — a sum of products, one term per intermediate variable. The partial derivatives $\partial f / \partial x$ and $\partial f / \partial y$ are the components of the **gradient** $\nabla f$, and the whole expression is the dot product of the gradient with the velocity $(dx/dt, dy/dt)$. We'll meet this again in lesson 28.
+
 ## Why the chain rule is the workhorse
 
 Most functions you'll encounter in science and engineering are compositions. Neural networks are chains of layer functions — backpropagation is just the chain rule applied repeatedly. Physics equations chain coordinate transformations. The chain rule is not just one tool in the toolbox — it's the mechanism that connects all the others.
 
 This is why we can differentiate something like $\sin(x^2)$ without expanding it first. The chain rule decomposes the rate of change into stages: first ask "how fast is $x^2$ changing?" then ask "how fast is $\sin$ changing at that output?" and multiply the answers. Any composition, no matter how deeply nested, yields to the same strategy — peel off one layer at a time.
 
+### Neural networks as function composition
+
+A neural network with $L$ layers is a deeply nested composition:
+
+<MathBlock expression={"\\hat{y} = f_L(f_{L-1}(\\cdots f_2(f_1(x))\\cdots))"} />
+
+Each layer $f_i$ has its own parameters (weights and biases) and its own derivative. **Backpropagation** computes the gradient of the loss with respect to every parameter by applying the chain rule from the output layer back to the input — multiplying derivatives layer by layer. This is why the chain rule is the single most important rule in machine learning: every trained model in the world, from GPT to image generators, runs the chain rule billions of times during training.
+
 <KeyInsight>
-The chain rule says: when functions compose, their rates of change multiply. The derivative of a pipeline is the product of the derivatives at each stage.
+The chain rule says: when functions compose, their rates of change multiply. The derivative of a pipeline is the product of the derivatives at each stage. For deeply nested functions, you "peel the onion" from outside in, multiplying one derivative per layer.
 </KeyInsight>
+
+## Connections
+
+The chain rule is the most consequential rule in calculus for modern applications. In the [previous lesson](/courses/calculus/03-differentiation-rules), we stated it alongside the product and quotient rules; here we saw *why* it works — the "conveyor belt" of function composition. The multivariable version previews the **gradient** and **partial derivatives** of [lesson 28](/courses/calculus/28-multivariable-preview), where a function of several variables changes through multiple input pathways.
+
+The chain rule reappears in two major later contexts. First, **integration by substitution** (lesson 14) is the chain rule run in reverse — if you recognize an integrand as $f'(g(x)) \cdot g'(x)$, you can integrate it as $f(g(x))$. Second, **backpropagation** in neural networks is the chain rule applied to a deep composition of layers; this is the algorithm that makes deep learning trainable at all. The ability to differentiate compositions is what makes the entire pipeline from data → model → loss → gradient → update possible.
 
 ## Practice
 
@@ -101,4 +141,24 @@ The chain rule says: when functions compose, their rates of change multiply. The
   answer="Inner: g(t) = sin(t), g'(t) = cos(t). Outer: f(u) = eᵘ, f'(u) = eᵘ. Velocity: s'(t) = e^(sin(t)) · cos(t)."
 />
 
-[Next Lesson →](/courses/calculus/05-curve-sketching)
+<ExerciseBlock number={4}
+  prompt="Differentiate h(x) = (sin(x²))³. This is a two-layer chain — identify both layers."
+  hint="Outermost: u³. Middle: sin(v). Innermost: x². Three layers, three factors."
+  answer="Layer 1 (outermost): d(u³)/du = 3u². Layer 2: d(sin(v))/dv = cos(v). Layer 3: d(x²)/dx = 2x. Multiply: h'(x) = 3[sin(x²)]² · cos(x²) · 2x = 6x·sin²(x²)·cos(x²)."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Use Leibniz notation to explain why the chain rule 'looks like' fractions canceling, even though dy/du and du/dx are not literally fractions. Is this cancellation intuition reliable?"
+  hint="Think about what dy/du and du/dx actually represent. Are they quotients?"
+  answer="In Leibniz notation, the chain rule reads dy/dx = (dy/du)·(du/dx), which looks like the 'du' terms cancel. This is a useful mnemonic but not rigorous — dy/du and du/dx are limits of difference quotients, not actual fractions. However, the notation was deliberately designed by Leibniz so that this 'cancellation' intuition works consistently across the chain rule, inverse functions, and integration by substitution. The intuition is reliable as a memory aid, but the proof requires the limit definition."
+/>
+
+<ExerciseBlock number={6}
+  prompt="A 2-layer neural network computes y = σ(W₂ · σ(W₁x + b₁) + b₂). How many times is the chain rule applied to compute dy/dx? Describe the chain."
+  hint="Count the nested operations: linear → sigmoid → linear → sigmoid."
+  answer="The chain rule is applied at each composition boundary. Starting from outside: (1) derivative of outer σ, (2) derivative of W₂·(·)+b₂ (linear, so just W₂), (3) derivative of inner σ, (4) derivative of W₁x+b₁ (linear, so W₁). So dy/dx = σ'(u₂)·W₂·σ'(u₁)·W₁ where u₁ = W₁x+b₁ and u₂ = W₂σ(u₁)+b₂. Four chain-rule factors for a 2-layer network — backpropagation generalizes this to L layers."
+/>
+
+---
+
+**Up next:** [Curve Sketching](/courses/calculus/05-curve-sketching)

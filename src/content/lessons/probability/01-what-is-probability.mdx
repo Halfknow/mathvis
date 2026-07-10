@@ -13,8 +13,11 @@ difficulty: "Beginner"
 ---
 
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
 import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
 You hold a six-sided die in your hand. Before you roll, the outcome is uncertain — it could land on any of 1 through 6. After you roll, the outcome is fixed. Probability lives in the space between those two moments: the grey zone before the die lands, where the outcome exists only as a possibility.
 
@@ -26,7 +29,7 @@ Imagine a floor tiled with six squares, each the same size, labeled 1 through 6.
 
 This tiled floor is your **sample space** — the set of all possible outcomes. For a fair die, the sample space has six equally sized tiles, so the probability of landing on any particular one is:
 
-$$P(\text{landing on tile } k) = \frac{1}{6}$$
+$<MathInline expression={"P(\\text{landing on tile } k) = \\frac{1}{6}"} />$
 
 The "P" stands for probability. The statement says: one favorable tile out of six total tiles. That fraction — one sixth — is the probability.
 
@@ -40,7 +43,7 @@ Probability has three major interpretations. All three produce the same numbers,
 
 You count the favorable tiles and divide by the total number of tiles. The probability of rolling an even number? Tiles 2, 4, and 6 are favorable — three out of six.
 
-$$P(\text{even}) = \frac{3}{6} = \frac{1}{2}$$
+$<MathInline expression={"P(\\text{even}) = \\frac{3}{6} = \\frac{1}{2}"} />$
 
 This works when every tile is equally likely. Fair coins, fair dice, well-shuffled decks — the classical view handles these cleanly. It is the oldest interpretation, dating back to the gambling problems that launched the field in the 1600s.
 
@@ -48,7 +51,7 @@ This works when every tile is equally likely. Fair coins, fair dice, well-shuffl
 
 Imagine rolling that die 10,000 times. You build a histogram — one bar per face. After 10 rolls, the bars are jagged and uneven. After 1,000 rolls, they start to even out. After 10,000 rolls, every bar has grown to roughly the same height: about 1,667 out of 10,000, which is close to 1/6.
 
-$$P(A) = \lim_{n \to \infty} \frac{\text{number of times } A \text{ occurs}}{n}$$
+$<MathInline expression={"P(A) = \\lim_{n \\to \\infty} \\frac{\\text{number of times } A \\text{ occurs}}{n}"} />$
 
 The frequentist view says: probability is the long-run frequency. If you could repeat the experiment infinitely many times under identical conditions, the fraction of times event $A$ occurs converges to $P(A)$. No die is truly fair — but over enough rolls, the histogram reveals the truth.
 
@@ -59,6 +62,10 @@ Before the die lands, how confident are you that the result will be even? That c
 The subjective view treats probability as a *quantified opinion*. Two people can have different probabilities for the same event if they have different information. A weather forecaster says "30% chance of rain" — that number encodes their belief based on all available data, not a long-run frequency of identical Tuesdays.
 
 This interpretation is the foundation of Bayesian statistics, which you will encounter later in this course.
+
+### Which interpretation is "right"?
+
+All three. They are three lenses on the same mathematical structure. The classical view is cleanest for fair games; the frequentist view dominates scientific experiments and hypothesis testing (lessons 19–20); the subjective view powers Bayesian inference (lessons 21–23). The axioms below are interpretation-agnostic — they work regardless of which lens you adopt.
 
 ## Four rules as geometric constraints
 
@@ -80,19 +87,43 @@ Something must happen. The total probability across all possible outcomes is exa
 
 $$P(A \cup B) = P(A) + P(B) - P(A \cap B)$$
 
-If region $A$ and region $B$ overlap, simply adding their areas double-counts the overlap. Subtract it once to get the correct total. On the die: $P(\text{even}) = 3/6$, $P(\text{greater than 3}) = 3/6$, but $P(\text{even or greater than 3}) = 5/6$, not $6/6$. The overlap — tile 4 and tile 6 — would be double-counted without the subtraction.
+If region $A$ and region $B$ overlap, simply adding their areas double-counts the overlap. Subtract it once to get the correct total. On the die: <MathInline expression={"P(\\text{even}) = 3/6"} />, <MathInline expression={"P(\\text{greater than 3}) = 3/6"} />, but <MathInline expression={"P(\\text{even or greater than 3}) = 5/6"} />, not $6/6$. The overlap — tile 4 and tile 6 — would be double-counted without the subtraction.
 
 **Rule 4. "Not A" is the floor with region A removed.**
 
 $$P(A^c) = 1 - P(A)$$
 
-The complement of $A$, written $A^c$, is everything outside $A$. On the die: $P(\text{not even}) = 1 - 1/2 = 1/2$. You just take the whole floor (area 1) and cut out the shaded region.
+The complement of $A$, written $A^c$, is everything outside $A$. On the die: <MathInline expression={"P(\\text{not even}) = 1 - 1/2 = 1/2"} />. You just take the whole floor (area 1) and cut out the shaded region.
 
 These four rules are surprisingly powerful. From them you can derive everything from Bayes' theorem to the law of large numbers. They are the grammar of the language of chance.
 
+### A measure-theoretic aside
+
+The rigorous mathematical foundation of probability (Kolmogorov, 1933) defines probability as a **measure** — a function that assigns "sizes" to subsets of a sample space, subject to exactly the four axioms above. The collection of subsets that can be measured is called a **σ-algebra** — think of it as "the set of all events you are allowed to ask about." This formality matters when the sample space is uncountable (like all real numbers), where naïve "area" reasoning can produce paradoxes. We will not need measure theory in this course, but it lurks beneath every formula — ensuring that "probability" is always well-defined.
+
+<FormulaReadout formulas={[
+  { label: "概率公理 (1–3)", expression: "P(A) \\geq 0,\\quad P(\\Omega) = 1,\\quad P(A \\cup B) = P(A) + P(B) - P(A \\cap B)" },
+  { label: "补事件", expression: "P(A^c) = 1 - P(A)" },
+  { label: "古典概率", expression: "P(A) = \\frac{\\text{有利结果数}}{\\text{总结果数}} = \\frac{|A|}{|\\Omega|}" },
+]} />
+
+## Three perspectives on probability
+
+1. **Geometric:** probability is the fraction of the tiled floor your event covers — area of region $A$ divided by total floor area.
+2. **Combinatorial:** probability is favorable outcomes divided by total outcomes — counting, when all outcomes are equally likely.
+3. **Axiomatic:** probability is any function $P$ satisfying the four Kolmogorov axioms — a measure of size that is non-negative, normalized, and additive.
+
+All three give the same answers for simple problems. The axiomatic view is the most general — it works even when outcomes are not equally likely or when the sample space is uncountable. The geometric view builds intuition; the combinatorial view computes answers; the axiomatic view guarantees everything is well-defined.
+
 <KeyInsight>
-Probability does not tell you what will happen — it tells you what is likely to happen, and by how much. Think of it as measuring regions on a tiled floor: every tile is a possible outcome, and probability is the fraction of floor your event covers.
+Probability does not tell you what will happen — it tells you what is likely to happen, and by how much. Think of it as measuring regions on a tiled floor: every tile is a possible outcome, and probability is the fraction of floor your event covers. Three interpretations (classical, frequentist, subjective) share one set of axioms.
 </KeyInsight>
+
+## Connections
+
+This lesson establishes the **sample space** and the **four axioms** — the vocabulary and grammar that every subsequent lesson uses. The inclusion-exclusion rule (Rule 3) generalizes to the **inclusion-exclusion principle** for many events, which underlies counting arguments in [lesson 02](/courses/probability/02-counting-enumeration). The complement rule (Rule 4) is the secret weapon for computing "at least one" probabilities — it's often easier to compute "none" and subtract from 1.
+
+The frequentist interpretation connects forward to the **law of large numbers** (lesson 15) and **central limit theorem** (lesson 16), which formalize why histograms converge. The subjective interpretation seeds the entire **Bayesian** half of the course (lessons 21–23), where probability is updated belief rather than long-run frequency. The axiomatic/measure-theoretic view is the silent foundation beneath continuous distributions (lesson 08), where the "tiled floor" becomes a smooth density curve and "area" becomes an integral.
 
 ## Practice
 
@@ -115,6 +146,34 @@ Probability does not tell you what will happen — it tells you what is likely t
   prompt="On the tile floor for a 20-sided die (d20), shade the tiles for the event 'the roll is at most 5.' What fraction of the floor did you shade? Now use Rule 4 to find P(roll is greater than 5) without counting tiles."
   hint="P(at most 5) = 5/20. P(greater than 5) is its complement."
   answer="P(at most 5) = 5/20 = 1/4. By Rule 4: P(greater than 5) = 1 - 1/4 = 3/4. Three quarters of the floor is unshaded."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="A card is drawn from a standard 52-card deck. What is P(the card is a king OR a heart)? Account for the overlap."
+  hint="There are 4 kings and 13 hearts, but one card is both (the king of hearts)."
+  answer="P(king) = 4/52, P(heart) = 13/52, P(king of hearts) = 1/52. By Rule 3: P(king or heart) = 4/52 + 13/52 - 1/52 = 16/52 = 4/13. Without subtracting the overlap, you'd get 17/52 — the king of hearts would be counted twice."
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="Explain in your own words why the classical, frequentist, and subjective interpretations can give different *meanings* to the same probability number. Give an example where they disagree about meaning, not about the number."
+  hint="Think about an event that cannot be repeated, or where 'equally likely' is unclear."
+  answer="Consider 'P(rain tomorrow) = 0.3'. The classical view struggles (outcomes are not equally likely tiles). The frequentist view is ill-defined (tomorrow happens once — there's no long-run frequency of identical tomorrows). The subjective view says 0.3 is the forecaster's degree of belief. All three might agree the number is 0.3, but they disagree about what 0.3 *means*: a counting ratio, a limiting frequency, or a quantified opinion. This philosophical difference becomes practical in Bayesian vs frequentist statistics."
+/>
+
+<ExerciseBlock
+  number={6}
+  prompt="Prove the inclusion-exclusion rule for three events: P(A ∪ B ∪ C) = P(A) + P(B) + P(C) − P(A∩B) − P(A∩C) − P(B∩C) + P(A∩B∩C). Hint: apply Rule 3 with (A ∪ B) and C."
+  hint="Let D = A ∪ B. Then P(D ∪ C) = P(D) + P(C) − P(D ∩ C). Expand P(D) using Rule 3."
+  answer="P(A∪B∪C) = P(A∪B) + P(C) − P((A∪B)∩C). Expand P(A∪B) = P(A)+P(B)−P(A∩B). Expand P((A∪B)∩C) = P((A∩C)∪(B∩C)) = P(A∩C)+P(B∩C)−P(A∩B∩C). Substituting and simplifying yields the formula. The alternating +/− pattern extends to any number of events — this is the general inclusion-exclusion principle."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="The 'birthday problem': in a room of 23 people, what is P(at least two share a birthday)? Use the complement rule — compute P(all different) first. (Ignore leap years; assume 365 equally likely birthdays.)"
+  hint="P(at least one match) = 1 − P(no matches). P(no matches) = (365/365)(364/365)(363/365)...(343/365)."
+  answer="P(all 23 different) = (365·364·363·...·343)/365²³ = ∏_{k=0}^{22} (365−k)/365 ≈ 0.493. So P(at least one shared birthday) = 1 − 0.493 ≈ 0.507 — just over 50%! This famously counterintuitive result shows the complement rule's power: computing 'at least one' directly is hard, but 'none' is a simple product. The answer surprises people because they confuse P(someone shares YOUR birthday) with P(any two people share a birthday)."
 />
 
 ---

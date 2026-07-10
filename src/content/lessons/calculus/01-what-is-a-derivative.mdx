@@ -18,10 +18,14 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { DerivativeSlope } from '../../../components/interactive/calculus/DerivativeSlope';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
 Imagine you're driving along a winding road. At every instant, your speedometer tells you exactly how fast you're going. That reading — your instantaneous rate of change — is what a **derivative** captures for any function.
 
@@ -57,17 +61,69 @@ Imagine zooming in on the curve at a single point. From far away, the curve look
 
 The fraction is the slope of a **secant line** — a line connecting two points on the curve. As $h$ shrinks to zero, the two points slide together and the secant line converges to the tangent line. You just watched this happen in the interactive above: the tangent line is the limit of secant lines as the two points merge.
 
+### Leibniz notation
+
+Leibniz wrote the derivative as <MathInline expression={"\\frac{dy}{dx}"} />, which reads as "the infinitesimal change in $y$ divided by the infinitesimal change in $x$." This notation is not just decoration — it reveals the derivative as a **ratio of two small quantities**, which makes the chain rule and integration by substitution feel natural later. Newton's "fluxion" notation (a dot above the variable, as in <MathInline expression={"\\dot{x}"} />) survives in physics for time derivatives, but Leibniz's notation won the general battle because it foregrounds the *ratio* structure.
+
+## Theorem: differentiability implies continuity
+
+If $f$ is differentiable at a point $a$, then $f$ is continuous at $a$.
+
+<MathBlock expression={"\\text{If } f'(a) \\text{ exists, then } \\lim_{x \\to a} f(x) = f(a)"} />
+
+The intuition is geometric: if the tangent line exists, the curve has no jump or gap there — you can draw a single straight line that approximates it. The converse is **false**: a function can be continuous but not differentiable. The absolute value $f(x) = |x|$ is continuous everywhere but has a sharp corner at the origin where no unique tangent line exists — the left and right slopes disagree.
+
+<FormulaReadout formulas={[
+  { label: "导数定义", expression: "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h)-f(x)}{h}" },
+  { label: "切线方程", expression: "y = f(a) + f'(a)(x-a)" },
+  { label: "瞬时变化率", expression: "\\frac{dy}{dx} \\bigg|_{x=a}" },
+]} />
+
+## Where the derivative does not exist
+
+Not every function has a derivative everywhere. Three classic failures:
+
+- **Corner (cusp):** $f(x) = |x|$ at $x = 0$. The left slope is $-1$, the right slope is $+1$. No single tangent line fits.
+- **Vertical tangent:** <MathInline expression={"f(x) = \\sqrt[3]{x}"} /> at $x = 0$. The tangent line is vertical — its slope is infinite.
+- **Discontinuity:** any jump, like the step function. No limit means no derivative.
+
+These failures are not pathologies — they appear in real data. ReLU activations in neural networks have a corner at zero (piecewise-linear, non-differentiable there), and financial time series have jumps that break smoothness.
+
+## Three ways to read the derivative
+
+The derivative has three equivalent interpretations, each the "right" one in a different context:
+
+1. **Geometric:** the slope of the tangent line — how steeply the graph rises or falls.
+2. **Physical:** the instantaneous rate of change — velocity is the derivative of position, acceleration the derivative of velocity.
+3. **Algebraic (best linear approximation):** the unique linear function $L(x) = f(a) + f'(a)(x-a)$ that matches $f$ to first order near $a$. Zoom in far enough and the curve *becomes* its tangent line.
+
+All three give the same number. The geometric view is for sketching and intuition, the physical view is for science and engineering, and the algebraic view is the one that powers everything in optimization and machine learning.
+
 ## Why derivatives matter
 
 Derivatives appear everywhere in science and engineering:
 
-- **Physics**: velocity is the derivative of position; acceleration is the derivative of velocity.
-- **Optimization**: finding the minimum of a cost function means finding where its derivative is zero.
-- **Machine learning**: gradient descent follows the negative derivative to minimize loss.
+- **Physics:** velocity is the derivative of position; acceleration is the derivative of velocity. Newton's $F = ma$ is a statement about second derivatives.
+- **Optimization:** finding the minimum of a cost function means finding where its derivative is zero. This is the entire engine of machine learning.
+- **Machine learning:** gradient descent follows the negative derivative to minimize loss. Each step asks the derivative "which direction is downhill?" and takes a step there.
+
+### Gradient descent — the derivative as a compass
+
+In machine learning, we minimize a loss function $L(\theta)$ over parameters $\theta$. The derivative $L'(\theta)$ tells us the slope of the loss landscape at our current position. Gradient descent takes a step in the **opposite** direction of the derivative:
+
+<MathBlock expression={"\\theta_{\\text{new}} = \\theta - \\alpha \\cdot L'(\\theta)"} />
+
+where $\alpha$ is the learning rate (step size). The derivative is literally a compass pointing uphill, so we walk against it to descend into a valley — a minimum of the loss. Every neural network trained today runs this loop millions of times.
 
 <KeyInsight>
 The derivative converts a function into a slope-at-each-point machine — it tells you not where you are, but which direction and how fast you're moving. Equivalently, the derivative gives the best linear approximation to the function at each point: zoom in far enough, and the curve becomes its tangent line.
 </KeyInsight>
+
+## Connections
+
+The derivative is the seed from which all of differential calculus grows. In the [next lesson](/courses/calculus/02-limits-and-continuity), we'll make the limit in the definition rigorous with the $\varepsilon$-$\delta$ language and meet the **Intermediate Value Theorem** — the result that connects continuity to the geometric fact that "a continuous curve cannot jump over a value." The derivative then becomes practical through the **differentiation rules** (lesson 03), which turn the limit definition into mechanical shortcuts. Later, the derivative reappears as the slope field of a differential equation (lesson 27) and as the gradient that drives optimization in machine learning.
+
+In the other direction, integration (lessons 09–13) will turn out to be the **inverse** of differentiation — the Fundamental Theorem of Calculus (lesson 12) reveals that the two operations undo each other. Everything you learn here about slopes will reappear as areas, and vice versa.
 
 ## Practice
 
@@ -89,4 +145,30 @@ The derivative converts a function into a slope-at-each-point machine — it tel
   answer="s'(t) = 2t + 3, so s'(2) = 7 m/s. The car is moving at 7 meters per second at the 2-second mark."
 />
 
-[Next Lesson →](/courses/calculus/02-limits-and-continuity)
+<ExerciseBlock number={4}
+  prompt="Write the equation of the tangent line to f(x) = x² at the point (1, 1)."
+  hint="Use the tangent line form y = f(a) + f'(a)(x − a) with a = 1."
+  answer="f(1) = 1, f'(x) = 2x so f'(1) = 2. The tangent line is y = 1 + 2(x − 1) = 2x − 1."
+/>
+
+<ExerciseBlock number={5}
+  prompt="The function f(x) = |x| is continuous at x = 0 but not differentiable there. Explain geometrically why no tangent line exists at the origin."
+  hint="Consider the slopes approaching from the left (x < 0) and from the right (x > 0) separately."
+  answer="For x > 0, f(x) = x, so the slope is +1. For x < 0, f(x) = −x, so the slope is −1. The left-hand slope (−1) and right-hand slope (+1) disagree at x = 0, so there is no single tangent line — the graph has a sharp corner (cusp)."
+/>
+
+<ExerciseBlock number={6}
+  prompt="In gradient descent, the update rule is θ_new = θ − α · L'(θ). Suppose L'(θ) = 6 at your current parameter θ = 2 and the learning rate α = 0.1. What is θ_new? Are you moving uphill or downhill?"
+  hint="The negative sign means you step against the derivative. A positive derivative means the function increases as θ increases."
+  answer="θ_new = 2 − 0.1 × 6 = 2 − 0.6 = 1.4. Since the derivative is positive (the loss is increasing as θ grows), stepping in the negative direction moves downhill — toward smaller loss. This is the core mechanic of training neural networks."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Prove that if f is differentiable at a, then f is continuous at a. (Hint: write f(x) − f(a) and multiply by (x − a)/(x − a).)"
+  hint="f(x) − f(a) = [f(x) − f(a)]/(x − a) · (x − a). Take the limit as x → a."
+  answer="For x ≠ a, write f(x) − f(a) = [(f(x) − f(a))/(x − a)] · (x − a). As x → a, the bracket approaches f'(a) (by definition of derivative) and (x − a) approaches 0. So f(x) − f(a) → f'(a) · 0 = 0, meaning f(x) → f(a). This proves continuity. The converse fails: |x| is continuous at 0 but not differentiable."
+/>
+
+---
+
+**Up next:** [Limits and Continuity](/courses/calculus/02-limits-and-continuity)

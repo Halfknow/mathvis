@@ -14,7 +14,13 @@ difficulty: "Beginner"
 
 import { BayesVisualizer } from '../../../components/interactive/probability/BayesVisualizer';
 
-Bayes' theorem is about **flipping your perspective**. A doctor knows: if you have the disease, the test comes back positive 99% of the time. That is $P(\text{positive} \mid \text{disease})$. But what you, the patient, actually need to know is the reverse: given that the test came back positive, what is the chance I actually have the disease? That is $P(\text{disease} \mid \text{positive})$.
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+Bayes' theorem is about **flipping your perspective**. A doctor knows: if you have the disease, the test comes back positive 99% of the time. That is <MathInline expression={"P(\\text{positive} \\mid \\text{disease})"} />. But what you, the patient, actually need to know is the reverse: given that the test came back positive, what is the chance I actually have the disease? That is <MathInline expression={"P(\\text{disease} \\mid \\text{positive})"} />.
 
 These two quantities are *not* the same, and confusing them leads to profoundly wrong conclusions. In the scenario above — a disease that affects 1 in 100 people, a test that is 99% sensitive and 95% specific — a positive result means you have roughly a **16.6% chance** of being sick. Not 99%. Not even close. Bayes' theorem is the bridge that gets you from the doctor's perspective to the patient's.
 
@@ -22,7 +28,7 @@ These two quantities are *not* the same, and confusing them leads to profoundly 
 
 Bayes' theorem in its simplest form:
 
-$$P(H \mid E) = \frac{P(E \mid H) \cdot P(H)}{P(E)}$$
+$<MathInline expression={"P(H \\mid E) = \\frac{P(E \\mid H) \\cdot P(H)}{P(E)}"} />$
 
 Each piece has a name and a geometric meaning:
 
@@ -37,6 +43,12 @@ $$P(E) = P(E \mid H) \cdot P(H) + P(E \mid \neg H) \cdot P(\neg H)$$
 
 This says: the chance of seeing the evidence is the sum over every way the evidence could appear — weighted by how likely each path is.
 
+<FormulaReadout formulas={[
+  { label: "贝叶斯定理", expression: "P(H \\mid E) = \\frac{P(E \\mid H) \\cdot P(H)}{P(E)}" },
+  { label: "证据展开 (全概率)", expression: "P(E) = P(E \\mid H)P(H) + P(E \\mid H^c)P(H^c)" },
+  { label: "赔率形式", expression: "\\frac{P(H \\mid E)}{P(H^c \\mid E)} = \\frac{P(E \\mid H)}{P(E \\mid H^c)} \\cdot \\frac{P(H)}{P(H^c)}" },
+]} />
+
 ## The visual picture
 
 Imagine a rectangle representing all possible outcomes. Divide it into **horizontal strips** — one strip for each hypothesis. The height of each strip is proportional to the prior probability $P(H_i)$. A rare hypothesis gets a thin strip. A common one gets a wide strip.
@@ -45,7 +57,7 @@ Now draw a **vertical line** through each strip, dividing it into two regions: t
 
 Bayes' theorem asks: look at the entire left column (all the $E$-regions stacked up). What fraction of that column comes from the $H_1$-strip?
 
-$$P(H_1 \mid E) = \frac{\text{area of } H_1\text{-strip's } E\text{-region}}{\text{total area of the entire } E\text{-column}}$$
+$<MathInline expression={"P(H_1 \\mid E) = \\frac{\\text{area of } H_1\\text{-strip's } E\\text{-region}}{\\text{total area of the entire } E\\text{-column}}"} />$
 
 When the prior for $H_1$ is tiny, its strip is thin. Even if nearly all of that thin strip falls in the $E$-column, the absolute area is small compared to the $E$-contributions from the fat $\neg H_1$-strip. That is why a rare disease with an accurate test still yields a surprisingly low posterior.
 
@@ -60,15 +72,15 @@ You test positive. What is the probability you actually have the disease?
 
 ### Step 1: Set up the priors
 
-$$P(\text{disease}) = 0.01, \quad P(\text{healthy}) = 0.99$$
+$<MathInline expression={"P(\\text{disease}) = 0.01, \\quad P(\\text{healthy}) = 0.99"} />$
 
 The healthy strip is 99 times wider than the sick strip. This is the base rate at work.
 
 ### Step 2: The likelihoods
 
-$$P(\text{positive} \mid \text{disease}) = 0.99$$
+$<MathInline expression={"P(\\text{positive} \\mid \\text{disease}) = 0.99"} />$
 
-$$P(\text{positive} \mid \text{healthy}) = 1 - 0.95 = 0.05$$
+$<MathInline expression={"P(\\text{positive} \\mid \\text{healthy}) = 1 - 0.95 = 0.05"} />$
 
 ### Step 3: The 10,000-person table
 
@@ -83,7 +95,7 @@ Look at the top row. There are 594 positive results in total. Of those, only 99 
 
 ### Step 4: Apply Bayes
 
-$$P(\text{disease} \mid \text{positive}) = \frac{99}{594} = \frac{99}{99 + 495} \approx 0.166$$
+$<MathInline expression={"P(\\text{disease} \\mid \\text{positive}) = \\frac{99}{594} = \\frac{99}{99 + 495} \\approx 0.166"} />$
 
 **About 16.6%.** Despite a test that seems highly accurate, a positive result means you probably do *not* have the disease. The reason: the healthy population is so large that even a 5% false positive rate generates far more false positives (495) than the true positives (99) from the tiny sick population.
 
@@ -93,6 +105,14 @@ Try the visualizer below. Adjust the disease prevalence and test accuracy, and w
 
 <BayesVisualizer client:visible />
 
+## The odds form of Bayes' theorem
+
+Dividing Bayes' theorem for $H$ by the same for $\neg H$ gives a cleaner version:
+
+$<MathInline expression={"\\underbrace{\\frac{P(H \\mid E)}{P(\\neg H \\mid E)}}_{\\text{posterior odds}} = \\underbrace{\\frac{P(E \\mid H)}{P(E \\mid \\neg H)}}_{\\text{likelihood ratio (Bayes factor)}} \\times \\underbrace{\\frac{P(H)}{P(\\neg H)}}_{\\text{prior odds}}"} />$
+
+This says: the **posterior odds** equal the **prior odds** times the **Bayes factor** (how much more likely the evidence is under $H$ than under $\neg H$). The odds form is computationally cleaner — you multiply rather than normalize — and it reveals that evidence updates your beliefs *multiplicatively*, not additively.
+
 ## The Monty Hall problem
 
 You are on a game show. Three doors. Behind one door is a car; behind the other two, goats. You pick door 1. The host, Monty, opens door 3 to reveal a goat. He asks: do you want to switch to door 2?
@@ -101,36 +121,104 @@ Most people feel the remaining two doors should be equally likely. They are wron
 
 ### Bayes' thinking
 
-Your prior for each door: $P(\text{car behind } i) = 1/3$ for $i = 1, 2, 3$.
+Your prior for each door: <MathInline expression={"P(\\text{car behind } i) = 1/3"} /> for $i = 1, 2, 3$.
 
 Monty's action is **evidence**. He always opens a goat door, and he chooses which door to open based on where the car actually is. Let $E$ be the event "Monty opens door 3."
 
-- If the car is behind door 1 (your pick), Monty opens door 2 or door 3 at random. So $P(E \mid \text{door 1}) = 1/2$.
-- If the car is behind door 2, Monty *must* open door 3. So $P(E \mid \text{door 2}) = 1$.
-- If the car is behind door 3, Monty cannot open it. So $P(E \mid \text{door 3}) = 0$.
+- If the car is behind door 1 (your pick), Monty opens door 2 or door 3 at random. So <MathInline expression={"P(E \\mid \\text{door 1}) = 1/2"} />.
+- If the car is behind door 2, Monty *must* open door 3. So <MathInline expression={"P(E \\mid \\text{door 2}) = 1"} />.
+- If the car is behind door 3, Monty cannot open it. So <MathInline expression={"P(E \\mid \\text{door 3}) = 0"} />.
 
 The total probability of the evidence:
 
-$$P(E) = \frac{1}{3} \cdot \frac{1}{2} + \frac{1}{3} \cdot 1 + \frac{1}{3} \cdot 0 = \frac{1}{2}$$
+$<MathInline expression={"P(E) = \\frac{1}{3} \\cdot \\frac{1}{2} + \\frac{1}{3} \\cdot 1 + \\frac{1}{3} \\cdot 0 = \\frac{1}{2}"} />$
 
 Now apply Bayes:
 
-$$P(\text{door 1} \mid E) = \frac{(1/2)(1/3)}{1/2} = \frac{1}{3}$$
+$<MathInline expression={"P(\\text{door 1} \\mid E) = \\frac{(1/2)(1/3)}{1/2} = \\frac{1}{3}"} />$
 
-$$P(\text{door 2} \mid E) = \frac{(1)(1/3)}{1/2} = \frac{2}{3}$$
+$<MathInline expression={"P(\\text{door 2} \\mid E) = \\frac{(1)(1/3)}{1/2} = \\frac{2}{3}"} />$
 
 Door 2 is **twice as likely** as door 1. Switching wins 2/3 of the time.
 
 The intuition: when you picked door 1, there was a 2/3 chance the car was behind one of the other two doors. Monty's revelation does not change that — it concentrates the 2/3 into the single remaining door. He has filtered out one goat for you.
 
-## Key insight
+## Application: the Naive Bayes classifier
 
-> Bayes' theorem says: your posterior belief is the prior times the likelihood, normalized. A tiny prior acts like a narrow funnel — even strong evidence can only push so much probability through a narrow opening.
+Bayes' theorem powers one of the simplest yet effective machine learning classifiers. To classify an email as spam or not, given its words $w_1, w_2, \ldots, w_n$:
+
+$<MathInline expression={"P(\\text{spam} \\mid w_1, \\ldots, w_n) = \\frac{P(w_1, \\ldots, w_n \\mid \\text{spam}) \\cdot P(\\text{spam})}{P(w_1, \\ldots, w_n)}"} />$
+
+The **naive** assumption: words are conditionally independent given the class:
+
+$<MathInline expression={"P(w_1, \\ldots, w_n \\mid \\text{spam}) = \\prod_{i=1}^{n} P(w_i \\mid \\text{spam})"} />$
+
+This reduces a hard joint probability to a product of easy-to-estimate word frequencies. Despite the unrealistic independence assumption, Naive Bayes works remarkably well for text classification, spam filtering, and sentiment analysis. It is Bayes' theorem applied at industrial scale.
+
+## A preview: Bayesian updating
+
+Bayes' theorem describes a single update: prior → posterior. But what happens when you get *another* piece of evidence? The posterior from the first update becomes the prior for the second:
+
+$<MathInline expression={"P(H) \\xrightarrow{E_1} P(H \\mid E_1) \\xrightarrow{E_2} P(H \\mid E_1, E_2) \\xrightarrow{E_3} \\cdots"} />$
+
+This is **Bayesian updating** — the core of Bayesian inference (lessons 21–23). When the prior and posterior belong to the same family (e.g., Beta), they are called **conjugate priors**, and updating is computationally trivial. For example, a Beta prior combined with Binomial data yields a Beta posterior — just update the parameters. This is why the Beta distribution is the default prior for probabilities.
+
+<KeyInsight>
+Bayes' theorem says: your posterior belief is the prior times the likelihood, normalized. A tiny prior acts like a narrow funnel — even strong evidence can only push so much probability through a narrow opening. The odds form reveals that evidence updates beliefs multiplicatively, and Naive Bayes turns this into a practical classifier.
+</KeyInsight>
+
+## Connections
+
+Bayes' theorem is the capstone of Module 1 — it unifies [conditional probability](/courses/probability/03-conditional-probability) (the definition of $P(H|E)$) with the [law of total probability](/courses/probability/03-conditional-probability) (the denominator $P(E)$). It also looks *backward* to [counting](/courses/probability/02-counting-enumeration): the medical test table is just careful enumeration of the sample space.
+
+Forward, Bayes' theorem splits into two major threads. The **frequentist** thread (lessons 17–20) uses likelihood and the law of total probability for hypothesis testing and confidence intervals, treating parameters as fixed but unknown. The **Bayesian** thread (lessons 21–23) treats parameters as random variables and uses Bayes' theorem to update beliefs — culminating in Bayesian inference with conjugate priors and MCMC methods.
+
+The Naive Bayes classifier connects to machine learning directly — it's one of the simplest generative models. The odds form (Bayes factors) connects to model comparison and **Bayesian model selection**, where you compare how well competing models predict data. The prosecutor's fallacy from lesson 03 is resolved precisely by Bayes' theorem: <MathInline expression={"P(\\text{evidence} | \\text{innocent}) \\neq P(\\text{innocent} | \\text{evidence})"} />.
 
 ## Practice
 
-**Exercise 1.** A spam filter flags 98% of spam emails and incorrectly flags 3% of legitimate emails. If 60% of all incoming email is spam, what is the probability that a flagged email is actually spam? Hint: build the 1000-email table.
+<ExerciseBlock number={1}
+  prompt="A spam filter flags 98% of spam emails and incorrectly flags 3% of legitimate emails. If 60% of all incoming email is spam, what is the probability that a flagged email is actually spam?"
+  hint="Build the 1000-email table or apply Bayes directly."
+  answer="P(spam) = 0.6, P(flag | spam) = 0.98, P(flag | legit) = 0.03, P(legit) = 0.4. P(flag) = 0.98×0.6 + 0.03×0.4 = 0.588 + 0.012 = 0.60. P(spam | flag) = 0.588/0.60 = 0.98 = 98%. Because spam is the majority (60%) and the filter is accurate, a flagged email is very likely spam. Contrast with the medical test where the disease was rare (1%)."
+/>
 
-**Exercise 2.** A factory has two machines producing widgets. Machine A makes 70% of the widgets with a 2% defect rate. Machine B makes 30% with a 5% defect rate. You find a defective widget. What is the probability it came from Machine B?
+<ExerciseBlock number={2}
+  prompt="A factory has two machines producing widgets. Machine A makes 70% of the widgets with a 2% defect rate. Machine B makes 30% with a 5% defect rate. You find a defective widget. What is the probability it came from Machine B?"
+  hint="Apply Bayes: P(B | defect) = P(defect | B)·P(B) / P(defect)."
+  answer="P(defect) = 0.02×0.7 + 0.05×0.3 = 0.014 + 0.015 = 0.029. P(B | defect) = (0.05×0.3)/0.029 = 0.015/0.029 ≈ 0.517. Even though Machine B makes only 30% of widgets, it produces slightly more than half the defects — because its defect rate is 2.5× higher. This is how Bayes attributes causes to observed effects."
+/>
 
-**Exercise 3.** In the Monty Hall problem, suppose there are 100 doors instead of 3. You pick door 1. Monty opens 98 other doors, all revealing goats, leaving only door 1 and door 73 closed. Should you switch? What is $P(\text{car behind door 73} \mid \text{Monty opened the other 98})$?
+<ExerciseBlock number={3}
+  prompt="In the Monty Hall problem, suppose there are 100 doors instead of 3. You pick door 1. Monty opens 98 other doors, all revealing goats, leaving only door 1 and door 73 closed. Should you switch? What is P(car behind door 73 | Monty opened the other 98)?"
+  hint="Your initial pick had a 1/100 chance. Monty filtered out 98 goats from the remaining 99 doors."
+  answer="P(car at 1) was 1/100. P(car in {2,...,100}) was 99/100. Monty opened 98 of those 99 doors, all goats. The entire 99/100 probability mass concentrates on the one unopened door (73). So P(car at 73 | evidence) = 99/100 = 99%. Switch! The more doors, the more dramatic the advantage of switching — Monty's filtering is doing enormous work."
+/>
+
+<ExerciseBlock number={4}
+  prompt="Use the odds form of Bayes: prior odds of a disease are 1:99 (1% prevalence). A test has likelihood ratio P(+|sick)/P(+|healthy) = 99/5 = 19.8. What are the posterior odds? Convert to a probability."
+  hint="Posterior odds = prior odds × likelihood ratio."
+  answer="Prior odds = 1/99. Likelihood ratio = 0.99/0.05 = 19.8. Posterior odds = (1/99) × 19.8 = 19.8/99 = 1/5. Converting odds 1:5 to probability: P = 1/(1+5) = 1/6 ≈ 16.7%. This matches the medical test result. The odds form makes the multiplicative update transparent: a likelihood ratio of ~20 couldn't overcome prior odds of 1:99."
+/>
+
+<ExerciseBlock number={5}
+  prompt="A Naive Bayes spam classifier has P(spam) = 0.5. The word 'FREE' appears with P('FREE'|spam) = 0.3 and P('FREE'|legit) = 0.01. After seeing the word 'FREE', what is the posterior P(spam | 'FREE')? What if you then see 'meeting' with P('meeting'|spam)=0.005, P('meeting'|legit)=0.05?"
+  hint="First update with 'FREE', then use the posterior as the new prior for 'meeting'. Assume conditional independence."
+  answer="After 'FREE': P(spam|FREE) = (0.3×0.5)/(0.3×0.5 + 0.01×0.5) = 0.15/(0.15+0.005) = 0.15/0.155 ≈ 0.968. Prior for second update = 0.968. After 'meeting': P(spam|FREE,meeting) ∝ 0.005×0.968 = 0.00484; P(legit|...) ∝ 0.05×0.032 = 0.0016. Normalize: P(spam) = 0.00484/(0.00484+0.0016) ≈ 0.751. The word 'meeting' pulled it back toward legit — each word updates the belief multiplicatively."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Explain why P(evidence | hypothesis) ≠ P(hypothesis | evidence), and give a real-world example where confusing them leads to a serious error."
+  hint="Think about what each probability conditions on. The 'prosecutor's fallacy' is the classic example."
+  answer="P(E|H) asks 'if H were true, how likely is E?' while P(H|E) asks 'given that we observed E, how likely is H?' These differ by the prior P(H). Example (prosecutor's fallacy): 'The DNA match probability is 1 in a million, so the defendant is guilty with 99.9999% certainty.' This confuses P(match|innocent)=10⁻⁶ with P(innocent|match). In a city of 10 million, ~10 innocent people match. So P(this defendant guilty | match) depends on how many suspects match — could be ~1/11 ≈ 9%, not 99.9999%. The prior (population size) matters enormously."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Derive Bayes' theorem from the definition of conditional probability and the multiplication rule. Show that P(H|E)·P(E) = P(E|H)·P(H) and explain why."
+  hint="Both sides equal P(H ∩ E). Start from the multiplication rule in both directions."
+  answer="By the multiplication rule: P(H ∩ E) = P(H|E)·P(E) and also P(H ∩ E) = P(E|H)·P(H) (just swap roles). Setting them equal: P(H|E)·P(E) = P(E|H)·P(H). Divide both sides by P(E): P(H|E) = P(E|H)·P(H)/P(E). This is Bayes' theorem. The key insight: P(H ∩ E) is a single quantity that can be reached from two directions — conditioning on E first, or conditioning on H first. Bayes' theorem equates the two paths."
+/>
+
+---
+
+**Up next:** [Random Variables →](/courses/probability/05-random-variables)

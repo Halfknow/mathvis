@@ -1,0 +1,96 @@
+---
+title: 'Functions as Vectors'
+titleZh: '函数即向量'
+description: 'Polynomials and functions obey the same rules as arrows — add them, scale them, find bases for them. The same theorems apply.'
+descriptionZh: '多项式和函数遵循与箭头相同的规则——可以相加、缩放、寻找基底。同样的定理依然适用。'
+course: 'linear-algebra'
+module: 'Abstract Vector Spaces'
+moduleZh: '抽象向量空间'
+moduleOrder: 7
+lessonOrder: 33
+duration: 16
+difficulty: 'Advanced'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { FunctionSpaceVis } from '../../../components/interactive/linear-algebra/FunctionSpaceVis';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# Functions as Vectors
+
+Everything we've built — span, basis, dimension, linear transformation — was motivated by arrows in space. But the same algebraic structure appears in places that have nothing to do with arrows.
+
+**Functions are vectors.** You can add them, scale them, and find bases for them. All the theorems still hold.
+
+## The rules of being a vector
+
+A "vector space" is anything where you can:
+1. **Add** two elements: f(x) + g(x) is a new function
+2. **Scale** by a number: 3*f(x) is a new function
+3. **Distribute**: c*(f + g) = c*f + c*g
+
+Polynomials satisfy all of these. So do continuous functions, differentiable functions, and many other families.
+
+## Explore function operations
+
+Use the buttons to switch between adding functions, scaling them, and combining basis polynomials. The sliders control the coefficients.
+
+<FunctionSpaceVis client:visible />
+
+## A basis for polynomials
+
+The space of polynomials of degree ≤ 2 has a natural basis:
+
+<MathBlock expression={'\\{1, \\; x, \\; x^2\\}'} />
+
+Any quadratic polynomial is a unique linear combination: p(x) = a + bx + cx². The coordinates are (a, b, c) — just like a point in 3D space, but the "directions" are 1, x, and x² instead of arrows.
+
+Differentiation is a **linear transformation** on this space:
+
+<MathBlock expression={'\\frac{d}{dx}(a + bx + cx^2) = b + 2cx = b \\cdot 1 + 2c \\cdot x'} />
+
+In the basis (1, x, x²), differentiation is the matrix:
+
+<MathBlock expression={'D = \\begin{bmatrix} 0 & 1 & 0 \\\\ 0 & 0 & 2 \\\\ 0 & 0 & 0 \\end{bmatrix}'} />
+
+The null space of D is the constant functions — the polynomials whose derivative is zero. The column space is all polynomials of degree ≤ 1. All the linear algebra you've learned applies.
+
+<FormulaReadout formulas={[
+  { label: "多项式基", expression: "\\mathcal{P}_n = \\text{span}(1, x, x^2, \\ldots, x^n)" },
+  { label: "线性变换", expression: "\\frac{d}{dx}(af + bg) = a\\frac{df}{dx} + b\\frac{dg}{dx}" },
+]} />
+
+<KeyInsight>
+Functions are vectors: you add them, scale them, and decompose them into bases. Differentiation, integration, and other operations are linear transformations on function spaces. The same theorems that govern arrows govern functions.
+</KeyInsight>
+
+**Connections.** Functions form an infinite-dimensional vector space — but the same rules apply. Polynomials add like vectors, scalars multiply them, and linear combinations generate new functions. Fourier analysis decomposes functions into an orthogonal basis of sines and cosines — Gram-Schmidt (lesson 24) in infinite dimensions. This is why the abstract vector space concept matters: the same algebra works whether your vectors are arrows, arrays, or functions.
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Write 3 + 2x - x² as a linear combination of the basis (1, x, x²). What are the coordinates?"
+  hint="Read off the coefficients: a + bx + cx²."
+  answer="a = 3, b = 2, c = -1. The coordinates are (3, 2, -1). This is no different from writing a 3D vector as 3e1 + 2e2 - e3 — the 'directions' are just 1, x, and x² instead of arrows."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="What is the null space of the differentiation operator on polynomials of degree ≤ 3?"
+  hint="Which polynomials have derivative zero?"
+  answer="Only the constant polynomials: a + 0x + 0x² + 0x³. The null space is 1-dimensional (spanned by the constant 1). Geometrically: only flat functions don't change under differentiation."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Show that {1, x, x^2} is linearly independent in the vector space of polynomials. Hint: if a + bx + cx^2 = 0 for all x, what must a, b, c be?"
+  hint="A polynomial that is zero at every point must have all zero coefficients. Try evaluating at specific x values."
+  answer="If a + bx + cx^2 = 0 for all x, then: at x=0, a = 0. At x=1, b + c = 0. At x=-1, -b + c = 0. From the last two: 2c = 0, so c = 0, then b = 0. All coefficients must be zero, so the set is linearly independent. This means no polynomial in the set can be written as a combination of the others."
+/>
+
+---
+
+**Up next:** [Inner Product Spaces](/courses/linear-algebra/34-inner-product-spaces)

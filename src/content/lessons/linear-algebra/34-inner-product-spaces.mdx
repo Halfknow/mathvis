@@ -1,0 +1,100 @@
+---
+title: 'Inner Product Spaces'
+titleZh: '内积空间'
+description: 'The dot product generalizes — integrals, weighted sums, anything that gives "length" and "angle" creates an inner product space.'
+descriptionZh: '点积可以推广——积分、加权和，任何给出"长度"和"角度"的运算都创造一个内积空间。'
+course: 'linear-algebra'
+module: 'Abstract Vector Spaces'
+moduleZh: '抽象向量空间'
+moduleOrder: 7
+lessonOrder: 34
+duration: 18
+difficulty: 'Advanced'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { InnerProductVis } from '../../../components/interactive/linear-algebra/InnerProductVis';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# Inner Product Spaces
+
+The dot product gave us length, angle, and orthogonality. But the dot product is just one example of an **inner product** — a generalization that works for functions, sequences, and any vector space.
+
+## What makes an inner product?
+
+An inner product is any operation that takes two vectors and returns a number, satisfying:
+1. **Symmetry**: a . b = b . a
+2. **Linearity**: a . (b + c) = a . b + a . c
+3. **Positive definiteness**: a . a ≥ 0, with equality only when a = 0
+
+The familiar dot product satisfies all three. But so does:
+
+<MathBlock expression={'\\langle f, g \\rangle = \\int_0^1 f(x) \\, g(x) \\, dx'} />
+
+This is the **L2 inner product** for functions. It measures how much two functions "overlap" — just as the dot product measures how much two arrows align.
+
+## Explore the inner product
+
+Adjust the coefficients of two polynomial functions. The shaded area shows the product f·g — blue for positive, red for negative. When the total area is zero, the functions are orthogonal.
+
+<InnerProductVis client:visible />
+
+## Orthogonal functions
+
+Two functions are orthogonal when their inner product is zero:
+
+<MathBlock expression={'\\langle f, g \\rangle = 0 \\quad \\iff \\quad f \\perp g'} />
+
+This means the integral of their product is zero — the positive and negative areas cancel out perfectly.
+
+The Fourier basis (1, sin x, cos x, sin 2x, cos 2x, …) is an orthogonal basis under this inner product. Fourier analysis is just Gram-Schmidt applied to function space.
+
+## The same geometry, everywhere
+
+Once you have an inner product, you get:
+- **Length**: the norm of f is the square root of its self-inner-product
+- **Angle**: cos θ = inner product divided by norms
+- **Projection**: decompose functions into orthogonal components
+- **Best approximation**: find the closest function in a subspace (least squares for functions)
+
+Every geometric idea from the arrow world transfers to the function world.
+
+<FormulaReadout formulas={[
+  { label: "函数内积", expression: "\\langle f, g \\rangle = \\int_a^b f(x)g(x)\\,dx" },
+  { label: "函数正交", expression: "f \\perp g \\iff \\int_a^b f(x)g(x)\\,dx = 0" },
+]} />
+
+<KeyInsight>
+The inner product generalizes the dot product to any vector space — functions, sequences, polynomials. It gives length, angle, and orthogonality, and with them: projection, decomposition, and best approximation.
+</KeyInsight>
+
+**Connections.** The L^2 inner product (f,g) = integral of f(x)g(x)dx generalizes the dot product to functions. Two functions are "orthogonal" when their inner product is zero — just like perpendicular vectors. Fourier series is orthogonal expansion: f(x) = sum of (f, phi_n) * phi_n where phi_n are sines and cosines. This is Parseval's identity for functions: ||f||^2 = sum of |(f, phi_n)|^2.
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Are f(x) = x and g(x) = 1 - 2x orthogonal on [0, 1] under the L2 inner product?"
+  hint="Compute the integral of f(x)*g(x) from 0 to 1."
+  answer="∫₀¹ x(1-2x) dx = ∫₀¹ (x - 2x²) dx = [x²/2 - 2x³/3]₀¹ = 1/2 - 2/3 = -1/6 ≠ 0. Not orthogonal. The positive and negative areas don't cancel."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Why is the Fourier basis (sin nx, cos mx) orthogonal on [0, 2π]?"
+  hint="Compute the integral of sin(nx)*cos(mx) over a full period."
+  answer="∫₀²π sin(nx)cos(mx)dx = 0 for all n, m. Similarly ∫₀²π sin(nx)sin(mx)dx = 0 when n ≠ m. These integrals vanish because the positive and negative lobes of the product cancel exactly over a complete period."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Compute the inner product of x and x^2 on [0,1]: integral from 0 to 1 of x * x^2 dx. Are x and x^2 orthogonal on [0,1]? What about on [-1,1]?"
+  hint="Evaluate the integral of x^3 on each interval. For [-1,1], notice the symmetry."
+  answer="On [0,1]: integral of x^3 dx = x^4/4 evaluated 0 to 1 = 1/4. Not zero, so x and x^2 are NOT orthogonal on [0,1]. On [-1,1]: integral of x^3 dx = x^4/4 evaluated -1 to 1 = 1/4 - 1/4 = 0. They ARE orthogonal on [-1,1]! The odd function x^3 cancels perfectly over the symmetric interval. This is why the Legendre polynomials (orthogonal on [-1,1]) are preferred for many applications."
+/>
+
+---
+
+**Up next:** [Applications and Connections](/courses/linear-algebra/35-where-linear-algebra-lives)

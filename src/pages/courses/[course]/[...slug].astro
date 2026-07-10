@@ -2,6 +2,7 @@
 import BaseLayout from '../../../components/layout/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { courseMeta } from '../../../i18n/utils';
+import type { Lang } from '../../../i18n/ui';
 
 export async function getStaticPaths() {
   const lessons = await getCollection('lessons');
@@ -15,6 +16,7 @@ export async function getStaticPaths() {
   });
 }
 
+const lang: Lang = 'en';
 const { course, slug } = Astro.params;
 const { lesson } = Astro.props;
 const { Content } = await lesson.render();
@@ -29,23 +31,20 @@ const currentIndex = courseLessons.findIndex((l) => lessonSlug(l) === slug);
 const prevLesson = currentIndex > 0 ? courseLessons[currentIndex - 1] : null;
 const nextLesson = currentIndex < courseLessons.length - 1 ? courseLessons[currentIndex + 1] : null;
 
-const courseMeta: Record<string, string> = {
-  'linear-algebra': 'Linear Algebra',
-  calculus: 'Calculus',
-  probability: 'Probability',
-};
+const meta = courseMeta[course!] ?? { en: { title: course!, symbol: '?' }, zh: { title: course!, symbol: '?' } };
+const courseTitle = meta[lang].title;
 
 const uniqueModules = [...new Set(courseLessons.map((l) => l.data.module))];
 ---
 
-<BaseLayout title={lesson.data.title}>
+<BaseLayout title={lesson.data.title} lang={lang}>
   <div class="mx-auto flex max-w-7xl">
     <!-- Sidebar (desktop: sticky, mobile: hidden) -->
     <aside class="hidden w-[260px] shrink-0 border-r border-rule bg-surface-1 lg:sticky lg:top-14 lg:block lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto">
       <div class="px-6 pt-8 pb-4">
         <p class="font-mono text-[10px] uppercase tracking-widest text-ink-faint">Course</p>
         <a href={`/courses/${course}`} class="font-serif text-h3 font-semibold text-ink no-underline hover:text-accent">
-          {courseMeta[course!] ?? course}
+          {courseTitle}
         </a>
       </div>
       <nav class="px-3 pb-16">

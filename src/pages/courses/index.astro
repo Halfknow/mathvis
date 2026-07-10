@@ -1,40 +1,11 @@
 ---
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import { CourseCard } from '../../components/learning/CourseCard';
+import { getCourses } from '../../i18n/utils';
+import { getCollection } from 'astro:content';
 
-const courses = [
-  {
-    href: '/courses/linear-algebra',
-    title: 'Linear Algebra',
-    description:
-      'Vectors as arrows, matrices as transformations. Build geometric intuition before symbol manipulation.',
-    symbol: 'λ',
-    lessonCount: 24,
-    estimatedHours: 18,
-    progressPct: 35,
-    difficulty: 'Beginner' as const,
-  },
-  {
-    href: '/courses/calculus',
-    title: 'Calculus',
-    description:
-      'Limits, derivatives, integrals — every concept rendered as a moving picture you can pause and inspect.',
-    symbol: '∫',
-    lessonCount: 30,
-    estimatedHours: 9,
-    difficulty: 'Beginner' as const,
-  },
-  {
-    href: '/courses/probability',
-    title: 'Probability',
-    description:
-      'From coin flips to continuous distributions. Sampling animations make the abstract feel concrete.',
-    symbol: 'P',
-    lessonCount: 19,
-    estimatedHours: 14,
-    difficulty: 'Intermediate' as const,
-  },
-];
+const lessons = await getCollection('lessons');
+const courses = getCourses(lessons, 'en');
 ---
 
 <BaseLayout title="Courses">

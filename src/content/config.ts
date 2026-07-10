@@ -24,18 +24,13 @@ const lessons = defineCollection({
       duration: z.string(),
     })).optional(),
     interactiveWidgets: z.array(z.object({
+      // Free-form string keyed to a component id. The full list of widget
+      // ids lives alongside the components in src/components/interactive/,
+      // not here — a hard-coded enum drifted out of sync every time a new
+      // component was added. Known examples: 'vector-canvas', 'matrix-3d',
+      // 'derivative-slope', 'riemann-sum', 'normal-dist', etc.
       id: z.string(),
-      type: z.enum(['vector-canvas', 'matrix-3d', 'derivative-slope',
-                    'riemann-sum', 'coin-flip', 'normal-dist', 'sampling',
-                    'limit-explorer', 'chain-rule', 'optimization', 'accumulation',
-                    'ftc-explorer', 'u-substitution', 'area-between-curves',
-                    'volume-revolution', 'taylor-explorer', 'slope-field',
-                    'surface-gradient', 'volume-slicing', 'sequence-convergence',
-                    'series-explorer', 'power-series',
-                    'volume-slicer-3d', 'shell-method-3d', 'surface-explorer-3d',
-                    'sequence-explorer', 'substitution-explorer', 'parts-explorer',
-                    'partial-fractions-vis', 'related-rates-vis', 'arc-length-explorer',
-                    'convergence-test-explorer']),
+      type: z.string(),
       title: z.string(),
     })).optional(),
     mobileFallback: z.enum(['poster', 'video', 'static-svg']).default('video'),

@@ -1,0 +1,366 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "∫ MathViz" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e6]: ∫
+        - generic [ref=e7]: MathViz
+      - navigation [ref=e8]:
+        - link "Linear Algebra" [ref=e9] [cursor=pointer]:
+          - /url: /courses/linear-algebra
+        - link "Calculus" [ref=e10] [cursor=pointer]:
+          - /url: /courses/calculus
+        - link "Probability" [ref=e11] [cursor=pointer]:
+          - /url: /courses/probability
+      - generic [ref=e12]:
+        - link "Search" [ref=e13] [cursor=pointer]:
+          - /url: /search
+          - img [ref=e14]
+        - link "中文" [ref=e17] [cursor=pointer]:
+          - /url: /zh/courses/linear-algebra/01-vectors-as-arrows/
+          - img [ref=e18]
+          - generic [ref=e21]: 中文
+        - button "Toggle theme" [ref=e22]:
+          - img [ref=e23]
+  - generic [ref=e25]:
+    - complementary [ref=e26]:
+      - generic [ref=e27]:
+        - paragraph [ref=e28]: Course
+        - link "Linear Algebra" [ref=e29] [cursor=pointer]:
+          - /url: /courses/linear-algebra
+      - navigation [ref=e30]:
+        - generic [ref=e31]:
+          - paragraph [ref=e32]: 1. Notation
+          - list [ref=e33]:
+            - listitem [ref=e34]:
+              - link "Linear Algebra Notation Reference 20m" [ref=e35] [cursor=pointer]:
+                - /url: /courses/linear-algebra/00-notation
+                - generic [ref=e36]: Linear Algebra Notation Reference
+                - generic [ref=e37]: 20m
+        - generic [ref=e38]:
+          - paragraph [ref=e39]: 2. Vectors and Their Language
+          - list [ref=e40]:
+            - listitem [ref=e41]:
+              - link "Vectors as Arrows 14m" [ref=e42] [cursor=pointer]:
+                - /url: /courses/linear-algebra/01-vectors-as-arrows
+                - generic [ref=e43]: Vectors as Arrows
+                - generic [ref=e44]: 14m
+            - listitem [ref=e45]:
+              - link "Vector Addition 15m" [ref=e46] [cursor=pointer]:
+                - /url: /courses/linear-algebra/02-vector-addition
+                - generic [ref=e47]: Vector Addition
+                - generic [ref=e48]: 15m
+            - listitem [ref=e49]:
+              - link "Scalar Multiplication 12m" [ref=e50] [cursor=pointer]:
+                - /url: /courses/linear-algebra/03-scalar-multiplication
+                - generic [ref=e51]: Scalar Multiplication
+                - generic [ref=e52]: 12m
+            - listitem [ref=e53]:
+              - link "The Dot Product 18m" [ref=e54] [cursor=pointer]:
+                - /url: /courses/linear-algebra/04-the-dot-product
+                - generic [ref=e55]: The Dot Product
+                - generic [ref=e56]: 18m
+            - listitem [ref=e57]:
+              - link "Length, Angles, and Orthogonality 15m" [ref=e58] [cursor=pointer]:
+                - /url: /courses/linear-algebra/05-length-angles-orthogonality
+                - generic [ref=e59]: Length, Angles, and Orthogonality
+                - generic [ref=e60]: 15m
+        - generic [ref=e61]:
+          - paragraph [ref=e62]: 3. Span, Basis, and Coordinate Systems
+          - list [ref=e63]:
+            - listitem [ref=e64]:
+              - link "Linear Combinations 18m" [ref=e65] [cursor=pointer]:
+                - /url: /courses/linear-algebra/06-linear-combinations
+                - generic [ref=e66]: Linear Combinations
+                - generic [ref=e67]: 18m
+            - listitem [ref=e68]:
+              - link "Span and Linear Independence 18m" [ref=e69] [cursor=pointer]:
+                - /url: /courses/linear-algebra/07-span-and-independence
+                - generic [ref=e70]: Span and Linear Independence
+                - generic [ref=e71]: 18m
+            - listitem [ref=e72]:
+              - link "Basis and Dimension 15m" [ref=e73] [cursor=pointer]:
+                - /url: /courses/linear-algebra/08-basis-and-dimension
+                - generic [ref=e74]: Basis and Dimension
+                - generic [ref=e75]: 15m
+            - listitem [ref=e76]:
+              - link "Projections 16m" [ref=e77] [cursor=pointer]:
+                - /url: /courses/linear-algebra/09-projections
+                - generic [ref=e78]: Projections
+                - generic [ref=e79]: 16m
+            - listitem [ref=e80]:
+              - link "Basis Change 18m" [ref=e81] [cursor=pointer]:
+                - /url: /courses/linear-algebra/10-basis-change
+                - generic [ref=e82]: Basis Change
+                - generic [ref=e83]: 18m
+        - generic [ref=e84]:
+          - paragraph [ref=e85]: 4. Matrices as Space Transformations
+          - list [ref=e86]:
+            - listitem [ref=e87]:
+              - link "Matrices as Transformations 20m" [ref=e88] [cursor=pointer]:
+                - /url: /courses/linear-algebra/11-matrices-as-transformations
+                - generic [ref=e89]: Matrices as Transformations
+                - generic [ref=e90]: 20m
+            - listitem [ref=e91]:
+              - link "Matrices Encode Transformations 20m" [ref=e92] [cursor=pointer]:
+                - /url: /courses/linear-algebra/12-matrices-encode-transformations
+                - generic [ref=e93]: Matrices Encode Transformations
+                - generic [ref=e94]: 20m
+            - listitem [ref=e95]:
+              - link "Matrix-Vector Product 16m" [ref=e96] [cursor=pointer]:
+                - /url: /courses/linear-algebra/13-matrix-vector-product
+                - generic [ref=e97]: Matrix-Vector Product
+                - generic [ref=e98]: 16m
+            - listitem [ref=e99]:
+              - link "The Determinant 18m" [ref=e100] [cursor=pointer]:
+                - /url: /courses/linear-algebra/14-the-determinant
+                - generic [ref=e101]: The Determinant
+                - generic [ref=e102]: 18m
+            - listitem [ref=e103]:
+              - link "Matrix Multiplication 18m" [ref=e104] [cursor=pointer]:
+                - /url: /courses/linear-algebra/15-matrix-multiplication
+                - generic [ref=e105]: Matrix Multiplication
+                - generic [ref=e106]: 18m
+        - generic [ref=e107]:
+          - paragraph [ref=e108]: 5. Linear Systems and Invertibility
+          - list [ref=e109]:
+            - listitem [ref=e110]:
+              - link "Linear Systems as Geometry 20m" [ref=e111] [cursor=pointer]:
+                - /url: /courses/linear-algebra/16-linear-systems-as-geometry
+                - generic [ref=e112]: Linear Systems as Geometry
+                - generic [ref=e113]: 20m
+            - listitem [ref=e114]:
+              - link "Inverse Matrices 16m" [ref=e115] [cursor=pointer]:
+                - /url: /courses/linear-algebra/17-inverse-matrices
+                - generic [ref=e116]: Inverse Matrices
+                - generic [ref=e117]: 16m
+            - listitem [ref=e118]:
+              - link "Column Space and Null Space 20m" [ref=e119] [cursor=pointer]:
+                - /url: /courses/linear-algebra/18-column-space-and-null-space
+                - generic [ref=e120]: Column Space and Null Space
+                - generic [ref=e121]: 20m
+            - listitem [ref=e122]:
+              - link "Null Space 16m" [ref=e123] [cursor=pointer]:
+                - /url: /courses/linear-algebra/19-null-space
+                - generic [ref=e124]: Null Space
+                - generic [ref=e125]: 16m
+            - listitem [ref=e126]:
+              - link "Subspaces 16m" [ref=e127] [cursor=pointer]:
+                - /url: /courses/linear-algebra/20-subspaces
+                - generic [ref=e128]: Subspaces
+                - generic [ref=e129]: 16m
+        - generic [ref=e130]:
+          - paragraph [ref=e131]: 6. Orthogonality and Decomposition
+          - list [ref=e132]:
+            - listitem [ref=e133]:
+              - link "Orthogonal Bases and Gram-Schmidt 20m" [ref=e134] [cursor=pointer]:
+                - /url: /courses/linear-algebra/21-orthogonal-bases-gram-schmidt
+                - generic [ref=e135]: Orthogonal Bases and Gram-Schmidt
+                - generic [ref=e136]: 20m
+            - listitem [ref=e137]:
+              - link "Eigenvectors and Eigenvalues 22m" [ref=e138] [cursor=pointer]:
+                - /url: /courses/linear-algebra/22-eigenvectors-and-eigenvalues
+                - generic [ref=e139]: Eigenvectors and Eigenvalues
+                - generic [ref=e140]: 22m
+            - listitem [ref=e141]:
+              - link "Diagonalization 18m" [ref=e142] [cursor=pointer]:
+                - /url: /courses/linear-algebra/23-diagonalization
+                - generic [ref=e143]: Diagonalization
+                - generic [ref=e144]: 18m
+            - listitem [ref=e145]:
+              - link "Singular Value Decomposition 22m" [ref=e146] [cursor=pointer]:
+                - /url: /courses/linear-algebra/24-singular-value-decomposition
+                - generic [ref=e147]: Singular Value Decomposition
+                - generic [ref=e148]: 22m
+        - generic [ref=e149]:
+          - paragraph [ref=e150]: 7. Beyond 2D
+          - list [ref=e151]:
+            - listitem [ref=e152]:
+              - link "3D Transformations 18m" [ref=e153] [cursor=pointer]:
+                - /url: /courses/linear-algebra/25-3d-transformations
+                - generic [ref=e154]: 3D Transformations
+                - generic [ref=e155]: 18m
+            - listitem [ref=e156]:
+              - link "The Cross Product 16m" [ref=e157] [cursor=pointer]:
+                - /url: /courses/linear-algebra/26-cross-product
+                - generic [ref=e158]: The Cross Product
+                - generic [ref=e159]: 16m
+            - listitem [ref=e160]:
+              - link "Non-Square Matrices 16m" [ref=e161] [cursor=pointer]:
+                - /url: /courses/linear-algebra/27-non-square-matrices
+                - generic [ref=e162]: Non-Square Matrices
+                - generic [ref=e163]: 16m
+        - generic [ref=e164]:
+          - paragraph [ref=e165]: 8. Abstract Vector Spaces
+          - list [ref=e166]:
+            - listitem [ref=e167]:
+              - link "Functions as Vectors 16m" [ref=e168] [cursor=pointer]:
+                - /url: /courses/linear-algebra/28-functions-as-vectors
+                - generic [ref=e169]: Functions as Vectors
+                - generic [ref=e170]: 16m
+            - listitem [ref=e171]:
+              - link "Inner Product Spaces 18m" [ref=e172] [cursor=pointer]:
+                - /url: /courses/linear-algebra/29-inner-product-spaces
+                - generic [ref=e173]: Inner Product Spaces
+                - generic [ref=e174]: 18m
+        - generic [ref=e175]:
+          - paragraph [ref=e176]: 9. Coda
+          - list [ref=e177]:
+            - listitem [ref=e178]:
+              - link "Applications and Connections 20m" [ref=e179] [cursor=pointer]:
+                - /url: /courses/linear-algebra/30-where-linear-algebra-lives
+                - generic [ref=e180]: Applications and Connections
+                - generic [ref=e181]: 20m
+    - main [ref=e182]:
+      - generic [ref=e183]:
+        - paragraph [ref=e184]:
+          - generic [ref=e185]: Vector Spaces
+          - generic [ref=e186]: ·
+          - generic [ref=e187]: Lesson 1 of 6
+        - heading "Vectors as Arrows" [level=1] [ref=e188]
+        - paragraph [ref=e189]:
+          - text: Before a vector is a list of numbers, it is an
+          - strong [ref=e190]: arrow
+          - text: — pointing from somewhere, in some direction, with some length. Almost every theorem you’ll meet later has a geometric shadow you can see, if you train yourself to look for it. This lesson is about training that eye.
+        - generic [ref=e191]:
+          - paragraph [ref=e192]: Before you start
+          - list [ref=e193]:
+            - listitem [ref=e194]:
+              - img [ref=e196]
+              - link "Coordinate plane basics" [ref=e198] [cursor=pointer]:
+                - /url: /courses/precalc/coordinate-plane
+        - heading "What an arrow knows" [level=2] [ref=e199]
+        - paragraph [ref=e200]:
+          - text: "An arrow on the page captures two pieces of information at once: a"
+          - strong [ref=e201]: direction
+          - text: and a
+          - strong [ref=e202]: magnitude
+          - text: . That’s it. It does not remember where its tail starts — and this freedom is what gives vectors their power.
+        - figure "FigureThree arrows of the same vector, drawn from different starting points." [ref=e203]:
+          - generic [ref=e206]: FigureThree arrows of the same vector, drawn from different starting points.
+        - heading "The zero vector" [level=3] [ref=e207]
+        - paragraph [ref=e208]:
+          - text: There is one arrow that breaks the rule. The
+          - strong [ref=e209]: zero vector
+          - text: has no direction at all — its tip and tail are the same point. It is the only vector that cannot point somewhere, because “somewhere” requires a direction, and the zero vector has none.
+        - paragraph [ref=e210]: "This might seem like a technicality, but the zero vector is the additive identity of the vector space: adding it to any vector leaves that vector unchanged, just as adding zero to a number does nothing. It is the “do nothing” displacement — you walk zero steps in zero directions and end up exactly where you started."
+        - heading "Drag it yourself" [level=2] [ref=e211]
+        - paragraph [ref=e212]: Below is the same idea, but interactive. Grab any of the arrows and slide it around. Or try the preset buttons to see special vectors animate into place.
+        - figure "Try itDrag the arrow tips to explore. Translation does not change a vector." [ref=e213]:
+          - generic [ref=e214]:
+            - generic [ref=e215]:
+              - generic [ref=e219]: Free vectors
+              - generic [ref=e220]:
+                - button "Reset" [ref=e221]:
+                  - img [ref=e222]
+                - button "Fullscreen" [ref=e225]:
+                  - img [ref=e226]
+            - generic [ref=e229]:
+              - generic [ref=e230]:
+                - button "Zero vector" [ref=e231]
+                - button "Unit vector" [ref=e232]
+                - button "Opposite" [ref=e233]
+                - button "Horizontal" [ref=e234]
+                - button "Vertical" [ref=e235]
+                - button "Reset" [ref=e236]
+              - generic [ref=e237]:
+                - img [ref=e238]:
+                  - generic [ref=e239]: "-8"
+                  - generic [ref=e240]: "-8"
+                  - generic [ref=e241]: "-6"
+                  - generic [ref=e242]: "-6"
+                  - generic [ref=e243]: "-4"
+                  - generic [ref=e244]: "-4"
+                  - generic [ref=e245]: "-2"
+                  - generic [ref=e246]: "-2"
+                  - generic [ref=e247]: "0"
+                  - generic [ref=e248]: "0"
+                  - generic [ref=e249]: "2"
+                  - generic [ref=e250]: "2"
+                  - generic [ref=e251]: "4"
+                  - generic [ref=e252]: "4"
+                  - generic [ref=e253]: "6"
+                  - generic [ref=e254]: "6"
+                  - generic [ref=e255]: "8"
+                  - generic [ref=e256]: "8"
+                  - generic [ref=e257]:
+                    - generic: v (3.0, 2.0)
+                  - generic [ref=e261]:
+                    - generic: v (3.0, 2.0)
+                  - generic [ref=e265]:
+                    - generic: v (3.0, 2.0)
+                - generic [ref=e269]:
+                  - generic [ref=e270]: "|v| = 3.61"
+                  - generic [ref=e271]: "|v| = 3.61"
+                  - generic [ref=e272]: "|v| = 3.61"
+          - generic [ref=e273]: Try itDrag the arrow tips to explore. Translation does not change a vector.
+        - heading "Opposite vectors" [level=3] [ref=e274]
+        - paragraph [ref=e275]:
+          - text: For every arrow, there is an arrow pointing the exact opposite way with the same length. This is the
+          - strong [ref=e276]: negative
+          - text: "of the vector: -v has the same magnitude but points in the opposite direction. If v is “walk 3 east and 2 north,” then -v is “walk 3 west and 2 south.”"
+        - paragraph [ref=e277]: Geometrically, negating a vector rotates it 180 degrees around its tail. The direction flips, the length stays the same. Watch what happens when you click the “Opposite” preset above — the vector pivots to face the other way.
+        - heading "In three dimensions" [level=2] [ref=e278]
+        - paragraph [ref=e279]: The same idea extends to 3D — a vector is still an arrow defined by direction and length, regardless of where it starts. Drag to orbit the scene below.
+        - generic [ref=e288]: Same vector from different origins — drag to orbit.
+        - generic [ref=e289]:
+          - generic [ref=e291]: 3D 向量
+          - generic [ref=e293]: 长度
+        - complementary [ref=e294]:
+          - paragraph [ref=e295]: Key insight
+          - paragraph
+          - paragraph [ref=e296]:
+            - text: A vector is the
+            - strong [ref=e297]: equivalence class
+            - text: of all arrows with the same direction and length. The zero vector is the unique arrow with no direction.
+          - paragraph
+        - heading "When coordinates enter" [level=2] [ref=e298]
+        - paragraph [ref=e299]: "With a starting point fixed at the origin, the arrow’s tip lands at its components:"
+        - paragraph [ref=e300]:
+          - text: The first number tells you how far east (positive) or west (negative). The second tells you how far north (positive) or south (negative). So the vector (3, 2) points northeast — mostly east, slightly north — while (-1, 3) points northwest — slightly west, strongly north. Both are in the upper half of the plane, but their
+          - emphasis [ref=e301]: character
+          - text: "is completely different: one chases the horizon, the other climbs toward the sky."
+        - paragraph [ref=e302]:
+          - text: "Notice the order:"
+          - strong [ref=e303]: geometry first, numbers second
+          - text: .
+        - heading "Practice" [level=2] [ref=e304]
+        - generic [ref=e305]:
+          - generic [ref=e307]: Exercise 1
+          - generic [ref=e308]: "Two arrows: first from (0,0) to (3,1), second from (2,4) to (5,5). Same vector?"
+          - generic [ref=e309]:
+            - button "Show hint" [ref=e310]
+            - button "Show answer" [ref=e311]
+        - generic [ref=e312]:
+          - generic [ref=e314]: Exercise 2
+          - generic [ref=e315]: What is special about the vector (0, 0)? Can you draw it as an arrow?
+          - generic [ref=e316]:
+            - button "Show hint" [ref=e317]
+            - button "Show answer" [ref=e318]
+        - generic [ref=e319]:
+          - generic [ref=e321]: Exercise 3
+          - generic [ref=e322]: Vector v has length 5. What is the length of -v? What is the length of 2v?
+          - generic [ref=e323]:
+            - button "Show hint" [ref=e324]
+            - button "Show answer" [ref=e325]
+        - separator [ref=e326]
+        - paragraph [ref=e327]:
+          - strong [ref=e328]: "Up next:"
+          - link "Vector addition →" [ref=e329] [cursor=pointer]:
+            - /url: /courses/linear-algebra/vector-spaces/vector-addition
+      - generic [ref=e330]:
+        - link "← Linear Algebra Notation Reference" [ref=e331] [cursor=pointer]:
+          - /url: /courses/linear-algebra/00-notation
+        - link "Vector Addition →" [ref=e332] [cursor=pointer]:
+          - /url: /courses/linear-algebra/02-vector-addition
+  - contentinfo [ref=e333]:
+    - generic [ref=e334]:
+      - paragraph [ref=e335]: MathViz · An open-source platform for learning math through interactive animation.
+      - navigation [ref=e336]:
+        - link "Linear Algebra" [ref=e337] [cursor=pointer]:
+          - /url: /courses/linear-algebra
+        - link "Calculus" [ref=e338] [cursor=pointer]:
+          - /url: /courses/calculus
+        - link "Probability" [ref=e339] [cursor=pointer]:
+          - /url: /courses/probability
+      - paragraph [ref=e340]: © 2026 · MIT

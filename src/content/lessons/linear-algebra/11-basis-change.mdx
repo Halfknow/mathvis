@@ -1,0 +1,116 @@
+---
+title: 'Basis Change'
+titleZh: '基变换'
+description: 'The same point has different coordinates in different coordinate systems — and the transformation between them is a matrix.'
+descriptionZh: '同一个点在不同坐标系下有不同的坐标——它们之间的转换就是一个矩阵。'
+course: 'linear-algebra'
+module: 'Span, Basis, and Coordinate Systems'
+moduleZh: '张成、基与坐标系'
+moduleOrder: 2
+lessonOrder: 11
+duration: 18
+difficulty: 'Intermediate'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { BasisChangeVis } from '../../../components/interactive/linear-algebra/BasisChangeVis';
+import { ProjectionBasis3DCompanion } from '../../../components/interactive/linear-algebra/ProjectionBasis3DCompanion';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# Basis Change
+
+A basis is a pair of arrows that defines a coordinate system. You've been using the **standard basis**: e1 = (1, 0) pointing right, e2 = (0, 1) pointing up. Every point in the plane gets coordinates by asking "how many e1's and how many e2's do I need?"
+
+But what if you tilt the axes? The point doesn't move — but its coordinates change. **Basis change** is the algebra of switching between coordinate systems.
+
+## The same point, two languages
+
+Take the point P = (3, 2) in standard coordinates. Now define a new basis:
+
+<MathBlock expression={'\\vec{b}_1 = (2, 1), \\quad \\vec{b}_2 = (-1, 2)'} />
+
+In this new system, P has *different* coordinates (c1, c2) satisfying:
+
+<MathBlock expression={'c_1 \\vec{b}_1 + c_2 \\vec{b}_2 = (3, 2)'} />
+
+Solving: c1 = 8/5, c2 = 1/5. The point is "0.8 copies of b1 plus 1 copy of b2" — same point, different description.
+
+## See the grid tilt
+
+Below, the faint gray grid is the standard basis. The dashed yellow grid is the new basis defined by b1 (blue) and b2 (green). The terracotta dot is the target point P. Drag the basis vectors and watch the coordinates change — the point never moves, but the numbers describing it do.
+
+<BasisChangeVis client:visible />
+
+## The change-of-basis matrix
+
+The relationship between old coordinates x and new coordinates c is a matrix equation:
+
+<MathBlock expression={'\\vec{x} = P\\vec{c}'} />
+
+where P is the matrix whose columns are the new basis vectors. To go from old to new: invert P.
+
+<MathBlock expression={'\\vec{c} = P^{-1}\\vec{x}'} />
+
+This is why basis change is a matrix operation — and why it matters. Every time you "rotate your head" to see the same space from a different angle, you're applying a basis change.
+
+## Why it matters
+
+Basis change is the hidden engine behind:
+- **Diagonalization** — switching to the eigenbasis makes the matrix diagonal (lesson 26)
+- **Compression** — JPEG and MP3 use basis changes to find efficient representations
+- **Principal Component Analysis** — rotating to the "natural" basis of data reveals its structure
+
+The pattern is always the same: the *same object* looks simpler when described in the *right coordinates*.
+
+## In three dimensions
+
+The same point (red) described by different basis vectors in 3D. The coordinates change, but the point stays put.
+
+<ProjectionBasis3DCompanion client:visible mode="basis" />
+
+<FormulaReadout formulas={[
+  { label: "基变换矩阵", expression: "\\vec{x} = P\\vec{c}, \\quad \\vec{c} = P^{-1}\\vec{x}" },
+  { label: "P 的列", expression: "P = \\begin{bmatrix} \\vec{b}_1 & \\vec{b}_2 \\end{bmatrix}" },
+]} />
+
+<KeyInsight>
+A basis change doesn't move the point — it relabels it. The change-of-basis matrix P has the new basis vectors as columns, and P inverse converts standard coordinates to new coordinates.
+</KeyInsight>
+
+**Connections.** Basis change is the algebra behind diagonalization (lesson 26): rewriting a matrix in its eigenbasis makes it diagonal — just a list of stretch factors. Every change of basis is a matrix multiplication. SVD (lesson 27) is a double basis change: different bases for input and output, connected by singular values.
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="If the new basis is b1 = (2, 0) and b2 = (0, 3), what are the new coordinates of the point (6, 6)?"
+  hint="Solve 6 = c1*2 and 6 = c2*3."
+  answer="c1 = 3, c2 = 2. The new coordinates are (3, 2). This basis just rescales the axes — the x-axis is stretched by 2, the y-axis by 3."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Can b1 = (1, 1) and b2 = (2, 2) form a basis? What happens to the determinant?"
+  hint="Check if they point in independent directions."
+  answer="No. b2 = 2*b1, so they point in the same direction. The determinant is 1*2 - 1*2 = 0. The change-of-basis matrix is not invertible — you cannot describe every point with these two vectors."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="If P = [[2, 1], [1, 2]] (columns are the new basis), what is P inverse? Use it to find the new coordinates of (5, 4)."
+  hint="det(P) = 2*2 - 1*1 = 3. P inverse = (1/3)*[[2, -1], [-1, 2]]."
+  answer="P inverse = (1/3)*[[2,-1],[-1,2]]. New coords = P^(-1) * (5,4) = (1/3)*(2*5 + (-1)*4, (-1)*5 + 2*4) = (1/3)*(6, 3) = (2, 1). Verify: 2*(2,1) + 1*(1,2) = (5,4). ✓"
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="The basis {(1,0),(1,1)} has coordinates (3, 2). What are the standard coordinates? What matrix converts from this basis to standard?"
+  hint="Multiply coordinates by the basis vectors: 3*(1,0) + 2*(1,1). The change-of-basis matrix has basis vectors as columns."
+  answer="Standard coordinates = 3*(1,0) + 2*(1,1) = (3,0) + (2,2) = (5,2). The matrix P = [[1,1],[0,1]] — its columns are (1,0) and (1,1). Indeed P*(3,2) = (1*3+1*2, 0*3+1*2) = (5,2)."
+/>
+
+---
+
+**Up next:** [Matrices as Transformations](/courses/linear-algebra/12-matrices-as-transformations)

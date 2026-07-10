@@ -1,0 +1,96 @@
+---
+title: 'Matrices Encode Transformations'
+titleZh: '矩阵编码变换'
+description: 'A matrix tells you exactly where each basis vector lands — and the rest of space follows.'
+descriptionZh: '矩阵告诉你每个基向量落到了哪里——空间其余部分随之而定。'
+course: 'linear-algebra'
+module: 'Matrices as Space Transformations'
+moduleZh: '矩阵即空间变换'
+moduleOrder: 3
+lessonOrder: 13
+duration: 20
+difficulty: 'Intermediate'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { MatrixTransform2D } from '../../../components/interactive/linear-algebra/MatrixTransform2D';
+import { MatrixTransform3DCompanion } from '../../../components/interactive/linear-algebra/MatrixTransform3DCompanion';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# Matrices Encode Transformations
+
+Last lesson, you saw what a linear transformation looks like: the grid bends, but lines stay lines and the origin stays put. Now the key question: **how do you write down a transformation?**
+
+The answer is deceptively simple. You only need to record where the two basis vectors land. That's it. Four numbers — two for where e1 goes, two for where e2 goes — and you've captured the entire transformation.
+
+## The columns are the destinations
+
+A 2x2 matrix has this structure:
+
+<MathBlock expression={'A = \\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix} = \\bigl[ \\, A\\hat{e}_1 \\;\\;\\; A\\hat{e}_2 \\, \\bigr]'} />
+
+The first column (a, c) is where e1 = (1, 0) lands. The second column (b, d) is where e2 = (0, 1) lands. Once you know where the basis vectors go, every other vector's destination is determined by linearity.
+
+## Watch the basis arrows move
+
+Drag the matrix sliders below. The blue arrow is e1's destination (column 1). The green arrow is e2's destination (column 2). The whole grid follows them — because the grid *is* built from e1 and e2.
+
+<MatrixTransform2D client:visible />
+
+## Reading a matrix geometrically
+
+Every matrix becomes readable once you learn to see its columns as arrows:
+
+| Matrix | What the columns tell you | Geometric effect |
+|--------|--------------------------|-----------------|
+| [[2, 0], [0, 2]] | Both basis arrows doubled in length | Uniform scaling by 2 |
+| [[0, -1], [1, 0]] | e1 goes up, e2 goes left | 90° counterclockwise rotation |
+| [[1, 1], [0, 1]] | e1 stays, e2 shifts right | Shear (parallelogram tilt) |
+| [[1, 0], [0, 0]] | e1 stays, e2 vanishes | Collapse onto x-axis |
+
+Try typing these into the presets above and watch what happens.
+
+## In three dimensions
+
+In 3D, a 3x3 matrix's three columns are where the three standard basis arrows land. Drag to orbit and see each column as a spatial direction.
+
+<MatrixTransform3DCompanion client:visible mode="shear" />
+
+<FormulaReadout formulas={[
+  { label: "3D 矩阵列", expression: "A = \\begin{bmatrix} \\vec{c}_1 & \\vec{c}_2 & \\vec{c}_3 \\end{bmatrix}" },
+]} />
+
+<KeyInsight>
+A matrix's columns are where the basis vectors land. Read the columns as arrows and you can *see* the transformation without any calculation.
+</KeyInsight>
+
+**Connections.** Reading a matrix as "where the basis vectors land" is the skill that unlocks everything. The columns of a rotation matrix lie on the unit circle. The columns of a projection matrix are the projection direction and zero. Once you can read transformations from columns, you can see the geometry in any matrix at a glance.
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="What does the matrix [[3, 0], [0, 3]] do geometrically? Where do e1 and e2 land?"
+  hint="Look at each column separately."
+  answer="e1 = (1,0) lands at (3,0) — three times longer along x. e2 = (0,1) lands at (0,3) — three times longer along y. This is uniform scaling by 3 in all directions."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="The matrix [[1, 2], [3, 4]] — where does e1 land? Where does e2 land?"
+  hint="First column = e1's destination, second column = e2's destination."
+  answer="e1 lands at (1, 3) — shifted up. e2 lands at (2, 4) — shifted right and up. The transformation stretches and skews the grid into a parallelogram."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="The matrix [[3, 0], [0, 3]] sends both basis vectors to the same point on the line y=x scaled by 3. What is this transformation? Compute its determinant."
+  hint="Each basis arrow triples in length while staying in its original direction."
+  answer="This is uniform scaling by 3 in all directions. e1 = (1,0) lands at (3,0) and e2 = (0,1) lands at (0,3). The determinant = 3*3 - 0*0 = 9 — areas are multiplied by 9 (since each axis scales by 3, area scales by 3*3)."
+/>
+
+---
+
+**Up next:** [Matrix-Vector Product](/courses/linear-algebra/14-matrix-vector-product)

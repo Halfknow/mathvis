@@ -5,7 +5,9 @@
       "Bash(export PATH=\"/c/Users/Halfknow/AppData/Roaming/fnm/node-versions/v22.14.0/installation:$PATH\")",
       "Bash(npx astro *)",
       "Bash(npm run *)",
-      "Bash(git config *)"
+      "Bash(git config *)",
+      "PowerShell(Get-Command npx -ErrorAction SilentlyContinue; Get-Command pnpm -ErrorAction SilentlyContinue; Get-Command bun -ErrorAction SilentlyContinue; Get-Command yarn -ErrorAction SilentlyContinue; $env:PATH -split \";\" | Where-Object { $_ -match \"node|npm|volta|fnm|nvm\" })",
+      "PowerShell(bun run build 2>&1)"
     ]
   }
 }

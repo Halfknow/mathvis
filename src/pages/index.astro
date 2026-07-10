@@ -2,40 +2,12 @@
 import BaseLayout from '../components/layout/BaseLayout.astro';
 import { CourseCard } from '../components/learning/CourseCard';
 import { Button } from '../components/ui/Button';
-import { useTranslations } from '../i18n/utils';
+import { useTranslations, getCourses } from '../i18n/utils';
+import { getCollection } from 'astro:content';
 
 const t = useTranslations('en');
-
-const courses = [
-  {
-    href: '/courses/linear-algebra',
-    title: t('course.linearAlgebra.title'),
-    description: t('course.linearAlgebra.description'),
-    symbol: 'λ',
-    lessonCount: 24,
-    estimatedHours: 18,
-    progressPct: 35,
-    difficulty: 'Beginner' as const,
-  },
-  {
-    href: '/courses/calculus',
-    title: t('course.calculus.title'),
-    description: t('course.calculus.description'),
-    symbol: '∫',
-    lessonCount: 30,
-    estimatedHours: 9,
-    difficulty: 'Beginner' as const,
-  },
-  {
-    href: '/courses/probability',
-    title: t('course.probability.title'),
-    description: t('course.probability.description'),
-    symbol: 'P',
-    lessonCount: 19,
-    estimatedHours: 14,
-    difficulty: 'Intermediate' as const,
-  },
-];
+const lessons = await getCollection('lessons');
+const courses = getCourses(lessons, 'en');
 ---
 
 <BaseLayout title="Learn math through animation" lang="en">

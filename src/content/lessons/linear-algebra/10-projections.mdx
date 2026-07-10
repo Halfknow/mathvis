@@ -1,0 +1,106 @@
+---
+title: 'Projections'
+titleZh: '投影'
+description: 'The shadow one vector casts onto another — and the formula that falls naturally out of the dot product.'
+descriptionZh: '一个向量在另一个向量上投下的影子——公式自然地从点积中流出。'
+course: 'linear-algebra'
+module: 'Span, Basis, and Coordinate Systems'
+moduleZh: '张成、基与坐标系'
+moduleOrder: 2
+lessonOrder: 10
+duration: 16
+difficulty: 'Intermediate'
+---
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { ProjectionVis } from '../../../components/interactive/linear-algebra/ProjectionVis';
+import { ProjectionBasis3DCompanion } from '../../../components/interactive/linear-algebra/ProjectionBasis3DCompanion';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+# Projections
+
+Imagine shining a light straight down onto vector **a**. Vector **b** casts a shadow onto **a**'s line — that shadow is the **projection** of **b** onto **a**.
+
+Projection answers a simple geometric question: "how much of **b** lies along the direction of **a**?" And remarkably, we already have the tool to compute it: the dot product.
+
+## The geometry of projection
+
+The projection of **b** onto **a** is a vector that:
+- Points along **a**'s direction (or opposite, if the projection is negative)
+- Has length equal to the shadow **b** would cast if light hit perpendicular to **a**
+
+<MathBlock expression={'\\text{proj}_{\\vec{a}} \\vec{b} = \\frac{\\vec{a} \\cdot \\vec{b}}{\\vec{a} \\cdot \\vec{a}} \\, \\vec{a}'} />
+
+Break this down: the scalar (a . b)/(a . a) tells you *how many copies of **a*** to take. When it's positive, the shadow falls along **a**. When it's zero, the shadow vanishes — **b** is perpendicular to **a**.
+
+## See the shadow
+
+Adjust the vectors below. The terracotta arrow is the projection — the shadow of b (green) onto a's line (blue). The dashed line drops perpendicularly from b's tip to the projection point. When a and b are perpendicular, the projection shrinks to zero.
+
+<ProjectionVis client:visible />
+
+## Decomposing a vector
+
+Projection lets you split any vector into two clean pieces: the part along a direction, and the part perpendicular to it.
+
+<MathBlock expression={'\\vec{b} = \\underbrace{\\text{proj}_{\\vec{a}} \\vec{b}}_{\\text{along } \\vec{a}} + \\underbrace{\\vec{b} - \\text{proj}_{\\vec{a}} \\vec{b}}_{\\text{perpendicular to } \\vec{a}}'} />
+
+This decomposition is the geometric engine behind:
+- **Least squares** — finding the best approximation when no exact solution exists
+- **Gram-Schmidt** — building orthogonal bases by repeatedly subtracting projections
+- **Fourier analysis** — decomposing signals into perpendicular frequency components
+
+All of these reduce to the same picture: drop a perpendicular, measure the shadow.
+
+## In three dimensions
+
+Projection in 3D works identically — **b** drops perpendicularly onto **a**'s line. The right-angle marker (red) confirms orthogonality.
+
+<ProjectionBasis3DCompanion client:visible mode="projection" />
+
+<FormulaReadout formulas={[
+  { label: "3D 投影", expression: "\\text{proj}_{\\vec{a}}\\vec{b} = \\frac{\\vec{a}\\cdot\\vec{b}}{\\vec{a}\\cdot\\vec{a}}\\,\\vec{a}" },
+  { label: "分解", expression: "\\vec{b} = \\text{proj}_{\\vec{a}}\\vec{b} + (\\vec{b} - \\text{proj}_{\\vec{a}}\\vec{b})" },
+]} />
+
+<KeyInsight>
+Projection splits a vector into "the part along a direction" and "the part perpendicular to it." The formula is just the dot product divided by the self-dot-product, times the direction vector.
+</KeyInsight>
+
+**Connections.** Projection is the geometric key to least squares (lesson 23): when Ax=b has no solution, projecting b onto Col(A) gives the best approximation. Gram-Schmidt (lesson 24) is repeated projection — subtract the projection to get the perpendicular piece. In machine learning, every regression model projects data onto a lower-dimensional subspace.
+
+## Practice
+
+<ExerciseBlock
+  number={1}
+  prompt="Project (4, 3) onto (1, 0) (the x-axis). What do you get?"
+  hint="Use the formula: scalar = a.b / a.a, then multiply by a."
+  answer="scalar = (4*1 + 3*0) / (1*1 + 0*0) = 4. Projection = 4*(1,0) = (4,0). Geometrically: the shadow of (4,3) on the x-axis is just its x-component (4,0). The y-component is the perpendicular part."
+/>
+
+<ExerciseBlock
+  number={2}
+  prompt="Project (1, 1) onto (1, -1). What is the perpendicular remainder?"
+  hint="Compute the projection, then subtract from the original."
+  answer="scalar = (1*1 + 1*(-1)) / (1*1 + (-1)*(-1)) = 0/2 = 0. Projection = (0,0). These vectors are perpendicular, so the shadow vanishes! The entire vector is the perpendicular remainder."
+/>
+
+<ExerciseBlock
+  number={3}
+  prompt="Decompose (5, 3) into the part along (2, 1) and the part perpendicular to it."
+  hint="Find the projection scalar first: a.b / a.a."
+  answer="scalar = (5*2 + 3*1) / (2*2 + 1*1) = 13/5 = 2.6. Projection = 2.6*(2,1) = (5.2, 2.6). Perpendicular part = (5,3) - (5.2,2.6) = (-0.2, 0.4). Check: (5.2,2.6) . (-0.2,0.4) = -1.04 + 1.04 = 0. Perpendicular! ✓"
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Project the vector (4, 3) onto the line through (1, 0). What is the perpendicular component? Verify that the two components are orthogonal."
+  hint="Compute the projection, then subtract from the original. Check the dot product of the two pieces."
+  answer="scalar = (4*1 + 3*0) / (1*1 + 0*0) = 4. Projection = 4*(1,0) = (4,0). Perpendicular component = (4,3) - (4,0) = (0,3). Check: (4,0) . (0,3) = 0. Orthogonal. The projection onto the x-axis is just the x-component, and the perpendicular piece is the y-component."
+/>
+
+---
+
+**Up next:** [Basis Change](/courses/linear-algebra/11-basis-change)

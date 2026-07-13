@@ -14,6 +14,12 @@ difficulty: "Beginner"
 
 import { ExpectationVis } from '../../../components/interactive/probability/ExpectationVis';
 
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
 Imagine a probability distribution as a physical object — a bar chart cut from sheet metal. The bars have different heights because some outcomes are heavier than others. If you tried to balance this metal chart on your fingertip, there is exactly one point where it would rest level. That point is the **expectation**.
 
 Now look at how far the metal extends to either side of that balance point. A distribution that is tall and narrow has most of its mass clustered near the center — it barely reaches outward. A distribution that is short and wide has mass spread far from center — it reaches far in both directions. That reach is the **variance**. Between them, expectation and variance capture the two most important things about any distribution: where it sits, and how it spreads.
@@ -26,29 +32,41 @@ $$E[X] = \sum_i x_i \cdot p_i$$
 
 For a continuous random variable, the sum becomes an integral:
 
-$$E[X] = \int_{-\infty}^{\infty} x \cdot f(x)\,dx$$
+$<MathInline expression={"E[X] = \\int_{-\\infty}^{\\infty} x \\cdot f(x)\\,dx"} />$
 
 The geometric picture: multiply each bar's height (probability) by its position (value), and sum them up. You are computing the center of mass of the distribution.
 
+### Theorem: Expectation of an indicator
+
+For any event $A$ with indicator <MathInline expression={"\\mathbf{1}_A"} />,
+
+$<MathInline expression={"E[\\mathbf{1}_A] = P(A)"} />$
+
+*Proof.* <MathInline expression={"\\mathbf{1}_A"} /> takes only values 0 and 1, so <MathInline expression={"E[\\mathbf{1}_A] = 0 \\cdot P(A^c) + 1 \\cdot P(A) = P(A)"} />.
+
+This innocent identity — the expectation of an indicator is the probability of the event — is one of the most useful facts in probability. It lets us replace probability computations with expectation computations, where we can deploy linearity.
+
 **A fair die.** Each face from 1 to 6 has probability $1/6$. The expectation is:
 
-$$E[X] = \frac{1+2+3+4+5+6}{6} = 3.5$$
+$<MathInline expression={"E[X] = \\frac{1+2+3+4+5+6}{6} = 3.5"} />$
 
 The balance point sits at 3.5 — a value you can never actually roll. The expectation is not "the most likely outcome." It is where the distribution balances. Think of it as the fulcrum, not the peak.
 
-## Linearity of expectation
+## Linearity of expectation — the most important property
 
 Expectation has a property so useful it deserves its own name: **linearity**.
 
-$$E[aX + b] = a \cdot E[X] + b$$
+### Theorem: Linearity of expectation
 
-Scaling a random variable scales its center of mass. Shifting it shifts the balance point. That part is intuitive.
+For any random variables $X, Y$ and constants $a, b$:
 
-The deeper surprise is this: the expectation of a sum is always the sum of expectations, even when the variables are tangled together:
+$$E[aX + bY] = a\,E[X] + b\,E[Y]$$
 
-$$E[X + Y] = E[X] + E[Y]$$
+This holds **always** — with no assumption about independence, correlation, or any relationship between $X$ and $Y$ whatsoever.
 
-This holds **unconditionally** — whether $X$ and $Y$ are independent or not.
+Scaling a random variable scales its center of mass. Shifting it shifts the balance point. That part is intuitive. The deeper surprise is that the expectation of a sum is always the sum of expectations, even when the variables are tangled together. Linearity does not care about dependence.
+
+This is the single most-used theorem in probability. Independence is a strong and often unrealistic assumption, but linearity never needs it. You can decompose a complicated random variable into simpler pieces, take expectations separately, and add them back up.
 
 **Example: aces in a poker hand.** You draw 5 cards from a standard deck. What is the expected number of aces?
 
@@ -56,9 +74,9 @@ Define an indicator variable for each card: $I_k = 1$ if the $k$-th card is an a
 
 The total number of aces is $X = I_1 + I_2 + I_3 + I_4 + I_5$. By linearity:
 
-$$E[X] = 5 \cdot \frac{1}{13} = \frac{5}{13} \approx 0.385$$
+$<MathInline expression={"E[X] = 5 \\cdot \\frac{1}{13} = \\frac{5}{13} \\approx 0.385"} />$
 
-Notice: we did not need to know how the cards depend on each other. (If the first card is an ace, the second card is less likely to be one — but that does not matter for the expectation of the sum.) Linearity cuts through the dependence.
+Notice: we did not need to know how the cards depend on each other. (If the first card is an ace, the second card is less likely to be one — but that does not matter for the expectation of the sum.) Linearity cuts through the dependence. This indicator trick — write a count as a sum of indicators, then apply linearity — solves a huge class of problems that would be brutal by direct computation.
 
 ## Variance as spread
 
@@ -66,50 +84,177 @@ The expectation tells you where the distribution balances. It says nothing about
 
 The **variance** measures that spread:
 
-$$\text{Var}(X) = E\!\left[(X - E[X])^2\right]$$
+$<MathInline expression={"\\text{Var}(X) = E\\!\\left[(X - E[X])^2\\right]"} />$
 
 It is the average squared distance from the center of mass. Every outcome contributes its squared deviation, weighted by its probability. Outliers pull hard because squaring amplifies large distances.
 
+### The computational formula
+
 There is a computationally convenient equivalent form:
 
-$$\text{Var}(X) = E[X^2] - \left(E[X]\right)^2$$
+$<MathInline expression={"\\text{Var}(X) = E[X^2] - \\left(E[X]\\right)^2"} />$
 
 In words: "the mean of the squares, minus the square of the mean." This form is often faster to compute because you only need $E[X]$ and $E[X^2]$, rather than computing every individual deviation.
 
+### Theorem: Variance under scaling and shifting
+
+$<MathInline expression={"\\text{Var}(aX + b) = a^2\\,\\text{Var}(X)"} />$
+
+Shifting by a constant does nothing to the spread (the distribution just translates). Scaling multiplies variance by the *square* of the scale factor — because variance is a squared quantity. This is why standard deviation, not variance, is the natural unit of spread.
+
+Note the contrast with expectation, which is linear: $E[aX+b] = aE[X]+b$. Variance is *not* linear. This asymmetry matters constantly.
+
 **A fair die, revisited.** We already know $E[X] = 3.5$. Computing $E[X^2]$:
 
-$$E[X^2] = \frac{1^2 + 2^2 + 3^2 + 4^2 + 5^2 + 6^2}{6} = \frac{91}{6} \approx 15.17$$
+$<MathInline expression={"E[X^2] = \\frac{1^2 + 2^2 + 3^2 + 4^2 + 5^2 + 6^2}{6} = \\frac{91}{6} \\approx 15.17"} />$
 
 So the variance is:
 
-$$\text{Var}(X) = \frac{91}{6} - \left(\frac{7}{2}\right)^2 = \frac{91}{6} - \frac{49}{4} = \frac{35}{12} \approx 2.917$$
+$<MathInline expression={"\\text{Var}(X) = \\frac{91}{6} - \\left(\\frac{7}{2}\\right)^2 = \\frac{91}{6} - \\frac{49}{4} = \\frac{35}{12} \\approx 2.917"} />$
 
 **Same mean, different spread.** Consider a random variable that is always exactly 3.5 — a "deterministic" variable. Its mean is 3.5 and its variance is 0 (there is no spread at all). Now consider a fair die: same mean, but the variance is about 2.917. Same balance point, completely different shape. The variance is what distinguishes them.
 
+## Variance as moment of inertia
+
+If expectation is the center of mass, variance is the **moment of inertia** — the resistance of the distribution to rotation around its center. This is not a loose analogy; it is exact. A point mass $p_i$ at position $x_i$ contributes $p_i(x_i - \mu)^2$ to the moment of inertia about the center, which is precisely its contribution to the variance.
+
+A tall narrow distribution (small variance) is like a tight spinning top — all the mass near the axis, easy to spin. A short wide distribution (large variance) is like a heavy rim — mass flung far from the axis, hard to get moving. The same physics governs both. Engineers and probabilists are doing the same calculation under different names.
+
 ## Standard deviation
 
-Variance is measured in **squared units**. If $X$ represents a length in meters, then $\text{Var}(X)$ has units of square meters — an area, not a length. That makes it hard to compare directly with the original quantity.
+Variance is measured in **squared units**. If $X$ represents a length in meters, then <MathInline expression={"\\text{Var}(X)"} /> has units of square meters — an area, not a length. That makes it hard to compare directly with the original quantity.
 
 The **standard deviation** fixes this by taking the square root:
 
-$$\sigma = \sqrt{\text{Var}(X)}$$
+$<MathInline expression={"\\sigma = \\sqrt{\\text{Var}(X)}"} />$
 
 If $X$ is in meters, $\sigma$ is back in meters. It answers the question: "how far does a typical outcome land from the center of mass?" — in the same units as the data.
 
-For the fair die: $\sigma = \sqrt{35/12} \approx 1.71$. A typical roll lands about 1.7 units away from 3.5. That feels right — the die ranges from 1 to 6, and most rolls are within 2 of the center.
+For the fair die: <MathInline expression={"\\sigma = \\sqrt{35/12} \\approx 1.71"} />. A typical roll lands about 1.7 units away from 3.5. That feels right — the die ranges from 1 to 6, and most rolls are within 2 of the center.
 
-Drag the fulcrum below to find the balance point of each distribution. When the seesaw levels out, you've found E[X]. Toggle "Show Variance" to see the spread arrows.
+Drag the fulcrum below to find the balance point of each distribution. When the seesaw levels out, you've found $E[X]$. Toggle "Show Variance" to see the spread arrows.
 
 <ExpectationVis client:visible />
 
-## Key insight
+## Moments — the fingerprints of a distribution
 
-> Expectation is the balance point — where the distribution would rest on your fingertip. Variance is the reach — how far the mass extends from that point. Together, these two numbers give you the position and the spread of the entire distribution, like knowing both the center and the radius of a cloud.
+The $k$-th **moment** of $X$ is $E[X^k]$. These moments form a sequence that fingerprints the distribution:
+
+- **First moment** $E[X]$ — the mean, the center of mass.
+- **Second moment** $E[X^2]$ — together with the first moment, gives the variance via $E[X^2] - (E[X])^2$.
+- **Higher moments** $E[X^3], E[X^4], \ldots$ — measure skewness (asymmetry) and kurtosis (tail heaviness).
+
+The variance is therefore called the *second central moment* — the second moment measured around the mean. Under mild conditions, the entire sequence of moments uniquely determines the distribution, which is why moment-based methods (method of moments, moment generating functions) are so powerful in statistics.
+
+## Jensen's inequality — convexity and expectation
+
+A subtle and far-reaching theorem connects expectation with the shape of functions.
+
+### Theorem: Jensen's inequality
+
+If $f$ is a **convex** function (curving upward, like $x^2$ or $e^x$) and $X$ is any random variable with finite expectation, then:
+
+$$E[f(X)] \geq f(E[X])$$
+
+If $f$ is **concave** (curving downward, like <MathInline expression={"\\sqrt{x}"} /> or $\log x$), the inequality flips:
+
+$$E[f(X)] \leq f(E[X])$$
+
+Equality holds only when $f$ is linear on the range of $X$ or when $X$ is deterministic.
+
+The intuition is geometric. For a convex function, the chord connecting two points on the curve lies *above* the curve. When you take an expectation, you are averaging points on the curve (the $f(x_i)$ values), which lands on the chord — above the curve at the average point $f(E[X])$. Convexity means "the average of the function is at least the function of the average."
+
+**Why this matters.** Jensen's inequality explains countless phenomena:
+
+- **The variance is non-negative:** with $f(x) = x^2$ (convex), $E[X^2] \geq (E[X])^2$, so <MathInline expression={"\\text{Var}(X) = E[X^2] - (E[X])^2 \\geq 0"} />. Variance cannot be negative — and Jensen is why.
+- **Arithmetic mean ≥ geometric mean:** with $f(x) = -\log x$ (concave), $E[-\log X] \leq -\log(E[X])$, which rearranges to the AM-GM inequality.
+- **Risk and insurance:** a concave utility function $u$ (risk aversion) gives $E[u(X)] \leq u(E[X])$. A risk-averse person prefers the certain amount $E[X]$ over the gamble $X$, even with the same expected value. This is the foundation of insurance and portfolio theory.
+- **Information theory:** the gap $E[f(X)] - f(E[X])$ for convex $f$ appears as the definition of divergence measures in information theory and machine learning (e.g., the evidence lower bound in variational inference).
+
+Jensen's inequality is the reason convexity is the most important shape in optimization, statistics, and machine learning. Whenever you take an expectation *outside* a nonlinear function, convexity decides which way the inequality goes.
+
+<FormulaReadout formulas={[
+  { label: "期望 (离散/连续)", expression: "E[X] = \\sum_i x_i p_i = \\int x f(x)\\,dx" },
+  { label: "期望的线性性", expression: "E[aX + bY] = aE[X] + bE[Y]" },
+  { label: "方差 (定义与计算公式)", expression: "\\text{Var}(X) = E[(X - E[X])^2] = E[X^2] - (E[X])^2" },
+  { label: "Jensen 不等式", expression: "f \\text{ 凸} \\Rightarrow E[f(X)] \\geq f(E[X])" },
+]} />
+
+## Three perspectives on expectation and variance
+
+1. **Physical:** expectation is center of mass; variance is moment of inertia; standard deviation is radius of gyration. The whole theory of random variables is literally classical mechanics in disguise.
+2. **Computational:** linearity of expectation lets you decompose and conquer — break a complex variable into simple pieces (often indicators), take expectations separately, and add. Variance is harder (it is not linear) but the computational formula $E[X^2] - (E[X])^2$ makes it a two-moment calculation.
+3. **Geometric (Jensen):** convex functions bend upward, so $E[f(X)] \geq f(E[X])$; concave functions bend downward, so the reverse. Curvature interacts with randomness in a deterministic, predictable way.
+
+## Modern applications
+
+**Machine learning loss functions.** Every ML training objective is an expectation — the expected loss over the data distribution. Mean squared error is <MathInline expression={"E[(Y - \\hat{Y})^2]"} />; the bias-variance tradeoff decomposes it using <MathInline expression={"E[X^2] = \\text{Var}(X) + (E[X])^2"} />. Cross-entropy is an expectation of a log-probability. Optimization of these expectations (via stochastic gradient descent) is the engine of modern deep learning.
+
+**Finance: risk and return.** Portfolio theory is built on expectation (expected return) and variance (risk). The Sharpe ratio, Markowitz efficient frontier, and option pricing all reduce to manipulating these two quantities. Jensen's inequality, applied to the concave utility of wealth, is the formal justification for why rational investors diversify.
+
+**Concentration and generalization.** How confidently can you estimate $E[X]$ from a sample? Concentration inequalities (Chebyshev, Chernoff) bound the probability that a sample mean strays far from the true mean, and every one of them is a statement about variance. These bounds are what guarantee that machine learning models generalize from training data to unseen data — covered in lessons 14 and 17.
+
+<KeyInsight>
+Expectation is the balance point — where the distribution would rest on your fingertip. Variance is the reach — how far the mass extends from that point, the rotational moment of inertia of the distribution. Linearity of expectation ($E[aX+bY] = aE[X]+bE[Y]$) holds with no independence assumption and is the most-used tool in probability, while Jensen's inequality ($E[f(X)] \geq f(E[X])$ for convex $f$) explains why variance is non-negative, why risk-averse people insure, and why convexity dominates optimization.
+</KeyInsight>
+
+## Connections
+
+This lesson takes the **random variables** of [lesson 05](/courses/probability/05-random-variables) and equips them with two headline numbers. The indicator identity <MathInline expression={"E[\\mathbf{1}_A] = P(A)"} /> directly extends the [Bayesian](/courses/probability/04-bayes-theorem) machinery of Module 1: any probability of a complex event can be computed as an expectation of an indicator, then attacked with linearity.
+
+Forward, expectation and variance are the parameters of every named distribution in [lesson 07](/courses/probability/07-discrete-distributions) (Bernoulli, Binomial, Poisson) and [lesson 08](/courses/probability/08-continuous-distributions) (uniform, exponential, normal) — each is summarized by its mean and variance. Linearity of expectation is the workhorse for analyzing sums of random variables, which culminates in the **law of large numbers** (lesson 15) and **central limit theorem** (lesson 16). Variance directly seeds the **concentration inequalities** of lesson 14 (Chebyshev: $P(|X - \mu| \geq k\sigma) \leq 1/k^2$), which turn spread into probabilistic guarantees. Jensen's inequality returns in information theory and variational inference, where the gap $E[f(X)] - f(E[X])$ becomes a measure of how much information a random variable carries.
 
 ## Practice
 
-1. A biased coin lands heads with probability 0.7 and tails with probability 0.3. Let $X = 1$ for heads and $X = 0$ for tails. Compute $E[X]$ and $\text{Var}(X)$. What happens to the variance as the coin becomes more biased (say, $p = 0.9$ or $p = 0.99$)? What does that tell you geometrically about the shape of the distribution?
+<ExerciseBlock
+  number={1}
+  prompt="A biased coin lands heads with probability 0.7 and tails with probability 0.3. Let X = 1 for heads and X = 0 for tails. Compute E[X] and Var(X). Then compute Var(X) for p = 0.9 and p = 0.99. What happens to the variance as the coin becomes more biased, and what does that tell you geometrically?"
+  hint="E[X] = p. Use the computational formula Var(X) = E[X^2] - (E[X])^2. For a 0/1 variable, E[X^2] = E[X] = p."
+  answer="E[X] = 0.7. Since X^2 = X for a 0/1 variable, E[X^2] = 0.7, so Var(X) = 0.7 - 0.49 = 0.21. For p = 0.9: Var = 0.9 - 0.81 = 0.09. For p = 0.99: Var = 0.99 - 0.9801 = 0.0099. The general formula is Var(X) = p(1-p). The variance shrinks to 0 as p approaches 0 or 1 — the bar chart collapses to a single tall bar, and there is no spread. Variance is maximized at p = 0.5, the point of maximum uncertainty."
+/>
 
-2. A class has 20 students. Each independently flips a fair coin. Let $X$ be the total number of heads. Use linearity of expectation to find $E[X]$. Does your answer depend on whether the students are "independent" or not — and why does the answer not require any information about dependence?
+<ExerciseBlock
+  number={2}
+  prompt="A class has 20 students. Each independently flips a fair coin. Let X be the total number of heads. Use linearity of expectation to find E[X]. Explain why your answer does not require knowing whether the students' flips are independent."
+  hint="Write X = I_1 + I_2 + ... + I_20 where I_k is 1 if student k flips heads. Use E[I_k] = 1/2 and linearity."
+  answer="Let I_k = 1 if the k-th student flips heads, 0 otherwise. Then X = sum of I_k. E[I_k] = 1/2 for each student. By linearity, E[X] = 20 * (1/2) = 10. Linearity holds regardless of dependence — even if the students somehow coordinated their flips, the expectation of the sum is still the sum of expectations. This is the power of linearity: it sidesteps dependence entirely. (Independence would matter for computing the variance, but not the mean.)"
+/>
 
-3. Two random variables have the same mean of 10. Variable $A$ always equals 10. Variable $B$ is equally likely to be 0 or 20. Compute the variance of each. Which one is "tall and narrow" and which is "short and wide"? Sketch the two distributions side by side.
+<ExerciseBlock
+  number={3}
+  prompt="Two random variables have the same mean of 10. Variable A always equals 10. Variable B is equally likely to be 0 or 20. Compute the variance of each. Which one is 'tall and narrow' and which is 'short and wide'? Sketch both distributions."
+  hint="Var(A) = 0 because A never deviates. For B, compute E[B^2] then subtract (E[B])^2."
+  answer="Var(A) = 0 — A never deviates from its mean, so there is no spread; it is infinitely tall and narrow (a single spike). For B: E[B^2] = (0^2 + 20^2)/2 = 200. Var(B) = 200 - 10^2 = 200 - 100 = 100. Standard deviation = 10. B is short and wide — two bars of height 0.5 at 0 and 20, with a huge gap between them. Same mean, opposite character. The variance (0 vs 100) is exactly what distinguishes them."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Use the computational formula to compute Var(X) for a fair six-sided die two ways: (a) directly via E[(X - 3.5)^2], and (b) via E[X^2] - (E[X])^2. Confirm they match."
+  hint="E[X] = 3.5. E[X^2] = (1+4+9+16+25+36)/6 = 91/6. For (a), average (1-3.5)^2, (2-3.5)^2, ..., (6-3.5)^2."
+  answer="(a) Deviations squared: (1-3.5)^2=6.25, (2-3.5)^2=2.25, (3-3.5)^2=0.25, (4-3.5)^2=0.25, (5-3.5)^2=2.25, (6-3.5)^2=6.25. Sum = 17.5. Average = 17.5/6 = 35/12 ≈ 2.917. (b) E[X^2] = 91/6, (E[X])^2 = (7/2)^2 = 49/4 = 12.25. Var = 91/6 - 49/4 = (182 - 147)/12 = 35/12 ≈ 2.917. Both methods give 35/12 — confirming the computational formula."
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="A hat contains coupons numbered 1 through n. You draw coupons one at a time without replacement until you collect all n distinct coupons (the coupon collector problem). Let T be the total number of draws. Use linearity of expectation to find E[T]. Compute it for n = 10 and n = 52."
+  hint="Write T = sum of geometric waiting times. After collecting k distinct coupons, the probability the next draw is new is (n-k)/n, so the expected number of draws to get the next new one is n/(n-k)."
+  answer="Let T_k be the number of draws needed to go from k distinct coupons to k+1. After you have k distinct coupons, each draw gives a new coupon with probability (n-k)/n, so E[T_k] = n/(n-k). By linearity, E[T] = sum_{k=0}^{n-1} n/(n-k) = n * sum_{j=1}^{n} 1/j = n * H_n, where H_n is the n-th harmonic number. For n = 10: E[T] = 10 * H_10 ≈ 10 * 2.929 ≈ 29.3 draws. For n = 52 (a deck of cards): E[T] = 52 * H_52 ≈ 52 * 4.538 ≈ 236 draws. Linearity turns a brutally complicated dependent problem into a sum of simple expectations."
+/>
+
+<ExerciseBlock
+  number={6}
+  prompt="Jensen's inequality: the random variable X takes value 1 with probability 1/2 and value 9 with probability 1/2. (a) Compute E[X] and E[sqrt(X)]. (b) Compute sqrt(E[X]). (c) Verify that E[sqrt(X)] is less than or equal to sqrt(E[X]) and explain why, citing the relevant theorem."
+  hint="f(x) = sqrt(x) is concave. Jensen's inequality says E[f(X)] is less than or equal to f(E[X]) for concave f."
+  answer="(a) E[X] = (1+9)/2 = 5. E[sqrt(X)] = (sqrt(1) + sqrt(9))/2 = (1+3)/2 = 2. (b) sqrt(E[X]) = sqrt(5) ≈ 2.236. (c) E[sqrt(X)] = 2 < 2.236 = sqrt(E[X]). This confirms Jensen's inequality for the concave function f(x) = sqrt(x): the average of the square roots is less than the square root of the average. Geometrically, the square-root curve bows downward, so the chord (average of function values) lies below the curve at the midpoint (function of the average). The same reasoning with convex f(x) = x^2 recovers the non-negativity of variance."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="Prove that Var(X) is always non-negative using the computational formula and Jensen's inequality. Then prove the computational formula Var(X) = E[X^2] - (E[X])^2 by expanding the definition."
+  hint="For non-negativity, apply Jensen to the convex function f(x) = x^2. For the formula, expand (X - E[X])^2 and use linearity."
+  answer="Non-negativity: f(x) = x^2 is convex, so Jensen gives E[X^2] >= (E[X])^2. Therefore Var(X) = E[X^2] - (E[X])^2 >= 0, with equality (zero variance) only if X is deterministic. Formula proof: Var(X) = E[(X - E[X])^2]. Expand the square: = E[X^2 - 2X*E[X] + (E[X])^2]. By linearity (treating E[X] as a constant): = E[X^2] - 2*E[X]*E[X] + (E[X])^2 = E[X^2] - 2(E[X])^2 + (E[X])^2 = E[X^2] - (E[X])^2. This derivation shows why the computational formula works: it is just the definition, expanded, with linearity doing the algebra. The two forms are mathematically identical — the computational version is merely faster to evaluate."
+/>
+
+---
+
+**Up next:** [Discrete distributions →](/courses/probability/07-discrete-distributions)

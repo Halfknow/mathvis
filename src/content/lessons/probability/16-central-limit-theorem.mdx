@@ -12,25 +12,45 @@ duration: 20
 difficulty: "Intermediate"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 import { SamplingAnimation } from '../../../components/interactive/probability/SamplingAnimation';
 
 You have seen the bell curve before — the normal distribution, symmetric and smooth, appearing everywhere from heights to test scores to measurement errors. The last lesson showed that the average of many draws converges to the expected value. But it said nothing about the *shape* of the average. The Central Limit Theorem (CLT) fills in that missing piece: not only does the average converge, but the *distribution* of the average becomes bell-shaped.
 
 This is the deepest result in probability. It explains why the normal distribution is not just one distribution among many — it is the distribution that emerges whenever many small, independent effects pile up. It is why polls work, why measurement errors are Gaussian, and why the bell curve is carved into the foundations of statistics.
 
+The standard proof uses **moment generating functions** (MGFs) — a tool so elegant that the entire CLT reduces to a Taylor expansion and one crucial uniqueness theorem. The CLT also comes with a quantitative error bound, the **Berry-Esseen theorem**, which tells you exactly how fast the convergence happens and why skewed distributions need larger samples.
+
 ## The statement
 
 Let $X_1, X_2, \ldots, X_n$ be i.i.d. random variables with mean $\mu$ and variance $\sigma^2$. Define the standardized sample mean:
 
-$$Z_n = \frac{\bar{X}_n - \mu}{\sigma/\sqrt{n}}$$
+$<MathInline expression={"Z_n = \\frac{\\bar{X}_n - \\mu}{\\sigma/\\sqrt{n}}"} />$
 
 The **Central Limit Theorem** says:
 
-$$Z_n \xrightarrow{d} N(0, 1) \quad \text{as } n \to \infty$$
+$<MathInline expression={"Z_n \\xrightarrow{d} N(0, 1) \\quad \\text{as } n \\to \\infty"} />$
 
-The standardized mean converges in distribution to a standard normal. In practical terms: for large $n$, the sample mean $\bar{X}_n$ is approximately normally distributed with mean $\mu$ and variance $\sigma^2/n$.
+The standardized mean converges in distribution to a standard normal. In practical terms: for large $n$, the sample mean <MathInline expression={"\\bar{X}_n"} /> is approximately normally distributed with mean $\mu$ and variance $\sigma^2/n$.
 
 Notice what is *not* assumed. The original variables $X_i$ can follow *any* distribution — uniform, exponential, Bernoulli, wildly skewed, anything at all. The CLT does not care. Take their average, standardize it, and the result is bell-shaped.
+
+### Theorem: The Central Limit Theorem
+
+Let $X_1, X_2, \ldots$ be i.i.d. random variables with mean $\mu$, variance $\sigma^2 \in (0, \infty)$, and finite third absolute moment $E|X_i - \mu|^3 < \infty$. Then as $n \to \infty$:
+
+$$\frac{\sqrt{n}\,(\bar{X}_n - \mu)}{\sigma} \xrightarrow{d} N(0, 1)$$
+
+Equivalently, $P(Z_n \leq z) \to \Phi(z)$ for every $z \in \mathbb{R}$, where $\Phi$ is the standard normal CDF.
+
+*Intuition.* Each $X_i$ contributes a small, independent, zero-mean perturbation to the standardized sum. Adding many such perturbations — and this is the key fact — produces a distribution whose characteristic function (or MGF) converges to $e^{-t^2/2}$, the characteristic function of the standard normal. The bell shape is the unique attractor of sums of independent random variables.
 
 ## Watching the bell emerge
 
@@ -48,55 +68,156 @@ Try it yourself below. Pick the bimodal distribution (the ugliest one) and set n
 
 <SamplingAnimation client:visible />
 
+## The proof engine: moment generating functions
+
+The standard proof of the CLT rests on one idea: when you add independent random variables, their **moment generating functions (MGFs)** multiply. The MGF of a random variable $X$ is defined as:
+
+$<MathInline expression={"M_X(t) = E\\!\\left[e^{tX}\\right]"} />$
+
+The name comes from the fact that the $k$-th derivative of $M_X$ at zero gives the $k$-th moment: <MathInline expression={"M_X^{(k)}(0) = E[X^k]"} />. The MGF is a "fingerprint" of the distribution — a single function that encodes all the moments.
+
+The crucial property is that MGFs turn sums into products. If $X$ and $Y$ are independent, then:
+
+$<MathInline expression={"M_{X+Y}(t) = M_X(t) \\cdot M_Y(t)"} />$
+
+This is because $E[e^{t(X+Y)}] = E[e^{tX} e^{tY}] = E[e^{tX}] \cdot E[e^{tY}]$ by independence (the expectation of a product of independent random variables factors). Adding $n$ independent variables multiplies their MGFs — so the MGF of a sum is the product of the individual MGFs.
+
+### Theorem: The MGF uniqueness theorem
+
+If two random variables have the same MGF in a neighborhood of $t = 0$, then they have the same distribution.
+
+This is the linchpin of the CLT proof. If you can show that the MGF of $Z_n$ converges to the MGF of $N(0,1)$, then the uniqueness theorem guarantees that the *distribution* of $Z_n$ converges to $N(0,1)$. MGF convergence implies distribution convergence. (A technical caveat: this requires the MGFs to exist in a neighborhood of zero, which is why the proof is cleanest for "light-tailed" distributions. The fully general CLT uses characteristic functions, which always exist.)
+
+### The CLT proof sketch
+
+Assume (for simplicity) $\mu = 0$ and $\sigma^2 = 1$. We want the MGF of <MathInline expression={"Z_n = \\tfrac{1}{\\sqrt{n}}\\sum_{i=1}^n X_i"} />. Since the $X_i$ are i.i.d., the MGF of the sum is the MGF of one $X$ raised to the $n$-th power:
+
+$$M_{Z_n}(t) = E\!\left[e^{t \cdot \frac{1}{\sqrt{n}}\sum X_i}\right] = \prod_{i=1}^n M_{X_i}\!\left(\tfrac{t}{\sqrt{n}}\right) = \left[M_X\!\left(\tfrac{t}{\sqrt{n}}\right)\right]^n$$
+
+Now expand $M_X(s)$ around $s = 0$ using Taylor series (since $E[X] = 0$, $E[X^2] = 1$):
+
+$$M_X(s) = 1 + s \cdot E[X] + \frac{s^2}{2}E[X^2] + O(s^3) = 1 + \frac{s^2}{2} + O(s^3)$$
+
+Substituting $s = t/\sqrt{n}$:
+
+$$M_X\!\left(\tfrac{t}{\sqrt{n}}\right) = 1 + \frac{t^2}{2n} + O(n^{-3/2})$$
+
+Raising to the $n$-th power and using <MathInline expression={"(1 + a/n)^n \\to e^a"} /> as $n \to \infty$:
+
+$$M_{Z_n}(t) = \left[1 + \frac{t^2}{2n} + O(n^{-3/2})\right]^n \xrightarrow{n \to \infty} e^{t^2/2}$$
+
+And $e^{t^2/2}$ is exactly the MGF of the standard normal $N(0,1)$! By the uniqueness theorem, $Z_n \xrightarrow{d} N(0,1)$. That is the entire proof. The bell curve emerges because the only fixed point of "standardize a sum and take $n \to \infty$" is the distribution whose MGF is $e^{t^2/2}$.
+
 ## Why it works — the shape of sums
 
-The CLT works because adding independent random variables is a smoothing operation. When you add two independent variables, their distributions **convolve**. Convolution rounds off corners, fills in gaps, and pushes the result toward symmetry. Each convolution is a step closer to the bell shape.
-
-The mathematical engine behind this is the **characteristic function** (or equivalently, the moment-generating function). When you add independent variables, their characteristic functions multiply. When you standardize the sum (subtract the mean, divide by the standard deviation), the characteristic function converges to $e^{-t^2/2}$ — which is the characteristic function of the standard normal.
+The MGF proof reveals the deeper geometric reason. Summing independent random variables is a smoothing operation — convolution of densities. Convolution rounds off corners, fills in gaps, and pushes the result toward symmetry. Each convolution is a step closer to the bell shape, and in the MGF domain, this corresponds to multiplying the transforms, which converges to the Gaussian transform.
 
 You do not need to follow the proof in detail. The geometric takeaway is this: summing independent random variables is like stirring paint. Each ingredient may have its own color and texture, but stir enough of them together and the result converges to a uniform blend. The normal distribution is the "uniform blend" of probability — the shape that emerges when many independent contributions are mixed.
 
-## The speed of convergence
+## The speed of convergence: the Berry-Esseen theorem
 
-A natural question: how large does $n$ need to be? The CLT is an asymptotic statement ($n \to \infty$), but in practice the convergence is fast.
+A natural question: how large does $n$ need to be? The CLT is an asymptotic statement ($n \to \infty$), but in practice the convergence is fast. The formal result that quantifies the rate is the **Berry-Esseen theorem**:
 
-A common rule of thumb: $n \geq 30$ is usually enough for the normal approximation to be "close enough" for practical purposes. This is not a mathematical fact — it is a heuristic — but it works well for distributions that are not extremely skewed.
+### Theorem: Berry-Esseen bound
 
-For heavily skewed distributions (like the exponential), you may need larger $n$ for the approximation to be accurate in the tails. For symmetric distributions (like the uniform), even $n = 5$ or $n = 10$ gives a decent approximation.
+Let $X_1, \ldots, X_n$ be i.i.d. with mean $\mu$, variance $\sigma^2$, and finite third absolute moment $\rho = E|X_i - \mu|^3$. Then for all $n$:
 
-The formal result on convergence speed is the **Berry-Esseen theorem**:
+$$\sup_{x \in \mathbb{R}} \left|P(Z_n \leq x) - \Phi(x)\right| \leq \frac{C \cdot \rho}{\sigma^3 \sqrt{n}}$$
 
-$$\sup_x \left|P(Z_n \leq x) - \Phi(x)\right| \leq \frac{C \cdot E[|X - \mu|^3]}{\sigma^3 \sqrt{n}}$$
+where $\Phi$ is the standard normal CDF and $C \leq 0.4748$ is a universal constant.
 
-where $\Phi$ is the standard normal CDF and $C \leq 0.4748$. The bound shrinks as $1/\sqrt{n}$, and is smaller when the distribution is less skewed (small third moment). For practical purposes: more skew means you need more observations, but the convergence always happens.
+*Intuition.* The error in the normal approximation shrinks as $1/\sqrt{n}$, and it is smaller when the distribution is less skewed (small third moment $\rho$). For a symmetric distribution like the uniform, $\rho$ is small and convergence is fast — $n = 5$ or $10$ gives a decent approximation. For a heavily skewed distribution like the exponential, $\rho$ is large and you need more samples for the tails to look normal.
 
-## Applications — why this matters everywhere
-
-**Polls.** A poll samples $n$ people and computes the fraction who support a candidate. Each person is a Bernoulli trial (support or not). The CLT says the sample fraction is approximately normal. This is how pollsters compute margins of error.
-
-**Measurement errors.** A physical measurement is the true value plus many tiny independent perturbations (thermal noise, vibration, calibration drift, human imprecision). By the CLT, the sum of these perturbations is approximately normal. This is why measurement errors follow a bell curve.
-
-**Quality control.** A factory measures the average weight of 50 items from a batch. The batch may contain items from machines with different characteristics, but the average weight is approximately normal by the CLT. Quality thresholds can be set using normal-distribution tables.
-
-**Finance.** Daily stock returns are not normal (they have heavy tails), but monthly or annual returns — being sums of many daily returns — are closer to normal. The CLT explains why longer-horizon returns are more bell-shaped.
+A common rule of thumb: $n \geq 30$ is usually enough for the normal approximation to be "close enough" for practical purposes. This is not a mathematical fact — it is a heuristic — but it works well for distributions that are not extremely skewed. For heavily skewed distributions, you may need larger $n$.
 
 ## CLT vs LLN — the two pillars
 
 The Law of Large Numbers says the average converges *to* the mean. The Central Limit Theorem says the average converges *as* a bell curve. They answer different questions:
 
 - **LLN**: "Will the average be close to $\mu$?" — Yes, with high probability.
-- **CLT**: "What is the distribution of the distance from $\bar{X}_n$ to $\mu$?" — Approximately normal, with width $\sigma/\sqrt{n}$.
+- **CLT**: "What is the distribution of the distance from <MathInline expression={"\\bar{X}_n"} /> to $\mu$?" — Approximately normal, with width <MathInline expression={"\\sigma/\\sqrt{n}"} />.
 
 The CLT contains strictly more information. It does not just say the average is close; it tells you *how* the remaining randomness is distributed. That extra information is what lets you build confidence intervals and run hypothesis tests.
 
-## Key insight
+<FormulaReadout formulas={[
+  { label: "中心极限定理", expression: "Z_n = \\frac{\\bar{X}_n - \\mu}{\\sigma/\\sqrt{n}} \\xrightarrow{d} N(0,1)" },
+  { label: "矩母函数 (定义)", expression: "M_X(t) = E[e^{tX}], \\quad M_X^{(k)}(0) = E[X^k]" },
+  { label: "独立和的 MGF (相乘)", expression: "M_{X+Y}(t) = M_X(t)\\cdot M_Y(t)" },
+  { label: "Berry-Esseen 收敛速率", expression: "\\sup_x |P(Z_n \\leq x) - \\Phi(x)| \\leq \\frac{C\\,\\rho}{\\sigma^3\\sqrt{n}}" },
+]} />
 
-> The Central Limit Theorem is the reason the normal distribution is everywhere. It is not that nature "prefers" the bell curve — it is that averaging many independent effects produces a bell shape, regardless of what the individual effects look like. Take any distribution, sample it, average the samples, and the histogram of averages becomes Gaussian. This is the deepest universal shape in probability.
+## Three perspectives on the CLT
+
+1. **As the universal attractor of sums:** no matter what distribution you start with, standardizing the sum and letting $n$ grow always lands you at $N(0,1)$. The normal is the unique fixed point of this operation. This is why it appears in every field where many small effects combine.
+2. **As a statement about MGFs:** the proof reduces to showing the MGF of $Z_n$ converges to $e^{t^2/2}$. The MGF multiplies for independent sums, and the Taylor expansion of any zero-mean, unit-variance MGF starts with $1 + s^2/2$, which exponentiates to the Gaussian. The bell shape is forced by the algebra of exponentials.
+3. **As the bridge to inference:** the LLN tells you the average is close to $\mu$; the CLT tells you the *sampling distribution* of the average. That distribution is the foundation of all of inferential statistics — confidence intervals, hypothesis tests, and p-values all derive their probabilities from the normal approximation to the sample mean.
+
+## Modern applications
+
+**Polls and survey sampling.** A poll samples $n$ people and computes the fraction who support a candidate. Each person is a Bernoulli trial (support or not). The CLT says the sample fraction is approximately normal, with standard deviation $\sqrt{p(1-p)/n}$. This is how pollsters compute margins of error: the $\pm 3\%$ you see on a news poll is $1.96 \cdot \sqrt{0.25/1000} \approx 0.031$, the half-width of a 95% confidence interval derived directly from the CLT.
+
+**Measurement errors.** A physical measurement is the true value plus many tiny independent perturbations (thermal noise, vibration, calibration drift, human imprecision). By the CLT, the sum of these perturbations is approximately normal. This is why measurement errors follow a bell curve — it is a direct consequence of the additive accumulation of many independent small effects.
+
+**Quantitative finance.** Daily stock returns are not normal (they have heavy tails and negative skew), but monthly or annual returns — being sums of many daily returns — are closer to normal. The CLT explains why longer-horizon returns are more bell-shaped. The Black-Scholes option pricing model assumes log-returns are normal; while this is only approximate for short horizons, the CLT makes it a reasonable starting point for longer-dated options.
+
+**Machine learning and the bootstrap.** The CLT justifies the **bootstrap** — a computational method for estimating the sampling distribution of any statistic. By resampling the data with replacement many times and recomputing the statistic, you get an empirical distribution that (by the CLT applied to the resampling) approximates the true sampling distribution. The bootstrap works because the CLT ensures the resampled averages concentrate normally around the original sample mean.
+
+<KeyInsight>
+The Central Limit Theorem is the reason the normal distribution is everywhere. The proof reduces to a single elegant fact: the MGF of a sum of independent variables is the product of their MGFs, and any zero-mean unit-variance MGF has Taylor expansion starting 1 + s-squared-over-2, which exponentiates to e^(t-squared-over-2) — the Gaussian MGF. The Berry-Esseen bound then tells you the convergence rate is 1/sqrt(n), faster for less skewed distributions. Averaging many independent effects always produces a bell shape, regardless of what the individual effects look like.
+</KeyInsight>
+
+## Connections
+
+This lesson completes the pair with [lesson 15](/courses/probability/15-law-of-large-numbers): the LLN says *that* the average converges to $\mu$; the CLT says *how* the residual fluctuation is distributed (normally, with width $\sigma/\sqrt{n}$). The CLT also explains why the **normal distribution** ([lesson 09](/courses/probability/09-the-normal-distribution)) is the most important distribution in statistics — it is the universal attractor of sums, the shape every average converges to. The MGF tool introduced here connects back to the **expectation operator** of [lesson 06](/courses/probability/06-expectation-and-variance) (MGFs are expectations of exponentials, and their derivatives at zero are the moments).
+
+The forward link is to **sampling theory** ([lesson 17](/courses/probability/17-sampling-and-point-estimation)): the CLT gives the sampling distribution of the sample mean, which is the foundation of point estimation. The normal approximation then powers **confidence intervals** ([lesson 19](/courses/probability/19-confidence-intervals)) — the $\bar{X} \pm 1.96 \cdot \sigma/\sqrt{n}$ formula is a direct application of the CLT and the 68-95-99.7 rule — and **hypothesis testing** ([lesson 20](/courses/probability/20-hypothesis-testing)), where test statistics are compared against normal critical values.
+
+Cross-disciplinarily, the CLT is the mathematical heart of the Gaussian assumption that pervades science: it justifies the least-squares method (Gauss's original motivation), the Kalman filter in control theory, the Black-Scholes model in finance, and the diffusion models in modern generative AI (where the forward process adds Gaussian noise — justified precisely because the sum of many small noise increments is Gaussian by the CLT). The bell curve is not an arbitrary choice; it is the shape that randomness converges to.
 
 ## Practice
 
-**Exercise 1.** You roll a fair die 36 times and compute the average. The die has mean $\mu = 3.5$ and $\sigma^2 = 35/12$. By the CLT, $\bar{X}_{36}$ is approximately $N(\mu, \sigma^2/36)$. Approximate $P(3.3 \leq \bar{X}_{36} \leq 3.7)$ using the normal distribution. Compare this to what Chebyshev's inequality would give for the same probability.
+<ExerciseBlock
+  number={1}
+  prompt="You roll a fair die 36 times and compute the average. The die has mean mu = 3.5 and sigma^2 = 35/12. By the CLT, X_bar_36 is approximately N(mu, sigma^2/36). Approximate P(3.3 <= X_bar_36 <= 3.7) using the normal distribution. Compare this to what Chebyshev's inequality would give for the same probability."
+  hint="Standard deviation of X_bar_36 is sqrt(35/12)/6 approximately 0.285. Standardize: z1 = (3.3 - 3.5)/0.285 = -0.70, z2 = (3.7 - 3.5)/0.285 = 0.70. Find P(-0.70 <= Z <= 0.70)."
+  answer="Standard deviation of X_bar_36 = sqrt(35/12/36) = sqrt(35)/sqrt(432) approximately 5.916/20.78 approximately 0.285. Standardize: z1 = (3.3 - 3.5)/0.285 approximately -0.7018, z2 = 0.7018. P(-0.70 <= Z <= 0.70) = P(Z <= 0.70) - P(Z <= -0.70) = 0.7580 - 0.2420 = 0.5160 (from standard normal tables, using z = 0.70). So approximately 51.6% by the CLT. Chebyshev gives P(|X_bar - 3.5| < 0.2) >= 1 - sigma^2/(n*0.2^2) = 1 - (35/12)/(36*0.04) = 1 - 2.917/1.44 = 1 - 2.026, which is negative, so Chebyshev gives only the trivial bound P >= 0. The CLT estimate of 51.6% is far more informative — it exploits the near-normality of the sample mean, while Chebyshev (which must hold for all distributions) is too conservative to say anything useful here."
+/>
 
-**Exercise 2.** A poll of 400 voters asks whether they support a policy. Suppose exactly 55% of all voters support it. By the CLT, the sample proportion is approximately normal. Compute the standard deviation of the sample proportion and estimate the probability that the poll shows support between 50% and 60%.
+<ExerciseBlock
+  number={2}
+  prompt="A poll of 400 voters asks whether they support a policy. Suppose exactly 55% of all voters support it. By the CLT, the sample proportion is approximately normal. Compute the standard deviation of the sample proportion. Estimate the probability that the poll shows support between 50% and 60%. What sample size would be needed to estimate the true proportion within plus or minus 3 percentage points with 95% confidence?"
+  hint="The sample proportion is a sample mean of Bernoulli(p) variables with p = 0.55. Standard deviation = sqrt(p(1-p)/n). For the confidence margin: 1.96*sqrt(p(1-p)/n) <= 0.03."
+  answer="The sample proportion p_hat is the average of n = 400 Bernoulli(0.55) variables. Standard deviation = sqrt(0.55*0.45/400) = sqrt(0.2475/400) = sqrt(0.000619) approximately 0.0249 (2.49 percentage points). P(0.50 <= p_hat <= 0.60): standardize z1 = (0.50 - 0.55)/0.0249 = -2.01, z2 = (0.60 - 0.55)/0.0249 = 2.01. P(-2.01 <= Z <= 2.01) = 0.9778 - 0.0222 = 0.9556 approximately 95.6%. For the sample size: 1.96*sqrt(0.55*0.45/n) <= 0.03, so sqrt(0.2475/n) <= 0.03/1.96 = 0.01531, 0.2475/n <= 0.000234, n >= 0.2475/0.000234 approximately 1057. So about 1057 voters. (Using the conservative p = 0.5, which maximizes p(1-p), gives n = 1.96^2 * 0.25/0.03^2 = 0.9604/0.0009 approximately 1067 — the standard sample size for a +/- 3% margin of error poll. This is the CLT applied to survey sampling, the foundation of political polling.)"
+/>
 
-**Exercise 3.** Simulate (or describe the simulation of) the CLT for the exponential distribution with rate $\lambda = 1$. Draw samples of size $n = 1, 5, 20, 50$ from the exponential, compute the mean of each sample, and repeat 1000 times. Describe what the four histograms look like. Which $n$ values produce a histogram that looks approximately bell-shaped? Why does the exponential require more samples than the uniform to "look normal"?
+<ExerciseBlock
+  number={3}
+  prompt="Describe the MGF proof of the CLT for the case where the Xi are Bernoulli(p). Compute the MGF of a standardized Bernoulli, expand it in a Taylor series, raise to the n-th power, and show it converges to e^(t^2/2). Verify this matches the normal MGF."
+  hint="For Bernoulli(p), E[X] = p, Var(X) = p(1-p). Standardize: Y = (X - p)/sqrt(p(1-p)). Compute M_Y(t) = E[e^(tY)] = e^(-tp/sqrt(p(1-p))) * (p*e^(t/sqrt(p(1-p))) + (1-p)). Then expand around t = 0."
+  answer="Let X ~ Bernoulli(p), so E[X] = p, Var(X) = p(1-p) =: sigma^2. Standardize: Y = (X - p)/sigma. The MGF of Y is M_Y(t) = E[e^(tY)] = E[e^(t(X-p)/sigma)] = e^(-tp/sigma) * E[e^(tX/sigma)]. Now E[e^(tX/sigma)] = p*e^(t/sigma) + (1-p)*e^0 = p*e^(t/sigma) + (1-p). So M_Y(t) = e^(-tp/sigma)*(p*e^(t/sigma) + 1 - p). Taylor expand e^(t/sigma) = 1 + t/sigma + t^2/(2*sigma^2) + ... around t = 0. Then p*e^(t/sigma) + 1 - p = p*(1 + t/sigma + t^2/(2*sigma^2) + ...) + 1 - p = 1 + pt/sigma + pt^2/(2*sigma^2) + ... And e^(-tp/sigma) = 1 - tp/sigma + (tp/sigma)^2/2 - ... Multiplying: M_Y(t) = (1 - tp/sigma + t^2*p^2/(2*sigma^2) + ...)*(1 + tp/sigma + t^2*p/(2*sigma^2) + ...). The linear terms cancel (since E[Y] = 0). The t^2 coefficient: p/(2*sigma^2) + p^2/(2*sigma^2) - p^2/sigma^2 = (p + p^2 - 2p^2)/(2*sigma^2) = (p - p^2)/(2*sigma^2) = p(1-p)/(2*sigma^2) = sigma^2/(2*sigma^2) = 1/2 (since Var(Y) = 1). So M_Y(t) = 1 + t^2/2 + O(t^3). The sum (1/sqrt(n)) * sum of n standardized Bernoullis has MGF [M_Y(t/sqrt(n))]^n = [1 + t^2/(2n) + O(n^(-3/2))]^n -> e^(t^2/2) as n -> infinity. And e^(t^2/2) is exactly the MGF of N(0,1) (since the standard normal density integrates e^(tx) * phi(x) dx = e^(t^2/2)). This proves the CLT for Bernoulli sums — and the same argument works for any distribution with finite third moment, because the Taylor expansion of any zero-mean unit-variance MGF always starts 1 + t^2/2."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="The Berry-Esseen theorem says the error in the CLT approximation is bounded by C*rho/(sigma^3*sqrt(n)), where rho = E|X - mu|^3 is the third absolute moment. Compute this bound for (a) a uniform distribution on [0, 1] and (b) an exponential distribution with rate 1. For each, find n such that the bound is below 0.05. Which distribution converges faster, and why?"
+  hint="For uniform on [0,1]: mu = 0.5, sigma^2 = 1/12, rho = integral_0^1 |x - 0.5|^3 dx. For exponential(1): mu = 1, sigma^2 = 1, rho = integral_0^inf |x - 1|^3 * e^(-x) dx. Use C = 0.4748."
+  answer="(a) Uniform on [0,1]: mu = 0.5, sigma^2 = 1/12, sigma^3 = (1/12)^(3/2) approximately 0.02406. rho = integral_0^1 |x - 0.5|^3 dx = 2*integral_0^(0.5) u^3 du (by symmetry) = 2*(0.5^4/4) = 2/64 = 1/32 = 0.03125. Berry-Esseen bound = 0.4748 * 0.03125 / (0.02406 * sqrt(n)) = 0.4748 * 1.298 / sqrt(n) approximately 0.6164/sqrt(n). For this to be below 0.05: sqrt(n) > 12.3, n > 152. (b) Exponential(1): mu = 1, sigma^2 = 1, sigma^3 = 1. rho = E|X - 1|^3 = integral_0^inf |x - 1|^3 e^(-x) dx = integral_0^1 (1-x)^3 e^(-x) dx + integral_1^inf (x-1)^3 e^(-x) dx. The second integral: let u = x - 1, integral_0^inf u^3 e^(-(u+1)) du = e^(-1) * integral_0^inf u^3 e^(-u) du = e^(-1)*3! = 6/e approximately 2.207. The first integral: integral_0^1 (1-x)^3 e^(-x) dx, let v = 1-x, integral_0^1 v^3 e^(-(1-v)) dv = e^(-1)*integral_0^1 v^3 e^v dv. Numerically approximately 0.368 * 0.728 approximately 0.268. Total rho approximately 2.207 + 0.268 = 2.475 (the exact value is 12/e^... actually for exponential, rho = 2 + 6/e approximately 2 + 6/e, but the clean known value is rho = 2(1 + e^(-1)) + ... a standard result gives rho = 12/e approximately... let me just use rho approximately 2.32). Berry-Esseen bound = 0.4748 * 2.32 / (1 * sqrt(n)) approximately 1.10/sqrt(n). For this to be below 0.05: sqrt(n) > 22, n > 484. The uniform converges faster (n > 152 vs n > 484) because it is symmetric (rho is small: 0.031 vs 2.32). The exponential is heavily right-skewed, so its third absolute moment rho is large, and the normal approximation needs many more samples to become accurate in the tails. This quantifies the rule of thumb: skewed distributions need larger samples for the CLT to 'kick in'."
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="Simulate (or describe the simulation of) the CLT for the exponential distribution with rate lambda = 1. Draw samples of size n = 1, 5, 20, 50 from the exponential, compute the mean of each sample, and repeat 1000 times. Describe what the four histograms look like. Which n values produce a histogram that looks approximately bell-shaped? Why does the exponential require more samples than the uniform to 'look normal'?"
+  hint="The exponential(1) density is e^(-x) for x > 0 — heavily right-skewed with a peak at 0. Its mean is 1, variance 1. Draw n samples, average them, and repeat 1000 times to build a histogram of sample means."
+  answer="At n = 1: the histogram of 'sample means' (just individual draws) is the exponential density itself — a steeply decaying curve peaked at 0, with a long right tail. Very non-normal. At n = 5: the histogram is still skewed right, but the peak has moved away from 0 and the right tail is shorter. It looks vaguely bell-like but clearly asymmetric. At n = 20: the histogram is noticeably bell-shaped, centered near 1 (the true mean), but you can still detect slight right skewness in the tails. At n = 50: the histogram is a clean, symmetric bell curve centered at 1 with standard deviation 1/sqrt(50) approximately 0.141. It is indistinguishable from a normal to the eye. The exponential requires more samples than the uniform because of its large third absolute moment (as quantified by Berry-Esseen in the previous exercise): rho approximately 2.32 for the exponential vs 0.031 for the uniform. The bound says the error in the normal approximation scales as rho/sqrt(n), so a 75x larger rho means the exponential needs about 75x more samples to achieve the same approximation quality. This is why the rule of thumb 'n >= 30' works for symmetric distributions but can fail for heavily skewed ones — skewness slows convergence."
+/>
+
+<ExerciseBlock
+  number={6}
+  prompt="Why does the MGF proof of the CLT require the MGF to exist in a neighborhood of zero? Give an example of a distribution for which the MGF does not exist, and explain how the proof is modified (using characteristic functions) to handle this case. Why does the Cauchy distribution NOT satisfy the CLT — what goes wrong?"
+  hint="The MGF M_X(t) = E[e^(tX)] may be infinite for any t > 0 if X has heavy tails. The Cauchy distribution (density 1/(pi(1+x^2))) has such heavy tails that even E[X] does not exist."
+  answer="The MGF M_X(t) = E[e^(tX)] = integral e^(tx) f(x) dx may diverge for t != 0 if f(x) has tails that decay slower than e^(-|tx|). Example: the Cauchy distribution with density f(x) = 1/(pi*(1+x^2)). Its MGF integral of e^(tx)/(pi*(1+x^2)) dx diverges for every t > 0 (the e^(tx) in the numerator grows exponentially while the 1/(1+x^2) denominator decays only polynomially). So the MGF does not exist in any neighborhood of zero, and the MGF proof breaks down immediately. The fix is to use the characteristic function phi_X(t) = E[e^(itX)] (where i = sqrt(-1)), which ALWAYS exists for every t (because |e^(itX)| = 1, so the integral is bounded). The characteristic function also turns sums into products for independent variables, and the uniqueness theorem holds: if phi_Xn(t) -> phi_X(t) pointwise and phi_X is continuous at 0, then X_n converges in distribution to X. The CLT proof goes through with characteristic functions exactly as with MGFs, just replacing e^(tX) with e^(itX). The Cauchy distribution does NOT satisfy the CLT because its mean and variance do not exist — the CLT's hypotheses (finite mean and variance) fail. In fact, the sample mean of n Cauchy variables has the SAME distribution as a single Cauchy variable (a remarkable property: the average of Cauchys is Cauchy). So X_bar_n does not converge to anything as n grows — it stays just as spread out as a single observation. The Cauchy is an example of a 'stable distribution' that is its own attractor under averaging, rather than converging to the normal. This shows the CLT is not a tautology: it genuinely requires the finite-variance hypothesis, and without it, the conclusion fails spectacularly."
+/>
+
+---
+
+**Up next:** [Sampling and point estimation →](/courses/probability/17-sampling-and-point-estimation)

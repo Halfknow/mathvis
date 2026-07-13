@@ -1,0 +1,277 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "MathViz" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img [ref=e6]
+        - generic [ref=e8]: MathViz
+      - navigation [ref=e9]:
+        - link "Linear Algebra" [ref=e10] [cursor=pointer]:
+          - /url: /courses/linear-algebra
+        - link "Calculus" [ref=e11] [cursor=pointer]:
+          - /url: /courses/calculus
+        - link "Probability" [ref=e12] [cursor=pointer]:
+          - /url: /courses/probability
+      - generic [ref=e13]:
+        - link "Search" [ref=e14] [cursor=pointer]:
+          - /url: /search
+          - img [ref=e15]
+        - link "中文" [ref=e18] [cursor=pointer]:
+          - /url: /zh/courses/probability
+          - img [ref=e19]
+          - generic [ref=e22]: 中文
+        - button "Toggle theme" [ref=e23]:
+          - img [ref=e24]
+  - main [ref=e26]:
+    - generic [ref=e27]:
+      - generic [ref=e29]: P
+      - generic [ref=e30]:
+        - paragraph [ref=e31]: Course
+        - heading "Probability" [level=1] [ref=e32]
+        - paragraph [ref=e33]: Random variables, distributions, and reasoning under uncertainty.
+        - generic [ref=e34]:
+          - generic [ref=e35]: Beginner
+          - generic [ref=e36]: 28 lessons · ~8h
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - paragraph [ref=e41]: Module 1
+            - heading "Notation" [level=2] [ref=e42]
+          - generic [ref=e43]: 1 lessons
+        - list [ref=e44]:
+          - listitem [ref=e45]:
+            - link "1 Probability Notation Reference 20 min" [ref=e46] [cursor=pointer]:
+              - /url: /courses/probability/00-notation
+              - generic [ref=e47]: "1"
+              - generic [ref=e48]: Probability Notation Reference
+              - generic [ref=e49]: 20 min
+      - generic [ref=e50]:
+        - generic [ref=e51]:
+          - generic [ref=e52]:
+            - paragraph [ref=e53]: Module 2
+            - heading "The Language of Chance" [level=2] [ref=e54]
+          - generic [ref=e55]: 4 lessons
+        - list [ref=e56]:
+          - listitem [ref=e57]:
+            - link "1 What is Probability? 14 min" [ref=e58] [cursor=pointer]:
+              - /url: /courses/probability/01-what-is-probability
+              - generic [ref=e59]: "1"
+              - generic [ref=e60]: What is Probability?
+              - generic [ref=e61]: 14 min
+          - listitem [ref=e62]:
+            - 'link "2 Counting: The Art of Enumeration 16 min" [ref=e63] [cursor=pointer]':
+              - /url: /courses/probability/02-counting-enumeration
+              - generic [ref=e64]: "2"
+              - generic [ref=e65]: "Counting: The Art of Enumeration"
+              - generic [ref=e66]: 16 min
+          - listitem [ref=e67]:
+            - link "3 Conditional Probability 18 min" [ref=e68] [cursor=pointer]:
+              - /url: /courses/probability/03-conditional-probability
+              - generic [ref=e69]: "3"
+              - generic [ref=e70]: Conditional Probability
+              - generic [ref=e71]: 18 min
+          - listitem [ref=e72]:
+            - link "4 Bayes' Theorem 18 min" [ref=e73] [cursor=pointer]:
+              - /url: /courses/probability/04-bayes-theorem
+              - generic [ref=e74]: "4"
+              - generic [ref=e75]: Bayes' Theorem
+              - generic [ref=e76]: 18 min
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - generic [ref=e79]:
+            - paragraph [ref=e80]: Module 3
+            - heading "Random Variables and Their Shapes" [level=2] [ref=e81]
+          - generic [ref=e82]: 5 lessons
+        - list [ref=e83]:
+          - listitem [ref=e84]:
+            - link "1 Random Variables 16 min" [ref=e85] [cursor=pointer]:
+              - /url: /courses/probability/05-random-variables
+              - generic [ref=e86]: "1"
+              - generic [ref=e87]: Random Variables
+              - generic [ref=e88]: 16 min
+          - listitem [ref=e89]:
+            - link "2 Expectation and Variance 18 min" [ref=e90] [cursor=pointer]:
+              - /url: /courses/probability/06-expectation-and-variance
+              - generic [ref=e91]: "2"
+              - generic [ref=e92]: Expectation and Variance
+              - generic [ref=e93]: 18 min
+          - listitem [ref=e94]:
+            - link "3 Discrete Distributions 20 min" [ref=e95] [cursor=pointer]:
+              - /url: /courses/probability/07-discrete-distributions
+              - generic [ref=e96]: "3"
+              - generic [ref=e97]: Discrete Distributions
+              - generic [ref=e98]: 20 min
+          - listitem [ref=e99]:
+            - link "4 Continuous Distributions 20 min" [ref=e100] [cursor=pointer]:
+              - /url: /courses/probability/08-continuous-distributions
+              - generic [ref=e101]: "4"
+              - generic [ref=e102]: Continuous Distributions
+              - generic [ref=e103]: 20 min
+          - listitem [ref=e104]:
+            - link "5 The Normal Distribution 20 min" [ref=e105] [cursor=pointer]:
+              - /url: /courses/probability/09-the-normal-distribution
+              - generic [ref=e106]: "5"
+              - generic [ref=e107]: The Normal Distribution
+              - generic [ref=e108]: 20 min
+      - generic [ref=e109]:
+        - generic [ref=e110]:
+          - generic [ref=e111]:
+            - paragraph [ref=e112]: Module 4
+            - heading "When Variables Meet" [level=2] [ref=e113]
+          - generic [ref=e114]: 4 lessons
+        - list [ref=e115]:
+          - listitem [ref=e116]:
+            - link "1 Joint Distributions 18 min" [ref=e117] [cursor=pointer]:
+              - /url: /courses/probability/10-joint-distributions
+              - generic [ref=e118]: "1"
+              - generic [ref=e119]: Joint Distributions
+              - generic [ref=e120]: 18 min
+          - listitem [ref=e121]:
+            - link "2 Marginal and Conditional Distributions 16 min" [ref=e122] [cursor=pointer]:
+              - /url: /courses/probability/11-marginal-and-conditional
+              - generic [ref=e123]: "2"
+              - generic [ref=e124]: Marginal and Conditional Distributions
+              - generic [ref=e125]: 16 min
+          - listitem [ref=e126]:
+            - link "3 Covariance and Correlation 18 min" [ref=e127] [cursor=pointer]:
+              - /url: /courses/probability/12-covariance-and-correlation
+              - generic [ref=e128]: "3"
+              - generic [ref=e129]: Covariance and Correlation
+              - generic [ref=e130]: 18 min
+          - listitem [ref=e131]:
+            - link "4 Independence 16 min" [ref=e132] [cursor=pointer]:
+              - /url: /courses/probability/13-independence
+              - generic [ref=e133]: "4"
+              - generic [ref=e134]: Independence
+              - generic [ref=e135]: 16 min
+      - generic [ref=e136]:
+        - generic [ref=e137]:
+          - generic [ref=e138]:
+            - paragraph [ref=e139]: Module 5
+            - heading "The Laws That Govern Randomness" [level=2] [ref=e140]
+          - generic [ref=e141]: 3 lessons
+        - list [ref=e142]:
+          - listitem [ref=e143]:
+            - link "1 Concentration Inequalities 16 min" [ref=e144] [cursor=pointer]:
+              - /url: /courses/probability/14-concentration-inequalities
+              - generic [ref=e145]: "1"
+              - generic [ref=e146]: Concentration Inequalities
+              - generic [ref=e147]: 16 min
+          - listitem [ref=e148]:
+            - link "2 Law of Large Numbers 18 min" [ref=e149] [cursor=pointer]:
+              - /url: /courses/probability/15-law-of-large-numbers
+              - generic [ref=e150]: "2"
+              - generic [ref=e151]: Law of Large Numbers
+              - generic [ref=e152]: 18 min
+          - listitem [ref=e153]:
+            - link "3 Central Limit Theorem 20 min" [ref=e154] [cursor=pointer]:
+              - /url: /courses/probability/16-central-limit-theorem
+              - generic [ref=e155]: "3"
+              - generic [ref=e156]: Central Limit Theorem
+              - generic [ref=e157]: 20 min
+      - generic [ref=e158]:
+        - generic [ref=e159]:
+          - generic [ref=e160]:
+            - paragraph [ref=e161]: Module 6
+            - heading "From Data to Inference" [level=2] [ref=e162]
+          - generic [ref=e163]: 4 lessons
+        - list [ref=e164]:
+          - listitem [ref=e165]:
+            - link "1 Sampling and Point Estimation 18 min" [ref=e166] [cursor=pointer]:
+              - /url: /courses/probability/17-sampling-and-point-estimation
+              - generic [ref=e167]: "1"
+              - generic [ref=e168]: Sampling and Point Estimation
+              - generic [ref=e169]: 18 min
+          - listitem [ref=e170]:
+            - link "2 Maximum Likelihood Estimation 20 min" [ref=e171] [cursor=pointer]:
+              - /url: /courses/probability/18-maximum-likelihood-estimation
+              - generic [ref=e172]: "2"
+              - generic [ref=e173]: Maximum Likelihood Estimation
+              - generic [ref=e174]: 20 min
+          - listitem [ref=e175]:
+            - link "3 Confidence Intervals 18 min" [ref=e176] [cursor=pointer]:
+              - /url: /courses/probability/19-confidence-intervals
+              - generic [ref=e177]: "3"
+              - generic [ref=e178]: Confidence Intervals
+              - generic [ref=e179]: 18 min
+          - listitem [ref=e180]:
+            - link "4 Hypothesis Testing 20 min" [ref=e181] [cursor=pointer]:
+              - /url: /courses/probability/20-hypothesis-testing
+              - generic [ref=e182]: "4"
+              - generic [ref=e183]: Hypothesis Testing
+              - generic [ref=e184]: 20 min
+      - generic [ref=e185]:
+        - generic [ref=e186]:
+          - generic [ref=e187]:
+            - paragraph [ref=e188]: Module 7
+            - heading "Bayesian Thinking" [level=2] [ref=e189]
+          - generic [ref=e190]: 3 lessons
+        - list [ref=e191]:
+          - listitem [ref=e192]:
+            - link "1 Two Schools of Thought 14 min" [ref=e193] [cursor=pointer]:
+              - /url: /courses/probability/21-two-schools-of-thought
+              - generic [ref=e194]: "1"
+              - generic [ref=e195]: Two Schools of Thought
+              - generic [ref=e196]: 14 min
+          - listitem [ref=e197]:
+            - link "2 Prior, Likelihood, Posterior 18 min" [ref=e198] [cursor=pointer]:
+              - /url: /courses/probability/22-prior-likelihood-posterior
+              - generic [ref=e199]: "2"
+              - generic [ref=e200]: Prior, Likelihood, Posterior
+              - generic [ref=e201]: 18 min
+          - listitem [ref=e202]:
+            - link "3 Bayesian Inference in Practice 20 min" [ref=e203] [cursor=pointer]:
+              - /url: /courses/probability/23-bayesian-inference-in-practice
+              - generic [ref=e204]: "3"
+              - generic [ref=e205]: Bayesian Inference in Practice
+              - generic [ref=e206]: 20 min
+      - generic [ref=e207]:
+        - generic [ref=e208]:
+          - generic [ref=e209]:
+            - paragraph [ref=e210]: Module 8
+            - heading "Stochastic Processes" [level=2] [ref=e211]
+          - generic [ref=e212]: 3 lessons
+        - list [ref=e213]:
+          - listitem [ref=e214]:
+            - link "1 Random Walks 16 min" [ref=e215] [cursor=pointer]:
+              - /url: /courses/probability/24-random-walks
+              - generic [ref=e216]: "1"
+              - generic [ref=e217]: Random Walks
+              - generic [ref=e218]: 16 min
+          - listitem [ref=e219]:
+            - link "2 Markov Chains 18 min" [ref=e220] [cursor=pointer]:
+              - /url: /courses/probability/25-markov-chains
+              - generic [ref=e221]: "2"
+              - generic [ref=e222]: Markov Chains
+              - generic [ref=e223]: 18 min
+          - listitem [ref=e224]:
+            - link "3 Poisson Processes 16 min" [ref=e225] [cursor=pointer]:
+              - /url: /courses/probability/26-poisson-processes
+              - generic [ref=e226]: "3"
+              - generic [ref=e227]: Poisson Processes
+              - generic [ref=e228]: 16 min
+      - generic [ref=e229]:
+        - generic [ref=e230]:
+          - generic [ref=e231]:
+            - paragraph [ref=e232]: Module 9
+            - heading "Coda" [level=2] [ref=e233]
+          - generic [ref=e234]: 1 lessons
+        - list [ref=e235]:
+          - listitem [ref=e236]:
+            - link "1 Where Probability Meets the World 16 min" [ref=e237] [cursor=pointer]:
+              - /url: /courses/probability/27-where-probability-meets-the-world
+              - generic [ref=e238]: "1"
+              - generic [ref=e239]: Where Probability Meets the World
+              - generic [ref=e240]: 16 min
+  - contentinfo [ref=e241]:
+    - generic [ref=e242]:
+      - paragraph [ref=e243]: MathViz · An open-source platform for learning math through interactive animation.
+      - navigation [ref=e244]:
+        - link "Linear Algebra" [ref=e245] [cursor=pointer]:
+          - /url: /courses/linear-algebra
+        - link "Calculus" [ref=e246] [cursor=pointer]:
+          - /url: /courses/calculus
+        - link "Probability" [ref=e247] [cursor=pointer]:
+          - /url: /courses/probability
+      - paragraph [ref=e248]: © 2026 · MIT

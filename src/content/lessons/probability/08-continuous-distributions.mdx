@@ -14,9 +14,15 @@ difficulty: "Intermediate"
 
 import { PDFCDFVis } from '../../../components/interactive/probability/PDFCDFVis';
 
-With a continuous random variable, asking for the probability of a single exact value is meaningless. $P(X = \text{exactly } 3.14159) = 0$. There are infinitely many possible values, and each individual one gets zero weight. Probability doesn't live at points — it lives in **intervals**.
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
 
-The right picture is a landscape. Imagine a smooth hill plotted over the number line. The height of the hill at each point tells you where values concentrate — the hill is tall where outcomes are likely, and short where they are rare. The probability of landing between two markers is the **area under the curve** between those markers. Not the height — the area.
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+With a continuous random variable, asking for the probability of a single exact value is meaningless. <MathInline expression={"P(X = \\text{exactly } 3.14159) = 0"} />. There are infinitely many possible values, and each individual one gets zero weight. Probability doesn't live at points — it lives in **intervals**.
+
+The right picture is a landscape. Imagine a smooth hill plotted over the number line. The height of the hill at each point tells you where values concentrate — the hill is tall where outcomes are likely, and short where they are rare. The probability of landing between two markers is the **area under the curve** between those markers. Not the height — the area. This single shift, from counting bars to measuring area, is what makes continuous distributions feel different from their discrete cousins.
 
 ## From bars to a smooth curve
 
@@ -33,7 +39,21 @@ The integral is the area. Shaded regions of the landscape are probabilities.
 Two conditions define a valid PDF:
 
 - $f(x) \geq 0$ everywhere (the landscape never dips below ground)
-- $\int_{-\infty}^{\infty} f(x)\,dx = 1$ (the total area is exactly one)
+- <MathInline expression={"\\int_{-\\infty}^{\\infty} f(x)\\,dx = 1"} /> (the total area is exactly one)
+
+### Theorem: The PDF-CDF relationship
+
+For a continuous random variable with PDF $f$ and CDF $F$:
+
+$<MathInline expression={"F(x) = P(X \\leq x) = \\int_{-\\infty}^{x} f(t)\\,dt, \\qquad f(x) = F'(x)"} />$
+
+The CDF is the accumulated area under the PDF; the PDF is the slope (derivative) of the CDF. They are two views of the same object: the PDF is the landscape (hills and valleys), the CDF is the odometer (always climbing from 0 to 1).
+
+A useful consequence: probabilities are differences of CDF values.
+
+$$P(a \leq X \leq b) = F(b) - F(a)$$
+
+You read the odometer at $b$, read it at $a$, and subtract. The area between the two markers is the difference in accumulated totals. This is the continuous analog of summing PMF values over a range — except it works even when there are infinitely many values in between.
 
 ## Uniform(a, b) — the flat landscape
 
@@ -41,21 +61,21 @@ The simplest continuous distribution is the **uniform distribution**. Imagine a 
 
 The density is a rectangle:
 
-$$f(x) = \frac{1}{b - a}, \quad a \leq x \leq b$$
+$<MathInline expression={"f(x) = \\frac{1}{b - a}, \\quad a \\leq x \\leq b"} />$
 
 The height is $1/(b - a)$ because the rectangle must have area 1. A wider interval means a shorter rectangle. A narrow interval means a tall, skinny one. The geometry forces the trade-off.
 
 The mean sits exactly in the center:
 
-$$E[X] = \frac{a + b}{2}$$
+$<MathInline expression={"E[X] = \\frac{a + b}{2}"} />$
 
 The variance grows with the square of the width:
 
-$$\text{Var}(X) = \frac{(b - a)^2}{12}$$
+$<MathInline expression={"\\text{Var}(X) = \\frac{(b - a)^2}{12}"} />$
 
-Why the 12? It comes from the integral of $(x - \text{midpoint})^2$ across a flat strip. The geometric intuition: spread the mass uniformly over a wider range and the squared distances from the center grow fast.
+Why the 12? It comes from the integral of <MathInline expression={"(x - \\text{midpoint})^2"} /> across a flat strip. The geometric intuition: spread the mass uniformly over a wider range and the squared distances from the center grow fast.
 
-**Example**: A random number generator produces values uniformly between 0 and 1. The density is a flat line at height 1 over $[0, 1]$. The mean is $0.5$, the variance is $1/12 \approx 0.083$. Every sub-interval of length 0.2 has probability exactly 0.2.
+**Example**: A random number generator produces values uniformly between 0 and 1. The density is a flat line at height 1 over $[0, 1]$. The mean is $0.5$, the variance is $1/12 \approx 0.083$. Every sub-interval of length 0.2 has probability exactly 0.2. The CDF is a straight ramp $F(x) = x$ for $x \in [0,1]$ — slope 1, because the density is flat at height 1.
 
 ## Exponential($\lambda$) — the waiting-time landscape
 
@@ -63,81 +83,145 @@ The **exponential distribution** models waiting times. If events arrive at rate 
 
 The density drops off sharply:
 
-$$f(x) = \lambda e^{-\lambda x}, \quad x \geq 0$$
+$<MathInline expression={"f(x) = \\lambda e^{-\\lambda x}, \\quad x \\geq 0"} />$
 
 Picture a cliff at the origin that plunges rightward. The rate $\lambda$ controls how steep the drop is. Large $\lambda$ means events arrive fast, so short waits are very likely and the cliff is very steep. Small $\lambda$ means long waits are common and the cliff is gentler.
 
 The mean and variance are:
 
-$$E[X] = \frac{1}{\lambda}, \quad \text{Var}(X) = \frac{1}{\lambda^2}$$
+$<MathInline expression={"E[X] = \\frac{1}{\\lambda}, \\quad \\text{Var}(X) = \\frac{1}{\\lambda^2}"} />$
 
-The mean waiting time is $1/\lambda$. If buses arrive at rate 4 per hour ($\lambda = 4$), the average wait is 15 minutes. The standard deviation is also $1/\lambda = 15$ minutes — the exponential distribution's spread equals its mean.
+The mean waiting time is $1/\lambda$. If buses arrive at rate 4 per hour ($\lambda = 4$), the average wait is 15 minutes. The standard deviation is also $1/\lambda = 15$ minutes — the exponential distribution's spread equals its mean. The CDF is <MathInline expression={"F(x) = 1 - e^{-\\lambda x}"} />, rising steeply near zero and asymptoting toward 1.
 
-### The memoryless property
+### Theorem: The memoryless property
 
-The exponential distribution has a remarkable feature: **it forgets how long you've already waited**.
+The exponential distribution is **memoryless**: for any $s, t \geq 0$,
 
 $$P(X > s + t \mid X > s) = P(X > t)$$
 
-If you've been waiting 10 minutes for a bus and no bus has come, the probability of waiting at least 5 more minutes is the *same* as the probability of waiting at least 5 minutes from the start. The distribution doesn't age. The landscape ahead of you looks identical no matter where you stand on it — as long as you haven't seen the event yet.
+*Proof.* By the definition of conditional probability, <MathInline expression={"P(X > s + t \\mid X > s) = \\frac{P(X > s + t \\text{ and } X > s)}{P(X > s)} = \\frac{P(X > s + t)}{P(X > s)}"} />. Using the survival function <MathInline expression={"P(X > x) = e^{-\\lambda x}"} />: this equals <MathInline expression={"\\frac{e^{-\\lambda(s+t)}}{e^{-\\lambda s}} = e^{-\\lambda t} = P(X > t)"} />.
 
-This is the only continuous distribution with this property. It makes the exponential the natural model for "time until the next event" in memoryless processes.
+The intuition is striking. If you've been waiting 10 minutes for a bus and no bus has come, the probability of waiting at least 5 *more* minutes is the *same* as the probability of waiting at least 5 minutes from the start. The distribution doesn't age. The landscape ahead of you looks identical no matter where you stand on it — as long as you haven't seen the event yet.
 
-## The CDF — accumulated area
+The exponential is the **only** continuous distribution with this property (just as the geometric is the only discrete one). This makes it the natural model for "time until the next event" in memoryless processes — radioactive decay, lightbulb lifetimes under constant hazard, inter-arrival times in a Poisson process. But it is also a warning: if your system *does* age (mechanical parts that wear out, humans whose mortality increases), the exponential is the wrong model and you need something like the Weibull distribution instead.
 
-The **cumulative distribution function** (CDF) gives you the running total:
+## The Normal distribution — a preview
 
-$$F(x) = P(X \leq x) = \int_{-\infty}^{x} f(t)\,dt$$
+The most important continuous distribution is the **normal** (Gaussian), whose density is the bell curve:
 
-Think of it as sweeping your hand from left to right under the density curve and accumulating area as you go. At the far left, $F(x) = 0$ (no area yet). At the far right, $F(x) = 1$ (all the area).
+$<MathInline expression={"f(x) = \\frac{1}{\\sigma\\sqrt{2\\pi}} \\exp\\!\\left(-\\frac{(x - \\mu)^2}{2\\sigma^2}\\right)"} />$
 
-The CDF has three guaranteed properties:
+It has two parameters: the mean $\mu$ (where the peak sits) and the standard deviation $\sigma$ (how wide the bell spreads). The normal is so central to statistics that [lesson 09](/courses/probability/09-the-normal-distribution) is devoted to it entirely. For now, note that it is the limit shape that sums of random variables converge to (the central limit theorem, lesson 16), which is why it appears in heights, measurement errors, test scores, and stock returns.
 
-- It starts at 0 and ends at 1
-- It never decreases (you can only accumulate area, never lose it)
-- It is right-continuous
+## How to compute $P(a < X < b)$
 
-The PDF and CDF are two views of the same object:
+For any continuous distribution, the probability of landing in an interval is the area under the PDF between the endpoints. There are two equivalent ways to compute it:
 
-- **PDF is the slope of the CDF**: $f(x) = F'(x)$. Where the density is high, the CDF rises steeply. Where the density is low, the CDF is nearly flat.
-- **CDF is the accumulated area under the PDF**: $F(x)$ is the running integral of $f$.
+1. **Integrate the PDF:** $P(a < X < b) = \int_a^b f(x)\,dx$. This is direct area measurement — literally computing the shaded region.
+2. **Subtract CDF values:** $P(a < X < b) = F(b) - F(a)$. This reads the odometer at both ends and subtracts. Often much faster, because CDFs of named distributions have closed forms.
 
-This is the key visual pair. The PDF is the landscape — hills and valleys showing where values concentrate. The CDF is the odometer — always climbing from 0 to 1, climbing fast through the hills and slow through the valleys.
+**Worked example (uniform).** For <MathInline expression={"X \\sim \\text{Uniform}(0, 1)"} />, find $P(0.3 < X < 0.7)$. Integrating the PDF: <MathInline expression={"\\int_{0.3}^{0.7} 1\\,dx = 0.4"} />. Via CDF: $F(0.7) - F(0.3) = 0.7 - 0.3 = 0.4$. Same answer — the geometry of a rectangle makes both methods trivial.
 
-To compute $P(a \leq X \leq b)$ using the CDF:
+**Worked example (exponential).** For <MathInline expression={"X \\sim \\text{Exponential}(2)"} />, find $P(X > 1)$. Via survival function: <MathInline expression={"P(X > 1) = e^{-2 \\cdot 1} = e^{-2} \\approx 0.135"} />. Via CDF: <MathInline expression={"1 - F(1) = 1 - (1 - e^{-2}) = e^{-2} \\approx 0.135"} />. About 13.5% of the time you wait longer than 1 unit.
 
-$$P(a \leq X \leq b) = F(b) - F(a)$$
+## The family summary table
 
-You read the odometer at $b$, read it at $a$, and subtract. The area between the two markers is the difference in accumulated totals.
+| Distribution | PDF | CDF | Mean | Variance |
+|---|---|---|---|---|
+| **Uniform($a$, $b$)** | $1/(b-a)$ on $[a,b]$ | $(x-a)/(b-a)$ | $(a+b)/2$ | $(b-a)^2/12$ |
+| **Exponential($\lambda$)** | <MathInline expression={"\\lambda e^{-\\lambda x}"} />, $x \geq 0$ | <MathInline expression={"1 - e^{-\\lambda x}"} /> | $1/\lambda$ | $1/\lambda^2$ |
+| **Normal($\mu$, $\sigma^2$)** | <MathInline expression={"\\frac{1}{\\sigma\\sqrt{2\\pi}} e^{-(x-\\mu)^2/(2\\sigma^2)}"} /> | (no closed form; use tables/erf) | $\mu$ | $\sigma^2$ |
 
-### CDF for the uniform distribution
-
-For $X \sim \text{Uniform}(a, b)$:
-
-$$F(x) = \frac{x - a}{b - a}, \quad a \leq x \leq b$$
-
-A straight ramp from 0 to 1. The slope is constant — $1/(b-a)$ — because the density is flat.
-
-### CDF for the exponential distribution
-
-For $X \sim \text{Exponential}(\lambda)$:
-
-$$F(x) = 1 - e^{-\lambda x}, \quad x \geq 0$$
-
-It rises steeply near zero (where the density is concentrated) and asymptotes toward 1 as $x$ grows. The tail probability $P(X > x) = 1 - F(x) = e^{-\lambda x}$ decays exponentially — the "long tail" of rare long waits.
+Note the normal CDF has no elementary closed form — it is computed numerically via the **error function** <MathInline expression={"\\text{erf}"} />. This is why statistics classes hand out z-tables and why lesson 09 emphasizes standardization.
 
 Explore the PDF and CDF side by side below. Drag the vertical line along the x-axis and watch the shaded area (PDF) and the height on the CDF stay perfectly in sync — one measures area, the other measures accumulated area.
 
 <PDFCDFVis client:visible />
 
-## Key insight
+<FormulaReadout formulas={[
+  { label: "PDF 与 CDF 的关系", expression: "F(x) = \\int_{-\\infty}^{x} f(t)\\,dt, \\qquad f(x) = F'(x)" },
+  { label: "区间概率", expression: "P(a \\leq X \\leq b) = F(b) - F(a) = \\int_a^b f(x)\\,dx" },
+  { label: "均匀分布", expression: "f(x) = \\frac{1}{b-a},\\quad E[X] = \\frac{a+b}{2},\\quad \\text{Var} = \\frac{(b-a)^2}{12}" },
+  { label: "指数分布与无记忆性", expression: "f(x) = \\lambda e^{-\\lambda x},\\quad P(X > s+t \\mid X > s) = P(X > t)" },
+]} />
 
-> In a continuous distribution, probability is not height — it is area. The PDF is the landscape, and the CDF is the running total of land you've swept past. Every probability you compute is a shaded region under the curve.
+## Three perspectives on continuous distributions
+
+1. **As density (PDF):** the landscape view. Hills where probability concentrates, valleys where it thins. The height $f(x)$ is a density, not a probability — only the area under a region is a probability. This is the most intuitive view but the one that trips up beginners (density can exceed 1).
+2. **As accumulation (CDF):** the odometer view. A single curve climbing from 0 to 1, rising fast through the hills and flattening through the valleys. Works for every continuous distribution uniformly, and probabilities are just differences $F(b) - F(a)$. This is the most computational view.
+3. **As a story:** each named distribution models a specific physical process. Uniform = "no preference across a range." Exponential = "constant hazard, memoryless waiting." Normal = "the sum of many small independent effects." Match the story to your data and the distribution is chosen for you — same principle as the discrete family in lesson 07.
+
+## Modern applications
+
+**Queueing theory and systems.** The exponential distribution is the backbone of queueing theory — models of servers, latency, and throughput that underpin everything from call center staffing to web server capacity planning. The memoryless property makes the math tractable: the state of the system at any moment depends only on the present, not the past. The M/M/1 queue (Markovian arrivals, Markovian service, one server) is built entirely from exponential distributions.
+
+**Reliability engineering.** The exponential models "constant failure rate" components — electronics in their useful-life phase, where age doesn't matter. When components do wear out (failure rate increases with age), the Weibull distribution generalizes the exponential. The choice of distribution is a statement about the physics of failure.
+
+**Differential privacy and randomness.** Modern privacy-preserving machine learning (differentially private training) adds carefully calibrated noise to data, and the noise is almost always drawn from continuous distributions — Laplace or Gaussian. The shape of the noise distribution directly determines the privacy-utility tradeoff. Uniform noise underpins randomized rounding and secure multiparty computation.
+
+<KeyInsight>
+In a continuous distribution, probability is not height — it is area. The PDF is the landscape (density, can exceed 1), and the CDF is the running total of land you've swept past (always climbing 0 to 1). Every probability is a shaded region under the curve, computed as $F(b) - F(a)$. The exponential distribution's memoryless property — $P(X > s+t \mid X > s) = P(X > t)$ — makes it the unique model for age-independent waiting times.
+</KeyInsight>
+
+## Connections
+
+This lesson is the continuous mirror of [lesson 07](/courses/probability/07-discrete-distributions). The **PDF-CDF relationship** $F(x) = \int f$ is the continuous analog of the discrete "CDF accumulates PMF jumps," and the CDF itself was introduced in [lesson 05](/courses/probability/05-random-variables) as the object unifying both families. The mean and variance formulas use the integration machinery of [lesson 06](/courses/probability/06-expectation-and-variance): $E[X] = \int x f(x)\,dx$.
+
+The deepest connection is the **Poisson-Exponential duality**: in a Poisson process, the *number* of events in a fixed interval is Poisson (discrete, lesson 07), while the *time* between consecutive events is Exponential (continuous, this lesson). They are two views of the same underlying random process — counting versus waiting. The exponential's memoryless property is the continuous twin of the geometric distribution's memoryless property from lesson 07.
+
+The normal distribution, previewed here, gets its own [lesson 09](/courses/probability/09-the-normal-distribution) because of its outsized role in statistics. The CDF-without-closed-form issue (the error function) motivates **standardization** and z-tables there. Forward, all three continuous families return in [lesson 16](/courses/probability/16-central-limit-theorem) (the exponential and uniform, under the central limit theorem, converge to the normal when summed) and in [lesson 17](/courses/probability/17-sampling-distributions) (sampling distributions of the mean).
 
 ## Practice
 
-**Exercise 1.** A random variable $X$ has density $f(x) = 2x$ for $0 \leq x \leq 1$ and $f(x) = 0$ otherwise. Sketch this density. Without computing, decide: is $P(0 \leq X \leq 0.5)$ less than, equal to, or greater than 0.5? Then compute it to check your geometric intuition.
+<ExerciseBlock
+  number={1}
+  prompt="A random variable X has density f(x) = 2x for 0 <= x <= 1 and f(x) = 0 otherwise. Sketch this density. Without computing, decide: is P(0 <= X <= 0.5) less than, equal to, or greater than 0.5? Then compute it to check your geometric intuition."
+  hint="The density f(x) = 2x rises from 0 at x=0 to 2 at x=1. Where is most of the area — on the left (near 0) or the right (near 1)?"
+  answer="Geometric intuition: the density is small near 0 and large near 1, so most of the area is on the right half. P(0 <= X <= 0.5) should be LESS than 0.5. Computation: integral of 2x from 0 to 0.5 = [x^2] from 0 to 0.5 = 0.25 - 0 = 0.25. Indeed less than 0.5. The right half [0.5, 1] carries probability 0.75. Verify normalization: integral of 2x from 0 to 1 = 1. Good. The mean is integral of 2x^2 = 2/3, larger than the uniform mean of 0.5, reflecting the rightward mass."
+/>
 
-**Exercise 2.** A lightbulb has lifetime $X \sim \text{Exponential}(\lambda)$ with mean 1000 hours. You've already used the bulb for 800 hours and it still works. What is the probability it lasts at least another 500 hours? (Hint: the memoryless property means the answer is the same as if the bulb were brand new.)
+<ExerciseBlock
+  number={2}
+  prompt="A lightbulb has lifetime X ~ Exponential(lambda) with mean 1000 hours. You've already used the bulb for 800 hours and it still works. What is the probability it lasts at least another 500 hours? Compare to the probability a brand-new bulb lasts 500 hours."
+  hint="The memoryless property: P(X > 800 + 500 | X > 800) = P(X > 500). Compute lambda from the mean."
+  answer="Mean = 1/lambda = 1000, so lambda = 0.001. By the memoryless property, P(X > 800 + 500 | X > 800) = P(X > 500). Compute: P(X > 500) = e^{-0.001 * 500} = e^{-0.5} ≈ 0.607. The probability a used bulb (800 hours old) lasts another 500 hours is exactly the same — about 60.7% — as the probability a brand-new bulb lasts 500 hours. The bulb 'doesn't remember' its age. This is the hallmark of the exponential distribution and a key modeling assumption to question: real lightbulbs DO wear out, so the exponential is only appropriate during the 'useful life' phase."
+/>
 
-**Exercise 3.** For the uniform distribution on $[2, 8]$, write down the PDF and the CDF. Then compute $P(3 \leq X \leq 5)$ two ways: (a) as area under the PDF, and (b) as a difference of CDF values. Confirm they match.
+<ExerciseBlock
+  number={3}
+  prompt="For the uniform distribution on [2, 8], write down the PDF and the CDF. Then compute P(3 <= X <= 5) two ways: (a) as area under the PDF, and (b) as a difference of CDF values. Confirm they match."
+  hint="The PDF is a rectangle of height 1/(8-2) = 1/6 over [2,8]. The CDF is a ramp (x-2)/(8-2)."
+  answer="PDF: f(x) = 1/6 for 2 <= x <= 8, else 0 (a rectangle of height 1/6 over an interval of width 6, area = 1). CDF: F(x) = 0 for x < 2; F(x) = (x-2)/6 for 2 <= x <= 8; F(x) = 1 for x > 8. (a) Area under PDF from 3 to 5: integral of 1/6 from 3 to 5 = (1/6)(5-3) = 2/6 = 1/3 ≈ 0.333. (b) CDF difference: F(5) - F(3) = (5-2)/6 - (3-2)/6 = 3/6 - 1/6 = 2/6 = 1/3. Both give 1/3. For a uniform, area is just base times height — simple geometry — but the two methods agree for any continuous distribution."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Customers arrive at a rate of 12 per hour. Model the inter-arrival time X as Exponential. What is the mean waiting time until the next customer (in minutes)? What is the probability you wait more than 10 minutes? Connect this to a discrete distribution from lesson 07."
+  hint="lambda = 12 per hour = 0.2 per minute. Mean = 1/lambda. P(X > t) = e^{-lambda t}."
+  answer="lambda = 12/hour = 0.2/minute. Mean waiting time = 1/lambda = 1/0.2 = 5 minutes. P(wait more than 10 minutes) = e^{-0.2 * 10} = e^{-2} ≈ 0.135, about 13.5%. Connection: the exponential is the continuous analog of the geometric distribution (lesson 07). The geometric counts discrete trials until success; the exponential measures continuous time until the next event. If customers arrive via a Poisson process, the number arriving in any fixed hour is Poisson(12) (discrete), and the time between consecutive arrivals is Exponential(0.2/min) (continuous) — two views of the same process. This Poisson-Exponential duality is one of the deepest pairings in probability."
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="Explain why the PDF f(x) can be greater than 1, but the CDF F(x) can never exceed 1. Give a concrete example where f(x) > 1 over some region, and verify the total area is still 1."
+  hint="f(x) is a density (probability per unit length), not a probability. F(x) is an accumulated probability. Total area under f must be 1."
+  answer="The PDF f(x) is a density — probability per unit length — so it can be large as long as the region where it is large is narrow. The CDF F(x) = integral of f up to x is an actual probability, so 0 <= F(x) <= 1 always. Example: Uniform(0, 0.5) has PDF f(x) = 2 for x in [0, 0.5], which exceeds 1 everywhere on its support. But the total area is 2 * 0.5 = 1, as required. A taller, narrower density concentrates the same unit of probability into a smaller region. An extreme case: Uniform(0, 0.01) has f(x) = 100 — a spike of height 100 over width 0.01, area still 1. This is why interpreting PDF height as a probability is a classic beginner error."
+/>
+
+<ExerciseBlock
+  number={6}
+  prompt="A bus arrives at a stop every 15 minutes on a fixed schedule, but you arrive at the stop at a random time without checking the schedule. Model your waiting time X as Uniform(0, 15) (in minutes). Compute the mean wait, the standard deviation, and P(you wait less than 5 minutes). Then explain why this model might be wrong if buses are actually Poisson-distributed instead of scheduled."
+  hint="For Uniform(a, b): mean = (a+b)/2, Var = (b-a)^2/12, SD = sqrt(Var). P(X < 5) = F(5) for a uniform on [0,15]."
+  answer="Mean wait = (0+15)/2 = 7.5 minutes. Variance = (15-0)^2/12 = 225/12 = 18.75. SD = sqrt(18.75) ≈ 4.33 minutes. P(wait < 5 min) = F(5) = (5-0)/(15-0) = 5/15 = 1/3 ≈ 0.333. The uniform model assumes buses arrive on a fixed schedule and you arrive uniformly between them — the 'waiting time paradox' for deterministic schedules. If buses are instead Poisson-distributed (arrivals at random, exponential gaps), the waiting time is Exponential with mean 15 min, and P(wait < 5) = 1 - e^{-5/15} = 1 - e^{-1/3} ≈ 0.283. The two models give different answers because the underlying process differs: scheduled (uniform gaps) versus random (exponential gaps). Choosing the right distribution is a modeling decision driven by the physics of the situation."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="Prove that the exponential distribution is the only continuous distribution with the memoryless property. (Sketch: assume P(X > s + t | X > s) = P(X > t) for all s, t >= 0. Let g(t) = P(X > t). Show g satisfies g(s+t) = g(s)g(t), and deduce g(t) = e^{-lambda t}.)"
+  hint="The memoryless condition says g(s+t)/g(s) = g(t), i.e., g(s+t) = g(s)g(t). This is the functional equation for exponentials. Also g(0) = 1 and g is non-increasing."
+  answer="Let g(t) = P(X > t) be the survival function. Memorylessness: P(X > s+t | X > s) = g(s+t)/g(s) = g(t), so g(s+t) = g(s)g(t) for all s, t >= 0. This is Cauchy's functional equation. Since g is non-increasing (a survival function) and g(0) = 1, the only solutions are g(t) = e^{-lambda t} for some lambda > 0 (monotonicity rules out pathological solutions). Therefore F(t) = 1 - e^{-lambda t} and f(t) = F'(t) = lambda e^{-lambda t} — the exponential PDF. Conclusion: the exponential is the UNIQUE continuous memoryless distribution. (The geometric is the unique discrete one.) This uniqueness theorem is why the exponential is forced upon us whenever we assume memorylessness — it is not a choice, it is a consequence. Any model claiming 'constant hazard rate' is necessarily exponential."
+/>
+
+---
+
+**Up next:** [The normal distribution →](/courses/probability/09-the-normal-distribution)

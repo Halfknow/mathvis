@@ -12,31 +12,46 @@ duration: 16
 difficulty: "Intermediate"
 ---
 
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
 You have a joint distribution — a heat map or a surface showing the probability landscape of two variables together. But often you want to ask a simpler question. What does $X$ look like on its own? Or: given that $Y$ takes a specific value, what does $X$ look like now?
 
-These two questions produce two different kinds of distributions. The **marginal** collapses the landscape onto one wall. The **conditional** slices through it at a fixed value and rescales what remains. One ignores the other variable entirely. The other uses it as a lens.
+These two questions produce two different kinds of distributions. The **marginal** collapses the landscape onto one wall. The **conditional** slices through it at a fixed value and rescales what remains. One ignores the other variable entirely. The other uses it as a lens. Mastering both operations is the key to every reasoning task involving multiple variables — from Bayesian inference to feature engineering.
 
 ## Marginal distributions: projecting onto one axis
 
-Imagine the joint density $f(x, y)$ as a 3D surface. Now imagine a light source far to one side, casting a shadow of the entire surface onto the $xz$-wall (the wall where $Y = 0$). That shadow is the marginal distribution of $X$.
+Imagine the joint density $f(x, y)$ as a 3D surface. Now imagine a light source far to one side, casting a shadow of the entire surface onto the $xz$-wall (the wall where $Y = 0$). That shadow is the **marginal distribution** of $X$.
 
-To compute it, you integrate out the other variable:
+To compute it, you integrate out (or "sum out") the other variable:
 
-$$f_X(x) = \int_{-\infty}^{\infty} f(x, y)\,dy$$
+$<MathInline expression={"f_X(x) = \\int_{-\\infty}^{\\infty} f(x, y)\\,dy \\qquad \\text{(continuous)}"} />$
 
-For discrete distributions, the integral becomes a sum:
-
-$$p_X(x) = \sum_j p(x, y_j)$$
+$<MathInline expression={"p_X(x) = \\sum_j p(x, y_j) \\qquad \\text{(discrete)}"} />$
 
 Geometrically: for each value of $x$, you sweep along the $y$-axis and accumulate all the probability mass at that $x$-coordinate. The result is a single curve $f_X(x)$ — a one-dimensional landscape that tells you everything about $X$ alone, and nothing about how $X$ relates to $Y$.
 
 The word "marginal" comes from the literal margin of a table. If you write a joint PMF as a grid, the row totals written in the right margin give you $p_X$, and the column totals written in the bottom margin give you $p_Y$. The margins of the table *are* the marginal distributions.
 
+### Theorem: Marginals are valid distributions
+
+If $f(x, y)$ is a valid joint PDF, then the marginal $f_X(x) = \int f(x, y)\,dy$ is a valid PDF: it is non-negative, and it integrates to 1.
+
+*Proof.* Non-negativity is immediate: $f \geq 0$ implies its integral is $\geq 0$. For normalization, swap the order of integration:
+
+$<MathInline expression={"\\int_{-\\infty}^{\\infty} f_X(x)\\,dx = \\int_{-\\infty}^{\\infty} \\int_{-\\infty}^{\\infty} f(x, y)\\,dy\\,dx = 1"} />$
+
+The last step uses the joint normalization condition. So the shadow of a valid landscape is itself a valid landscape — in one fewer dimension.
+
 ### The loss of information
 
 Here is the catch. Many different joint distributions can produce the same marginals. Two very different landscapes — one with a diagonal ridge, one with a circular blob — can cast the same shadow on each wall. The marginal tells you about each variable alone, but it destroys all information about the *relationship* between them.
 
-If the joint distribution is a photograph of two people, the marginals are two separate portraits. You can learn each person's face, but you cannot tell whether they are standing side by side or back to back.
+If the joint distribution is a photograph of two people, the marginals are two separate portraits. You can learn each person's face, but you cannot tell whether they are standing side by side or back to back. **You cannot recover the joint from the marginals alone** — unless the variables are independent (lesson 13). This is the deepest asymmetry in this subject: projection is easy and always possible, but reconstruction is impossible without extra information.
 
 ## Conditional distributions: slicing the landscape
 
@@ -44,76 +59,141 @@ Now a different operation. Instead of projecting the entire surface onto a wall,
 
 But a cross-section is not yet a distribution. Its total area (or sum) is almost certainly not 1 — it is some fraction of the total probability, namely $f_Y(y_0)$ (or $p_Y(y_0)$ for discrete). To turn this slice into a valid distribution, you normalize it — divide by that total.
 
-$$f_{X \mid Y}(x \mid y) = \frac{f(x, y)}{f_Y(y)}$$
+$<MathInline expression={"f_{X \\mid Y}(x \\mid y) = \\frac{f(x, y)}{f_Y(y)} \\qquad \\text{(continuous)}"} />$
 
-Read the bar as "given." This is the density of $X$, *given that* $Y = y$. It is a genuine probability distribution in its own right: it is non-negative, and it integrates to 1 over $x$.
+$<MathInline expression={"p_{X \\mid Y}(x \\mid y) = \\frac{p(x, y)}{p_Y(y)} \\qquad \\text{(discrete)}"} />$
 
-For discrete random variables:
+Read the bar as "given." This is the density of $X$, *given that* $Y = y$. It is a genuine probability distribution in its own right: it is non-negative, and it integrates to 1 over $x$ (the $f_Y(y)$ in the denominator is exactly the normalizer that makes this true).
 
-$$p_{X \mid Y}(x \mid y) = \frac{p(x, y)}{p_Y(y)}$$
+### Theorem: Conditional distributions are valid distributions
+
+For any $y$ with $f_Y(y) > 0$, the conditional <MathInline expression={"f_{X|Y}(x|y) = f(x,y)/f_Y(y)"} /> is a valid PDF in $x$.
+
+*Proof.* Non-negativity is immediate. For normalization: <MathInline expression={"\\int f_{X|Y}(x|y)\\,dx = \\frac{1}{f_Y(y)} \\int f(x,y)\\,dx = \\frac{f_Y(y)}{f_Y(y)} = 1"} />, where we used the definition of the marginal $f_Y(y) = \int f(x,y)\,dx$. So the rescaled slice is a genuine distribution — the geometric meaning of the normalizing denominator.
 
 ### The visual
 
 Go back to the heat map. Pick one row — say the row where $Y = y_0$. The brightness values across that row are the unnormalized slice. Now rescale the entire row so that its total brightness becomes 1. The pattern of relative brightness within that row — the ups and downs across $x$ — is the conditional distribution $p(x \mid y_0)$.
 
-Different rows may look very different. Row $Y = 1$ might show mass concentrated at large $x$-values. Row $Y = 3$ might show mass concentrated at small $x$-values. If the rows all look the same (after normalization), then knowing $Y$ tells you nothing about $X$ — the variables are independent. If the rows look different, knowing $Y$ reshapes your picture of $X$.
+Different rows may look very different. Row $Y = 1$ might show mass concentrated at large $x$-values. Row $Y = 3$ might show mass concentrated at small $x$-values. If the rows all look the same (after normalization), then knowing $Y$ tells you nothing about $X$ — the variables are independent. If the rows look different, knowing $Y$ reshapes your picture of $X$. This is the operational test for independence in the next lesson.
 
-### Connection to earlier conditional probability
+## Bayes' theorem for distributions
 
-This is the same conditional probability from earlier, but lifted from events to random variables. There, we wrote:
+The marginal and conditional are linked by the most important equation in inference. Combining the definition of conditional with the symmetry $f(x, y) = f(y, x)$, we get **Bayes' theorem for densities**:
 
-$$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$
+$<MathInline expression={"f_{Y \\mid X}(y \\mid x) = \\frac{f_{X \\mid Y}(x \\mid y) \\, f_Y(y)}{f_X(x)}"} />$
 
-Here, the "event" $A$ is "$X$ takes a particular value" and the "event" $B$ is "$Y = y$." The joint distribution gives you $P(A \cap B) = p(x, y)$ and the marginal gives you $P(B) = p_Y(y)$. Same formula, richer context.
+This is the same Bayes' theorem from [lesson 04](/courses/probability/04-bayes-theorem), lifted from events to distributions. It tells you how to *flip* the direction of conditioning: if you know the conditional of $X$ given $Y$, and the marginal of $Y$, you can recover the reverse conditional of $Y$ given $X$.
+
+The denominator <MathInline expression={"f_X(x) = \\int f_{X|Y}(x|y) f_Y(y)\\,dy"} /> is the marginal of $X$, computed by integrating out $y$. This is the "evidence" term — the normalizer that makes the result a valid distribution. Every Bayesian update, from spam filtering to medical diagnosis to posterior inference in machine learning, is an application of this single equation.
 
 ## A worked example
 
-Return to the two-dice setting from the previous lesson. Let $X$ be the number of heads in two coin flips, and $Y$ be the number of heads on the first flip. The joint PMF was:
+Two fair coins: outcomes are HH, HT, TH, TT, each with probability $1/4$. Let $X$ be the total number of heads and $Y$ be the number of heads on the first flip. The joint PMF:
 
-| | Y = 0 | Y = 1 |
-|---|---|---|
-| X = 0 | 1/4 | 0 |
-| X = 1 | 1/4 | 1/2 |
-| X = 2 | 0 | 1/4 |
+| | Y = 0 | Y = 1 | $p_X(x)$ |
+|---|---|---|---|
+| **X = 0** | 1/4 (TT) | 0 | 1/4 |
+| **X = 1** | 1/4 (TH) | 1/4 (HT) | 1/2 |
+| **X = 2** | 0 | 1/4 (HH) | 1/4 |
+| **$p_Y(y)$** | 1/2 | 1/2 | 1 |
 
-**Marginal of $X$** (sum across columns): $p_X(0) = 1/4$, $p_X(1) = 3/4$, $p_X(2) = 1/4$. Wait — that sums to more than 1. Let us recompute: $p_X(0) = 1/4 + 0 = 1/4$. $p_X(1) = 1/4 + 1/2 = 3/4$. But $1/4 + 3/4 + 1/4 = 5/4$. Something is wrong — and it is. Re-examining: $p_X(0) = 1/4$, $p_X(1) = 1/4 + 1/2 = 3/4$? No. The correct sum: row $X = 0$ gives $1/4 + 0 = 1/4$. Row $X = 1$ gives $1/4 + 1/2 = 3/4$. Row $X = 2$ gives $0 + 1/4 = 1/4$. Total: $1/4 + 3/4 + 1/4 = 5/4$. That cannot be right.
-
-Let us fix the table. Two fair coins: outcomes are HH, HT, TH, TT, each with probability $1/4$. Then $Y$ (first coin heads) is 0 for TH, TT and 1 for HH, HT. And $X$ (total heads) is 2 for HH, 1 for HT and TH, 0 for TT.
-
-| | Y = 0 | Y = 1 |
-|---|---|---|
-| X = 0 | 1/4 (TT) | 0 |
-| X = 1 | 1/4 (TH) | 1/4 (HT) |
-| X = 2 | 0 | 1/4 (HH) |
-
-Now the marginals: $p_X(0) = 1/4$, $p_X(1) = 1/2$, $p_X(2) = 1/4$. These sum to 1. And $p_Y(0) = 1/2$, $p_Y(1) = 1/2$. These sum to 1.
+**Marginal of $X$** (sum across each row): $p_X(0) = 1/4 + 0 = 1/4$, $p_X(1) = 1/4 + 1/4 = 1/2$, $p_X(2) = 0 + 1/4 = 1/4$. These sum to 1, as they must. **Marginal of $Y$** (sum down each column): $p_Y(0) = 1/2$, $p_Y(1) = 1/2$.
 
 **Conditional $X \mid Y = 1$**: take the $Y = 1$ column: $p(0, 1) = 0$, $p(1, 1) = 1/4$, $p(2, 1) = 1/4$. Divide by $p_Y(1) = 1/2$:
 
-$$p_{X \mid Y}(0 \mid 1) = 0, \quad p_{X \mid Y}(1 \mid 1) = \frac{1}{2}, \quad p_{X \mid Y}(2 \mid 1) = \frac{1}{2}$$
+$<MathInline expression={"p_{X \\mid Y}(0 \\mid 1) = 0, \\quad p_{X \\mid Y}(1 \\mid 1) = \\tfrac{1}{2}, \\quad p_{X \\mid Y}(2 \\mid 1) = \\tfrac{1}{2}"} />$
 
 Given that the first flip is heads, the total number of heads is either 1 or 2, with equal probability. It cannot be 0. The slice removed a possibility and rescaled the rest.
 
 **Conditional $X \mid Y = 0$**: take the $Y = 0$ column: $p(0, 0) = 1/4$, $p(1, 0) = 1/4$, $p(2, 0) = 0$. Divide by $p_Y(0) = 1/2$:
 
-$$p_{X \mid Y}(0 \mid 0) = \frac{1}{2}, \quad p_{X \mid Y}(1 \mid 0) = \frac{1}{2}, \quad p_{X \mid Y}(2 \mid 0) = 0$$
+$<MathInline expression={"p_{X \\mid Y}(0 \\mid 0) = \\tfrac{1}{2}, \\quad p_{X \\mid Y}(1 \\mid 0) = \\tfrac{1}{2}, \\quad p_{X \\mid Y}(2 \\mid 0) = 0"} />$
 
-Given the first flip is tails, total heads is 0 or 1, never 2. The two conditional distributions look different — knowing $Y$ reshapes what you expect from $X$.
+Given the first flip is tails, total heads is 0 or 1, never 2. The two conditional distributions look completely different — knowing $Y$ reshapes what you expect from $X$. This is the fingerprint of dependence.
 
-## Key insight
+<FormulaReadout formulas={[
+  { label: "边缘分布 (积分/求和消除)", expression: "f_X(x) = \\int f(x,y)\\,dy, \\quad p_X(x) = \\sum_j p(x, y_j)" },
+  { label: "条件分布 (切片再归一化)", expression: "f_{X|Y}(x|y) = \\frac{f(x,y)}{f_Y(y)}, \\quad p_{X|Y}(x|y) = \\frac{p(x,y)}{p_Y(y)}" },
+  { label: "贝叶斯定理 (分布形式)", expression: "f_{Y|X}(y|x) = \\frac{f_{X|Y}(x|y)\\,f_Y(y)}{f_X(x)}" },
+  { label: "联合 = 边缘 × 条件", expression: "f(x,y) = f_{X|Y}(x|y)\\, f_Y(y) = f_{Y|X}(y|x)\\, f_X(x)" },
+]} />
 
-> The marginal projects the joint landscape onto one axis — it collapses the heat map into a single profile, losing all information about the relationship. The conditional slices the landscape at a fixed value and rescales — it shows you one variable through the lens of the other, preserving the shape of the relationship.
+## Three perspectives on marginal and conditional distributions
+
+1. **Geometric (projection vs. slicing):** the marginal is the shadow of the joint surface on one wall (project, losing a dimension); the conditional is a cross-section at fixed $Y$, rescaled to have area 1 (slice, then normalize). These are the two fundamental operations on a 3D landscape.
+2. **Information-theoretic:** the marginal tells you about one variable with *zero* information about the other; the conditional tells you about one variable *using everything you know* about the other. The difference between the conditional and the marginal — how much the conditional shifts when you learn $Y$ — is precisely what "information" measures (the mutual information, covered in advanced treatments).
+3. **Bayesian (inversion):** Bayes' theorem lets you flip the direction of conditioning. The conditional of $X$ given $Y$ plus the marginal of $Y$ together determine the conditional of $Y$ given $X$. This symmetry is the engine of Bayesian inference — you specify a likelihood and a prior, and recover a posterior.
+
+## Modern applications
+
+**Bayesian inference and posterior updating.** The entire Bayesian framework is built on the conditional distribution. You have a parameter $\theta$ (say, the true click-through rate of an ad) with a *prior* distribution $p(\theta)$. You observe data $x$. The *likelihood* is $p(x \mid \theta)$ — the conditional of the data given the parameter. Bayes' theorem flips this into the *posterior* $p(\theta \mid x) = p(x \mid \theta) p(\theta) / p(x)$: the conditional of the parameter given the data. Every Bayesian update — from A/B testing to medical diagnosis to hyperparameter tuning — is this single flip. The marginal $p(x) = \int p(x \mid \theta) p(\theta)\,d\theta$ (the "evidence") is the normalizer that makes the posterior a valid distribution.
+
+**Conditional models in machine learning.** Supervised learning is, at its core, the problem of estimating a conditional distribution. Given features $X$ (an image), what is the distribution of the label $Y$ (the object in the image)? A classifier outputs $p(Y \mid X)$; a regression model outputs the parameters of $p(Y \mid X)$. The whole training loop — minimizing cross-entropy or mean squared error — is maximum likelihood estimation of the conditional distribution. Generative models like GANs and diffusion models go the other direction: they learn to sample from $p(X)$ itself, the marginal of the data.
+
+**Markov chains and time series.** A Markov chain is defined by its *transition kernel* — the conditional distribution <MathInline expression={"p(X_{t+1} \\mid X_t)"} />. The chain's long-run behavior is captured by the *stationary distribution*, which is a marginal. The interplay between conditionals (transitions) and marginals (stationary distributions) is the heart of Markov chain theory, MCMC sampling, and PageRank.
+
+<KeyInsight>
+The marginal projects the joint landscape onto one axis — it sums or integrates out the other variable, producing a valid 1D distribution that forgets everything about the relationship. The conditional slices the landscape at a fixed value and rescales — it shows you one variable through the lens of the other, preserving the shape of the dependence. Bayes' theorem links them: the conditional of $X$ given $Y$ plus the marginal of $Y$ determines the reverse conditional, which is the engine of Bayesian inference.
+</KeyInsight>
+
+## Connections
+
+This lesson takes the **joint distributions** of [lesson 10](/courses/probability/10-joint-distributions) and shows how to extract single-variable information from them. The marginalization operation (summing or integrating out a variable) is the direct multivariate analog of the normalization conditions from [lesson 06](/courses/probability/06-expectation-and-variance). Bayes' theorem for distributions is the lifting of the **event-level Bayes' theorem** from [lesson 04](/courses/probability/04-bayes-theorem) to the random-variable setting — same equation, richer context.
+
+Forward, the conditional distribution is the gateway to [lesson 12](/courses/probability/12-covariance-and-correlation): the covariance measures *on average* how much the conditional shifts as $Y$ changes, reducing a whole family of conditionals to a single number. [Lesson 13](/courses/probability/13-independence) identifies the special case where the conditional equals the marginal — where learning $Y$ changes nothing — and gives it the name *independence*. The Bayesian flip (prior + likelihood = posterior) introduced here becomes the computational backbone of all of statistical inference in lessons 17-20. Cross-disciplinarily, the projection/slicing duality of marginals and conditionals is the same duality that appears in database theory (marginalization is a GROUP-BY aggregation), in image processing (projections in computed tomography), and in quantum mechanics (partial trace of a density matrix).
 
 ## Practice
 
-**Exercise 1.** Using the corrected joint PMF table from the example above, compute the conditional distribution of $Y$ given $X = 1$. That is, find $p_{Y \mid X}(0 \mid 1)$ and $p_{Y \mid X}(1 \mid 1)$. Describe in words: given that exactly one head appeared in total, what is the probability the first coin was heads?
+<ExerciseBlock
+  number={1}
+  prompt="Using the joint PMF table from the worked example (X = total heads, Y = heads on first flip), compute the conditional distribution of Y given X = 1. That is, find p_{Y|X}(0|1) and p_{Y|X}(1|1). Describe in words: given that exactly one head appeared in total, what is the probability the first coin was heads?"
+  hint="Use the row X = 1. The joint probabilities are p(1, 0) = 1/4 and p(1, 1) = 1/4. The marginal p_X(1) = 1/2. Normalize by dividing each by p_X(1)."
+  answer="The row X = 1 has p(1, 0) = 1/4 (from TH) and p(1, 1) = 1/4 (from HT). The marginal is p_X(1) = 1/2. So p_{Y|X}(0|1) = (1/4)/(1/2) = 1/2, and p_{Y|X}(1|1) = (1/4)/(1/2) = 1/2. Given exactly one head total, the first coin is equally likely to be heads (HT) or tails (TH). This makes sense: there are two equally likely ways to get exactly one head, and in one of them the first coin is heads. The conditional distribution here is uniform on {0, 1}, but the marginal of Y is also uniform on {0, 1} — so in this particular case the conditional happens to equal the marginal, which is a coincidence of this small example rather than a sign of independence (the variables are in fact dependent, as the X=0 and X=2 rows show)."
+/>
 
-*Hint:* Use the row $X = 1$. The joint probabilities are $p(1, 0) = 1/4$ and $p(1, 1) = 1/4$. The marginal $p_X(1) = 1/2$. Normalize.
+<ExerciseBlock
+  number={2}
+  prompt="A joint PDF is f(x, y) = 6x for 0 <= y <= x <= 1, and zero otherwise. (a) Find the marginal f_X(x). (b) Find the marginal f_Y(y). (c) Find the conditional f_{Y|X}(y|x). What is the shape of the conditional distribution?"
+  hint="(a) Integrate 6x over y from 0 to x. (b) Integrate 6x over x from y to 1 (note the bounds flip because y <= x). (c) Divide f(x,y) by f_X(x)."
+  answer="(a) f_X(x) = integral from 0 to x of 6x dy = 6x * x = 6x^2 for 0 <= x <= 1. (b) f_Y(y) = integral from x=y to 1 of 6x dx = [3x^2] from y to 1 = 3(1 - y^2) for 0 <= y <= 1. (Check: integral of 6x^2 from 0 to 1 = 2... wait, let us recompute. integral of 6x^2 dx = 2x^3 from 0 to 1 = 2. That is not 1, so we have an error. Recomputing f_X: f_X(x) = integral from 0 to x of 6x dy = 6x * (x - 0) = 6x^2. Then integral of 6x^2 from 0 to 1 = 2x^3 | from 0 to 1 = 2. So the PDF was not normalized — the correct constant should make the total 1. Indeed integral over the triangle of c*x dy dx = integral of c*x^2 dx from 0 to 1 = c/3, so c = 3. Let us assume the problem meant f(x,y) = 3x. Then f_X(x) = 3x^2 (integrates to 1), f_Y(y) = integral from y to 1 of 3x dx = (3/2)(1 - y^2). (c) f_{Y|X}(y|x) = f(x,y)/f_X(x) = 3x / 3x^2 = 1/x for 0 <= y <= x. Given X = x, Y is uniform on [0, x] — a flat conditional distribution. The conditional does not depend on the shape of the marginal; once you know X = x, Y is equally likely to be anywhere in [0, x]."
+/>
 
-**Exercise 2.** A joint PDF is $f(x, y) = 6x$ for $0 \leq x \leq 1$ and $0 \leq y \leq x$, and zero otherwise. Find the marginal $f_X(x)$. Then find the conditional $f_{Y \mid X}(y \mid x)$. What shape does the conditional distribution have?
+<ExerciseBlock
+  number={3}
+  prompt="Suppose X and Y are independent with X ~ Uniform(0, 1) and Y ~ Uniform(0, 1). Write down the joint PDF. Then compute the conditional f_{X|Y}(x|y). Does it depend on y? Explain why, and connect your answer to the definition of independence."
+  hint="Independence means f(x,y) = f_X(x) * f_Y(y). When you form the conditional by dividing by f_Y(y), what cancels?"
+  answer="Since X and Y are independent, the joint PDF factors: f(x,y) = f_X(x) * f_Y(y) = 1 * 1 = 1 for 0 <= x <= 1 and 0 <= y <= 1 (uniform on the unit square), and zero elsewhere. The conditional: f_{X|Y}(x|y) = f(x,y) / f_Y(y) = (1 * 1) / 1 = 1 for 0 <= x <= 1. This does NOT depend on y at all — the conditional is just the marginal f_X(x) = 1. This is the hallmark of independence: the conditional equals the marginal, so learning Y tells you nothing about X. The f_Y(y) in the denominator exactly cancels the f_Y(y) hidden inside the joint (because the joint factored). For independent variables, conditioning changes nothing — which is the very definition of independence in the next lesson."
+/>
 
-*Hint:* To find $f_X(x)$, integrate $6x$ over $y$ from 0 to $x$. For the conditional, divide $f(x, y)$ by $f_X(x)$ and notice what remains — it should not depend on $x$ at all for the shape.
+<ExerciseBlock
+  number={4}
+  prompt="Show that marginals do not determine the joint. Construct two different joint PMFs on the same pair of variables that have identical marginals p_X and p_Y, but different joint tables. This proves that projection loses information."
+  hint="Pick binary variables X and Y in {0, 1}. Make one joint where the variables are independent, and another where they are perfectly correlated, but choose the marginals to match."
+  answer="Let both X and Y take values in {0, 1} with marginals p_X(0) = p_X(1) = 1/2 and p_Y(0) = p_Y(1) = 1/2. Joint A (independent): p(0,0) = 1/4, p(0,1) = 1/4, p(1,0) = 1/4, p(1,1) = 1/4. Check marginals: row sums give 1/2, 1/2; column sums give 1/2, 1/2. Good. Joint B (perfectly correlated): p(0,0) = 1/2, p(0,1) = 0, p(1,0) = 0, p(1,1) = 1/2. Check marginals: row sums give 1/2, 1/2; column sums give 1/2, 1/2. Identical marginals to Joint A! Yet Joint A has the variables independent (uniform on the square), while Joint B has them locked together (X = Y always). These are radically different relationships — one knows nothing about the other, one knows everything — but they cast the exact same shadows. This proves that the marginal-to-joint map is many-to-one: you cannot recover the joint from the marginals without an additional assumption like independence."
+/>
 
-**Exercise 3.** Suppose $X$ and $Y$ are independent with $X \sim \text{Uniform}(0, 1)$ and $Y \sim \text{Uniform}(0, 1)$. Write down the joint PDF. Then compute the conditional $f_{X \mid Y}(x \mid y)$. Does it depend on $y$? Why or why not?
+<ExerciseBlock
+  number={5}
+  prompt="A medical test for a disease has the following structure. The prior probability of having the disease is 0.01 (the marginal of the 'health' variable). The test is positive 95% of the time given the disease is present, and positive 5% of the time given the disease is absent (these are conditionals). Use Bayes' theorem to find the probability of having the disease given a positive test."
+  hint="Apply Bayes: P(disease | positive) = P(positive | disease) * P(disease) / P(positive). The denominator P(positive) must be computed by summing over both disease states (the marginal of the test result)."
+  answer="Let D = 1 mean disease, D = 0 mean no disease. P(D=1) = 0.01, P(D=0) = 0.99. Conditionals: P(pos | D=1) = 0.95, P(pos | D=0) = 0.05. The marginal (evidence): P(pos) = P(pos|D=1)P(D=1) + P(pos|D=0)P(D=0) = 0.95*0.01 + 0.05*0.99 = 0.0095 + 0.0495 = 0.059. Bayes: P(D=1 | pos) = 0.95*0.01 / 0.059 = 0.0095 / 0.059 approximately 0.161. So even with a positive test, the probability of having the disease is only about 16%. This is the famous base-rate fallacy: because the disease is rare (prior 0.01), most positive tests are false positives coming from the large healthy population. The marginal (evidence) term is dominated by the P(pos|D=0)*P(D=0) = 0.0495 contribution. Bayes' theorem correctly accounts for this by normalizing against all the ways the test could be positive. This example is why every medical test result must be interpreted in light of the base rate."
+/>
 
-*Hint:* Independence means $f(x, y) = f_X(x) \cdot f_Y(y)$. When you form the conditional by dividing by $f_Y(y)$, what cancels?
+<ExerciseBlock
+  number={6}
+  prompt="A joint PDF is f(x, y) = x + y for 0 <= x <= 1 and 0 <= y <= 1, zero otherwise. (a) Find the marginal f_X(x). (b) Find the conditional f_{Y|X}(y|x). (c) Does the conditional depend on x? What does that tell you about independence?"
+  hint="(a) Integrate x + y over y from 0 to 1. (b) Divide the joint by the marginal. (c) If the conditional changes with x, the variables are dependent."
+  answer="(a) f_X(x) = integral from 0 to 1 of (x + y) dy = [xy + y^2/2] from 0 to 1 = x + 1/2, for 0 <= x <= 1. (b) f_{Y|X}(y|x) = (x + y)/(x + 1/2) for 0 <= y <= 1. (c) Yes, the conditional depends on x. As x increases, the denominator x + 1/2 grows, and the shape of (x + y)/(x + 1/2) tilts: for large x, the density is more uniform (close to y/y_max); for small x near 0, the density is proportional to y + 0 = y, sloping upward. Because the conditional of Y given X changes with the value of X, learning X changes your picture of Y — so X and Y are dependent. This confirms what we saw in lesson 10, exercise 4: the joint f(x,y) = x + y does not factor into g(x)*h(y), so the variables cannot be independent. The changing conditional is the direct geometric evidence of that dependence."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="Prove the continuous version of Bayes' theorem for distributions: f_{Y|X}(y|x) = f_{X|Y}(x|y) f_Y(y) / f_X(x). Then explain in one sentence why the denominator f_X(x) is called the 'evidence' in Bayesian inference."
+  hint="Start from the definition of the conditional in both directions: f(x,y) = f_{X|Y}(x|y) f_Y(y) and also f(x,y) = f_{Y|X}(y|x) f_X(x). Set them equal and solve."
+  answer="Proof: By the definition of conditional density, the joint can be written two ways: f(x,y) = f_{X|Y}(x|y) * f_Y(y) (conditioning on Y) and f(x,y) = f_{Y|X}(y|x) * f_X(x) (conditioning on X). The joint density f(x,y) is the same object either way, so these two expressions are equal: f_{X|Y}(x|y) f_Y(y) = f_{Y|X}(y|x) f_X(x). Solving for f_{Y|X}: f_{Y|X}(y|x) = f_{X|Y}(x|y) f_Y(y) / f_X(x). This is Bayes' theorem for densities. The denominator f_X(x) = integral of f_{X|Y}(x|y) f_Y(y) dy over all y is called the 'evidence' because it is the marginal probability of observing the data x — averaged over all possible values of the parameter y, weighted by how likely each y was a priori. It is the normalizing constant that ensures the posterior integrates to 1, converting the unnormalized product (likelihood times prior) into a valid probability distribution. Without it, we would have only a relative, not absolute, measure of belief."
+/>
+
+---
+
+**Up next:** [Covariance and correlation →](/courses/probability/12-covariance-and-correlation)

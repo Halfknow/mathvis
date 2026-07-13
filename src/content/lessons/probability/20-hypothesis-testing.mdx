@@ -12,9 +12,19 @@ duration: 20
 difficulty: "Advanced"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 You have a default assumption about the world — a drug does not work, a coin is fair, a factory produces within specifications. Then you collect data. The data might be perfectly consistent with your assumption, or it might look surprising under that assumption. How surprising does the data need to be before you abandon the default?
 
 **Hypothesis testing** gives you a framework for making that decision. It is a probabilistic version of proof by contradiction: assume the default, check whether the data makes that assumption look absurd, and if it does, reject the default. The catch is that "absurd" is not binary — it is a matter of degree, and you must choose where to draw the line.
+
+This lesson formalizes that framework and confronts its sharpest difficulties: the two types of error (false positives and false negatives), the widely misunderstood p-value, the concept of statistical power, and the **multiple testing problem** — the fact that if you run enough tests, some will appear significant purely by chance. We close with the frequentist-vs-Bayesian critique, the great philosophical debate that has shaped statistics for a century.
 
 ## Null and alternative hypotheses
 
@@ -30,18 +40,34 @@ You compute a **test statistic** from your data — a number that measures how f
 
 The **p-value** is the probability of seeing data at least as extreme as what you observed, assuming $H_0$ is true:
 
-$$p\text{-value} = P(\text{data this extreme or more} \mid H_0)$$
+$<MathInline expression={"p\\text{-value} = P(\\text{data this extreme or more} \\mid H_0)"} />$
 
 A small p-value means: "if $H_0$ were true, data this extreme would be rare." That is evidence against $H_0$.
 
-A large p-value means: "data like this is perfectly normal under $H_0$." That is not evidence for $H_0$ — it just means you lack the evidence to reject it. Absence of evidence is not evidence of absence.
+A large p-value means: "data like this is perfectly normal under $H_0$." That is not evidence *for* $H_0$ — it just means you lack the evidence to reject it. **Absence of evidence is not evidence of absence.**
+
+### Theorem: definition and distribution of the p-value
+
+Under $H_0$, if the test statistic $T$ has CDF $F_0$, the p-value $p = P_{H_0}(T \geq t_{\text{obs}})$ (for a one-sided test) is uniformly distributed on $[0, 1]$. That is, $p \sim \text{Uniform}(0, 1)$ when $H_0$ is true.
+
+*Intuition.* If $H_0$ is true, the p-value is a random draw from the uniform distribution. So a p-value below 0.05 happens exactly 5% of the time — by construction. This is why the 5% threshold gives a 5% false-positive rate: under $H_0$, 5% of p-values fall below 0.05 purely by chance.
+
+### The misinterpretation of the p-value
+
+The p-value is the most misunderstood quantity in statistics. The common (wrong) interpretations:
+
+- **Wrong:** "The p-value is the probability that $H_0$ is true." (It is not — $H_0$ is either true or false; there is no probability.)
+- **Wrong:** "A p-value of 0.04 means there is a 96% chance the alternative is true." (It does not — the p-value is computed *assuming* $H_0$ is true; it says nothing about the probability of $H_1$.)
+- **Wrong:** "A p-value of 0.20 means $H_0$ is probably true." (It does not — it just means the data is not surprising under $H_0$, which could also happen if $H_1$ is true but the effect is small or the sample is small.)
+
+The **correct** interpretation: the p-value is the probability of observing data *at least as extreme* as what you got, *if $H_0$ were true*. It is a statement about the data under a hypothetical, not a statement about the truth of the hypothesis.
 
 ## Drawing the line: significance level
 
-You choose a **significance level** $\alpha$ before looking at the data. Common values: $\alpha = 0.05$ (5%) or $\alpha = 0.01$ (1%). The rule is simple:
+You choose a **significance level** $\alpha$ *before* looking at the data. Common values: $\alpha = 0.05$ (5%) or $\alpha = 0.01$ (1%). The rule is simple:
 
-- If $p\text{-value} \leq \alpha$: reject $H_0$. The data is too extreme to be compatible with the null.
-- If $p\text{-value} > \alpha$: fail to reject $H_0$. The data is not extreme enough to overthrow the default.
+- If <MathInline expression={"p\\text{-value} \\leq \\alpha"} />: reject $H_0$. The data is too extreme to be compatible with the null.
+- If <MathInline expression={"p\\text{-value} > \\alpha"} />: fail to reject $H_0$. The data is not extreme enough to overthrow the default.
 
 The significance level is the threshold for how much surprise you are willing to tolerate before changing your mind. A strict threshold ($\alpha = 0.01$) demands overwhelming evidence. A lenient threshold ($\alpha = 0.10$) is more easily convinced.
 
@@ -55,6 +81,16 @@ Every decision under uncertainty can be wrong. There are exactly two ways to mak
 
 The **power** of a test is $1 - \beta$ — the probability of correctly detecting a real effect. High power means the test is sensitive enough to catch the signal when it is there.
 
+### Theorem: the relationship between alpha, beta, and power
+
+For a test of $H_0: \theta = \theta_0$ vs $H_1: \theta = \theta_1$ at significance level $\alpha$:
+
+- $P(\text{Type I error}) = P(\text{reject } H_0 \mid H_0 \text{ true}) = \alpha$ (controlled by the critical value).
+- $P(\text{Type II error}) = P(\text{fail to reject } H_0 \mid H_1 \text{ true}) = \beta$ (depends on $\theta_1$, $n$, and $\alpha$).
+- **Power** $= 1 - \beta = P(\text{reject } H_0 \mid H_1 \text{ true})$.
+
+*The fundamental tradeoff.* For fixed sample size $n$, decreasing $\alpha$ (stricter significance) increases $\beta$ (more missed detections) and vice versa. The only way to reduce both errors simultaneously is to increase $n$.
+
 ## The tradeoff
 
 Here is the fundamental tension: reducing one type of error increases the other.
@@ -66,7 +102,7 @@ Picture two overlapping bell curves on the same axis. The left curve is the samp
 
 Now slide the critical value to the right. $\alpha$ shrinks (fewer false alarms) but $\beta$ grows (more missed detections). You become harder to convince, but you also miss more real effects. Slide it to the left and the reverse happens.
 
-The only way to reduce both errors simultaneously is to collect more data. More data pulls the two curves apart — $H_0$ and $H_1$ distributions separate from each other — so the overlap shrinks and both tails get smaller.
+The only way to reduce both errors simultaneously is to collect more data. More data pulls the two curves apart — $H_0$ and $H_1$ distributions separate from each other (because the standard error $\sigma/\sqrt{n}$ shrinks) — so the overlap shrinks and both tails get smaller.
 
 ## A concrete example
 
@@ -78,14 +114,112 @@ At $\alpha = 0.05$, you reject $H_0$: the coin appears biased. At $\alpha = 0.01
 
 Notice how the threshold matters. The data is the same. The p-value is the same. The conclusion changes depending on how strict you decided to be before seeing the data.
 
-## Key insight
+## The multiple testing problem
 
-> Hypothesis testing is a probabilistic courtroom. The null hypothesis is innocent until proven guilty. The p-value measures how surprising the evidence is under that innocence assumption. You cannot eliminate the risk of a wrong verdict — you can only choose which kind of wrong you are willing to live with. More data is the only way to have it both ways: fewer false convictions and fewer guilty escapes.
+Here is a subtle and dangerous trap. If you run a single test at $\alpha = 0.05$, the probability of a false positive is 5%. But if you run *many* tests, the probability that *at least one* of them produces a false positive grows rapidly.
+
+Suppose you run $m$ independent tests, all under true null hypotheses. The probability that at least one is falsely significant is:
+
+$<MathInline expression={"P(\\text{at least one false positive}) = 1 - (1 - \\alpha)^m"} />$
+
+For $\alpha = 0.05$: with $m = 10$ tests, this is $1 - 0.95^{10} = 0.40$ — a 40% chance of at least one false positive. With $m = 100$ tests, it is $1 - 0.95^{100} = 0.994$ — a 99.4% chance. Run enough tests and you are *guaranteed* to find "significance" purely by chance.
+
+This is the **multiple testing problem**, and it is rampant in modern science. Genomic studies test thousands of genes simultaneously. A/B testing platforms run hundreds of experiments. Neuroimaging compares activity at tens of thousands of brain voxels. Without correction, all of these fields would drown in false positives.
+
+### Theorem: The Bonferroni correction
+
+To control the **family-wise error rate** (the probability of at least one false positive among all $m$ tests) at level $\alpha$, test each individual hypothesis at level $\alpha/m$. That is, reject test $i$ only if $p_i \leq \alpha/m$.
+
+*Proof (union bound).* By the union bound, $P(\text{at least one false positive}) \leq \sum_{i=1}^m P(\text{test } i \text{ false positive}) = \sum_{i=1}^m (\alpha/m) = \alpha$. So testing each at $\alpha/m$ guarantees the family-wise error rate is at most $\alpha$.
+
+*Tradeoff.* The Bonferroni correction is very conservative — it controls the worst case. With $m = 1000$ tests at $\alpha = 0.05$, each test requires $p < 0.00005$, which makes it very hard to detect real effects (low power). Modern alternatives like the **Benjamini-Hochberg** procedure control the **false discovery rate** (the expected proportion of false positives among the rejected hypotheses) instead of the family-wise error rate, which is less conservative and more powerful for large-scale testing.
+
+<FormulaReadout formulas={[
+  { label: "p-值定义", expression: "p = P(\\text{数据至少如此极端} \\mid H_0)" },
+  { label: "第一类与第二类错误", expression: "\\alpha = P(\\text{弃真}), \\quad \\beta = P(\\text{取伪}), \\quad \\text{power} = 1 - \\beta" },
+  { label: "多重检验 (至少一个假阳性)", expression: "P(\\geq 1\\text{ 假阳性}) = 1 - (1-\\alpha)^m" },
+  { label: "Bonferroni 校正", expression: "\\text{检验 } i \\text{ 的阈值}: \\; p_i \\leq \\frac{\\alpha}{m}" },
+]} />
+
+## Three perspectives on hypothesis testing
+
+1. **As probabilistic proof by contradiction:** assume $H_0$, derive what the data should look like, and check whether the observed data is too extreme to be plausible. If it is, reject $H_0$. This is the logic of the scientific method formalized: you never *prove* $H_1$; you only show that $H_0$ is implausible.
+2. **As decision theory under uncertainty:** every test is a decision with two possible errors (Type I and Type II). The significance level $\alpha$ controls the cost of false positives; the power $1-\beta$ controls the cost of false negatives. The choice of $\alpha$ reflects the relative seriousness of the two errors — in medical screening, you tolerate more false positives (low threshold) to avoid missing real disease; in criminal justice, you tolerate more false negatives (high threshold) to avoid convicting the innocent.
+3. **As the dual of confidence intervals:** a 95% CI is exactly the set of parameter values that would not be rejected by a two-sided test at 5%. The two are the same inference expressed differently — the test gives a binary verdict, the interval gives the continuous picture of which values are plausible.
+
+## Modern applications
+
+**A/B testing in tech.** Every major tech company (Google, Netflix, Meta) runs thousands of A/B tests per year. Each test is a hypothesis test: does version B convert better than version A? The significance level controls the false-positive rate (shipping a feature that doesn't actually help), and the power controls the false-negative rate (failing to ship a feature that would have helped). The multiple testing problem is acute — with thousands of tests, some will appear significant by chance. Sophisticated platforms use sequential testing (stop early if the result is clear) and false-discovery-rate control to manage this.
+
+**Clinical trials and drug approval.** The FDA requires Phase III clinical trials to demonstrate efficacy at $\alpha = 0.025$ (two-sided, or 0.025 one-sided) with adequate power (typically 80-90%). The stringent significance level reflects the cost of approving an ineffective or harmful drug. Power analysis determines the sample size: to detect a clinically meaningful effect with 90% power at $\alpha = 0.025$, you need a specific number of patients, computed from the expected effect size and variability. This is why clinical trials enroll thousands of patients.
+
+**Genomics and high-throughput biology.** A gene expression study might test 20,000 genes for differential expression. Without correction, at $\alpha = 0.05$, you would expect 1000 false positives. The Benjamini-Hochberg procedure (controlling false discovery rate) is the standard tool — it allows some false positives but controls the proportion, enabling discovery in high-dimensional data where Bonferroni would be too conservative.
+
+**The replication crisis.** A growing concern across science (psychology, medicine, economics) is that many published findings fail to replicate. The causes include: p-hacking (running many analyses and reporting only the significant one), publication bias (journals publish only significant results, creating a distorted literature), and underpowered studies (small samples that detect large effects but miss small ones). The multiple testing problem is central: when researchers have many "degrees of freedom" in how to analyze the data, the effective number of tests is large, and false positives proliferate. Preregistration and the open science movement are direct responses.
+
+<KeyInsight>
+Hypothesis testing is a probabilistic courtroom. The null hypothesis is innocent until proven guilty. The p-value measures how surprising the evidence is under that innocence assumption (P(data this extreme | H_0)) — it is NOT the probability that H_0 is true. Type I error (alpha) is a false conviction; Type II error (beta) is a missed detection; power is 1 minus beta. The multiple testing problem means that running many tests inflates false positives (the chance of at least one is 1 minus (1-alpha)^m), corrected by Bonferroni (test each at alpha/m) or Benjamini-Hochberg (control false discovery rate).
+</KeyInsight>
+
+## Connections
+
+This lesson completes the inference trilogy with [lesson 18](/courses/probability/18-maximum-likelihood-estimation) (MLE) and [lesson 19](/courses/probability/19-confidence-intervals). The three great hypothesis tests — the Wald test, the score test, and the likelihood ratio test — are all built on the MLE's asymptotic properties. The duality with confidence intervals means every concept here maps to a concept there: the significance level $\alpha$ corresponds to the confidence level $1-\alpha$; the test statistic corresponds to the interval's center and width; rejection of $H_0$ corresponds to the CI excluding the null value. The **Central Limit Theorem** ([lesson 16](/courses/probability/16-central-limit-theorem)) provides the sampling distributions (normal for the z-test, t for small samples) that underlie all the tests in this lesson.
+
+The backward link is to **Bayes' theorem** ([lesson 04](/courses/probability/04-conditional-probability-and-bayes)): hypothesis testing is the frequentist approach to the question "is this hypothesis true given the data?" The Bayesian approach computes $P(H_0 \mid \text{data})$ directly, using a prior. The frequentist refuses to put a probability on a hypothesis, which is why the p-value is so awkward — it answers a different question ("how likely is the data given the hypothesis?") than the one we actually want to ask ("how likely is the hypothesis given the data?"). The **Bayes factor** is the Bayesian alternative to the p-value, and the debate between the two frameworks continues to shape statistical practice.
+
+Cross-disciplinarily, hypothesis testing is the mathematical formalization of the scientific method: formulate a null hypothesis (the conservative default), collect data, and reject the null only if the data is sufficiently surprising. This structure — assume the default, look for evidence against it — appears in every empirical science, in quality control (six-sigma testing), in the legal standard ("beyond reasonable doubt" is a low-alpha test), and in machine learning (significance testing for comparing model performance). The concepts of Type I and Type II error, power, and multiple testing correction are the shared vocabulary of all quantitative research. The replication crisis is, at its core, a crisis of hypothesis testing — a reminder that the framework's guarantees hold only when its assumptions (pre-specified hypotheses, adequate power, honest reporting) are respected.
 
 ## Practice
 
-1. A factory claims its bolts have a mean diameter of 10 mm. You sample 36 bolts and find a sample mean of 10.3 mm with a known standard deviation of 0.9 mm. State $H_0$ and $H_1$. Compute the test statistic (how many standard errors is 10.3 from 10?). Find the p-value. Would you reject $H_0$ at $\alpha = 0.05$?
+<ExerciseBlock
+  number={1}
+  prompt="A factory claims its bolts have a mean diameter of 10 mm. You sample 36 bolts and find a sample mean of 10.3 mm with a known standard deviation of 0.9 mm. State H_0 and H_1. Compute the test statistic (how many standard errors is 10.3 from 10?). Find the p-value. Would you reject H_0 at alpha = 0.05? What about alpha = 0.01?"
+  hint="H_0: mu = 10, H_1: mu != 10 (two-sided). Test statistic z = (x_bar - mu_0)/(sigma/sqrt(n)) = (10.3 - 10)/(0.9/sqrt(36)) = 0.3/0.15 = 2.0. The p-value is 2*P(Z >= 2.0)."
+  answer="H_0: mu = 10 (the bolts meet specification). H_1: mu != 10 (the bolts are off-target, two-sided). Test statistic: z = (10.3 - 10)/(0.9/6) = 0.3/0.15 = 2.0. The sample mean is 2.0 standard errors above the claimed mean. P-value (two-sided): 2*P(Z >= 2.0) = 2*(1 - 0.9772) = 2*0.0228 = 0.0456. At alpha = 0.05: p-value 0.0456 < 0.05, so REJECT H_0. The bolts appear to be off-target. At alpha = 0.01: p-value 0.0456 > 0.01, so FAIL TO REJECT H_0. The evidence is suggestive but not strong enough for the stricter standard. This illustrates how the choice of alpha affects the conclusion: the same data (z = 2.0, p = 0.046) is significant at 5% but not at 1%. A result that is 'just barely significant' at 5% is on shaky ground — it would not survive a stricter threshold. This is why many fields are moving toward alpha = 0.005 for new discoveries."
+/>
 
-2. Two doctors use different significance levels. Doctor A uses $\alpha = 0.05$, Doctor B uses $\alpha = 0.01$. Which doctor is more likely to commit a Type I error? Which is more likely to commit a Type II error? If the treatment actually has no effect, which doctor's patients are more likely to receive an ineffective treatment? If the treatment does work, whose patients are more likely to miss out?
+<ExerciseBlock
+  number={2}
+  prompt="Two doctors use different significance levels. Doctor A uses alpha = 0.05, Doctor B uses alpha = 0.01. Which doctor is more likely to commit a Type I error? Which is more likely to commit a Type II error? If the treatment actually has no effect, which doctor's patients are more likely to receive an ineffective treatment? If the treatment does work, whose patients are more likely to miss out?"
+  hint="Type I error (false positive) probability = alpha. Type II error (false negative) probability = beta, which increases as alpha decreases (for fixed sample size). Doctor A has higher alpha (more false positives, fewer false negatives)."
+  answer="Type I error (false positive): probability = alpha. Doctor A (alpha = 0.05) is more likely to commit a Type I error than Doctor B (alpha = 0.01). If the treatment has no effect, Doctor A is more likely to falsely conclude it works, so Doctor A's patients are more likely to receive an ineffective treatment (5% vs 1% chance of a false positive). Type II error (false negative): probability = beta. For a fixed sample size, decreasing alpha increases beta — a stricter threshold is harder to cross, so you miss more real effects. So Doctor B (alpha = 0.01) is more likely to commit a Type II error. If the treatment DOES work, Doctor B is more likely to miss it, so Doctor B's patients are more likely to miss out on an effective treatment. Summary: Doctor A is liberal (more false positives, fewer false negatives) — quick to adopt new treatments, but some won't work. Doctor B is conservative (fewer false positives, more false negatives) — slow to adopt, but less likely to endorse a dud. Neither is 'right' — the choice depends on the relative costs of the two errors. In screening for a serious disease, be like Doctor A (don't miss cases). In approving a drug with side effects, be like Doctor B (don't approve a dud)."
+/>
 
-3. Sketch two overlapping bell curves on the same horizontal axis — label the left one $H_0$ and the right one $H_1$. Draw a vertical line as the critical value. Shade the area representing $\alpha$. Shade the area representing $\beta$. Now imagine you double the sample size. What happens to the overlap between the two curves? What happens to both shaded areas?
+<ExerciseBlock
+  number={3}
+  prompt="Sketch two overlapping bell curves on the same horizontal axis — label the left one H_0 and the right one H_1. Draw a vertical line as the critical value. Shade the area representing alpha. Shade the area representing beta. Now imagine you double the sample size. What happens to the overlap between the two curves? What happens to both shaded areas? Explain why more data is the only way to reduce both errors simultaneously."
+  hint="Under H_0, the test statistic has one distribution (e.g., N(0,1) if mu = mu_0). Under H_1, it has a shifted distribution (e.g., N(delta, 1) where delta is the standardized effect size). The two curves overlap. Alpha is the right tail of the H_0 curve beyond the critical value. Beta is the left tail of the H_1 curve before the critical value. Increasing n sharpens both curves (narrower spread), reducing overlap."
+  answer="Picture: the H_0 curve is centered at 0 (the null value). The H_1 curve is centered at some positive value delta (the true effect, in standardized units). The critical value c is a vertical line to the right of 0. Alpha (shaded right tail of H_0, beyond c): the probability of crossing c when H_0 is true. Beta (shaded left tail of H_1, before c): the probability of NOT crossing c when H_1 is true. Power = 1 - beta: the probability of crossing c when H_1 is true (the bulk of the H_1 curve to the right of c). When you double the sample size, the standard error sigma/sqrt(n) shrinks by a factor of sqrt(2). Both curves become narrower (taller and more concentrated). The two peaks move further apart in standardized units (the effect size delta grows as sqrt(n)), so the overlap shrinks. With less overlap, alpha decreases (smaller H_0 tail beyond c) AND beta decreases (smaller H_1 tail before c) simultaneously — IF you keep the critical value fixed. This is why more data is the only way to reduce both errors: sliding the critical value left reduces alpha but increases beta (and vice versa), because you're trading one tail for the other within the fixed overlap. But narrowing both curves (more data) reduces the overlap itself, shrinking both tails at once. Practical implication: to detect a small effect with high power, you need a large sample. This is the basis of power analysis: decide on the minimum effect size you want to detect, set alpha and desired power (1 - beta), and solve for the required n."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Multiple testing. A researcher tests 100 different genes for association with a disease, using alpha = 0.05 for each test. Assume all 100 null hypotheses are true (no gene is actually associated). What is the expected number of false positives? What is the probability of at least one false positive? Apply the Bonferroni correction: what significance level should each test use to control the family-wise error rate at 0.05?"
+  hint="Expected false positives = m * alpha = 100 * 0.05. P(at least one) = 1 - (1-alpha)^m. Bonferroni: test each at alpha/m."
+  answer="Expected number of false positives: m * alpha = 100 * 0.05 = 5. So you expect about 5 genes to appear 'significantly associated' purely by chance, even though none actually is. Probability of at least one false positive: 1 - (1 - 0.05)^100 = 1 - 0.95^100 = 1 - 0.00592 = 0.994. So there is a 99.4% chance of finding at least one 'significant' gene by chance alone. Without correction, this study is almost guaranteed to produce false discoveries. Bonferroni correction: to control the family-wise error rate (probability of at least one false positive) at 0.05, test each gene at level alpha/m = 0.05/100 = 0.0005. So a gene is declared significant only if its p-value is below 0.0005 (not 0.05). This is 100 times stricter. With this correction, the probability of at least one false positive drops to at most 0.05 (by the union bound: 100 * 0.0005 = 0.05). The cost: the correction is very conservative. If the true effect sizes are small, requiring p < 0.0005 for each test makes it very hard to detect real associations (low power). This is why genomics often uses the Benjamini-Hochberg procedure instead, which controls the false DISCOVERY rate (expected proportion of false positives among the rejected hypotheses) rather than the family-wise error rate. BH is less conservative and more powerful for large-scale testing."
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="Power analysis. You are designing a clinical trial to detect a drug effect. The drug is considered effective if it shifts the mean response by at least 2 units (the clinically meaningful effect). The standard deviation of the response is known to be 10. You want 90% power at alpha = 0.05 (two-sided). How many patients do you need per group (treatment and control)? Use the normal approximation: the required n per group is approximately n = (z_alpha/2 + z_beta)^2 * sigma^2 / delta^2, where delta is the effect size and z_beta corresponds to the desired power."
+  hint="z_alpha/2 = 1.96 (for two-sided alpha = 0.05). For 90% power, beta = 0.10, so z_beta = z_0.10 = 1.282 (the 90th percentile of the standard normal). sigma = 10, delta = 2. Plug into the formula."
+  answer="z_alpha/2 = 1.96 (two-sided test at alpha = 0.05). For 90% power: beta = 1 - 0.90 = 0.10, and z_beta = z_{0.90} = 1.282 (the value such that P(Z <= z_beta) = 0.90). Required sample size per group: n = (z_alpha/2 + z_beta)^2 * sigma^2 / delta^2 = (1.96 + 1.282)^2 * 10^2 / 2^2 = (3.242)^2 * 100 / 4 = 10.51 * 25 = 262.75. So about 263 patients per group, or 526 total. Let's verify the intuition: to detect an effect of 2 units against a noise of 10, the standardized effect size is delta/sigma = 0.2 — a small effect. Small effects require large samples. The formula shows n scales as sigma^2/delta^2 = (10/2)^2 = 25, times a factor of about 10.5 from the z-values. Key insight: halving the detectable effect size quadruples the required sample size. If the clinically meaningful effect were 1 unit instead of 2, you'd need about 1051 per group (4x). This is why clinical trials are expensive — detecting small effects requires thousands of patients. And if the true effect is smaller than delta (the effect you designed for), the power drops below 90% — you might miss it. This is the source of many 'failed' trials: the drug works, but the effect is smaller than expected, and the trial was underpowered to detect it."
+/>
+
+<ExerciseBlock
+  number={6}
+  prompt="The frequentist vs Bayesian critique. A frequentist tests H_0: the coin is fair, flips it 100 times, gets 60 heads, and computes a p-value of 0.057 (just above 0.05, so fails to reject). A Bayesian computes the posterior probability P(coin is biased | data) = 0.72 (using a prior that assigns 50% probability to 'fair' and 50% to 'biased'). Explain why these two answers can coexist — they answer different questions. What question does each answer? Why does the frequentist refuse to assign a probability to H_0?"
+  hint="The frequentist p-value is P(data | H_0). The Bayesian posterior is P(H_0 | data). These are related by Bayes' theorem but are not the same — the posterior also depends on the prior P(H_0) and the likelihood under H_1."
+  answer="The two answers coexist because they answer different questions. Frequentist p-value: P(data this extreme or more | H_0 is true) = 0.057. This says: IF the coin were fair, data this extreme would occur 5.7% of the time. Since 5.7% > 5%, the frequentist fails to reject H_0 — the data is not surprising enough under the null. Bayesian posterior: P(coin is biased | data) = 0.72. This says: given the data (60 heads out of 100), there is a 72% probability that the coin is biased. The Bayesian can directly answer the question 'is the coin biased?' with a probability, while the frequentist can only say 'the data is/isn't surprising under the assumption of fairness.' Why the frequentist refuses to assign a probability to H_0: in the frequentist framework, a hypothesis is a statement about a fixed (unknown) fact about the world — the coin IS fair or IS biased, there is no probability. Probability is defined as a long-run frequency, and you cannot repeat the 'experiment' of this specific coin being fair or biased. So the frequentist can only assign probabilities to the DATA (which is random, repeatable), not to the HYPOTHESIS (which is fixed). The Bayesian disagrees: probability is a degree of belief, which can be assigned to any statement, including a hypothesis. The Bayesian starts with a prior P(H_0) = 0.50, updates it with the data via Bayes' theorem (lesson 04): P(H_0 | data) proportional to P(data | H_0) * P(H_0), and arrives at the posterior. The two frameworks use the same likelihood P(data | H_0) but combine it differently. The frequentist uses it directly as the p-value; the Bayesian combines it with a prior to get a posterior. Neither is 'wrong' — they are answering different questions with different philosophies. The debate is ongoing and has profound implications for how science should be conducted."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="Explain the duality between confidence intervals and hypothesis tests. Show that a 95% confidence interval for mu is exactly the set of values mu_0 that would NOT be rejected by a two-sided z-test at alpha = 0.05. Use this to state the test for H_0: mu = mu_0 in terms of the CI, and conversely to construct a CI from the test. Why is this duality useful in practice?"
+  hint="The 95% CI is x_bar +/- 1.96*sigma/sqrt(n). The two-sided test of H_0: mu = mu_0 rejects when |x_bar - mu_0|/(sigma/sqrt(n)) > 1.96, i.e., when mu_0 is outside the CI. So the CI contains exactly the values of mu_0 that are NOT rejected."
+  answer="The 95% CI for mu is [x_bar - 1.96*sigma/sqrt(n), x_bar + 1.96*sigma/sqrt(n)]. The two-sided z-test of H_0: mu = mu_0 at alpha = 0.05 rejects when the test statistic |z| = |x_bar - mu_0|/(sigma/sqrt(n)) > 1.96, i.e., when |x_bar - mu_0| > 1.96*sigma/sqrt(n). Rearranging: the test rejects when mu_0 < x_bar - 1.96*sigma/sqrt(n) OR mu_0 > x_bar + 1.96*sigma/sqrt(n), i.e., when mu_0 is OUTSIDE the 95% CI. Equivalently, the test FAILS TO REJECT when mu_0 is INSIDE the 95% CI. So: the 95% CI is exactly the set of mu_0 values that would not be rejected by the two-sided test at 5%. Statement of the test in terms of the CI: to test H_0: mu = mu_0 at 5%, compute the 95% CI and check whether mu_0 is inside it. If yes, fail to reject; if no, reject. Construction of the CI from the test: the 95% CI is the set of all mu_0 for which the test fails to reject. Why this is useful: (1) It means you can read off the hypothesis test from the CI without recomputing — if the CI excludes mu_0, the test rejects; if it includes mu_0, it doesn't. (2) The CI is more informative than the test: it tells you not just whether to reject (binary) but the RANGE of plausible values (continuous). A narrow CI that excludes mu_0 is strong evidence against H_0; a wide CI that barely excludes mu_0 is weak evidence. (3) The duality extends to all tests: the t-test corresponds to the t-interval, the chi-squared test to the chi-squared CI, etc. Every confidence interval has a corresponding hypothesis test, and vice versa. This is why modern statistical practice emphasizes reporting confidence intervals over p-values — the interval contains strictly more information."
+/>
+
+---
+
+**Up next:** [Two schools of thought →](/courses/probability/21-two-schools-of-thought)

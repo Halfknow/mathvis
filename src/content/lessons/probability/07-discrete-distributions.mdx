@@ -14,9 +14,15 @@ difficulty: "Intermediate"
 
 import { DiscreteDistVis } from '../../../components/interactive/probability/DiscreteDistVis';
 
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
 Every discrete distribution tells a story about **counting**. The setting changes — a single coin flip, a sequence of free throws, emails arriving in an hour — but the question is always the same: how many successes do we get?
 
-This lesson is about three distributions that form a family. They look different at first glance, but each one grows out of the one before it. By the end, you will see how the same counting story gets retold in different scenes, and how the bar chart morphs as the parameters shift.
+This lesson is about a family of distributions connected by that single thread. They look different at first glance, but each one grows out of the one before it. By the end, you will see how the same counting story gets retold in different scenes, and how the bar chart morphs as the parameters shift. Learn the family tree and you never memorize three separate distributions — you learn one story at three scales.
 
 ## The Bernoulli distribution: one trial, two outcomes
 
@@ -28,7 +34,7 @@ Its bar chart is just two bars: a bar of height $p$ at $x = 1$ and a bar of heig
 
 The mean and variance are immediate:
 
-$$E[X] = p, \quad \text{Var}(X) = p(1 - p)$$
+$<MathInline expression={"E[X] = p, \\quad \\text{Var}(X) = p(1 - p)"} />$
 
 The variance is largest when $p = 0.5$ — maximum uncertainty — and shrinks to zero as $p$ approaches 0 or 1, where the outcome becomes nearly certain.
 
@@ -38,13 +44,21 @@ The Bernoulli distribution is the **atom** from which all the others are built. 
 
 Now run $n$ independent Bernoulli($p$) trials and count how many come up as 1. The count $X$ follows a **Binomial($n$, $p$)** distribution.
 
-$$P(X = k) = \binom{n}{k} p^k (1 - p)^{n-k}$$
+$<MathInline expression={"P(X = k) = \\binom{n}{k} p^k (1 - p)^{n-k}"} />$
 
 The formula has three pieces, and each one has a clear job:
 
-- $\binom{n}{k}$ — how many ways to choose which $k$ of the $n$ trials are successes
+- <MathInline expression={"\\binom{n}{k}"} /> — how many ways to choose which $k$ of the $n$ trials are successes
 - $p^k$ — the probability that those $k$ chosen trials all succeed
-- $(1 - p)^{n-k}$ — the probability that the remaining $n - k$ trials all fail
+- <MathInline expression={"(1 - p)^{n-k}"} /> — the probability that the remaining $n - k$ trials all fail
+
+### Theorem: Mean and variance of the Binomial
+
+For <MathInline expression={"X \\sim \\text{Binomial}(n, p)"} />:
+
+$<MathInline expression={"E[X] = np, \\quad \\text{Var}(X) = np(1-p)"} />$
+
+*Intuition via linearity of expectation.* Write $X = I_1 + I_2 + \cdots + I_n$ where each $I_k$ is a Bernoulli($p$) indicator. By linearity, $E[X] = \sum E[I_k] = np$. For the variance, independence lets variances add: <MathInline expression={"\\text{Var}(X) = \\sum \\text{Var}(I_k) = np(1-p)"} />. This is linearity of expectation doing real work — no messy combinatorial sums required.
 
 Picture the bar chart. It starts near zero at $k = 0$, rises to a peak near $k = np$, then falls back toward zero. The shape depends on $p$:
 
@@ -52,58 +66,143 @@ Picture the bar chart. It starts near zero at $k = 0$, rises to a peak near $k =
 - **$p$ near 0**: the bars are bunched on the left with a long tail to the right — skewed right
 - **$p$ near 1**: the bars are bunched on the right with a long tail to the left — skewed left
 
-**Example**: A basketball player shoots 20 free throws with 70% accuracy. The number of made shots follows Binomial(20, 0.7). The bar chart peaks near $np = 14$. Most of the probability mass sits between 11 and 17 — that is where the bars are tall. Getting exactly 20 is possible but the bar at $k = 20$ is tiny: $(0.7)^{20} \approx 0.0008$. Getting exactly 0 is even smaller: $(0.3)^{20}$, essentially invisible on the chart.
+**Example**: A basketball player shoots 20 free throws with 70% accuracy. The number of made shots follows Binomial(20, 0.7). The bar chart peaks near $np = 14$. Most of the probability mass sits between 11 and 17 — that is where the bars are tall. Getting exactly 20 is possible but the bar at $k = 20$ is tiny: <MathInline expression={"(0.7)^{20} \\approx 0.0008"} />. Getting exactly 0 is even smaller: <MathInline expression={"(0.3)^{20}"} />, essentially invisible on the chart.
+
+When $n = 1$, the Binomial collapses back to a Bernoulli. That is the family connection: Bernoulli($p$) is exactly Binomial(1, $p$).
+
+## The Geometric distribution: trials until the first success
+
+Instead of fixing the number of trials and counting successes, fix the goal — get one success — and ask how many trials it takes. The number of trials $X$ until the first success follows a **Geometric($p$)** distribution:
+
+$<MathInline expression={"P(X = k) = (1 - p)^{k-1} p, \\quad k = 1, 2, 3, \\ldots"} />$
+
+The story: you fail $k-1$ times in a row (probability <MathInline expression={"(1-p)^{k-1}"} />), then succeed once (probability $p$). The bar chart is strictly decreasing — $k = 1$ is always the tallest bar, because succeeding immediately is the most likely outcome. The tail stretches out to the right, thinning by a factor of $(1-p)$ at each step.
 
 The mean and variance:
 
-$$E[X] = np, \quad \text{Var}(X) = np(1 - p)$$
+$<MathInline expression={"E[X] = \\frac{1}{p}, \\quad \\text{Var}(X) = \\frac{1 - p}{p^2}"} />$
 
-When $n = 1$, the Binomial collapses back to a Bernoulli. That is the family connection: Bernoulli($p$) is exactly Binomial(1, $p$).
+If a free-throw shooter hits 70% ($p = 0.7$), the expected number of shots until the first make is $1/0.7 \approx 1.43$. If the success probability is tiny ($p = 0.01$), the expected wait balloons to 100 trials. The geometric distribution is the simplest model of **waiting time** — and it previews the exponential distribution for continuous waiting times in lesson 08.
 
 ## The Poisson distribution: events arriving in time
 
 Some situations involve counting events that occur at random moments — emails arriving in an hour, typos on a page, earthquakes in a decade. There is no fixed number of "trials" here. Instead, there is a **rate** $\lambda$ (average number of events per interval), and the count of events follows a **Poisson($\lambda$)** distribution.
 
-$$P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}$$
-
-The formula looks different from Binomial, but it is actually the limit of Binomial($n$, $p$) as $n$ grows large and $p$ shrinks small, while holding $np = \lambda$ constant. Imagine slicing an hour into tinier and tinier sub-intervals. In each sub-interval, the chance of an email arriving gets very small (tiny $p$), but there are very many sub-intervals (huge $n$). The Binomial bar chart converges to the Poisson bar chart.
+$<MathInline expression={"P(X = k) = \\frac{\\lambda^k e^{-\\lambda}}{k!}"} />$
 
 The Poisson bar chart peaks near $k = \lambda$ and has a **long right tail**. The right tail is longer than the left because counts cannot go below zero, but there is no upper bound — occasionally you get an unusually large number of events.
 
-**Example**: A server receives an average of $\lambda = 4$ requests per minute. The number of requests in any given minute follows Poisson(4). The tallest bar is at $k = 4$. The bar at $k = 0$ — a completely silent minute — has height $e^{-4} \approx 0.018$, about 1.8%. The bar at $k = 8$ — double the average — still has noticeable height, roughly 3%. That long tail is what makes the Poisson look distinctly lopsided compared to a symmetric bell curve.
+**Example**: A server receives an average of $\lambda = 4$ requests per minute. The number of requests in any given minute follows Poisson(4). The tallest bar is at $k = 4$. The bar at $k = 0$ — a completely silent minute — has height <MathInline expression={"e^{-4} \\approx 0.018"} />, about 1.8%. The bar at $k = 8$ — double the average — still has noticeable height, roughly 3%. That long tail is what makes the Poisson look distinctly lopsided compared to a symmetric bell curve.
 
 The mean and variance are both $\lambda$:
 
-$$E[X] = \lambda, \quad \text{Var}(X) = \lambda$$
+$<MathInline expression={"E[X] = \\lambda, \\quad \\text{Var}(X) = \\lambda"} />$
 
-The fact that mean equals variance is a signature property. If you observe data where the variance is much larger than the mean, Poisson is the wrong model — the events are "overdispersed," which points to a different story entirely.
+The fact that mean equals variance is a signature property. If you observe data where the variance is much larger than the mean, Poisson is the wrong model — the events are "overdispersed," which points to a different story entirely (such as the negative binomial).
 
-## The family portrait
+## Theorem: Poisson as a limit of the Binomial
 
-All three distributions are connected by a single thread: counting independent successes.
+If <MathInline expression={"X_n \\sim \\text{Binomial}(n, p_n)"} /> and $n p_n \to \lambda$ as $n \to \infty$ (so $p_n \to 0$), then for every fixed $k$:
 
-- **Bernoulli($p$)** is the base case — one trial, one count
-- **Binomial($n$, $p$)** stacks $n$ Bernoulli trials — count the yeses
-- **Poisson($\lambda$)** is Binomial pushed to the limit — many trials, tiny success probability, fixed expected count
+$<MathInline expression={"P(X_n = k) \\to \\frac{\\lambda^k e^{-\\lambda}}{k!}"} />$
 
-Imagine sliding a single knob: increase $n$ while decreasing $p$ to keep $np$ constant. The Binomial bar chart starts chunky and discrete, then the bars get thinner and more numerous, the shape smooths out, and you arrive at the Poisson bar chart. It is the same story — counting successes — told in a setting where the trials are so numerous and so unlikely that only the rate $\lambda$ matters.
+That is, the Binomial converges to the Poisson when the number of trials grows huge while the success probability shrinks tiny, holding the expected count $np = \lambda$ constant.
 
-Or wind the other direction: set $n = 1$ in the Binomial and the bar chart collapses to just two bars. You are back to Bernoulli.
+*Intuition.* Imagine slicing an hour into tinier and tinier sub-intervals. In each sub-interval, the chance of an email arriving gets very small (tiny $p$), but there are very many sub-intervals (huge $n$). The Binomial bar chart converges to the Poisson bar chart. The combinatorial coefficient <MathInline expression={"\\binom{n}{k}"} /> and the powers <MathInline expression={"p^k(1-p)^{n-k}"} /> conspire — through the limit <MathInline expression={"(1 - \\lambda/n)^n \\to e^{-\\lambda}"} /> — to produce the clean Poisson formula. This is why the Poisson is the universal model for **rare events in time or space**: it is the limit of Binomial counting when trials are numerous and individually unlikely.
 
-Understanding these relationships means you never have to memorize three separate distributions. You learn one story — independent trials, count the successes — and the three distributions are just that story told at different scales.
+## The family summary table
 
-Explore all three distributions below. Switch between Bernoulli, Binomial, and Poisson. Drag the parameter sliders and watch the bar chart reshape. Notice how Binomial(n, p) flattens as n grows and p shrinks toward the Poisson limit.
+| Distribution | Story | PMF | Mean | Variance |
+|---|---|---|---|---|
+| **Bernoulli($p$)** | One yes/no trial | <MathInline expression={"p^x(1-p)^{1-x}"} />, <MathInline expression={"x \\in \\{0,1\\}"} /> | $p$ | $p(1-p)$ |
+| **Binomial($n$, $p$)** | # successes in $n$ trials | <MathInline expression={"\\binom{n}{k}p^k(1-p)^{n-k}"} /> | $np$ | $np(1-p)$ |
+| **Geometric($p$)** | Trials until 1st success | <MathInline expression={"(1-p)^{k-1}p"} />, $k \geq 1$ | $1/p$ | $(1-p)/p^2$ |
+| **Poisson($\lambda$)** | # rare events in an interval | <MathInline expression={"\\lambda^k e^{-\\lambda}/k!"} /> | $\lambda$ | $\lambda$ |
 
-<DiscreteDistVis client:visible />
+Each row is one counting story at a different magnification. Bernoulli is one trial. Binomial stacks $n$ Bernoullis. Geometric counts trials until the first success. Poisson is Binomial pushed to the limit of many trials, tiny $p$, fixed expected count.
 
-## Key insight
+<FormulaReadout formulas={[
+  { label: "伯努利 (单次试验)", expression: "P(X=1) = p,\\quad P(X=0) = 1-p,\\quad E[X]=p" },
+  { label: "二项分布 (n 次试验)", expression: "P(X=k) = \\binom{n}{k} p^k (1-p)^{n-k},\\quad E[X]=np" },
+  { label: "几何分布 (直到首次成功)", expression: "P(X=k) = (1-p)^{k-1} p,\\quad E[X]=\\frac{1}{p}" },
+  { label: "泊松分布 (稀有事件)", expression: "P(X=k) = \\frac{\\lambda^k e^{-\\lambda}}{k!},\\quad E[X]=\\lambda,\\ \\text{Var}=\\lambda" },
+]} />
 
-> Every discrete distribution in this family is the same counting story at a different magnification: one trial (Bernoulli), many trials (Binomial), so many trials you lose count and only the rate matters (Poisson).
+## Three perspectives on the family
+
+1. **By story:** each distribution answers a different counting question. "Did it happen once?" (Bernoulli). "How many times in $n$ tries?" (Binomial). "How many tries until it happens?" (Geometric). "How many times in a fixed interval of time/space?" (Poisson). Match the story to your problem and the distribution is chosen for you.
+2. **By limit relationships:** Bernoulli is Binomial($1$, $p$). Binomial with large $n$ and small $p$ approaches Poisson. The family is a chain of limits, not a list of unrelated objects.
+3. **By mean-variance signature:** Bernoulli and Binomial have variance $< $ mean (when $p < 1$). Poisson has variance $=$ mean. Negative binomial (a cousin) has variance $>$ mean. Reading the mean-to-variance ratio tells you which family your data belongs to — a key diagnostic in modeling.
+
+## Modern applications
+
+**A/B testing and conversion rates.** Each visitor to a website either converts (success) or does not (failure) — a Bernoulli trial. Out of $n$ visitors, the number of conversions is Binomial($n$, $p$). Estimating $p$ and comparing it between two variants is the foundation of online experimentation, and the Binomial's variance $np(1-p)$ determines how large a sample you need for statistical significance.
+
+**Queueing and reliability.** The Poisson distribution models arrivals to a server (requests, customers, phone calls) when events occur independently at a constant average rate. The number of requests hitting a web server per second, the number of mutations in a stretch of DNA, the number of typos in a manuscript — all modeled as Poisson. The geometric distribution models the number of trials between failures, central to reliability engineering.
+
+**Machine learning and overdispersion.** Poisson regression is the standard model for count data (number of clicks, number of claims, number of defects). But real count data often has variance larger than the mean — overdispersion — which violates the Poisson signature and signals that a richer model (negative binomial, zero-inflated Poisson) is needed. Recognizing the mean-variance relationship is a core modeling skill.
+
+<KeyInsight>
+Every discrete distribution in this family is the same counting story at a different magnification: one trial (Bernoulli), many trials (Binomial), trials until the first success (Geometric), so many rare trials that only the rate matters (Poisson). Match the story to your problem and the distribution — with its mean and variance — is chosen for you.
+</KeyInsight>
+
+## Connections
+
+This lesson populates the **random variables** of [lesson 05](/courses/probability/05-random-variables) with concrete, recurring characters. Each distribution's mean and variance are computed with the tools of [lesson 06](/courses/probability/06-expectation-and-variance) — most cleanly via linearity of expectation, which derives the Binomial mean $np$ in one line by summing $n$ Bernoulli indicators.
+
+The Bernoulli-Binomial-Geometric-Poisson chain sets up the **continuous** half of the family in [lesson 08](/courses/probability/08-continuous-distributions): the exponential distribution is the continuous analog of the geometric (waiting time until the next event), and the Poisson process (Poisson counts per interval, exponential gaps between events) is the bridge between the two. The Poisson's mean-equals-variance property returns in [lesson 14](/courses/probability/14-concentration-inequalities) as a diagnostic for model fit. And the Binomial, for large $n$, approaches the **normal distribution** (lesson 09) — a special case of the central limit theorem (lesson 16) that explains why bell curves appear whenever many small independent counts are added up.
 
 ## Practice
 
-1. A fair coin is flipped 10 times. What is the probability of getting exactly 7 heads? Sketch the rough shape of the bar chart — where does it peak, and which tail is longer?
+<ExerciseBlock
+  number={1}
+  prompt="A fair coin is flipped 10 times. What is the probability of getting exactly 7 heads? Where does the bar chart peak, and which tail is longer?"
+  hint="Use the Binomial(10, 0.5) PMF. The peak is near np."
+  answer="P(X=7) = C(10,7) * (0.5)^7 * (0.5)^3 = 120 * (0.5)^10 = 120/1024 ≈ 0.117. The bar chart peaks near np = 5. Because p = 0.5, it is symmetric — neither tail is longer. The bars at 3 and 7 have the same height, as do 0 and 10. Symmetry of the Binomial is a signature of p = 0.5."
+/>
 
-2. A call center receives an average of 3 calls per minute. Model this with a Poisson distribution. What is $P(X = 0)$ — the probability of a completely silent minute? What about $P(X = 6)$? Which is larger, and does that match your intuition about where the bar chart peaks?
+<ExerciseBlock
+  number={2}
+  prompt="A call center receives an average of 3 calls per minute, modeled as Poisson(3). Compute P(X = 0) (a completely silent minute) and P(X = 6). Which is larger, and does that match your intuition about where the bar chart peaks?"
+  hint="P(X=k) = lambda^k e^{-lambda} / k!. Plug in lambda = 3."
+  answer="P(X=0) = 3^0 * e^{-3} / 0! = e^{-3} ≈ 0.0498 (about 5%). P(X=6) = 3^6 * e^{-3} / 6! = 729 * e^{-3} / 720 ≈ 729/720 * 0.0498 ≈ 1.0125 * 0.0498 ≈ 0.0504 (about 5%). They are nearly equal! The peak is at k = 3 (P(X=3) = 27 e^{-3}/6 ≈ 0.224). Since 6 is on the descending right tail and 0 is on the (shorter) left tail, their near-equality is a coincidence of the numbers. The right tail extends further than the left because counts are bounded below by 0 but unbounded above."
+/>
 
-3. A drug test has a 95% accuracy rate for detecting a disease when it is present, and a 1% false positive rate. If you test 200 healthy people, model the number of false positives as a Binomial. What are the mean and standard deviation? Roughly how many false positives would you expect?
+<ExerciseBlock
+  number={3}
+  prompt="A drug test has a 1% false positive rate. You test 200 healthy people. Model the number of false positives as a Binomial. What are the mean and standard deviation? Then approximate the same quantity with a Poisson and compare the means."
+  hint="Binomial(200, 0.01). Mean = np, Var = np(1-p), SD = sqrt(Var). For Poisson approximation, set lambda = np."
+  answer="Binomial: mean = 200 * 0.01 = 2. Variance = 200 * 0.01 * 0.99 = 1.98. SD = sqrt(1.98) ≈ 1.407. Poisson approximation with lambda = np = 2: mean = 2, variance = 2, SD ≈ 1.414. The means match exactly (both 2). The variances differ slightly (1.98 vs 2.0) — the Poisson slightly overestimates because it drops the (1-p) factor. For small p and large n, the Poisson is an excellent approximation, which is exactly the Poisson limit theorem at work."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="A baseball player has a 0.250 batting average. What is the expected number of at-bats until their next hit? What is the probability they go 10 at-bats without a hit? Which distribution models each quantity?"
+  hint="Batting average = p = 0.25. The number of at-bats until the first hit is Geometric(p). Going 10 at-bats with no hit means the first 10 trials all fail."
+  answer="Expected at-bats until the next hit: E[X] = 1/p = 1/0.25 = 4 at-bats (Geometric distribution). Probability of 10 at-bats with no hit: each at-bat is a miss with probability (1-p) = 0.75, so P(10 misses in a row) = 0.75^10 ≈ 0.0563, about 5.6%. Equivalently, P(X > 10) for Geometric(0.25) = (1-p)^10 = 0.75^10. The geometric distribution is the natural model for waiting time until the next success in repeated independent trials."
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="Use linearity of expectation to derive E[X] for a Binomial(n, p) random variable without using the PMF directly. Then explain why the same approach gives the variance when the trials are independent."
+  hint="Write X = I_1 + ... + I_n where I_k is a Bernoulli(p) indicator for trial k. E[I_k] = p. For variance under independence, variances of independent variables add."
+  answer="Write X = sum_{k=1}^n I_k, where I_k = 1 if trial k succeeds. Each I_k is Bernoulli(p), so E[I_k] = p. By linearity, E[X] = sum E[I_k] = np. For the variance: Var(I_k) = p(1-p). Because the trials are independent, the variance of the sum equals the sum of the variances: Var(X) = sum Var(I_k) = n p(1-p). Note linearity gives the mean with NO independence assumption; independence is needed only for the variance step. This is the cleanest derivation of the Binomial moments — no Stirling approximations, no messy sums."
+/>
+
+<ExerciseBlock
+  number={6}
+  prompt="You observe count data with mean 8 and variance 25. Explain why a Poisson model would be inappropriate. What does the variance being much larger than the mean tell you about the underlying process?"
+  hint="The Poisson distribution has a signature property relating its mean and variance. Compare them."
+  answer="For a Poisson distribution, mean = variance always. Here mean = 8 but variance = 25, which is more than 3 times the mean. This 'overdispersion' violates the Poisson signature, so Poisson is the wrong model. The large variance suggests the events are not arriving independently at a constant rate — there is clustering, heterogeneity, or contagion. For example, if emails arrive in bursts (a thread triggers replies), or if different hours have genuinely different rates, the count will be overdispersed. The negative binomial distribution, which has an extra parameter allowing variance > mean, is the standard replacement. Reading the mean-variance ratio is the first diagnostic when fitting count models."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="Prove the Poisson limit: show that if X_n ~ Binomial(n, p_n) with n*p_n = lambda fixed, then P(X_n = k) converges to lambda^k e^{-lambda} / k! for each fixed k. Explain the key limit step."
+  hint="Write p_n = lambda/n. Expand C(n,k) p_n^k (1-p_n)^{n-k} and take term-by-term limits. Use (1 - lambda/n)^n -> e^{-lambda} and C(n,k)/n^k -> 1/k!."
+  answer="Write the Binomial PMF with p_n = lambda/n: P(X_n = k) = C(n,k) (lambda/n)^k (1 - lambda/n)^{n-k}. Split into three factors. (1) C(n,k)/n^k = [n(n-1)...(n-k+1)] / (k! n^k) -> 1/k! as n -> infinity (the k fixed factors each tend to 1). (2) (lambda/n)^k contributes lambda^k. (3) (1 - lambda/n)^{n-k} = (1 - lambda/n)^n * (1 - lambda/n)^{-k} -> e^{-lambda} * 1 = e^{-lambda}, using the standard limit (1 - x/n)^n -> e^{-x} and the fact that (1 - lambda/n)^{-k} -> 1. Multiplying: P(X_n = k) -> (1/k!) * lambda^k * e^{-lambda} = lambda^k e^{-lambda} / k!. The key step is the limit (1 - lambda/n)^n -> e^{-lambda}, which is what converts the Binomial's (1-p)^(n-k) decay into the Poisson's exponential decay. This is the mathematical heart of 'rare events, many trials.'"
+/>
+
+---
+
+**Up next:** [Continuous distributions →](/courses/probability/08-continuous-distributions)

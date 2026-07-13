@@ -12,6 +12,14 @@ duration: 18
 difficulty: "Advanced"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 Some processes carry the full weight of their history. Where you go next depends on everywhere you have been. But there is a simpler, stranger class of processes where the past does not matter. Only the present state determines the future. These are **Markov chains**, and they are the workhorse model of stochastic processes.
 
 The Markov property is a radical simplification. It says: forget everything except where you are right now. The chain has no memory. It makes no distinction between a state you just arrived at and one you have occupied for a hundred steps. All that matters is the current position.
@@ -20,17 +28,25 @@ The Markov property is a radical simplification. It says: forget everything exce
 
 Formally, a sequence of random variables $X_0, X_1, X_2, \ldots$ is a Markov chain if:
 
+### Theorem: The Markov property (memorylessness)
+
+For all states $i, j$ and all possible histories <MathInline expression={"i_0, i_1, \\ldots, i_{n-1}"} />:
+
 $$P(X_{n+1} = j \mid X_n = i, X_{n-1} = i_{n-1}, \ldots, X_0 = i_0) = P(X_{n+1} = j \mid X_n = i)$$
 
-The conditional probability of the next state, given the entire history, reduces to the conditional probability given only the current state. The past is summarized completely by the present.
+The conditional probability of the next state, given the *entire* history, reduces to the conditional probability given only the current state. The past is summarized completely by the present.
+
+*Why this matters.* The Markov property is what makes stochastic processes tractable. Without it, predicting the next state would require remembering the entire trajectory — the state space would grow exponentially with time. With it, the current state is a **sufficient statistic** for the future. You can throw away the history.
 
 Think of it as a board game. You land on a square. What happens next depends only on which square you are on — not on the path you took to get there. The board does not remember your journey.
 
+The [random walk](/courses/probability/24-random-walks) of lesson 24 is the simplest Markov chain: the next position is the current position plus or minus 1, regardless of how you got there. The [Poisson process](/courses/probability/26-poisson-processes) of lesson 26 is the continuous-time analog.
+
 ## The transition matrix
 
-For a Markov chain with a finite set of states, the dynamics are encoded in a **transition matrix** $P$. The entry $P_{ij}$ is the probability of moving from state $i$ to state $j$ in one step:
+For a Markov chain with a finite set of states, the dynamics are encoded in a **transition matrix** $P$. The entry <MathInline expression={"P_{ij}"} /> is the probability of moving from state $i$ to state $j$ in one step:
 
-$$P_{ij} = P(X_{n+1} = j \mid X_n = i)$$
+<MathInline expression={"P_{ij} = P(X_{n+1} = j \\mid X_n = i)"} />
 
 Each row of $P$ is a probability distribution — it sums to 1, because from any state $i$, the chain must go *somewhere*. The transition matrix is a complete description of the chain's dynamics. Given $P$, you can compute the probability of any future path.
 
@@ -52,27 +68,31 @@ As a matrix:
 
 If today is sunny, the probability it is rainy the day after tomorrow is:
 
-$P(\text{rainy in 2 steps} \mid \text{sunny today}) = P_{S,C} \cdot P_{C,R} + P_{S,S} \cdot P_{S,R} + P_{S,R} \cdot P_{R,R}$
+<MathInline expression={"P(\\text{rainy in 2 steps} \\mid \\text{sunny today}) = P_{S,C} \\cdot P_{C,R} + P_{S,S} \\cdot P_{S,R} + P_{S,R} \\cdot P_{R,R}"} />
 
-$= 0.2 \times 0.3 + 0.7 \times 0.1 + 0.1 \times 0.5 = 0.18$
+$$= 0.2 \times 0.3 + 0.7 \times 0.1 + 0.1 \times 0.5 = 0.18$$
 
-Multi-step transitions are matrix powers. The probability of going from $i$ to $j$ in exactly $n$ steps is the $(i,j)$ entry of $P^n$.
+Multi-step transitions are matrix powers. The probability of going from $i$ to $j$ in exactly $n$ steps is the $(i,j)$ entry of $P^n$. This is the power of the matrix formulation: forecasting $n$ steps ahead is just matrix multiplication.
 
 ## Visualizing a Markov chain: the state diagram
 
-The most natural picture of a Markov chain is a **directed graph** with weighted edges. Each state is a node. Each possible transition is an arrow from state $i$ to state $j$, labeled with probability $P_{ij}$.
+The most natural picture of a Markov chain is a **directed graph** with weighted edges. Each state is a node. Each possible transition is an arrow from state $i$ to state $j$, labeled with probability <MathInline expression={"P_{ij}"} />.
 
 The arrows tell you where the flow goes. A state with thick outgoing arrows to its neighbors is "sticky" — the chain tends to visit it often. A state with thin incoming arrows and thick outgoing arrows is "transient" — the chain passes through but rarely returns.
 
 Look at the weather diagram. The rainy state has a thick self-loop ($0.5$). Once it starts raining, it tends to keep raining. The sunny state also has a thick self-loop ($0.7$) — sunny days cluster. This is the visual fingerprint of **persistence**.
 
-## Stationary distribution
+## Stationary distributions
 
 Run the weather chain for a long time. After many steps, the probability of being in each state stabilizes. The chain settles into a **stationary distribution** $\pi$, satisfying:
 
-$$\pi = \pi P$$
+### Theorem: Stationary distribution
 
-The stationary distribution is a row vector that does not change when multiplied by the transition matrix. It is a fixed point of the row-matrix product.
+A probability vector $\pi$ is a **stationary distribution** of the transition matrix $P$ if:
+
+$$\pi = \pi P, \qquad \sum_i \pi_i = 1, \qquad \pi_i \geq 0$$
+
+When the chain's distribution reaches $\pi$, it stays there forever: multiplying by $P$ leaves it unchanged. $\pi$ is a fixed point (eigenvector with eigenvalue 1) of the row-matrix product.
 
 For the weather chain, solving $\pi = \pi P$ with $\pi_S + \pi_C + \pi_R = 1$ gives approximately:
 
@@ -80,24 +100,179 @@ $$\pi_S \approx 0.48, \quad \pi_C \approx 0.27, \quad \pi_R \approx 0.25$$
 
 In the long run, this climate is sunny about 48% of the time, cloudy 27%, rainy 25%. The chain has "forgotten" where it started. Whether you begin in blazing sun or pouring rain, the distribution of states after enough steps is the same.
 
-This is the ergodic property: the chain mixes. It explores the state space according to the stationary distribution, regardless of the starting point. Not all chains do this (some get trapped in subsets of states), but for chains that are **irreducible** (every state can reach every other state) and **aperiodic** (the chain does not cycle in lockstep), the stationary distribution is the long-run attractor.
+This forgetting is the **ergodic property**: the chain mixes. It explores the state space according to the stationary distribution, regardless of the starting point. Not all chains do this — some get trapped in subsets of states — but for chains that are **irreducible** (every state can reach every other state) and **aperiodic** (the chain does not cycle in lockstep), the stationary distribution is the unique long-run attractor.
 
-## PageRank: a giant Markov chain
+<FormulaReadout formulas={[
+  { label: "马尔可夫性质 (无记忆)", expression: "P(X_{n+1}=j \\mid X_n=i, \\ldots) = P(X_{n+1}=j \\mid X_n=i)" },
+  { label: "平稳分布方程", expression: "\\pi = \\pi P, \\quad \\sum_i \\pi_i = 1" },
+  { label: "细致平衡 (可逆性)", expression: "\\pi_i P_{ij} = \\pi_j P_{ji}" },
+  { label: "遍历定理 (时间均值 = 集合均值)", expression: "\\frac{1}{N}\\sum_{t=1}^N f(X_t) \\to E_\\pi[f]" },
+]} />
+
+## Detailed balance and reversibility
+
+There is a beautiful condition that guarantees a distribution is stationary, and it is far easier to check than solving $\pi = \pi P$ directly. It is called **detailed balance** (or **reversibility**).
+
+### Theorem: Detailed balance (reversibility)
+
+A Markov chain with transition matrix $P$ and distribution $\pi$ satisfies **detailed balance** if, for every pair of states $i, j$:
+
+$$\pi_i P_{ij} = \pi_j P_{ji}$$
+
+The probability flux from $i$ to $j$ equals the flux from $j$ to $i$. If detailed balance holds, then $\pi$ is a stationary distribution.
+
+*Proof.* Sum detailed balance over all $i$: <MathInline expression={"\\sum_i \\pi_i P_{ij} = \\sum_i \\pi_j P_{ji} = \\pi_j \\sum_i P_{ji} = \\pi_j \\cdot 1 = \\pi_j"} />, since each row of $P$ sums to 1. The left side is the $(j)$-th entry of $\pi P$. So $\pi P = \pi$.
+
+*Intuition.* Detailed balance says the chain is in **equilibrium at every pair of states** — the flow from $i$ to $j$ exactly cancels the flow from $j$ to $i$. There is no net probability current anywhere. A chain satisfying detailed balance is **reversible**: if you film it in equilibrium and play the film backward, the statistics look identical. You cannot tell time's direction from the trajectory.
+
+Not every stationary distribution satisfies detailed balance (chains with "cycles" of probability flow do not), but every chain that does is far easier to analyze. Detailed balance is the foundation of MCMC: it is the condition that guarantees a sampler targets the right distribution.
+
+## The ergodic theorem
+
+The deepest result about Markov chains is the **ergodic theorem**. It says: for an irreducible, aperiodic chain, the long-run fraction of time spent in each state converges to the stationary probability — and more generally, time averages converge to expectation under $\pi$.
+
+### Theorem: Ergodic theorem for Markov chains
+
+For an irreducible, aperiodic Markov chain with stationary distribution $\pi$, for any bounded function $f$ on the state space:
+
+$$\frac{1}{N}\sum_{t=1}^N f(X_t) \;\xrightarrow{N \to \infty}\; E_\pi[f] = \sum_i \pi_i f(i)$$
+
+with probability 1, regardless of the starting state.
+
+This is the Markov chain analog of the Law of Large Numbers. The **time average** (how often each state is visited along a single long trajectory) equals the **ensemble average** (the expectation under the stationary distribution). You do not need to run many independent chains — one sufficiently long chain explores the state space according to $\pi$.
+
+This is the theorem that makes MCMC work (see below): you estimate any posterior expectation by averaging a function over a long Markov chain trajectory. The ergodic theorem guarantees the average converges to the truth.
+
+*Conditions.* The chain must be:
+- **Irreducible**: it is possible to get from any state to any other state (possibly in multiple steps). The chain explores the whole space.
+- **Aperiodic**: the chain does not get stuck in a deterministic cycle (e.g., alternating between two states with probability 1). A self-loop anywhere guarantees aperiodicity.
+
+## MCMC: the killer application
+
+The most consequential application of Markov chains in modern statistics and machine learning is **Markov Chain Monte Carlo (MCMC)**. MCMC solves the central problem of Bayesian inference (see [lesson 23](/courses/probability/23-bayesian-inference-in-practice)): how to sample from a posterior distribution that has no closed form.
+
+The idea is profound: **construct a Markov chain whose stationary distribution is the posterior, then run it and collect samples.** The ergodic theorem guarantees that the empirical distribution of samples converges to the posterior.
+
+### The Metropolis-Hastings algorithm
+
+The most foundational MCMC algorithm, **Metropolis-Hastings**, constructs such a chain using detailed balance:
+
+1. **Target**: a distribution $\pi(\theta)$ known up to a normalizing constant (the posterior, proportional to likelihood times prior).
+2. **Proposal**: a distribution $q(\theta^* \mid \theta)$ from which you can easily sample (e.g., a Gaussian centered at the current $\theta$).
+3. **Acceptance probability**: move from $\theta$ to $\theta^*$ with probability:
+
+<MathInline expression={"\\alpha(\\theta, \\theta^*) = \\min\\!\\left(1,\\; \\frac{\\pi(\\theta^*)\\, q(\\theta \\mid \\theta^*)}{\\pi(\\theta)\\, q(\\theta^* \\mid \\theta)}\\right)"} />
+
+4. Otherwise, stay at $\theta$.
+
+### Theorem: Metropolis-Hastings targets the posterior
+
+The Metropolis-Hastings transition kernel satisfies **detailed balance** with respect to $\pi$:
+
+$$\pi(\theta)\, P(\theta \to \theta^*) = \pi(\theta^*)\, P(\theta^* \to \theta)$$
+
+Therefore $\pi$ is the stationary distribution. By the ergodic theorem, the chain's samples converge to the posterior, and sample averages converge to posterior expectations.
+
+*Why this works.* The acceptance probability is chosen precisely to enforce detailed balance. The normalizing constant of $\pi$ cancels in the ratio <MathInline expression={"\\pi(\\theta^*)/\\pi(\\theta)"} /> — this is the magic that lets MCMC sample from posteriors without computing the intractable integral. This single algorithm, discovered in the 1950s (for physics) and imported into statistics in the 1990s, powers modern Bayesian inference: Stan, PyMC, NumPyro, and most probabilistic programming.
+
+## Hidden Markov models (HMMs)
+
+Many real systems have a **hidden** state that evolves as a Markov chain, while you observe only noisy emissions that depend on the hidden state. These are **Hidden Markov Models** (HMMs), and they are everywhere.
+
+### The HMM structure
+
+- A hidden Markov chain <MathInline expression={"X_1, X_2, \\ldots"} /> with transition matrix $P$.
+- Observations <MathInline expression={"Y_1, Y_2, \\ldots"} /> where <MathInline expression={"P(Y_t \\mid X_t)"} /> is the **emission distribution**.
+- The observed sequence is a probabilistic function of the hidden state sequence.
+
+Three canonical HMM problems, each with a classical algorithm:
+
+| Problem | Question | Algorithm |
+|---|---|---|
+| **Evaluation** | How likely is the observed sequence? | Forward algorithm |
+| **Decoding** | What is the most likely hidden state sequence? | Viterbi algorithm |
+| **Learning** | What are the transition and emission parameters? | Baum-Welch (EM) |
+
+**Applications.** Speech recognition (hidden = phoneme, observed = acoustic signal). Bioinformatics (hidden = gene structure, observed = DNA sequence). Part-of-speech tagging (hidden = grammatical tag, observed = word). Activity recognition (hidden = activity, observed = sensor readings). Finance (hidden = market regime, observed = returns). HMMs are the workhorse model for any time series with a discrete latent structure.
+
+## PageRank: the web as a Markov chain
 
 Google's original PageRank algorithm treats web surfing as a Markov chain. The states are web pages. The transitions are links: from page $i$, the surfer follows a random outgoing link with uniform probability. The stationary distribution gives the long-run fraction of time a random surfer spends on each page — which is taken as a measure of importance.
 
 There is a twist: with probability $\alpha$ (typically 0.85), the surfer follows a link. With probability $1 - \alpha$, the surfer jumps to a random page anywhere on the web. This "teleportation" ensures the chain is irreducible and aperiodic, guaranteeing a unique stationary distribution. Pages with many incoming links from important pages rank high — the stationary probability flows toward them through the link structure.
 
-The entire web, reduced to a single matrix equation. Billions of states, one stationary distribution.
+The PageRank vector is the **leading eigenvector** of the modified transition matrix (the Google matrix). Computing it for billions of pages is one of the largest eigenvalue computations ever performed. The entire web, reduced to a single matrix equation: find $\pi$ such that $\pi = \pi G$.
 
-## Key insight
+## Three perspectives on Markov chains
 
-> A Markov chain is a memoryless process governed by a transition matrix. Run it long enough and it forgets its starting point, settling into a stationary distribution that depends only on the transition probabilities — not on where it began. The past is washed away; only the transition structure remains.
+1. **As a dynamical system with randomness.** A Markov chain is a stochastic process whose evolution is governed by a transition matrix. Multi-step dynamics are matrix powers; the long-run behavior is governed by the eigenstructure of $P$ (the largest eigenvalue is 1, with eigenvector $\pi$). This is the linear-algebraic view, and it makes the connection to PageRank and spectral graph theory immediate.
+2. **As a model of sequential data.** Many real-world sequences — weather, speech, genes, market regimes, user behavior — are well-modeled by a Markov chain (or a hidden Markov chain). The transition matrix captures the local dynamics, and the stationary distribution captures the long-run statistics. This is the modeling view that underlies HMMs and their modern descendants (state-space models, recurrent neural networks).
+3. **As a computational device (MCMC).** A Markov chain can be deliberately constructed to have a desired stationary distribution, then run to generate samples from it. This is MCMC — the bridge from Markov chain theory to Bayesian inference. The detailed balance condition is the design criterion, and the ergodic theorem is the convergence guarantee. This view has transformed computational statistics and probabilistic machine learning.
+
+## Modern applications
+
+**Probabilistic programming (Stan, PyMC, NumPyro).** Every modern Bayesian inference framework runs on MCMC. The No-U-Turn Sampler (NUTS), a variant of Hamiltonian Monte Carlo, constructs a Markov chain over the parameter space whose stationary distribution is the posterior. The ergodic theorem guarantees convergence; detailed balance guarantees correctness. When you call `fit()` in PyMC, you are running a Markov chain.
+
+**Reinforcement learning.** The agent's trajectory through the environment is a Markov chain (the Markov decision process, or MDP). The state transitions are governed by the environment's dynamics; the policy determines the actions. The value function and Q-function are expectations computed under the stationary distribution of the policy-induced chain. Policy gradient methods estimate these expectations from sampled trajectories — the ergodic theorem in action.
+
+**Natural language processing.** Language models can be viewed as (very large) Markov chains: the next-token distribution conditions on the current context. A bigram model is a first-order Markov chain on words; modern transformer LMs condition on a long context but still produce text token-by-token via a Markov-like process. The stationary distribution of a language model is its "typical text" — a concept explored in the next lesson's finale.
+
+**Graph algorithms.** Random walks on graphs (a Markov chain where states are nodes and transitions follow edges) power recommendation systems (Pinwalk at Pinterest), community detection, and semi-supervised learning. PageRank itself is a random-walk algorithm. The stationary distribution of a graph random walk measures node importance.
+
+<KeyInsight>
+A Markov chain is a memoryless process governed by a transition matrix P. The Markov property (the next state depends only on the current one) makes the process tractable: multi-step transitions are matrix powers, and the long-run behavior is captured by the stationary distribution (the solution to pi = pi P). Detailed balance (pi_i P_ij = pi_j P_ji) is the easier-to-check condition that guarantees stationarity and makes the chain reversible. The ergodic theorem — time averages converge to ensemble averages — is what lets a single long chain estimate any expectation, and it is the foundation of MCMC: construct a chain whose stationary distribution is your posterior, run it, and collect samples. From Bayesian inference to PageRank to speech recognition, Markov chains are the connective tissue of modern probabilistic computing.
+</KeyInsight>
+
+## Connections
+
+This lesson builds directly on the [random walk](/courses/probability/24-random-walks) (lesson 24), which is the simplest Markov chain — its next position depends only on the current one. The recurrence vs transience of random walks (Polya's theorem) generalizes to the classification of Markov chain states as recurrent or transient. The [expectation](/courses/probability/06-expectation-and-variance) machinery (lesson 06) underlies the ergodic theorem: the stationary distribution is a kind of long-run average, and the ergodic convergence is a Markov-chain version of the [Law of Large Numbers](/courses/probability/14-law-of-large-numbers).
+
+Forward, [Poisson processes](/courses/probability/26-poisson-processes) (lesson 26) are the continuous-time analog: where a discrete-time Markov chain takes steps at integer times, a continuous-time Markov chain (of which the Poisson process is the simplest example) takes steps at random exponential times. The MCMC connection runs backward to [Bayesian inference in practice](/courses/probability/23-bayesian-inference-in-practice) (lesson 23): MCMC is the computational engine that makes Bayesian inference practical for models without conjugate priors. Detailed balance and the ergodic theorem are the two theorems that guarantee MCMC works. The finale ([lesson 27](/courses/probability/27-where-probability-meets-the-world)) connects Markov chains to information theory (stationary distributions maximize entropy under constraints) and to statistical mechanics (the Boltzmann distribution is the stationary distribution of physical dynamics).
 
 ## Practice
 
-**Exercise 1.** A Markov chain has two states, $A$ and $B$. From $A$, the chain moves to $B$ with probability 0.6 and stays at $A$ with probability 0.4. From $B$, the chain moves to $A$ with probability 0.3 and stays at $B$ with probability 0.7. Write the transition matrix. Find the stationary distribution $\pi = (\pi_A, \pi_B)$ by solving $\pi = \pi P$.
+<ExerciseBlock number={1}
+  prompt="A Markov chain has two states, A and B. From A, the chain moves to B with probability 0.6 and stays at A with probability 0.4. From B, the chain moves to A with probability 0.3 and stays at B with probability 0.7. Write the transition matrix. Find the stationary distribution pi = (pi_A, pi_B) by solving pi = pi P."
+  hint="The transition matrix P has rows summing to 1. Solve pi_A = 0.4*pi_A + 0.3*pi_B and pi_A + pi_B = 1."
+  answer="The transition matrix is P = [[0.4, 0.6], [0.3, 0.7]] (row A, row B). To find the stationary distribution, solve pi = pi P: pi_A = 0.4*pi_A + 0.3*pi_B and pi_B = 0.6*pi_A + 0.7*pi_B, with pi_A + pi_B = 1. From the first equation: pi_A - 0.4*pi_A = 0.3*pi_B, so 0.6*pi_A = 0.3*pi_B, so pi_B = 2*pi_A. Substituting into pi_A + pi_B = 1: pi_A + 2*pi_A = 1, so pi_A = 1/3 and pi_B = 2/3. The stationary distribution is pi = (1/3, 2/3). In the long run, the chain spends twice as much time in B as in A — which makes sense because B is 'stickier' (0.7 self-loop vs 0.4 for A)."
+/>
 
-**Exercise 2.** Consider the weather Markov chain from the lesson. Suppose today is rainy. Compute the probability that it is rainy two days from now using the matrix product $P^2$. Verify your answer by computing $P^2$ (multiply $P$ by itself) and reading off the appropriate entry.
+<ExerciseBlock number={2}
+  prompt="Consider the weather Markov chain from the lesson. Suppose today is rainy. Compute the probability that it is rainy two days from now using the matrix product P^2. Verify your answer by computing P^2 (multiply P by itself) and reading off the appropriate entry."
+  hint="P(rainy in 2 steps | rainy) is the (R,R) entry of P^2. Compute the dot product of row R of P with column R of P."
+  answer="The (R,R) entry of P^2 is the dot product of row R of P with column R of P. Row R of P = (0.2, 0.3, 0.5). Column R of P = (0.1, 0.3, 0.5). Dot product: 0.2*0.1 + 0.3*0.3 + 0.5*0.5 = 0.02 + 0.09 + 0.25 = 0.36. So P(rainy in 2 days | rainy today) = 0.36. Interpretation: starting rainy, the next day is rainy with prob 0.5, cloudy 0.3, sunny 0.2. From each of those, the prob of reaching rainy on day 2 is 0.5 (from rainy), 0.3 (from cloudy), 0.1 (from sunny). Weighted: 0.5*0.5 + 0.3*0.3 + 0.2*0.1 = 0.25 + 0.09 + 0.02 = 0.36. Notice 0.36 is higher than the stationary probability of rainy (0.25) — the chain is still 'remembering' that it started rainy, but it is converging toward the stationary distribution."
+/>
 
-**Exercise 3.** A rat runs through a maze of three rooms. From Room 1, it always goes to Room 2. From Room 2, it goes to Room 1 or Room 3 with equal probability. From Room 3, it always goes to Room 2. Draw the state diagram. Write the transition matrix. Find the stationary distribution. Which room does the rat visit most often in the long run, and why does this make intuitive sense?
+<ExerciseBlock number={3}
+  prompt="A rat runs through a maze of three rooms. From Room 1, it always goes to Room 2. From Room 2, it goes to Room 1 or Room 3 with equal probability. From Room 3, it always goes to Room 2. Draw the state diagram. Write the transition matrix. Find the stationary distribution. Which room does the rat visit most often in the long run, and why does this make intuitive sense?"
+  hint="The transition matrix is P = [[0,1,0],[0.5,0,0.5],[0,1,0]]. Notice Room 2 is a 'hub.'"
+  answer="State diagram: Room 1 <-> Room 2 <-> Room 3, with Room 2 connecting to both. Transition matrix P = [[0,1,0],[0.5,0,0.5],[0,1,0]] (rows: Room 1, 2, 3). Stationary distribution: solve pi = pi P. pi_1 = 0.5*pi_2, pi_2 = pi_1 + pi_3, pi_3 = 0.5*pi_2, and pi_1 + pi_2 + pi_3 = 1. From the first and third equations: pi_1 = pi_3 = 0.5*pi_2. Substituting: 0.5*pi_2 + pi_2 + 0.5*pi_2 = 1, so 2*pi_2 = 1, pi_2 = 0.5, pi_1 = pi_3 = 0.25. Stationary distribution: (0.25, 0.5, 0.25). The rat spends half its time in Room 2 and a quarter each in Rooms 1 and 3. This makes intuitive sense: Room 2 is a 'hub' that every path must pass through. To get from Room 1 to Room 3, the rat must go through Room 2. This hub structure concentrates the stationary probability on Room 2. Note: this chain is periodic (period 2 — the rat alternates between Room 2 and {Room 1, Room 3}), so strictly the stationary distribution describes the long-run FRACTION of time spent in each state, but the distribution at a specific step oscillates."
+/>
+
+<ExerciseBlock number={4}
+  prompt="Verify detailed balance for the following chain. States {1, 2}. P(1 -> 2) = 0.4, P(2 -> 1) = 0.6. The stationary distribution is pi = (0.6, 0.4). Check whether pi_i P_ij = pi_j P_ji for the pair (1,2). Does this chain satisfy detailed balance?"
+  hint="Compute pi_1 * P(1->2) and pi_2 * P(2->1). Are they equal?"
+  answer="Detailed balance requires pi_1 * P_12 = pi_2 * P_21. Compute: pi_1 * P_12 = 0.6 * 0.4 = 0.24. pi_2 * P_21 = 0.4 * 0.6 = 0.24. They are equal, so detailed balance holds for this pair. Since there are only two states, detailed balance holds for the whole chain. We can verify pi is stationary: (pi P)_1 = pi_1*P_11 + pi_2*P_21 = 0.6*0.6 + 0.4*0.6 = 0.36 + 0.24 = 0.6 = pi_1. Check. (pi P)_2 = pi_1*P_12 + pi_2*P_22 = 0.6*0.4 + 0.4*0.4 = 0.24 + 0.16 = 0.4 = pi_2. Check. The chain is reversible: if you run it in equilibrium and play the recording backward, the statistics are identical. The flow from 1 to 2 (0.24 per step) exactly equals the flow from 2 to 1 (0.24 per step) — no net current."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Explain in your own words why the Metropolis-Hastings acceptance probability alpha(theta, theta*) = min(1, [pi(theta*) q(theta | theta*)] / [pi(theta) q(theta* | theta)]) guarantees that the chain has pi as its stationary distribution. What role does detailed balance play?"
+  hint="Show pi(theta) * P(theta -> theta*) = pi(theta*) * P(theta* -> theta) using the acceptance probability. The normalizing constant of pi cancels."
+  answer="The Metropolis-Hastings transition kernel moves from theta to theta* with probability q(theta* | theta) * alpha(theta, theta*), or stays at theta with the remaining probability. To verify pi is stationary, we check detailed balance: pi(theta) * P(theta -> theta*) should equal pi(theta*) * P(theta* -> theta). Assume WLOG that the ratio r = [pi(theta*) q(theta | theta*)] / [pi(theta) q(theta* | theta)] >= 1, so alpha(theta, theta*) = 1 (accept) and alpha(theta*, theta) = 1/r (the reciprocal case). Then: pi(theta) * P(theta -> theta*) = pi(theta) * q(theta* | theta) * 1 = pi(theta) * q(theta* | theta). And pi(theta*) * P(theta* -> theta) = pi(theta*) * q(theta | theta*) * (1/r) = pi(theta*) * q(theta | theta*) * [pi(theta) q(theta* | theta)] / [pi(theta*) q(theta | theta*)] = pi(theta) * q(theta* | theta). They are equal — detailed balance holds. Since detailed balance holds, pi is stationary (summing over theta gives pi P = pi). The crucial point: the ratio pi(theta*)/pi(theta) is all that appears, so the normalizing constant of pi cancels. This is why MCMC can target an UNNORMALIZED posterior — the intractable integral never needs to be computed."
+/>
+
+<ExerciseBlock number={6}
+  prompt="A hidden Markov model has two hidden states (H1, H2) with transition matrix P = [[0.8, 0.2],[0.3, 0.7]]. The emission distributions are: from H1, observe 'A' with prob 0.9 and 'B' with prob 0.1; from H2, observe 'A' with prob 0.2 and 'B' with prob 0.8. You observe the sequence 'A', 'B'. Given that the chain starts in H1 with probability 0.5, what is the probability of observing this sequence? (This is the forward algorithm — do one step of it.)"
+  hint="Use the forward recursion: alpha_t(j) = [sum_i alpha_{t-1}(i) P_ij] * P(obs_t | H_j). Start with alpha_0(i) = pi(i) * P(obs_0 | H_i)."
+  answer="Forward algorithm. Step 0 (observe 'A'): alpha_0(H1) = pi(H1) * P('A' | H1) = 0.5 * 0.9 = 0.45. alpha_0(H2) = pi(H2) * P('A' | H2) = 0.5 * 0.2 = 0.10. Step 1 (observe 'B'): alpha_1(H1) = [alpha_0(H1)*P(H1->H1) + alpha_0(H2)*P(H2->H1)] * P('B' | H1) = [0.45*0.8 + 0.10*0.3] * 0.1 = [0.36 + 0.03] * 0.1 = 0.39 * 0.1 = 0.039. alpha_1(H2) = [alpha_0(H1)*P(H1->H2) + alpha_0(H2)*P(H2->H2)] * P('B' | H2) = [0.45*0.2 + 0.10*0.7] * 0.8 = [0.09 + 0.07] * 0.8 = 0.16 * 0.8 = 0.128. Total probability of the observed sequence = alpha_1(H1) + alpha_1(H2) = 0.039 + 0.128 = 0.167. This is the evaluation problem solved by the forward algorithm: dynamic programming over hidden states, avoiding enumeration of all 2^2 = 4 possible hidden paths. For a sequence of length T with N hidden states, the forward algorithm is O(T*N^2) instead of O(T*N^T)."
+/>
+
+<ExerciseBlock number={7}
+  prompt="State the ergodic theorem for Markov chains in your own words and explain why it is the foundation of MCMC. Specifically: if you run a Metropolis-Hastings sampler targeting a posterior p(theta | data) for N steps, producing samples theta_1, ..., theta_N, what does the theorem guarantee about the average (1/N) sum f(theta_t)?"
+  hint="Time average converges to ensemble average (expectation under the stationary distribution). The stationary distribution of the MCMC chain is the posterior."
+  answer="The ergodic theorem states: for an irreducible, aperiodic Markov chain with stationary distribution pi, the time average of any function f converges to the expectation of f under pi, almost surely: (1/N) sum_{t=1}^N f(X_t) -> E_pi[f] = sum_x pi(x) f(x), regardless of the starting state. For MCMC: a Metropolis-Hastings sampler targeting the posterior p(theta | data) constructs a Markov chain whose stationary distribution IS the posterior (guaranteed by detailed balance). The chain is irreducible (it can reach any region with positive posterior probability) and aperiodic (the 'stay put' option when a proposal is rejected provides a self-loop). Therefore, by the ergodic theorem, (1/N) sum_{t=1}^N f(theta_t) -> E_posterior[f(theta)] = integral of f(theta) p(theta | data) d theta. So any posterior expectation — the posterior mean, the probability of a hypothesis, a credible interval boundary — can be estimated by averaging f over the MCMC samples. This is profound: it converts integration (hard) into sampling (tractable). You never need to compute the posterior analytically; you just need to run the chain long enough. The error shrinks like 1/sqrt(N) (with a correction for the chain's autocorrelation), so quadrupling the run halves the error."
+/>
+
+---
+
+**Up next:** [Poisson Processes →](/courses/probability/26-poisson-processes)

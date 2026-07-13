@@ -12,6 +12,14 @@ duration: 14
 difficulty: "Advanced"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 Flip a coin. What does "the probability of heads is 0.5" actually *mean*? Most people answer without thinking: it means heads comes up half the time. But that answer hides a deep philosophical divide — one that has split statisticians into two camps for over a century.
 
 This lesson is about that divide. Not to declare a winner, but to understand what each camp sees when they look at the same data. Because the math is the same. The disagreement is about what the numbers *mean*.
@@ -30,6 +38,14 @@ The consequences of this view run deep:
 - **Uncertainty lives in the procedure, not the parameter.** A 95% confidence interval does *not* mean "there is a 95% chance the true value is in this interval." The true value is fixed — it is either in the interval or it isn't. The 95% refers to the **procedure**: if you repeated the experiment infinitely many times, 95% of the intervals constructed this way would contain the true value.
 
 This last point trips up nearly everyone. The frequentist cannot make probability statements about parameters, because parameters are not random.
+
+### Theorem: The frequentist definition of probability
+
+The probability of an event $A$ is the limit of its relative frequency in infinitely many independent replications:
+
+$$P(A) = \lim_{n \to \infty} \frac{n(A)}{n}$$
+
+where $n(A)$ is the number of times event $A$ occurs in $n$ trials. This is grounded by the Law of Large Numbers: the relative frequency converges almost surely to the underlying probability.
 
 ## The Bayesian view
 
@@ -52,37 +68,161 @@ Imagine I hand you a coin and ask you to estimate the probability of heads.
 
 **The frequentist flips it 100 times, counts 58 heads, and reports:**
 
-$$\hat{p} = 0.58$$
+<MathInline expression={"\\hat{p} = 0.58"} />
 
 along with a confidence interval. The estimate is the point on the number line where the likelihood peaks. The confidence interval is the range that would, in repeated experiments, cover the true value 95% of the time. The true $p$ is a fixed dot somewhere on the line. The interval is a net cast around it.
 
 **The Bayesian starts with a prior — say Beta(2,2), a gentle hill centered at 0.5 — then flips the coin 100 times, sees 58 heads, and reports:**
 
-$$p \mid \text{data} \sim \text{Beta}(60, 44)$$
+<MathInline expression={"p \\mid \\text{data} \\sim \\text{Beta}(60, 44)"} />
 
 The posterior is a full distribution. It peaks near 0.58, but it also shows *how wide* the remaining uncertainty is. You can read off the probability that $p > 0.5$ (it is about 94%). You can read off a credible interval. You can feed this posterior into your next decision.
 
 The frequentist got a point and an interval. The Bayesian got a landscape.
 
-## Neither is wrong
+## Confidence interval vs. credible interval
 
-The two schools answer **different questions**.
+The confusion between these two is the most common statistical mistake in practice. They are numerically similar in many symmetric, large-sample problems, but they answer fundamentally different questions.
 
-- The frequentist asks: "If the true parameter were $\theta$, how unusual is the data I actually saw?" This is a question about the data, holding the parameter fixed.
-- The Bayesian asks: "Given the data I saw, what should I believe about $\theta$?" This is a question about the parameter, holding the data fixed.
+| Property | Confidence interval (Frequentist) | Credible interval (Bayesian) |
+|---|---|---|
+| What is fixed? | The parameter; the interval is random | The data; the parameter is random |
+| Probability statement | About the procedure, before seeing data | About the parameter, after seeing data |
+| Correct reading | "95% of intervals built this way cover the truth" | "95% probability the truth lies in this interval" |
+| Common mistake | Reading it as a probability about the parameter | Assuming the prior was neutral |
 
-Both are legitimate. In practice, modern statistics uses both. Frequentist methods dominate hypothesis testing and experimental design — they are simple, fast, and well-understood. Bayesian methods dominate prediction, decision theory, and sequential updating — they are flexible, coherent, and produce full distributions.
+### Theorem: Confidence interval coverage
 
-The Bayesian revolution of the last 30 years was driven not by philosophy, but by computation. Fast computers and clever algorithms (MCMC, variational inference) finally made it practical to compute the posterior distributions that Bayesians had been writing down on paper for centuries.
+An interval <MathInline expression={"[L(\\mathbf{X}), U(\\mathbf{X})]"} /> is a $100(1-\alpha)\%$ confidence interval for $\theta$ if, *before* the data is collected:
 
-## Key insight
+$$P_\theta(L(\mathbf{X}) \leq \theta \leq U(\mathbf{X})) \geq 1 - \alpha$$
 
-> Frequentists and Bayesians use the same probability axioms but disagree on what probability *is*. The frequentist sees a fixed world and random data. The Bayesian sees fixed data and an uncertain world. The coin does not care about your philosophy — but your choice of framework shapes every answer you give.
+The probability is over the random data <MathInline expression={"\\mathbf{X}"} />, with $\theta$ fixed. Once the data is observed, the interval is just two numbers — there is no probability left. This is why "the probability that $\theta$ is in $[3.1, 7.4]$" is meaningless to a frequentist: $\theta$ is fixed, and the interval is now fixed too.
+
+By contrast, a Bayesian $100(1-\alpha)\%$ credible interval $[a, b]$ satisfies <MathInline expression={"P(a \\leq \\theta \\leq b \\mid \\text{data}) = 1 - \\alpha"} /> — a genuine probability statement about the parameter, conditional on the observed data.
+
+<FormulaReadout formulas={[
+  { label: "频率学派概率定义", expression: "P(A) = \\lim_{n \\to \\infty} \\frac{n(A)}{n}" },
+  { label: "置信区间覆盖 (置信水平)", expression: "P_\\theta\\big(L(\\mathbf{X}) \\leq \\theta \\leq U(\\mathbf{X})\\big) \\geq 1 - \\alpha" },
+  { label: "可信区间 (贝叶斯)", expression: "P(a \\leq \\theta \\leq b \\mid \\text{data}) = 1 - \\alpha" },
+  { label: "最大似然估计", expression: "\\hat{\\theta}_{\\text{MLE}} = \\arg\\max_\\theta\\, L(\\theta;\\,\\text{data})" },
+]} />
+
+## When each approach shines
+
+Neither school dominates. They are tools suited to different questions.
+
+**Frequentist methods shine when:**
+
+- **Objective reporting is required.** Regulatory agencies (the FDA, EPA) often insist on frequentist methods because the answer does not depend on the analyst's prior beliefs. A p-value or confidence interval has the same meaning regardless of who computes it.
+- **Data is plentiful and the model is well-specified.** With large samples, the likelihood dominates and the prior barely matters, so the Bayesian and frequentist answers converge.
+- **Hypothesis testing is the goal.** The machinery of null hypothesis significance testing — Type I and Type II error rates, power calculations, multiple-comparison corrections — is naturally frequentist. It controls the rate of false positives *in the long run*.
+- **Computational simplicity matters.** Maximum likelihood estimation is a single optimization problem; Bayesian inference often requires integration (MCMC, variational methods).
+
+**Bayesian methods shine when:**
+
+- **Prior information is real and valuable.** In medical trials with historical control data, in hierarchical models with partial pooling, in physics where prior measurements constrain a parameter — the prior is not a liability but an asset.
+- **Sequential updating is needed.** As data arrives in streams (online learning, adaptive experiments, sensor networks), the Bayesian posterior-updated-yesterday becomes today's prior. This is mathematically clean and operationally natural.
+- **Decisions must be made under uncertainty.** Decision theory (loss functions, expected utility, risk) integrates seamlessly with the Bayesian posterior. The optimal action minimizes expected loss under the posterior.
+- **Complex hierarchical structure exists.** Bayesian graphical models, hierarchical priors, and partial pooling handle dependencies and partial information sharing far more naturally than frequentist alternatives.
+
+## The unification: decision theory
+
+The deepest resolution of the frequentist-Bayesian debate comes from **decision theory**, pioneered by Abraham Wald in the 1940s. Wald proved that *every* admissible statistical decision procedure is either a Bayesian procedure (or a limit of Bayesian procedures) — a result called the **complete class theorem**.
+
+This is staggering. It says: under very general conditions, any statistical procedure that cannot be uniformly improved upon is, in effect, a Bayesian procedure with respect to some prior. The frequentist who searches for good procedures ends up finding Bayesian ones.
+
+### The decision-theoretic framework
+
+Define a **loss function** <MathInline expression={"L(\\theta, a)"} /> — the cost of taking action $a$ when the true state is $\theta$. The **risk** of a decision rule $\delta$ is its expected loss:
+
+<MathInline expression={"R(\\theta, \\delta) = E_{\\mathbf{X} \\mid \\theta}[L(\\theta, \\delta(\\mathbf{X}))]"} />
+
+A frequentist minimizes the *worst-case* risk (minimax) or averages over the sample space. A Bayesian averages the risk over a prior <MathInline expression={"\\pi(\\theta)"} /> to get the **Bayes risk**, then minimizes it:
+
+<MathInline expression={"r(\\pi, \\delta) = \\int R(\\theta, \\delta)\\, \\pi(\\theta)\\, d\\theta"} />
+
+The decision rule that minimizes Bayes risk is the **Bayes rule** — and it is exactly the rule that averages the loss over the posterior distribution. Decision theory does not resolve the philosophical disagreement, but it shows that the two frameworks are deeply connected, not opposed.
+
+## The computational revolution
+
+The Bayesian revolution of the last 30 years was driven not by philosophy, but by computation. For centuries, the normalization step in Bayes' theorem required an integral that had no closed form for most real models. Frequentist methods (which avoid that integral) dominated practical statistics.
+
+Then two computational breakthroughs changed everything:
+
+1. **Markov Chain Monte Carlo (MCMC).** Algorithms like Metropolis-Hastings and Hamiltonian Monte Carlo sample from posterior distributions without computing the normalizing constant. The 1990s saw the release of BUGS and WinBUGS, then Stan, PyMC, and NumPyro. Suddenly any model you could write down, you could fit.
+2. **Variational inference (VI).** Instead of sampling, VI turns Bayesian inference into an optimization problem: approximate the posterior with a tractable family, then optimize the fit. This scales to massive datasets and deep neural networks — it underlies variational autoencoders and large-scale Bayesian deep learning.
+
+The result: Bayesian methods now power drug development, A/B testing at tech companies, astrophysical inference, climate modeling, and Bayesian deep learning. The philosophical debate continues. The engineering verdict is in.
+
+## Three perspectives on the divide
+
+1. **As two interpretations of one calculus.** Both schools accept Kolmogorov's axioms (lesson 01). Both agree on what $P(A \cap B)$ means computationally. They disagree only on what $P$ *refers to* — a physical frequency or a degree of belief. The math is common ground; the interpretation is the fault line.
+2. **As two answers to two questions.** The frequentist asks "if the parameter were $\theta$, how unusual is this data?" (a question about the data, holding the parameter fixed). The Bayesian asks "given this data, what should I believe about $\theta$?" (a question about the parameter, holding the data fixed). These are genuinely different questions; it is no surprise they have different answers.
+3. **As a spectrum, not a dichotomy.** Modern practice blends both. Empirical Bayes uses data to estimate the prior (frequentist-flavored Bayes). Fiducial inference, confidence distributions, and objective Bayes sit in between. The caricature of two warring camps obscures how often practitioners move freely between them.
+
+## Modern applications
+
+**Bayesian A/B testing in industry.** Companies like Netflix, Google, and Microsoft run experiments where each variant's conversion rate has a Beta posterior. The Bayesian framework lets them directly compute "the probability that variant B beats variant A" and stop experiments as soon as the posterior probability crosses a threshold — far more natural than the frequentist fixed-sample-size ritual. This is conjugate-pair Bayesian inference (lesson 23) applied at industrial scale.
+
+**Bayesian optimization.** Optimizing expensive black-box functions (hyperparameter tuning of machine learning models, drug discovery, materials design) uses a Gaussian process prior over the function and decides where to evaluate next based on the posterior. The expected improvement acquisition function is an integral over the posterior — a pure Bayesian computation. This is how modern machine learning practitioners tune models.
+
+**Objective Bayesian methods and confidence distributions.** Recent statistical methodology builds "confidence distributions" — distributions that are computed frequentist-style but interpreted like posteriors. This is an active research area attempting to bridge the two schools formally, giving frequentist guarantees with Bayesian interpretability.
+
+<KeyInsight>
+Frequentists and Bayesians use the same probability axioms but disagree on what probability is. The frequentist sees a fixed world and random data, controlling long-run error rates via confidence intervals and p-values. The Bayesian sees fixed data and an uncertain world, updating a prior into a posterior via Bayes' theorem. Decision theory reveals they are more connected than opposed: every admissible statistical procedure is (a limit of) a Bayesian one. The modern practitioner uses both, choosing the tool that best answers the question at hand.
+</KeyInsight>
+
+## Connections
+
+This lesson opens Module 6 (Bayesian Thinking) by drawing the philosophical boundary that the rest of the module explores in depth. It looks back to [Bayes' theorem](/courses/probability/04-bayes-theorem) — the shared mathematical engine that both schools accept — and to [confidence intervals](/courses/probability/19-confidence-intervals) and [hypothesis testing](/courses/probability/20-hypothesis-testing) in Module 5, where the frequentist interpretation was the default. The distinction between confidence intervals (procedure-level probability) and credible intervals (parameter-level probability) is the sharpest concrete difference between the two schools.
+
+Forward, [lesson 22](/courses/probability/22-prior-likelihood-posterior) dissects the three-part Bayesian engine (prior, likelihood, posterior) and [lesson 23](/courses/probability/23-bayesian-inference-in-practice) shows how conjugate priors and MCMC make Bayesian updating practical. Decision theory connects to reinforcement learning and optimal control in machine learning, and the complete class theorem is the formal reason "everyone is a Bayesian at heart" when it comes to admissible decision rules.
 
 ## Practice
 
-**Exercise 1.** A frequentist constructs a 95% confidence interval for a mean and gets $[3.1, 7.4]$. A colleague says: "So there is a 95% chance the true mean is between 3.1 and 7.4?" Explain why this statement is wrong from the frequentist perspective, and rephrase it correctly.
+<ExerciseBlock number={1}
+  prompt="A frequentist constructs a 95% confidence interval for a mean and gets [3.1, 7.4]. A colleague says: 'So there is a 95% chance the true mean is between 3.1 and 7.4?' Explain why this statement is wrong from the frequentist perspective, and rephrase it correctly."
+  hint="The true mean is a fixed number. Once the interval is computed, what is random?"
+  answer="From the frequentist perspective, the true mean is a fixed unknown constant — it is not random. Once the interval [3.1, 7.4] is computed from observed data, it is also just two fixed numbers. Either the true mean is in [3.1, 7.4] (probability 1) or it is not (probability 0). The 95% refers to the procedure: if you repeated the experiment many times, constructing a new interval each time from fresh data, about 95% of those intervals would contain the true mean. Correct rephrasing: 'The method used to construct this interval captures the true mean in 95% of repeated samples.' A Bayesian credible interval, by contrast, would support the colleague's original reading."
+/>
 
-**Exercise 2.** A Bayesian estimates the proportion of voters supporting a policy. Their posterior distribution for the proportion $p$ is approximately normal with mean 0.52 and standard deviation 0.03. What is the approximate probability that $p > 0.5$? (This is a question a frequentist framework cannot directly answer — explain why.)
+<ExerciseBlock number={2}
+  prompt="A Bayesian estimates the proportion of voters supporting a policy. Their posterior distribution for the proportion p is approximately normal with mean 0.52 and standard deviation 0.03. What is the approximate probability that p > 0.5? (This is a question a frequentist framework cannot directly answer — explain why.)"
+  hint="Standardize: z = (0.5 - 0.52)/0.03. Then use the normal CDF. Why can a frequentist not assign probability to the parameter?"
+  answer="z = (0.5 - 0.52)/0.03 = -0.667. P(p > 0.5) = P(Z > -0.667) = 1 - P(Z < -0.667) ≈ 1 - 0.252 = 0.748. So there is about a 75% probability the policy is favored. A frequentist cannot make this statement because to a frequentist, p is a fixed constant — it either exceeds 0.5 (probability 1) or it does not (probability 0). The frequentist can only make probability statements about the data or the estimation procedure, not about the parameter itself. The Bayesian can, because the posterior treats p as a random variable with a distribution."
+/>
 
-**Exercise 3.** You are testing a new drug. Describe (a) what a frequentist would do to evaluate it, and (b) what a Bayesian would do differently. Focus on the questions each framework asks, not the computational details.
+<ExerciseBlock number={3}
+  prompt="You are testing a new drug. Describe (a) what a frequentist would do to evaluate it, and (b) what a Bayesian would do differently. Focus on the questions each framework asks, not the computational details."
+  hint="Frequentist: null hypothesis, p-value, power. Bayesian: prior on effect size, posterior, credible interval, probability the drug works."
+  answer="(a) A frequentist sets up a null hypothesis (the drug has no effect), runs a trial, computes a test statistic and p-value, and either rejects or fails to reject the null at a pre-specified significance level (say 0.05). The question answered is: 'if the drug had no effect, how unusual is the data I observed?' The answer is a probability about the data, given a fixed parameter. (b) A Bayesian specifies a prior distribution on the treatment effect (perhaps skeptical, centered at zero, or informative from previous trials), observes the data, and computes a posterior distribution on the effect. The question answered is: 'given the data, what is the distribution of plausible effect sizes?' The Bayesian can directly report 'the probability the drug has a positive effect is 0.93' — a statement the frequentist framework cannot make."
+/>
+
+<ExerciseBlock number={4}
+  prompt="State the complete class theorem in plain language and explain its philosophical significance for the frequentist-Bayesian debate."
+  hint="It concerns which decision procedures are 'admissible' — meaning no other procedure beats them everywhere."
+  answer="The complete class theorem (Wald, 1950) states that, under very general conditions, every admissible statistical decision procedure is either a Bayes rule (minimizing Bayes risk for some prior) or a limit of Bayes rules. 'Admissible' means no other procedure has lower risk for every value of the parameter. Philosophical significance: it shows that the two schools are not truly opposed. A frequentist who searches the space of decision rules for good ones (low risk, robust, admissible) will inevitably find Bayesian procedures. This does not force a Bayesian interpretation onto the analyst, but it reveals that the Bayesian framework is mathematically complete in a deep sense — it contains all the procedures a frequentist would want to use."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Give two concrete scenarios where frequentist methods are preferable, and two where Bayesian methods are preferable. In each case, explain what about the problem makes that framework the better fit."
+  hint="Think about objectivity requirements, sample size, sequential data, prior information availability, and decision-making under uncertainty."
+  answer="Frequentist preferable: (1) A drug approval trial submitted to the FDA. The regulator wants a result that does not depend on the analyst's prior beliefs — an objective, reproducible standard. A p-value and confidence interval provide this; a posterior dependent on a chosen prior would invite disputes. (2) A genome-wide association study testing 100,000 genetic variants for association with a disease. Multiple-comparison corrections (Bonferroni, FDR) control the long-run false positive rate — a frequentist concept with no clean Bayesian analog at this scale. Bayesian preferable: (1) A Bayesian optimization loop tuning a machine learning model's hyperparameters, where each evaluation is expensive and prior evaluations should inform the next. The Gaussian process posterior naturally pools information. (2) A sequential medical trial where patients are enrolled over time and the analyst wants to stop early if the treatment is clearly effective or harmful. Bayesian posterior updating handles this cleanly; frequentist sequential testing requires complex alpha-spending corrections."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Explain the statement 'the frequentist controls the procedure; the Bayesian quantifies the parameter.' Give one concrete consequence of each emphasis."
+  hint="Think about what each framework makes probability statements about, and what that lets you control or report."
+  answer="'The frequentist controls the procedure': frequentist methods guarantee properties of the estimation or testing procedure over repeated sampling. Consequence: a 95% confidence interval procedure will cover the true parameter in 95% of repeated experiments — this long-run coverage rate is guaranteed regardless of the true parameter value. You control false positive rates (the 5% significance level) and can bound the probability of Type II errors via power analysis. 'The Bayesian quantifies the parameter': Bayesian methods produce a full posterior distribution over the parameter, conditional on the observed data. Consequence: a 95% credible interval lets you say 'given this data, the probability that the parameter lies in this range is 0.95' — a direct statement about where the parameter is. You can also compute the probability of any hypothesis (the drug works, variant B beats variant A), feed the posterior into a decision, or update it sequentially as new data arrives. The frequentist guarantee is about the method; the Bayesian statement is about the world."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Two analysts estimate the same parameter. Analyst A (frequentist) reports a point estimate of 5.2 with a 95% confidence interval [4.1, 6.3]. Analyst B (Bayesian) reports a posterior mean of 5.2 with a 95% credible interval [4.1, 6.3]. The numbers are identical. Are the analysts saying the same thing? Explain precisely what differs."
+  hint="The numbers are the same. The probability statements those numbers license are not."
+  answer="The numbers coincide but the interpretations differ fundamentally. Analyst A's confidence interval [4.1, 6.3] means: the procedure that generated this interval, applied to fresh data repeatedly, would produce intervals covering the true parameter 95% of the time. This specific interval either contains the truth or it does not; there is no probability left to assign. Analyst B's credible interval [4.1, 6.3] means: given the observed data (and the prior), there is a 95% probability that the true parameter lies in this range. The parameter is random, the interval is fixed, and the 95% is a genuine posterior probability. Numerical agreement is common in large-sample, symmetric problems where the likelihood dominates the prior — the Bayesian posterior concentrates near the MLE, and the credible interval matches the confidence interval. But the legal interpretations diverge, and in small samples, skewed problems, or with informative priors, the numbers themselves will differ."
+/>
+
+---
+
+**Up next:** [Prior, Likelihood, Posterior →](/courses/probability/22-prior-likelihood-posterior)

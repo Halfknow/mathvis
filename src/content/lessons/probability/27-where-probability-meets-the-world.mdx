@@ -12,89 +12,214 @@ duration: 16
 difficulty: "Intermediate"
 ---
 
-We started with a coin flip. One event, two outcomes, a single number: $P(\text{heads}) = 1/2$. From that seed, an entire mathematical landscape grew. We learned to count outcomes, condition on evidence, update beliefs, measure expectation, shape distributions, and watch randomness converge to order. Now it is time to look outward — to see where this language reaches into the world.
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
-This is not a lesson with new theorems. It is a view from the mountaintop, looking back at the trail we climbed and forward at the terrain beyond.
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+We started with a coin flip. One event, two outcomes, a single number: <MathInline expression={"P(\\text{heads}) = 1/2"} />. From that seed, an entire mathematical landscape grew. We learned to count outcomes, condition on evidence, update beliefs, measure expectation, shape distributions, and watch randomness converge to order. Now it is time to look outward — to see where this language reaches into the world.
+
+This is the summit of the course. We will synthesize the entire journey through one unifying lens — **information theory** — and then trace the connections outward to physics, finance, and machine learning. The same handful of ideas (distributions, expectation, conditioning, convergence, Bayesian updating) describes every domain where the future is not fully determined by the past.
 
 ## The journey in review
 
 We moved through eight modules, each building on the last:
 
-**Module 1 — The Language of Chance.** We defined probability, learned to count, discovered conditional probability, and met Bayes' theorem. The core idea: probability quantifies uncertainty, and Bayes' theorem lets you flip the direction of conditioning — from "how likely is the evidence given the hypothesis?" to "how likely is the hypothesis given the evidence?"
+**Module 1 — The Language of Chance.** We defined probability, learned to count, discovered conditional probability, and met [Bayes' theorem](/courses/probability/04-bayes-theorem). The core idea: probability quantifies uncertainty, and Bayes' theorem lets you flip the direction of conditioning.
 
-**Module 2 — Random Variables and Distributions.** We gave numbers to randomness. A random variable maps outcomes to the number line. Its distribution — the PMF or PDF — is the shape of that map. We met the families: Bernoulli, Binomial, Geometric, Poisson, Uniform, Exponential, Normal. Each family captures a different story about where randomness comes from.
+**Module 2 — Random Variables and Distributions.** We gave numbers to randomness. A random variable maps outcomes to the number line. We met the families: Bernoulli, Binomial, Geometric, Poisson, Uniform, Exponential, Normal. Each captures a different story about where randomness comes from.
 
-**Module 3 — When Variables Meet.** Joint distributions, marginals, conditioning. When two random variables share a space, their relationship is a landscape — ridges of correlation, valleys of independence. Covariance and correlation measure the tilt of that landscape.
+**Module 3 — When Variables Meet.** Joint distributions, marginals, conditioning. Covariance and correlation measure the tilt of the joint landscape.
 
-**Module 4 — The Laws That Govern Randomness.** The Law of Large Numbers says the average converges to the mean. The Central Limit Theorem says the average, rescaled, converges to a bell curve. Concentration inequalities proved that no distribution can scatter its mass far from the center without paying a steep price. These are the guardrails of randomness.
+**Module 4 — The Laws That Govern Randomness.** The [Law of Large Numbers](/courses/probability/14-law-of-large-numbers) says the average converges to the mean. The [Central Limit Theorem](/courses/probability/16-central-limit-theorem) says the rescaled average converges to a bell curve. Concentration inequalities proved randomness cannot scatter its mass too widely.
 
-**Module 5 — Statistical Inference.** We turned probability around: given data, what can we say about the process that generated it? Estimation (point estimates, confidence intervals) and hypothesis testing (p-values, significance). Every scientific claim that relies on data is built on this foundation.
+**Module 5 — Statistical Inference.** We turned probability around: given data, what can we say about the process that generated it? Estimation, [confidence intervals](/courses/probability/19-confidence-intervals), and [hypothesis testing](/courses/probability/20-hypothesis-testing).
 
-**Module 6 — Bayesian Thinking.** We made the prior explicit and updated beliefs with evidence. The posterior is where prior knowledge meets new data. Bayesian reasoning is how you should change your mind in the face of evidence — not all at once, but proportionally, weighted by the strength of the evidence.
+**Module 6 — Bayesian Thinking.** [Two schools](/courses/probability/21-two-schools-of-thought), [three-part updating](/courses/probability/22-prior-likelihood-posterior), and [conjugate priors plus MCMC](/courses/probability/23-bayesian-inference-in-practice). The posterior is where prior knowledge meets new data.
 
-**Module 7 — Stochastic Processes.** Random walks, Markov chains, Poisson processes — randomness unfolding in time. The random walk spreads as $\sqrt{n}$. The Markov chain forgets its past and settles into a stationary distribution. The Poisson process generates events with no memory of the last arrival.
+**Module 7 — Stochastic Processes.** [Random walks](/courses/probability/24-random-walks) spread as root-n. [Markov chains](/courses/probability/25-markov-chains) forget their past and settle into stationary distributions. [Poisson processes](/courses/probability/26-poisson-processes) generate events with no memory of the last arrival.
 
-Now, the connections outward.
+Now, the unifying lens and the connections outward.
 
-## Information theory
+## Information theory: the bridge to machine learning
 
 Claude Shannon built information theory on one idea: **information is the resolution of uncertainty**. The information content of an event with probability $p$ is $-\log_2 p$. Rare events carry more information — they are more surprising. The average information content of a distribution is its **entropy**:
 
+### Theorem: Shannon entropy
+
+For a discrete random variable $X$ with PMF $p(x)$, the **entropy** is:
+
 $$H(X) = -\sum_x p(x) \log_2 p(x)$$
 
-Entropy is expected surprise. A uniform distribution (maximum uncertainty) has maximum entropy. A degenerate distribution (all mass on one outcome) has zero entropy — no surprise, no information.
+Entropy is **expected surprise**, measured in bits. A uniform distribution (maximum uncertainty) has maximum entropy. A degenerate distribution (all mass on one outcome) has zero entropy — no surprise, no information.
 
-Every compression algorithm, every error-correcting code, every data transmission system is built on this foundation. When you stream a video, Shannon's theorems tell the encoder the minimum number of bits needed to represent each frame without losing perceptible quality. Probability theory is the raw material; information theory is the engineering.
+Entropy is the bridge between probability and machine learning because every learning algorithm is, at its core, trying to reduce uncertainty about the world. The training loss of a classifier (cross-entropy) is a direct measure of how much surprise remains in the true labels given the model's predictions. Compression (the Shannon source coding theorem) and learning (reducing predictive uncertainty) are two sides of the same coin: both are about representing a distribution efficiently.
 
-## Machine learning
+### KL divergence: measuring distributional distance
 
-At its core, machine learning is probability in disguise. A classifier maps inputs to a distribution over labels. A regression model outputs a distribution over possible values. A language model assigns probabilities to sequences of words.
+The **Kullback-Leibler (KL) divergence** measures how one probability distribution $q$ differs from a reference distribution $p$:
 
-The softmax function at the output of a neural network converts raw scores into a probability distribution:
+### Theorem: KL divergence
 
-$$P(\text{class } i) = \frac{e^{z_i}}{\sum_j e^{z_j}}$$
+$$D_{\text{KL}}(p \| q) = \sum_x p(x) \log \frac{p(x)}{q(x)}$$
 
-Training minimizes the cross-entropy loss — the gap between the model's predicted distribution and the true distribution of the data. The entire framework of maximum likelihood estimation, which we encountered in the inference module, is the standard training objective.
+KL divergence is always non-negative, and equals zero if and only if $p = q$:
 
-Bayesian methods extend this further: instead of a single best model, they maintain a distribution over models, updating the distribution as data arrives. The prior encodes what you believed before; the posterior encodes what you believe after. The same Bayes' theorem from Module 1, scaled up to millions of parameters.
+$$D_{\text{KL}}(p \| q) \geq 0, \qquad D_{\text{KL}}(p \| q) = 0 \iff p = q$$
 
-## Physics
+This is **Gibbs' inequality**. KL divergence is not symmetric (<MathInline expression={"D_{\\text{KL}}(p \\| q) \\neq D_{\\text{KL}}(q \\| p)"} /> in general) and does not satisfy the triangle inequality, so it is not a true metric — but it is the central measure of distributional difference in machine learning.
 
-Statistical mechanics is probability applied to enormous collections of particles. Temperature is average kinetic energy. Entropy is the logarithm of the number of microstates consistent with a given macrostate. The Boltzmann distribution gives the probability of a particle having energy $E$ at temperature $T$:
+- **Variational inference** ([lesson 23](/courses/probability/23-bayesian-inference-in-practice)) minimizes <MathInline expression={"D_{\\text{KL}}(q \\| p)"} /> to approximate a posterior.
+- **Model training** minimizes the KL divergence between the model's predicted distribution and the true data distribution — equivalent to minimizing cross-entropy.
+- **Variational autoencoders** use the ELBO, which decomposes as (data fit) minus (KL divergence from the prior).
 
-$$P(E) \propto e^{-E / (k_B T)}$$
+### Mutual information: the information between variables
 
-The exponential form is familiar — it is the same shape as the Poisson process's waiting time distribution. Physics and probability share deep structural DNA.
+The **mutual information** between two random variables $X$ and $Y$ measures how much knowing one reduces uncertainty about the other:
+
+$$I(X; Y) = H(X) - H(X \mid Y) = D_{\text{KL}}(p(x,y) \| p(x)\,p(y))$$
+
+Mutual information is zero if and only if $X$ and $Y$ are independent — it is the definitive measure of statistical dependence, capturing nonlinear relationships that correlation misses. It underpins feature selection, the information bottleneck method, and the theory of communication channels.
+
+<FormulaReadout formulas={[
+  { label: "香农熵", expression: "H(X) = -\\sum_x p(x)\\log_2 p(x)" },
+  { label: "KL 散度 (分布距离)", expression: "D_{\\text{KL}}(p \\| q) = \\sum_x p(x)\\log\\frac{p(x)}{q(x)} \\geq 0" },
+  { label: "互信息", expression: "I(X;Y) = H(X) - H(X \\mid Y)" },
+  { label: "玻尔兹曼分布 (统计力学)", expression: "P(E) \\propto e^{-E/(k_B T)}" },
+]} />
+
+## The maximum entropy principle
+
+There is a deep principle that connects probability to physics and to machine learning: when you must choose a distribution subject to known constraints (a given mean, a given variance), the principled choice is the one with **maximum entropy** — the distribution that assumes the least beyond what you know.
+
+### Theorem: Maximum entropy principle
+
+Among all distributions satisfying given constraints (e.g., specified mean and variance), the distribution that maximizes entropy <MathInline expression={"H(X)"} /> is the one that is "maximally uncommitted" given those constraints. Maximum entropy distributions include:
+
+- **No constraints** on $[a, b]$: the **Uniform** distribution.
+- **Specified mean** on $[0, \infty)$: the **Exponential** distribution.
+- **Specified mean and variance** on $(-\infty, \infty)$: the **Normal** distribution.
+- **Specified mean** on counting measure: the **Poisson** distribution.
+
+This is profound. The Normal distribution is not just "common" — it is the **maximum-entropy distribution for a given mean and variance**. When you assume a measurement is Normal, you are implicitly saying "I know the mean and variance, and I refuse to assume anything else." This is why the Normal is the default in statistics: it is the least-assuming choice. The same logic explains why the Exponential is the default for waiting times (it is max-ent given a mean) and why the Poisson process is the default point process (it is max-ent given a rate). The entire catalog of named distributions is a catalog of maximum-entropy solutions to constraint sets.
+
+## How probability connects to physics
+
+Statistical mechanics is probability applied to enormous collections of particles. Temperature is average kinetic energy. Entropy (the physical quantity) is the logarithm of the number of microstates consistent with a given macrostate. The **Boltzmann distribution** gives the probability of a particle having energy $E$ at temperature $T$:
+
+<MathInline expression={"P(E) \\propto e^{-E / (k_B T)}"} />
+
+The exponential form is familiar — it is the same shape as the Poisson process's waiting time distribution. This is not a coincidence. The Boltzmann distribution is the **maximum-entropy distribution** subject to a fixed average energy, just as the exponential is the max-ent distribution with a fixed mean. The math of thermal equilibrium and the math of random arrivals are the same math.
+
+The second law of thermodynamics (entropy increases) is a theorem about probability: in an isolated system, the system evolves toward macrostates with more microstates (higher probability), because there are overwhelmingly more of them. This is the [Law of Large Numbers](/courses/probability/14-law-of-large-numbers) at the scale of <MathInline expression={"10^{23}"} /> particles — fluctuations away from the maximum-entropy state are exponentially unlikely.
 
 Quantum mechanics goes further. The outcomes of quantum measurements are fundamentally probabilistic. A quantum state does not determine what you will observe — it determines the *probabilities* of what you will observe. The wave function is a probability amplitude, and its squared magnitude gives the probability density. At the deepest level, nature does not deal in certainties.
 
-## Finance
+## How probability connects to finance
 
-The Black-Scholes model for pricing options treats stock prices as a geometric Brownian motion — a continuous-time random walk on a logarithmic scale. The model's core assumption is that price changes are proportional, independent, and normally distributed. These are the same assumptions behind the random walk and the Central Limit Theorem.
+The Black-Scholes model for pricing options treats stock prices as a **geometric Brownian motion** — a continuous-time random walk on a logarithmic scale. The model's core assumption is that log-returns are independent and normally distributed with variance proportional to the time horizon (the <MathInline expression={"\\sqrt{t}"} /> law from [lesson 24](/courses/probability/24-random-walks)). These are the same assumptions behind the random walk and the Central Limit Theorem.
 
-Every option price, every risk calculation, every portfolio optimization in modern finance rests on probabilistic foundations. Value at Risk (VaR) is a quantile of a loss distribution. The efficient frontier of portfolio theory is built from the means and covariances of asset returns. Probability is the language of financial risk.
+Every option price, every risk calculation, every portfolio optimization in modern finance rests on probabilistic foundations. Value at Risk (VaR) is a quantile of a loss distribution. The efficient frontier of portfolio theory is built from the means and covariances of asset returns. The [capital asset pricing model](https://en.wikipedia.org/wiki/Capital_asset_pricing_model) relates expected return to systematic risk (<MathInline expression={"\\beta"} />). Probability is the language of financial risk — and when the models fail (the 2008 crisis, the Gaussian copula), it is usually because the probabilistic assumptions (independent normal returns) broke down in the tails.
+
+## How probability connects to machine learning
+
+At its core, machine learning is probability in disguise. A classifier maps inputs to a distribution over labels. A regression model outputs a distribution over possible values. A language model assigns probabilities to sequences of words.
+
+The **softmax** function at the output of a neural network converts raw scores into a probability distribution:
+
+<MathInline expression={"P(\\text{class } i) = \\frac{e^{z_i}}{\\sum_j e^{z_j}}}"} />
+
+Training minimizes the **cross-entropy loss** — the gap between the model's predicted distribution and the true distribution of the data. Cross-entropy loss is equivalent to minimizing the KL divergence between the empirical data distribution and the model distribution, which is equivalent to maximum likelihood estimation. The entire framework of maximum likelihood, encountered in [lesson 17](/courses/probability/17-sampling-distributions), is the standard training objective.
+
+### Bayesian deep learning and variational autoencoders
+
+Bayesian methods extend this further: instead of a single best model, they maintain a **distribution over models**, updating the distribution as data arrives. The prior encodes what you believed before; the posterior encodes what you believe after. The same Bayes' theorem from Module 1, scaled up to millions of parameters.
+
+The two computational engines that make this tractable were developed in [lesson 23](/courses/probability/23-bayesian-inference-in-practice):
+
+- **MCMC (Markov Chain Monte Carlo)**: construct a Markov chain whose stationary distribution is the posterior ([lesson 25](/courses/probability/25-markov-chains)), run it, collect samples. Powers Stan, PyMC, NumPyro.
+- **Variational inference**: approximate the posterior with a tractable distribution, fit by maximizing the ELBO. Scales to deep neural networks.
+
+**Variational autoencoders (VAEs)** combine all three threads — deep learning, variational inference, and information theory. The encoder outputs parameters of an approximate posterior $q(z \mid x)$ over a latent code $z$; training maximizes the ELBO, which decomposes as:
+
+<MathInline expression={"\\text{ELBO} = \\underbrace{E_{q}[\\log p(x \\mid z)]}_{\\text{reconstruction}} - \\underbrace{D_{\\text{KL}}(q(z \\mid x) \\| p(z))}_{\\text{regularization}}"} />
+
+The first term rewards reconstruction (the data likelihood); the second term penalizes the approximate posterior for straying from the prior (a complexity penalty, measured by KL divergence). This single equation unifies Bayesian inference, information theory, and neural networks. Modern generative AI is built on it.
+
+## Three perspectives on the whole course
+
+1. **As the mathematics of uncertainty.** Probability is the calculus of reasoning under uncertainty. Every concept — from the axioms of probability to MCMC — is a tool for making uncertainty precise, manipulable, and ultimately useful. This is why probability appears in every quantitative field: uncertainty is universal, and probability is its language.
+2. **As a bridge between pure and applied mathematics.** Probability theory is built on measure theory (pure math), but its tools (expectation, conditioning, convergence, distributions) are the daily vocabulary of applied statistics, machine learning, physics, and finance. No other branch of mathematics sits so centrally between theory and practice. The same theorem (the CLT) that is a deep result in analysis is also the reason sample means are reliable and bell curves are everywhere.
+3. **As the foundation of modern AI.** Every modern AI system is, at some level, a probabilistic model. Language models assign probabilities to token sequences. Diffusion models are random walks in pixel space ([lesson 24](/courses/probability/24-random-walks)). Reinforcement learning optimizes expectations over Markov decision processes ([lesson 25](/courses/probability/25-markov-chains)). Generative models minimize KL divergence. The course you just completed is the mathematical foundation of artificial intelligence.
 
 ## Everyday life
 
 You use probability more than you realize:
 
-- **Medical decisions**: a positive test result triggers Bayesian reasoning — how likely is the disease given this evidence, given the base rate, given the test accuracy?
+- **Medical decisions**: a positive test result triggers Bayesian reasoning — how likely is the disease given this evidence, given the base rate, given the test accuracy? ([Lesson 04](/courses/probability/04-bayes-theorem).)
 - **Weather forecasts**: "70% chance of rain" means that in all historically similar atmospheric conditions, it rained about 70% of the time. The forecast is a calibrated probability.
-- **Spam filters**: naive Bayes classifiers compute $P(\text{spam} \mid \text{words in email})$ using Bayes' theorem, assuming word occurrences are independent. The independence assumption is wrong, but the classifier works well enough.
+- **Spam filters**: naive Bayes classifiers compute <MathInline expression={"P(\\text{spam} \\mid \\text{words in email})"} /> using Bayes' theorem, assuming word occurrences are independent.
 - **Insurance premiums**: actuaries estimate the probability distribution of claims and set prices so that expected payouts are covered by expected premiums. The entire business model is a bet on the Law of Large Numbers.
 
-## The final word
+<KeyInsight>
+Probability is the language of uncertainty, and information theory is its information-theoretic core. Entropy measures uncertainty, KL divergence measures distributional distance, and the maximum-entropy principle explains why the Normal, Exponential, and Poisson distributions are the defaults (they assume the least). From the Boltzmann distribution in physics to the cross-entropy loss in machine learning to the Black-Scholes model in finance, the same handful of concepts — distributions, expectation, conditioning, convergence, Bayesian updating — describe every domain where the future is not fully determined by the past. The coin flip we started with was the atom of a theory that reaches from the quantum scale to the cosmic, from the trivial to the profound.
+</KeyInsight>
 
-Probability theory is not just a branch of mathematics. It is the language of uncertainty, and uncertainty is everywhere — in data, in decisions, in the physical world, in the future. The tools we developed over these lessons — distributions, expectations, conditioning, convergence, Bayesian updating — are the vocabulary of that language.
+## Connections
 
-The coin flip we started with was not a toy. It was the atom of a theory that reaches from the quantum scale to the cosmic, from the trivial to the profound. Every uncertain event, every noisy measurement, every prediction about the future can be described in this language. The description does not remove the uncertainty. But it makes the uncertainty precise, and that precision is the beginning of understanding.
+This finale synthesizes the entire course. Information theory (entropy, KL divergence, mutual information) is the unifying lens: it connects [Bayes' theorem](/courses/probability/04-bayes-theorem) (the posterior minimizes a KL divergence from the prior under the likelihood constraint) to the [maximum likelihood estimation](/courses/probability/17-sampling-distributions) of Module 5 (MLE minimizes KL divergence from the empirical distribution) to [variational inference](/courses/probability/23-bayesian-inference-in-practice) (the ELBO is a KL-regularized objective).
 
-## Key insight
+The maximum entropy principle explains why the [Normal distribution](/courses/probability/09-the-normal-distribution) (max-ent with given mean and variance), the [Exponential](/courses/probability/08-continuous-distributions) (max-ent with given mean), and the [Poisson process](/courses/probability/26-poisson-processes) (max-ent point process with given rate) are the default distributions across science — they are the least-assuming choices. The [random walk](/courses/probability/24-random-walks) (lesson 24) connects to physics (Brownian motion, diffusion), finance (geometric Brownian motion, Black-Scholes), and generative AI (diffusion models). [Markov chains](/courses/probability/25-markov-chains) (lesson 25) connect to MCMC (the engine of Bayesian inference), PageRank, HMMs, and reinforcement learning. The [Central Limit Theorem](/courses/probability/16-central-limit-theorem) explains why the Normal appears in measurement errors, stock returns, and sampling distributions — all consequences of additive aggregation.
 
-> Probability is the language of uncertainty. From coin flips to quantum mechanics, from spam filters to options pricing, the same concepts — distributions, conditioning, expectation, convergence — describe every domain where the future is not fully determined by the past. To think probabilistically is to think honestly about an uncertain world.
+Looking outward, this course is the foundation for: statistical learning theory (generalization bounds via concentration inequalities), deep learning (cross-entropy loss, softmax, VAEs, diffusion models), Bayesian nonparametrics (Dirichlet processes, Gaussian processes), causal inference (do-calculus, structural causal models), and information-theoretic cryptography and communication. The language of probability is the language of modern quantitative science — and this course has given you its grammar.
 
-## Reflection
+## Practice
 
-**Question 1.** Look back at the modules we covered. Which concept changed how you think about uncertainty in everyday life — Bayes' theorem, the Central Limit Theorem, the memoryless property, or something else? Describe a concrete situation where that concept reshaped your intuition.
+<ExerciseBlock number={1}
+  prompt="Compute the entropy of a Bernoulli(p) random variable: H(X) = -p*log2(p) - (1-p)*log2(1-p). What value of p maximizes the entropy? What are the entropies at p=0, p=0.5, and p=1? Explain in words what the maximum means."
+  hint="Take the derivative with respect to p and set it to zero. Or recall that maximum uncertainty is at the fair coin."
+  answer="H(p) = -p*log2(p) - (1-p)*log2(1-p). Taking dH/dp and setting to zero: dH/dp = -log2(p) - 1 + log2(1-p) + 1 = log2((1-p)/p). Setting to zero: (1-p)/p = 1, so p = 1/2. The maximum entropy is at p = 0.5, giving H = -0.5*log2(0.5) - 0.5*log2(0.5) = 0.5 + 0.5 = 1 bit. At p = 0: H = 0 (the outcome is certain to be 0; no surprise). At p = 1: H = 0 (the outcome is certain to be 1; no surprise). At p = 0.5: H = 1 bit (maximum uncertainty, maximum surprise). The maximum at p = 0.5 means: the fair coin is the hardest to predict — each flip conveys one full bit of information. A biased coin (p near 0 or 1) is more predictable, so each flip conveys less information. This is the precise sense in which 'maximum entropy' means 'maximum uncertainty' or 'least assumptions'."
+/>
 
-**Question 2.** Probability theory models uncertainty, but it does not eliminate it. Name one domain where you think probabilistic models are most powerful, and one where you think they are most limited. What makes the difference?
+<ExerciseBlock number={2}
+  prompt="Two distributions over {A, B, C}: p = (0.5, 0.3, 0.2) and q = (0.4, 0.4, 0.2). Compute the KL divergence D_KL(p || q) = sum p(x) log(p(x)/q(x)) (use natural log). Verify that it is non-negative and would be zero if p = q."
+  hint="D_KL = 0.5*ln(0.5/0.4) + 0.3*ln(0.3/0.4) + 0.2*ln(0.2/0.2). Note ln(1) = 0 for the third term."
+  answer="D_KL(p || q) = 0.5*ln(0.5/0.4) + 0.3*ln(0.3/0.4) + 0.2*ln(0.2/0.2). Term 1: 0.5*ln(1.25) = 0.5*0.2231 = 0.1116. Term 2: 0.3*ln(0.75) = 0.3*(-0.2877) = -0.0863. Term 3: 0.2*ln(1.0) = 0.2*0 = 0. Sum = 0.1116 - 0.0863 + 0 = 0.0253 nats. The KL divergence is approximately 0.025 nats (or 0.036 bits if using log2), which is non-negative, consistent with Gibbs' inequality. If p = q exactly, every ratio p(x)/q(x) = 1, so every log term is zero, giving D_KL = 0. The small value (0.025) reflects that p and q are close — q is a 'good' approximation of p. The asymmetry: D_KL(q || p) would give a different value (you can verify), illustrating that KL is not a true metric."
+/>
+
+<ExerciseBlock number={3}
+  prompt="State the maximum entropy principle and explain why the Normal distribution is the maximum-entropy distribution given a fixed mean and variance. Why does this justify using the Normal as the default distribution in statistics when you know only the mean and variance?"
+  hint="The Normal's density is exp(-(x-mu)^2/(2*sigma^2)). Among all densities with given mean and variance, this form maximizes the integral of -p*log p."
+  answer="The maximum entropy principle: among all probability distributions satisfying a set of constraints (e.g., specified mean mu and variance sigma^2), the distribution that maximizes entropy H = -integral of p(x)*log p(x) dx is the one that is 'maximally uncommitted' — it assumes the least beyond the constraints. For a fixed mean and variance on the real line, the max-ent distribution is the Normal. Reason: using the calculus of variations (Lagrange multipliers for the mean and variance constraints), the density that maximizes entropy has the form p(x) proportional to exp(-(x-mu)^2/(2*sigma^2)), which is exactly the Normal density. Justification for the default: when you know only the mean and variance of a measurement (from a sample), the Normal is the principled choice because it encodes exactly what you know (mean, variance) and assumes nothing else. Any other distribution with the same mean and variance would be making additional assumptions (skewness, tail behavior, multimodality) that you have no evidence for. This is why the Normal is the default in regression (Gaussian errors), in the CLT (sums converge to it), and in measurement modeling — it is the least-assuming, maximum-entropy choice."
+/>
+
+<ExerciseBlock number={4}
+  prompt="Explain how the cross-entropy loss used to train a neural network classifier is connected to KL divergence and to maximum likelihood estimation. Why does minimizing cross-entropy 'work' for training classifiers?"
+  hint="Cross-entropy: H(p,q) = -sum p(x) log q(x). KL divergence: D_KL(p||q) = H(p,q) - H(p). The true labels define an empirical distribution p_hat."
+  answer="For a classification problem, let p be the true label distribution (a one-hot vector: p_i = 1 for the correct class, 0 otherwise) and q be the model's predicted distribution (the softmax output). The cross-entropy is H(p,q) = -sum_i p_i log q_i = -log q_correct (since only the true class contributes). The KL divergence is D_KL(p || q) = H(p,q) - H(p). But H(p) = 0 for a one-hot true label (no entropy — the label is certain). So D_KL(p || q) = H(p,q) - 0 = H(p,q). Minimizing cross-entropy IS minimizing KL divergence. Connection to maximum likelihood: minimizing cross-entropy over a dataset is equivalent to maximizing the log-likelihood of the true labels under the model (since -log q_correct is the negative log-likelihood of the correct label). So the three frameworks coincide: minimizing cross-entropy = minimizing KL divergence = maximum likelihood estimation. This is why cross-entropy 'works' — it is the information-theoretically correct measure of how far the model's predictions are from the truth, and it coincides with the statistical principle of maximum likelihood."
+/>
+
+<ExerciseBlock number={5}
+  prompt="The Boltzmann distribution in statistical mechanics is P(E) proportional to e^(-E/(k_B*T)), where E is energy, T is temperature, and k_B is Boltzmann's constant. Show that this is the maximum-entropy distribution subject to a fixed average energy. What is the analogous distribution in probability theory (which named distribution does it match)?"
+  hint="Use Lagrange multipliers: maximize -integral p(E) log p(E) dE subject to integral p(E) dE = 1 and integral E*p(E) dE = <E> (fixed). The solution has the form p(E) proportional to exp(-beta*E)."
+  answer="Set up the constrained optimization: maximize H = -integral of p(E)*log(p(E)) dE subject to (1) integral of p(E) dE = 1 (normalization) and (2) integral of E*p(E) dE = <E> (fixed average energy). Using Lagrange multipliers alpha (for normalization) and beta (for the energy constraint), the Lagrangian is: L = -integral of p*log(p) dE - alpha*(integral p dE - 1) - beta*(integral E*p dE - <E>). Taking the functional derivative with respect to p and setting to zero: -log(p(E)) - 1 - alpha - beta*E = 0, so log(p(E)) = -1 - alpha - beta*E, giving p(E) proportional to exp(-beta*E). This is exactly the Boltzmann form with beta = 1/(k_B*T). The analogous distribution in probability theory: the exponential distribution. If E is a non-negative random variable (like a waiting time or an energy) with a fixed mean, the max-ent distribution is Exponential(1/mean), which has density (1/mean)*exp(-E/mean). This is the same exponential form. So the Boltzmann distribution and the exponential waiting-time distribution are both maximum-entropy distributions — they are the least-assuming choices given a fixed mean. This is deep structural DNA shared between physics and probability: thermal equilibrium and random arrivals are governed by the same max-ent principle."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Look back at the modules we covered. Which concept changed how you think about uncertainty in everyday life — Bayes' theorem, the Central Limit Theorem, the memoryless property, the sqrt(n) diffusion law, or something else? Describe a concrete situation where that concept reshaped your intuition, and explain the probabilistic insight that applies."
+  hint="Pick one concept and connect it to a real decision or observation you have made. The best answers identify a place where the math corrects a common intuition."
+  answer="(Open-ended; here is a model answer.) Bayes' theorem reshaped how I interpret medical test results and rare-event claims. Before this course, I would have heard 'the test is 95% accurate, you tested positive' and panicked. After lesson 04, I ask: what is the base rate? If the disease affects 1 in 1000 people, even a 95%-accurate test produces mostly false positives — a positive result might mean only a 2% chance of actually having the disease. The probabilistic insight: the posterior probability of the hypothesis given the evidence depends critically on the prior (base rate), and rare hypotheses need extraordinary evidence to become probable. This Bayes-theorem reasoning extends beyond medicine: it applies to interpreting criminal evidence (the prosecutor's fallacy), spam filtering (a flagged email is probably spam only if spam is common), and any decision where a signal must be weighed against a base rate. The concept that reshaped my intuition is that 'accuracy' is not a property of a test alone — it is a property of a test COMBINED with a base rate, and you cannot reason about one without the other."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Synthesis question: explain how the ELBO (evidence lower bound) in variational autoencoders connects together (a) Bayesian inference, (b) information theory, and (c) neural network training. Identify each term in the ELBO and which course concept it embodies."
+  hint="ELBO = E_q[log p(x|z)] - D_KL(q(z|x) || p(z)). The first term is reconstruction (likelihood); the second is a KL penalty (regularization toward the prior)."
+  answer="The ELBO in a variational autoencoder is: ELBO = E_{q(z|x)}[log p(x|z)] - D_KL(q(z|x) || p(z)). (a) Bayesian inference: the VAE performs approximate Bayesian inference on the latent variable z. The true posterior p(z|x) is intractable, so we approximate it with q(z|x) (the encoder network's output). The ELBO is a lower bound on log p(x) (the log evidence), and maximizing it minimizes D_KL(q(z|x) || p(z|x)) — the gap between the approximation and the true posterior. This is the variational inference framework from lesson 23. (b) Information theory: the second term D_KL(q(z|x) || p(z)) is a KL divergence (lesson 27's information-theoretic measure of distributional distance). It penalizes the approximate posterior for straying from the prior p(z) (typically a standard normal). This is a complexity penalty, measured in nats. The first term E_q[log p(x|z)] is the negative cross-entropy between the data and the decoder's reconstruction — the information-theoretic 'data fit'. (c) Neural network training: both terms are differentiable and computed by neural networks (the encoder outputs q's parameters, the decoder outputs p(x|z)). Training maximizes the ELBO via stochastic gradient descent. The reconstruction term drives the decoder to reproduce the data; the KL term regularizes the latent space to stay close to the prior. So the ELBO unifies Bayesian inference (approximate a posterior), information theory (KL divergence, cross-entropy), and deep learning (differentiable neural networks trained by gradient descent). This single objective is the mathematical heart of modern generative AI."
+/>
+
+---
+
+**This concludes the Probability course.** You have traveled from a single coin flip to the foundations of statistical mechanics, modern finance, and artificial intelligence. The atoms of probability — distributions, expectation, conditioning, convergence, Bayesian updating — turned out to be the atoms of reasoning itself under uncertainty. Wherever the future is not fully determined by the past, this is the language to describe it.

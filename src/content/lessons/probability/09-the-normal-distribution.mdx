@@ -17,13 +17,14 @@ interactiveWidgets:
 ---
 
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
 import { MathBlock, MathInline } from '../../../components/math/Math';
+
 import { NormalDistribution } from '../../../components/interactive/probability/NormalDistribution';
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
-# The Normal Distribution
-
-If probability has a celebrity, it is the bell curve. You have seen it in test scores, heights, measurement errors, blood pressure readings. It shows up in physics, biology, economics, psychology, engineering — almost every quantitative field. Understanding why it appears everywhere is one of the deepest insights in all of mathematics.
+If probability has a celebrity, it is the bell curve. You have seen it in test scores, heights, measurement errors, blood pressure readings. It shows up in physics, biology, economics, psychology, engineering — almost every quantitative field. Understanding why it appears everywhere is one of the deepest insights in all of mathematics, and the answer — the central limit theorem — is the climax of this course.
 
 ## The shape: a hill
 
@@ -37,17 +38,25 @@ The bell is always symmetric around $\mu$. The left half is a mirror image of th
 
 A normal distribution with mean $\mu$ and standard deviation $\sigma$ is written $X \sim N(\mu, \sigma^2)$. Its probability density function is:
 
-$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)$$
+$<MathInline expression={"f(x) = \\frac{1}{\\sigma\\sqrt{2\\pi}} \\exp\\left(-\\frac{(x - \\mu)^2}{2\\sigma^2}\\right)"} />$
 
-The formula looks intimidating. Do not memorize it. The geometry is the point. The exponential term creates the bell shape. The fraction in front normalizes the total area to 1. Everything else follows from those two facts.
+The formula looks intimidating. Do not memorize it. The geometry is the point. The exponential term <MathInline expression={"e^{-(x-\\mu)^2/(2\\sigma^2)}"} /> creates the bell shape: it peaks at $x = \mu$ (where the exponent is zero) and decays as a Gaussian function of the distance from the mean. The fraction <MathInline expression={"\\frac{1}{\\sigma\\sqrt{2\\pi}}"} /> in front is a normalizing constant — chosen so the total area under the curve is exactly 1. Everything else follows from those two facts.
+
+The standard deviation $\sigma$ appears in two places. In the exponent, dividing the squared deviation by $2\sigma^2$ controls how fast the curve decays: large $\sigma$ means slow decay (wide bell), small $\sigma$ means fast decay (narrow bell). In the normalizer, dividing by $\sigma$ means a wider bell is also shorter (to keep area 1). These two effects together encode the shape.
 
 ## Standardization: translating to a common language
 
 Here is the key practical skill for working with normal distributions. Any normal variable $X \sim N(\mu, \sigma^2)$ can be converted to a **standard normal** variable $Z \sim N(0, 1)$ by subtracting the mean and dividing by the standard deviation:
 
-$$Z = \frac{X - \mu}{\sigma}$$
+$<MathInline expression={"Z = \\frac{X - \\mu}{\\sigma}"} />$
 
 This process is called **standardization**, and the resulting $Z$ is called a **z-score**. It measures how many standard deviations above or below the mean a value sits.
+
+### Theorem: Standardization preserves normality
+
+If $X \sim N(\mu, \sigma^2)$, then $Z = (X - \mu)/\sigma \sim N(0, 1)$. Conversely, if $Z \sim N(0,1)$, then $X = \mu + \sigma Z \sim N(\mu, \sigma^2)$.
+
+*Intuition.* Subtracting $\mu$ shifts the peak to 0; dividing by $\sigma$ rescales the width to 1. The bell shape is preserved because it depends only on the dimensionless ratio $(x - \mu)/\sigma$. This is why every normal distribution is "the same bell, repositioned and rescaled" — there is really only one normal distribution, and all the others are affine transformations of it.
 
 Standardization is like translating every bell curve into a common language. No matter what $\mu$ and $\sigma$ are, after this transformation you are working with the same standard bell. That means you only need one table (or one set of rules) to compute probabilities for *any* normal distribution.
 
@@ -57,7 +66,7 @@ SAT scores are approximately normally distributed with mean $\mu = 500$ and stan
 
 First, standardize:
 
-$$z = \frac{700 - 500}{100} = \frac{200}{100} = 2$$
+$<MathInline expression={"z = \\frac{700 - 500}{100} = \\frac{200}{100} = 2"} />$
 
 A score of 700 is **2 standard deviations above the mean**. Look up $P(Z > 2)$ in the standard normal table:
 
@@ -67,7 +76,7 @@ About 2.3% of test-takers score above 700. The bell curve drops off fast — two
 
 What about scoring below 350?
 
-$$z = \frac{350 - 500}{100} = \frac{-150}{100} = -1.5$$
+$<MathInline expression={"z = \\frac{350 - 500}{100} = \\frac{-150}{100} = -1.5"} />$
 
 $$P(Z < -1.5) \approx 0.067$$
 
@@ -81,6 +90,14 @@ You do not always need a table. For quick estimates, the **68-95-99.7 rule** (al
 - **95%** of the mass falls within $\mu \pm 2\sigma$ — two steps from the peak.
 - **99.7%** of the mass falls within $\mu \pm 3\sigma$ — three steps from the peak.
 
+### Theorem: The empirical rule (68-95-99.7)
+
+For $X \sim N(\mu, \sigma^2)$ and $Z = (X - \mu)/\sigma \sim N(0,1)$:
+
+$$P(|Z| < 1) \approx 0.683, \quad P(|Z| < 2) \approx 0.954, \quad P(|Z| < 3) \approx 0.997$$
+
+These are computed by integrating the standard normal density: <MathInline expression={"P(|Z| < k) = \\int_{-k}^{k} \\frac{1}{\\sqrt{2\\pi}} e^{-z^2/2}\\,dz"} />. The values 68%, 95%, 99.7% are the rounded approximations every working scientist carries in their head.
+
 Think of these as **bands** painted on the hill. The band between $\mu - \sigma$ and $\mu + \sigma$ captures about two-thirds of the total area. The next band out (from $\sigma$ to $2\sigma$ on each side) captures most of what remains. Beyond $3\sigma$, you are in the tails — fewer than 3 in 1000 observations.
 
 For the SAT example: about 68% of scores fall between 400 and 600, about 95% between 300 and 700, and about 99.7% between 200 and 800. If someone tells you they scored 850, they are more than 3 standard deviations from the mean — roughly 1 in 1000 territory.
@@ -93,7 +110,17 @@ The rule also tells you what is *outside* the bands:
 - About 5% lies outside the $\pm 2\sigma$ band (2.5% on each tail).
 - About 0.3% lies outside the $\pm 3\sigma$ band (0.15% on each tail).
 
-When you hear "statistically significant at the 5% level," it usually means the observed value falls outside the $\pm 2\sigma$ band — far enough from the mean that chance alone would produce it less than 5% of the time.
+When you hear "statistically significant at the 5% level," it usually means the observed value falls outside the $\pm 2\sigma$ band — far enough from the mean that chance alone would produce it less than 5% of the time. This is the bridge from descriptive statistics (this lesson) to inferential statistics (lessons 19-20).
+
+## The error function connection
+
+The CDF of the standard normal has no elementary closed form — there is no formula for it using basic functions. It is computed numerically and tabulated. The connection to the **error function** <MathInline expression={"\\text{erf}"} /> is the standard way to express it:
+
+$<MathInline expression={"\\Phi(z) = P(Z \\leq z) = \\frac{1}{2}\\left[1 + \\text{erf}\\!\\left(\\frac{z}{\\sqrt{2}}\\right)\\right]"} />$
+
+where <MathInline expression={"\\text{erf}(x) = \\frac{2}{\\sqrt{\\pi}} \\int_0^x e^{-t^2}\\,dt"} />.
+
+The error function appears throughout physics and engineering (heat diffusion, signal processing) and is built into every programming language's math library. When you call `scipy.stats.norm.cdf` or `math.erf`, this is what is computed under the hood. The lack of a closed form is exactly why statistics classes historically distributed printed z-tables — and why standardization (reducing every problem to $N(0,1)$) is so valuable: one table serves all normal distributions.
 
 ## Explore the bell
 
@@ -101,11 +128,24 @@ Drag $\mu$ and $\sigma$ below and watch the bell reshape. Hit "Sample +50" repea
 
 <NormalDistribution client:visible />
 
+<FormulaReadout formulas={[
+  { label: "正态分布密度", expression: "f(x) = \\frac{1}{\\sigma\\sqrt{2\\pi}} \\exp\\!\\left(-\\frac{(x-\\mu)^2}{2\\sigma^2}\\right)" },
+  { label: "标准化 (z-分数)", expression: "Z = \\frac{X - \\mu}{\\sigma} \\sim N(0,1)" },
+  { label: "经验法则 68-95-99.7", expression: "P(|Z|<1)\\approx 0.68,\\quad P(|Z|<2)\\approx 0.95,\\quad P(|Z|<3)\\approx 0.997" },
+  { label: "误差函数连接", expression: "\\Phi(z) = \\tfrac{1}{2}\\left[1 + \\text{erf}\\!\\left(\\tfrac{z}{\\sqrt{2}}\\right)\\right]" },
+]} />
+
+## Three perspectives on the normal distribution
+
+1. **As a two-parameter family:** $N(\mu, \sigma^2)$ is a family of bells indexed by location ($\mu$) and scale ($\sigma$). All members have the same shape — only position and width differ. Standardization reduces the entire family to a single canonical member, $N(0,1)$.
+2. **As a limit (the CLT preview):** the normal is the *attractor* of sums of independent random variables. Add up enough independent noise of almost any kind and the result looks bell-shaped. This is why the normal is the default model when you do not know the underlying distribution — it is the universal shape that emerges from aggregation.
+3. **As a maximum-entropy distribution:** among all continuous distributions with a given mean and variance, the normal is the one with the maximum entropy — it makes the fewest additional assumptions. This "least assumption" property is why the normal is the principled default in Bayesian inference (conjugate prior for unknown mean with known variance) and in physics (thermal equilibrium states are Gaussian).
+
 ## Why is it everywhere?
 
 The normal distribution is not just one distribution among many. It is the shape that nature **converges to** whenever many small independent effects pile up.
 
-The **Central Limit Theorem** (which you will study in detail in a later lesson) says: take any distribution — skewed, lumpy, uniform, whatever. Draw a sample of size $n$ and compute the average. Repeat many times. The histogram of those averages will look bell-shaped, and it gets more bell-shaped as $n$ grows.
+The **Central Limit Theorem** (which you will study in detail in [lesson 16](/courses/probability/16-central-limit-theorem)) says: take any distribution — skewed, lumpy, uniform, whatever. Draw a sample of size $n$ and compute the average. Repeat many times. The histogram of those averages will look bell-shaped, and it gets more bell-shaped as $n$ grows.
 
 This is why the bell curve appears in so many contexts:
 
@@ -116,9 +156,27 @@ This is why the bell curve appears in so many contexts:
 
 The CLT explains why statisticians reach for the normal distribution as a first approximation. It is not always exactly right, but it is often close, and the mathematical tools for working with it are powerful and well-developed.
 
+## Modern applications
+
+**Gaussian processes.** In machine learning, a Gaussian process is a distribution over *functions* — every finite collection of function values is jointly normal. GPs are the gold standard for Bayesian regression when you want calibrated uncertainty estimates. They power geostatistics (kriging), hyperparameter optimization (Bayesian optimization), and scientific model emulation. The entire framework rests on the multivariate normal distribution and its linear-algebraic properties.
+
+**Diffusion models in generative AI.** The breakthrough behind modern image generators (DALL-E, Stable Diffusion) is the **diffusion process**: gradually add Gaussian noise to an image until it is pure static, then train a neural network to reverse the process. The forward noise is drawn from normal distributions; the reverse denoising recovers realistic images from pure Gaussian noise. The mathematical machinery — score matching, Langevin dynamics, stochastic differential equations — is all built on the Gaussian's special properties under addition and transformation. The normal distribution is quite literally the noise from which modern AI generates images.
+
+**Statistical inference.** Every introductory statistics course is built on the normal distribution because of the CLT. Confidence intervals (lesson 18) and hypothesis tests (lessons 19-20) for means rely on the fact that sample means are approximately normal, regardless of the original distribution. The z-test and t-test are direct applications of standardization. This is why the 68-95-99.7 rule and z-scores are the most practically used tools in all of applied statistics.
+
+**Quantitative finance.** The Black-Scholes option pricing model assumes stock returns are normal (more precisely, log-normal prices). While real returns have heavier tails (the normal underestimates extreme events — the "black swans"), the normal remains the baseline model from which all of mathematical finance deviates. Value-at-Risk, the Gaussian copula (infamous from the 2008 financial crisis), and the Sharpe ratio all assume normality.
+
 <KeyInsight>
-The normal distribution is a family of bell curves parameterized by $\mu$ (where the peak sits) and $\sigma$ (how wide it spreads). Standardization translates any member of this family into the common language of z-scores. The Central Limit Theorem explains why this family appears naturally whenever many small independent effects combine.
+The normal distribution is a family of bell curves parameterized by $\mu$ (where the peak sits) and $\sigma$ (how wide it spreads). Standardization $Z = (X-\mu)/\sigma$ translates any member into the common language of z-scores, the empirical rule (68-95-99.7) gives instant probability estimates, and the central limit theorem explains why this family appears naturally whenever many small independent effects combine — from heights and test scores to the Gaussian noise that powers modern generative AI.
 </KeyInsight>
+
+## Connections
+
+This lesson completes the tour of continuous distributions begun in [lesson 08](/courses/probability/08-continuous-distributions). The normal shares the PDF-CDF machinery and the integration-based probability computations of the uniform and exponential, but its CDF has no closed form — which is why standardization and the error function matter here uniquely. The mean $\mu$ and variance $\sigma^2$ come directly from [lesson 06](/courses/probability/06-expectation-and-variance); the 68-95-99.7 bands translate those moments into probability statements.
+
+The deepest forward connection is the **central limit theorem** (lesson 16): the normal is the limiting distribution of standardized sums, which is why Binomials (lesson 07) look normal for large $n$, why sample means of any distribution become normal, and why the bell appears everywhere data aggregates. The normal then anchors **sampling distributions** (lesson 17) — the distribution of the sample mean is normal, which is the foundation of all of inferential statistics (confidence intervals in lesson 18, hypothesis testing in lessons 19-20). The z-score and the $\pm 2\sigma$ "significance" threshold you met here are the exact tools those later lessons formalize.
+
+Cross-disciplinarily, the normal distribution is the hinge between probability (this course) and statistics (the second half of the course). It is also the distribution that makes the multivariate generalization — the multivariate Gaussian — the workhorse of linear algebra-heavy machine learning (Gaussian processes, Kalman filtering, principal component analysis). The bell curve is not just common; it is the connective tissue of quantitative science.
 
 ## Practice
 
@@ -126,21 +184,49 @@ The normal distribution is a family of bell curves parameterized by $\mu$ (where
   number={1}
   prompt="The weights of apples from an orchard are approximately normal with mean 150g and standard deviation 20g. What fraction of apples weigh more than 190g? First compute the z-score, then use the 68-95-99.7 rule to estimate."
   hint="z = (190 - 150)/20 = 2. Use the rule: what fraction is above +2 sigma?"
-  answer="z = 2. By the 68-95-99.7 rule, about 95% of the mass is within plus or minus 2 sigma, so about 5% is outside. By symmetry, half of that is above +2 sigma. Approximately 2.5% of apples weigh more than 190g."
+  answer="z = (190 - 150)/20 = 2. By the 68-95-99.7 rule, about 95% of the mass is within plus or minus 2 sigma, so about 5% is outside. By symmetry, half of that is above +2 sigma. Approximately 2.5% of apples weigh more than 190g. (The exact value from a z-table is 2.28%, so the rule's estimate of 2.5% is close.)"
 />
 
 <ExerciseBlock
   number={2}
   prompt="A machine produces bolts whose lengths are normally distributed with mean 50mm and standard deviation 0.5mm. A bolt is rejected if its length is more than 51.2mm. What is the z-score for 51.2mm? Approximately what fraction of bolts are rejected?"
   hint="Compute z = (51.2 - 50)/0.5 = 2.4. This is beyond 2 sigma. How much mass is in the tail beyond 2.4 sigma?"
-  answer="z = (51.2 - 50)/0.5 = 2.4. This is beyond the 2-sigma mark (which has 2.5% in the upper tail). From a standard normal table, P(Z > 2.4) is approximately 0.008. Roughly 0.8% of bolts are rejected."
+  answer="z = (51.2 - 50)/0.5 = 2.4. This is beyond the 2-sigma mark (which has 2.5% in the upper tail). From a standard normal table, P(Z > 2.4) is approximately 0.0082. Roughly 0.8% of bolts are rejected. Note the 68-95-99.7 rule is too coarse here (it only tells us the answer is under 2.5%), which is why z-tables or software are needed for tail probabilities at non-integer z values."
 />
 
 <ExerciseBlock
   number={3}
-  prompt="Exam scores in a large class are approximately normal with mean 72 and standard deviation 8. The professor announces that students scoring below 56 will fail. Using standardization, find the z-score for 56. Approximately what fraction of students fail?"
-  hint="z = (56 - 72)/8 = -2. Use symmetry and the 68-95-99.7 rule."
-  answer="z = (56 - 72)/8 = -16/8 = -2. By the 68-95-99.7 rule, about 95% of scores fall between 56 and 88 (mean plus or minus 2 sigma). So about 5% fall outside this range, split evenly between the two tails. Approximately 2.5% of students score below 56 and fail."
+  prompt="Exam scores in a large class are approximately normal with mean 72 and standard deviation 8. The professor announces that students scoring below 56 will fail. Using standardization, find the z-score for 56. Approximately what fraction of students fail? What score corresponds to the top 5% (the A threshold)?"
+  hint="For failing: z = (56 - 72)/8 = -2. For the A threshold: find z such that P(Z > z) = 0.05, then un-standardize with x = mu + z*sigma."
+  answer="Failing: z = (56 - 72)/8 = -2. By the rule, about 2.5% of scores fall below 56 and fail. For the A threshold: P(Z > z) = 0.05 means z is at the 95th percentile. From the 68-95-99.7 rule, 95% is within 2 sigma, so the top 5% starts roughly at z = 1.645 (from a z-table; the rule gives a rougher estimate of z ≈ 2). Un-standardize: x = 72 + 1.645 * 8 = 72 + 13.16 = 85.16. So scoring about 85 or above puts a student in the top 5%. This un-standardization step — going from z back to x — is the reverse of standardization."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Two machines fill bags of flour. Machine A produces bags with mean 1000g and SD 20g. Machine B produces bags with mean 1000g and SD 5g. Both are normally distributed. A bag is 'underweight' if it weighs less than 950g. Which machine produces more underweight bags? Compute the z-score and estimate for each."
+  hint="Both have the same mean, so standardize 950 for each. The machine with the larger SD has more mass in the tails."
+  answer="Machine A: z = (950 - 1000)/20 = -2.5. P(Z < -2.5) ≈ 0.0062, about 0.62% underweight. Machine B: z = (950 - 1000)/5 = -10. P(Z < -10) is essentially 0 (far beyond the 3-sigma rule, roughly 1 in a trillion). Machine A produces dramatically more underweight bags because its larger standard deviation spreads the distribution into the underweight region. Same mean, different precision: Machine B is far more reliable. This is why 'six sigma' quality control aims to keep the mean at least 6 standard deviations from the failure threshold."
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="IQ scores are standardized to be normally distributed with mean 100 and standard deviation 15. What range covers the middle 99.7% of IQ scores? What IQ score corresponds to z = 2 (often called the threshold for 'gifted')? Explain in plain language what z = 2 means."
+  hint="Middle 99.7% is within 3 sigma. z = 2 means 2 standard deviations above the mean: x = mu + 2*sigma."
+  answer="Middle 99.7%: within 3 sigma of the mean, i.e., 100 plus or minus 3*15 = 100 plus or minus 45 = [55, 145]. So 99.7% of people have IQ between 55 and 145. Gifted threshold (z = 2): x = 100 + 2*15 = 130. An IQ of 130 is 2 standard deviations above the mean. In plain language: an IQ of 130 is higher than about 97.7% of the population (since P(Z < 2) ≈ 0.977) — only about 2.3% score higher. The z-score '2' means 'two standard deviations above average,' which translates to a concrete percentile. This is the power of standardization: it converts any normal measurement into a universal percentile."
+/>
+
+<ExerciseBlock
+  number={6}
+  prompt="Explain why the normal distribution is a reasonable model for adult human heights, but a poor model for household incomes. What property of the normal distribution fails for income? What does this tell you about the limits of the central limit theorem?"
+  hint="Heights result from adding many small independent genetic and environmental factors (CLT applies). Incomes are not generated by an additive process, and the normal has thin tails."
+  answer="Heights fit the normal model well because they result from adding many small independent genetic and environmental factors — exactly the setting where the central limit theorem applies. The bell curve accurately describes adult heights within a sex and population. Household incomes, however, are poorly modeled by a normal distribution because (1) income is not generated by an additive process of many small independent factors — it is multiplicative and influenced by structural factors (education, networks, luck that compounds); (2) the normal has thin tails (3-sigma captures 99.7%), but income distributions have heavy tails — billionaires are far more than 3 standard deviations from the mean, and the log-normal or Pareto distributions fit far better; (3) income is bounded below by zero and highly right-skewed, while the normal is symmetric and unbounded. The lesson: the CLT explains why sums of small independent effects are normal, but it does NOT say everything is normal. When the generating process is multiplicative, or when extreme values are driven by different mechanisms than typical ones, the normal fails. Model selection must match the data-generating process."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="Prove that standardization preserves normality: if X ~ N(mu, sigma^2), then Z = (X - mu)/sigma has mean 0 and variance 1. Then explain why, combined with the fact that Z is still normal, this means there is 'really only one' normal distribution."
+  hint="Use linearity of expectation for the mean: E[aX + b] = aE[X] + b. For variance: Var(aX + b) = a^2 Var(X)."
+  answer="Let Z = (X - mu)/sigma = (1/sigma)X - mu/sigma. This is of the form aX + b with a = 1/sigma, b = -mu/sigma. Mean: E[Z] = a E[X] + b = (1/sigma)(mu) - mu/sigma = 0. Variance: Var(Z) = a^2 Var(X) = (1/sigma^2)(sigma^2) = 1. (Shifting by b does not affect variance.) So Z has mean 0 and variance 1. A theorem (proven via the change-of-variables formula for densities, or via moment generating functions) shows that any affine transformation aX + b of a normal is still normal — so Z is normal with mean 0 and variance 1, i.e., Z ~ N(0,1). Why this means 'only one normal': given any X ~ N(mu, sigma^2), standardize to Z ~ N(0,1), look up the probability in the standard table, and you have answered the question for the original X. Every normal distribution is just N(0,1) shifted and rescaled. There is one bell shape; the parameters mu and sigma just reposition and resize it. This is why a single z-table serves all normal distributions — a remarkable economy that is the practical payoff of standardization."
 />
 
 ---

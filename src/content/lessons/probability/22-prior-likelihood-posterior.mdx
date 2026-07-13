@@ -12,6 +12,14 @@ duration: 18
 difficulty: "Advanced"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 Bayesian inference is a machine with three moving parts. You pour in a **prior** (what you believed before), feed it some **data** through the **likelihood** (how well each possible world predicts that data), and out comes a **posterior** (what you believe now). The machine is Bayes' theorem, and it never stops — every new batch of data turns today's posterior into tomorrow's prior.
 
 This lesson is about the three parts and how they interact. The goal is to see, geometrically, how data reshapes belief.
@@ -20,11 +28,11 @@ This lesson is about the three parts and how they interact. The goal is to see, 
 
 The core equation, written in the language of distributions:
 
-$$p(\theta \mid \text{data}) = \frac{p(\text{data} \mid \theta) \cdot p(\theta)}{p(\text{data})}$$
+<MathInline expression={"p(\\theta \\mid \\text{data}) = \\frac{p(\\text{data} \\mid \\theta) \\cdot p(\\theta)}{p(\\text{data})}"} />
 
-Or more compactly, since $p(\text{data})$ is just a normalizing constant:
+Or more compactly, since <MathInline expression={"p(\\text{data})"} /> is just a normalizing constant:
 
-$$\text{posterior} \propto \text{likelihood} \times \text{prior}$$
+<MathInline expression={"\\underbrace{p(\\theta \\mid \\text{data})}_{\\text{posterior}} \\;\\propto\\; \\underbrace{p(\\text{data} \\mid \\theta)}_{\\text{likelihood}} \\;\\times\\; \\underbrace{p(\\theta)}_{\\text{prior}}"} />
 
 The symbol $\propto$ means "proportional to." The posterior has the same *shape* as the product of the likelihood and the prior — the denominator just scales it so the total area is 1.
 
@@ -38,19 +46,34 @@ Picture a landscape over the number line. Hills are where you think $\theta$ is 
 
 The prior encodes everything you knew before this experiment. It can come from previous studies, from physical constraints, or from expert judgment. In the absence of any information, you can use a **non-informative prior** — a flat or nearly flat distribution that tries not to bias the result.
 
+### Informative vs uninformative priors
+
+Priors come on a spectrum:
+
+- **Uninformative / weakly informative priors** are deliberately vague. The flat <MathInline expression={"\\text{Beta}(1,1)"} /> or <MathInline expression={"\\text{Uniform}(0,1)"} /> prior says "any value is equally plausible." A weakly informative prior like <MathInline expression={"N(0, 10^2)"} /> for a regression coefficient says "the effect is probably near zero, but I allow it to be large." These let the data speak while keeping the model numerically well-behaved.
+- **Informative priors** encode genuine prior knowledge. A Beta(50, 50) prior for a coin says "I have seen roughly 100 flips and they were balanced." An informative prior from a previous clinical trial becomes the prior for the next. These shrink the estimate toward the prior mean, which is exactly what you want when the prior is real.
+
 A common misconception: the prior is a weakness of Bayesian methods because it is "subjective." In reality, every statistical analysis makes assumptions. The Bayesian simply writes them down explicitly, as a distribution, where they can be examined, criticized, and changed.
 
-## The likelihood $p(\text{data} \mid \theta)$
+## The likelihood <MathInline expression={"p(\\text{data} \\mid \\theta)"} />
 
 The likelihood is a function of $\theta$, not of the data. The data is already observed — it is fixed. What varies is $\theta$: for each possible value of $\theta$, how probable is the data you actually saw?
 
 Picture the same number line, now overlaid with a second curve. This curve peaks at the value of $\theta$ that makes the data *most likely* — the **maximum likelihood estimate** (MLE). The curve falls off on either side as $\theta$ moves away from the best explanation.
 
+### Theorem: Maximum likelihood estimation
+
+Given independent data <MathInline expression={"x_1, \\ldots, x_n"} /> from a model with parameter $\theta$, the likelihood is <MathInline expression={"L(\\theta) = \\prod_{i=1}^n f(x_i \\mid \\theta)"} />. The maximum likelihood estimator is:
+
+$$\hat{\theta}_{\text{MLE}} = \arg\max_\theta \; L(\theta; \mathbf{x}) = \arg\max_\theta \; \sum_{i=1}^n \log f(x_i \mid \theta)$$
+
+(we maximize the log-likelihood because it turns the product into a sum and is numerically better-behaved). The MLE is the "peak of the likelihood" — the parameter value under which the observed data is most probable. Under mild regularity conditions, the MLE is consistent (converges to the truth) and asymptotically normal.
+
 The likelihood is where the data speaks. It is the bridge between your model and the evidence. If the data is strongly informative, the likelihood curve is sharply peaked — only a narrow range of $\theta$ values are consistent with what you observed. If the data is weak, the likelihood is broad and shallow.
 
 Note: the likelihood is *not* a probability distribution over $\theta$. Its area does not integrate to 1, and it does not necessarily sum to anything meaningful. It is a **relative** measure — it tells you which values of $\theta$ are more or less compatible with the data, but it does not assign probabilities to them. That is the prior's job.
 
-## The posterior $p(\theta \mid \text{data})$
+## The posterior <MathInline expression={"p(\\theta \\mid \\text{data})"} />
 
 The posterior is your updated belief — the prior reshaped by the evidence. It is a full probability distribution over $\theta$, and it is the main output of Bayesian inference.
 
@@ -69,11 +92,71 @@ The relative influence of the prior and the likelihood depends on how much data 
 
 **Little data.** With only a handful of observations, the likelihood is broad and shallow. It does not strongly favor any particular $\theta$. The posterior looks mostly like the prior — gently nudged, but not reshaped. Your initial belief dominates because the data has not yet spoken loudly enough to override it.
 
-**Moderate data.** The likelihood starts to sharpen. It pulls the posterior away from the prior and toward the MLE. The posterior sits between the two, a weighted average where the weights depend on the precision (inverse variance) of each. If the prior is tight and the data is moderate, the posterior stays close to the prior. If the prior is vague and the data is moderate, the posterior follows the data.
+**Moderate data.** The likelihood starts to sharpen. It pulls the posterior away from the prior and toward the MLE. The posterior sits between the two, a weighted average where the weights depend on the **precision** (inverse variance) of each. Formally, for a Normal prior and Normal likelihood, the posterior mean is a precision-weighted average:
+
+<MathInline expression={"\\mu_{\\text{post}} = \\frac{\\tau_0 \\mu_0 + \\tau_{\\text{data}} \\bar{x}}{\\tau_0 + \\tau_{\\text{data}}}, \\quad \\text{where } \\tau = 1/\\sigma^2"} />
+
+where $\tau_0 = 1/\sigma_0^2$ is the prior precision and <MathInline expression={"\\tau_{\\text{data}} = n/\\sigma^2"} /> is the data precision (growing with sample size $n$). If the prior is tight and the data is moderate, the posterior stays close to the prior. If the prior is vague and the data is moderate, the posterior follows the data.
 
 **Lots of data.** The likelihood becomes a narrow spike. The product of a spike and a smooth hill is essentially just the spike — the prior barely matters anymore. The posterior concentrates tightly around the MLE, and any reasonable prior would have led to the same conclusion. **The data overwhelms the prior.**
 
 This is the reassuring property of Bayesian inference. Get enough data, and your starting beliefs wash out. Two analysts with different priors will converge to the same posterior as the data accumulates. The method is *eventually* objective, even if the starting point is subjective.
+
+<FormulaReadout formulas={[
+  { label: "贝叶斯更新 (分布形式)", expression: "p(\\theta \\mid \\text{data}) = \\frac{p(\\text{data} \\mid \\theta)\\, p(\\theta)}{p(\\text{data})}" },
+  { label: "后验正比于似然乘先验", expression: "\\text{posterior} \\propto \\text{likelihood} \\times \\text{prior}" },
+  { label: "最大似然估计", expression: "\\hat{\\theta}_{\\text{MLE}} = \\arg\\max_\\theta \\sum_{i=1}^n \\log f(x_i \\mid \\theta)" },
+  { label: "共轭性 (族保持)", expression: "p(\\theta) \\in \\mathcal{F} \\;\\Rightarrow\\; p(\\theta \\mid \\text{data}) \\in \\mathcal{F}" },
+]} />
+
+## Sequential updating: posterior becomes the new prior
+
+Bayes' theorem describes a single update, but reality arrives in streams. The power of the Bayesian framework is that it handles sequential updating with effortless elegance: **today's posterior is tomorrow's prior.**
+
+<MathInline expression={"p(\\theta) \\;\\xrightarrow{\\,\\text{data}_1\\,}\\; p(\\theta \\mid \\text{data}_1) \\;\\xrightarrow{\\,\\text{data}_2\\,}\\; p(\\theta \\mid \\text{data}_1, \\text{data}_2) \\;\\xrightarrow{\\,\\text{data}_3\\,}\\; \\cdots"} />
+
+Each batch of data updates the distribution. You do not need to re-process old data — the current posterior already encodes everything the past data said. This is why Bayesian methods are the natural framework for online learning, streaming data, adaptive experiments, and real-time sensor fusion.
+
+Formally, if the batches are conditionally independent given $\theta$:
+
+$$p(\theta \mid \text{data}_1, \text{data}_2) = \frac{p(\text{data}_2 \mid \theta)\, p(\theta \mid \text{data}_1)}{p(\text{data}_2 \mid \text{data}_1)}$$
+
+which is just Bayes' theorem applied again, with <MathInline expression={"p(\\theta \\mid \\text{data}_1)"} /> playing the role of the prior. Updating once on the combined data, or updating twice in sequence, gives the identical posterior. Order does not matter (as long as the data is exchangeable). This is **posterior consistency** — the engine is associative.
+
+## Conjugate priors: when the update is exact
+
+For most models, the posterior has no closed form — computing it requires numerical integration (the subject of [lesson 23](/courses/probability/23-bayesian-inference-in-practice)). But for certain carefully matched pairs of prior and likelihood, the posterior stays in the same family as the prior. These are **conjugate priors**, and they make Bayesian updating exact and analytical.
+
+### Theorem: Conjugate prior
+
+A family <MathInline expression={"\\mathcal{F}"} /> of prior distributions is **conjugate** to a likelihood $p(x \mid \theta)$ if, for every prior <MathInline expression={"p(\\theta) \\in \\mathcal{F}"} /> and every observed dataset, the posterior <MathInline expression={"p(\\theta \\mid \\text{data})"} /> also lies in <MathInline expression={"\\mathcal{F}"} />. Only the parameters of the distribution change; the family is preserved.
+
+This means updating is pure parameter arithmetic — add to a counter, scale a shape parameter — no integration required. The standard conjugate pairs cover most of the common one-parameter models:
+
+| Likelihood (data story) | Conjugate prior | Posterior update | Posterior parameters |
+|---|---|---|---|
+| Binomial (k heads in n flips) | <MathInline expression={"\\text{Beta}(\\alpha, \\beta)"} /> | Add heads to $\alpha$, tails to $\beta$ | <MathInline expression={"\\text{Beta}(\\alpha + k,\\, \\beta + n - k)"} /> |
+| Poisson (counts, rate $\lambda$) | <MathInline expression={"\\text{Gamma}(a, b)"} /> | Add total count to $a$, observation time to $b$ | <MathInline expression={"\\text{Gamma}(a + \\sum x_i,\\, b + n)"} /> |
+| Normal (mean $\mu$, known $\sigma^2$) | <MathInline expression={"N(\\mu_0, \\sigma_0^2)"} /> | Precision-weighted update | <MathInline expression={"N\\!\\left(\\tfrac{\\mu_0/\\sigma_0^2 + n\\bar{x}/\\sigma^2}{1/\\sigma_0^2 + n/\\sigma^2},\\, (1/\\sigma_0^2 + n/\\sigma^2)^{-1}\\right)"} /> |
+| Exponential (waiting times, rate $\lambda$) | <MathInline expression={"\\text{Gamma}(a, b)"} /> | Add count to $a$, total time to $b$ | <MathInline expression={"\\text{Gamma}(a + n,\\, b + \\sum x_i)"} /> |
+| Multinomial (categorical counts) | Dirichlet | Add counts to corresponding $\alpha_i$ | Dirichlet with updated $\alpha_i$ |
+
+The pattern is the same everywhere: the prior parameters act as **pseudo-counts** (imaginary prior observations), and the data simply adds to them. The Beta-Binomial is the cleanest example — covered in detail in [lesson 23](/courses/probability/23-bayesian-inference-in-practice).
+
+### Why conjugacy exists: the exponential family
+
+Conjugate priors are not accidents. Every likelihood in the **exponential family** (Normal, Poisson, Binomial, Gamma, Multinomial, and many more) has a conjugate prior family derived systematically. The exponential family has the form <MathInline expression={"p(x \\mid \\theta) = h(x)\\exp(\\eta(\\theta) \\cdot T(x) - A(\\theta))"} />, and the conjugate prior mirrors this structure: <MathInline expression={"p(\\theta) \\propto \\exp(\\eta(\\theta) \\cdot \\nu - \\tau A(\\theta))"} />, with hyperparameters $(\nu, \tau)$ that act as prior pseudo-statistics. When data arrives, $\nu$ absorbs $T(x)$ and $\tau$ absorbs the count. This is why the same update pattern — "add the sufficient statistic to the prior parameter" — recurs across every conjugate pair. (Lesson 23 develops the exponential family in depth.)
+
+## The prior's influence vs the data's influence
+
+A useful mental model: the prior and the data are two witnesses testifying about $\theta$. The posterior is the weighted average of their testimony, weighted by each one's **precision** (inverse variance).
+
+- The prior's precision is $1/\sigma_0^2$ (how concentrated your prior was).
+- The data's precision is $n/\sigma^2$ (grows linearly with sample size $n$).
+
+When $n$ is small, the prior dominates. When $n$ is large, the data dominates. The crossover happens when $n/\sigma^2 \approx 1/\sigma_0^2$ — that is, when you have collected roughly as much information from the data as you encoded in the prior.
+
+This is why the prior matters most for small samples and vanishes for large ones. A skeptic who says "your Bayesian result depends entirely on your prior" is usually looking at a small-sample problem. With hundreds of data points, the same posterior would emerge from almost any reasonable prior. This is **Bernstein-von Mises theorem** territory: under mild conditions, the posterior is asymptotically normal, centered at the MLE, with variance shrinking like $1/n$ — regardless of the prior.
 
 ## A visual sketch
 
@@ -85,14 +168,74 @@ Imagine three curves drawn on the same axes, all over the parameter $\theta$:
 
 Now imagine collecting ten times more data. The likelihood sharpens into a narrow needle at 0.65. The prior has not changed — still the same gentle hill at 0.4. But the posterior now sits almost exactly at 0.65, a thin spike. The prior's opinion has been overwhelmed.
 
-## Key insight
+## Three perspectives on the update
 
-> The posterior is the product of prior and likelihood — your initial belief multiplied by what the data says. With little data, the prior dominates. With lots of data, the likelihood dominates. Bayesian inference is not about imposing subjective opinion; it is about starting from somewhere reasonable and letting the evidence take over.
+1. **As a precision-weighted compromise.** The posterior mean is a weighted average of the prior mean and the MLE, with weights proportional to their precisions. This is exact for Normal-Normal conjugate updating and approximately true in general via the Bernstein-von Mises theorem. It explains at a glance why small data defers to the prior and large data overrides it.
+2. **As multiplicative evidence accumulation.** In odds form, each observation multiplies the prior odds by a likelihood ratio (the Bayes factor). Evidence accumulates multiplicatively, not additively — which is why Bayesian updating is naturally suited to sequential decision-making and why a single contradictory observation can only move the posterior so far.
+3. **As pseudo-count addition.** For conjugate pairs, the prior parameters are literally "imaginary observations." Updating means adding real observations to the imaginary ones. A Beta(10, 10) prior is ten imaginary heads and ten imaginary tails; observing 58 heads and 42 tails gives a Beta(68, 52) posterior. The arithmetic is the same whether the counts were imaginary or real.
+
+## Modern applications
+
+**Variational autoencoders and the evidence lower bound.** In deep learning, variational autoencoders (VAEs) perform approximate Bayesian inference on latent variables. The "encoder" network outputs the parameters of an approximate posterior $q(z \mid x)$ over the latent code $z$, and training maximizes the **evidence lower bound (ELBO)** — a lower bound on the log marginal likelihood $\log p(x)$. The prior $p(z)$ is typically a standard normal, and the posterior is approximated by a Gaussian whose mean and variance the network learns. This is the prior-likelihood-posterior machinery running inside a neural network, at scale, on GPUs.
+
+**Bayesian optimization.** When optimizing an expensive black-box function (hyperparameter tuning, drug discovery), a Gaussian process prior is placed over the function. Each evaluation provides a likelihood, and the posterior over the function shape updates. The acquisition function (expected improvement, upper confidence bound) is computed from the posterior. This is sequential Bayesian updating driving each decision about where to evaluate next — a direct industrial application of "posterior becomes the new prior."
+
+**Empirical Bayes.** When you have many related parameters (e.g., gene expression across thousands of genes, batting averages across hundreds of players), empirical Bayes estimates the prior *from the data itself* — treating the prior hyperparameters as parameters to be estimated, then using that estimated prior for each individual inference. This is a frequentist-Bayesian hybrid: the prior is data-driven, but the per-parameter inference is fully Bayesian. It is how large-scale multiple-testing problems (the false discovery rate framework) get their power.
+
+<KeyInsight>
+The posterior is the product of prior and likelihood — your initial belief multiplied by what the data says. With little data, the prior dominates (the posterior looks like a nudged prior); with lots of data, the likelihood dominates (the prior washes out). Conjugate priors make this updating exact and analytical: the prior parameters act as pseudo-counts, and the data simply adds to them. Sequential updating is automatic — today's posterior is tomorrow's prior — which is why Bayesian methods are the natural language for streaming data, adaptive experiments, and online learning.
+</KeyInsight>
+
+## Connections
+
+This lesson dissects the three-part Bayesian engine introduced by [Bayes' theorem](/courses/probability/04-bayes-theorem) in Module 1. The likelihood connects directly to [maximum likelihood estimation](/courses/probability/17-sampling-distributions) in Module 5 — the MLE is the peak of the likelihood curve, the value a frequentist would report. The precision-weighting view of the posterior mean ties back to [expectation and variance](/courses/probability/06-expectation-and-variance): precision is inverse variance, and the update is a variance-weighted average.
+
+Forward, [lesson 23](/courses/probability/23-bayesian-inference-in-practice) makes the engine run: it develops the Beta-Binomial conjugate pair in full detail, generalizes to the exponential family (which explains *why* conjugacy exists), and introduces MCMC and variational inference for the models where no conjugate prior is available. The sequential-updating property connects to [Markov chains](/courses/probability/25-markov-chains) — MCMC algorithms construct a Markov chain whose stationary distribution is the posterior, making these two lessons deeply linked.
 
 ## Practice
 
-**Exercise 1.** You have a Beta(2, 5) prior for a coin's probability of heads. You flip the coin 10 times and see 7 heads. Without computing the exact posterior, sketch (or describe) where you expect the posterior to peak relative to the prior's peak (at roughly 0.29) and the likelihood's peak (at 0.7). Will it be closer to 0.29 or 0.7?
+<ExerciseBlock number={1}
+  prompt="You have a Beta(2, 5) prior for a coin's probability of heads. You flip the coin 10 times and see 7 heads. Without computing the exact posterior, sketch (or describe) where you expect the posterior to peak relative to the prior's peak (at roughly 0.29) and the likelihood's peak (at 0.7). Will it be closer to 0.29 or 0.7?"
+  hint="Compare the prior's pseudo-count strength (2+5=7 imaginary flips) to the data's strength (10 real flips)."
+  answer="The prior Beta(2,5) has pseudo-count 7 (concentration alpha+beta); the data has 10 observations. The data is stronger than the prior, so the posterior will be pulled closer to the likelihood peak at 0.7 than to the prior peak at 0.29. The exact posterior is Beta(2+7, 5+3) = Beta(9, 8), which has mean 9/17 ≈ 0.529. This is between 0.29 and 0.7 but closer to 0.7, as predicted — the data (10 flips) outweighs the prior (equivalent to 7 flips). If you had observed 100 flips instead of 10, the posterior would sit almost exactly at the MLE 0.7."
+/>
 
-**Exercise 2.** A colleague uses a prior that assigns probability zero to all values of $\theta$ above 0.5. The data strongly suggests $\theta \approx 0.8$. What happens to the posterior? Explain why this is a problem and what the colleague should have done differently.
+<ExerciseBlock number={2}
+  prompt="A colleague uses a prior that assigns probability zero to all values of theta above 0.5. The data strongly suggests theta is approximately 0.8. What happens to the posterior? Explain why this is a problem and what the colleague should have done differently."
+  hint="The posterior is proportional to prior times likelihood. What happens to a product when one factor is zero?"
+  answer="Because the prior assigns zero probability to theta > 0.5, and the posterior is proportional to (prior) times (likelihood), the posterior is also exactly zero for all theta > 0.5 — no matter how strongly the data points there. The product of zero and any finite likelihood is zero. No amount of data can overcome a prior that rules out a region with probability zero. This is a serious problem: the colleague has made an irrevocable commitment that the parameter cannot exceed 0.5, and the data is powerless to revise it. The fix: use a prior with broad support — one that assigns positive (even if small) probability to every plausible region. A Beta(1,1) flat prior, or a Beta(2,2), or any prior positive on (0,1), would let the data push the posterior toward 0.8 if the evidence is strong enough. The lesson: never use a prior that assigns zero probability to a region you cannot rule out with certainty."
+/>
 
-**Exercise 3.** Two analysts study the same drug. Analyst A uses a tight prior centered at 0.3 (skeptical the drug works). Analyst B uses a broad, nearly flat prior. They both observe the same data, in which 45 out of 100 patients recover. Describe how their posteriors will differ, and explain what would happen if they each observed 4500 recoveries out of 10,000 patients instead.
+<ExerciseBlock number={3}
+  prompt="Two analysts study the same drug. Analyst A uses a tight prior centered at 0.3 (skeptical the drug works). Analyst B uses a broad, nearly flat prior. They both observe the same data, in which 45 out of 100 patients recover. Describe how their posteriors will differ, and explain what would happen if they each observed 4500 recoveries out of 10,000 patients instead."
+  hint="With n=100, the prior matters. With n=10000, the data overwhelms the prior (Bernstein-von Mises)."
+  answer="With n=100 (45 recoveries): Analyst A's skeptical prior pulls the posterior toward 0.3; the posterior will sit between 0.3 and the MLE of 0.45, closer to 0.45 but noticeably shrunk. Analyst B's flat prior barely influences the posterior, which will sit near 0.45. The two analysts reach meaningfully different conclusions from the same data — the prior is doing real work because the sample is modest. With n=10000 (4500 recoveries, same proportion): the data's precision (10000 observations) vastly outweighs either prior. Both posteriors concentrate sharply around 0.45 with negligible influence from the prior. The two analysts converge to essentially the same conclusion. This is the Bernstein-von Mises theorem in action: as data accumulates, the prior washes out and the posterior becomes asymptotically normal, centered at the MLE, regardless of the prior."
+/>
+
+<ExerciseBlock number={4}
+  prompt="For the Normal-Normal conjugate pair: prior mu_0 = 0, sigma_0 = 10 (vague); likelihood from n=25 observations with sample mean x-bar = 4 and known sigma = 2. Compute the posterior mean and posterior variance using the precision-weighted update. Explain why the posterior mean is much closer to the sample mean than to the prior mean."
+  hint="Prior precision = 1/sigma_0^2 = 1/100. Data precision = n/sigma^2 = 25/4. Posterior precision = sum of precisions."
+  answer="Prior precision tau_0 = 1/sigma_0^2 = 1/100 = 0.01. Data precision tau_data = n/sigma^2 = 25/4 = 6.25. Posterior precision = 0.01 + 6.25 = 6.26. Posterior mean = (tau_0 * mu_0 + tau_data * x-bar) / (tau_0 + tau_data) = (0.01*0 + 6.25*4) / 6.26 = 25/6.26 ≈ 3.994. Posterior variance = 1/6.26 ≈ 0.16, so posterior SD ≈ 0.40. The posterior mean (3.994) is essentially equal to the sample mean (4) and far from the prior mean (0), because the data precision (6.25) dwarfs the prior precision (0.01). The prior was vague (large sigma_0 means low precision), so it contributed almost nothing. The posterior SD (0.40) is much smaller than both the prior SD (10) and the per-observation SD (2), reflecting that combining 25 observations shrinks uncertainty by a factor of roughly sqrt(n)=5."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Explain what it means for a prior to be a 'pseudo-count.' Give the Beta-Binomial example concretely: if your prior is Beta(3, 7) and you observe 20 heads in 50 flips, what is the posterior? Interpret the prior and posterior in terms of imaginary and real observations."
+  hint="The parameters alpha and beta count 'imaginary heads' and 'imaginary tails.'"
+  answer="A prior acts as a pseudo-count when its parameters can be interpreted as imaginary observations added to the real data. For Beta(alpha, beta): alpha is 'imaginary heads' and beta is 'imaginary tails.' A Beta(3, 7) prior says: 'before seeing any data, it is as if I had observed 3 heads and 7 tails in 10 imaginary flips — I mildly believe the coin is biased toward tails (mean 3/10 = 0.3), but with only 10 imaginary flips, I am not very certain.' After observing 20 heads in 50 real flips (20 heads, 30 tails), the posterior is Beta(3+20, 7+30) = Beta(23, 37). The posterior mean is 23/60 ≈ 0.383. This sits between the prior mean (0.3) and the MLE (0.4), pulled toward the data because the 50 real flips outweigh the 10 imaginary flips. The arithmetic is identical whether counts are imaginary (prior) or real (data) — that is the power and simplicity of conjugate updating."
+/>
+
+<ExerciseBlock number={6}
+  prompt="State the sequential updating property formally: if you observe data_1 then data_2, show that updating once on (data_1, data_2) gives the same posterior as updating on data_1 then using that posterior as the prior for data_2. Why does this matter for streaming data?"
+  hint="Apply Bayes' theorem twice. Use conditional independence of the two batches given theta."
+  answer="Assume the two batches are conditionally independent given theta: p(data_1, data_2 | theta) = p(data_1 | theta) p(data_2 | theta). Batch update: p(theta | data_1, data_2) is proportional to p(data_1, data_2 | theta) p(theta) = p(data_2 | theta) p(data_1 | theta) p(theta). Sequential update: first compute p(theta | data_1) proportional to p(data_1 | theta) p(theta). Then use this as the prior for data_2: p(theta | data_1, data_2) proportional to p(data_2 | theta) p(theta | data_1), which is proportional to p(data_2 | theta) p(data_1 | theta) p(theta). The two expressions match — so batch and sequential updating give identical posteriors. Why it matters: for streaming data, you never need to store or re-process old observations. You maintain only the current posterior (for conjugate families, just a few parameters) and update it as new data arrives. This makes Bayesian inference the natural framework for online learning, real-time sensor fusion, and adaptive clinical trials."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Explain why conjugate priors exist for the exponential family of distributions. Describe the structural reason the same 'add the sufficient statistic to the prior parameter' pattern recurs across Beta-Binomial, Gamma-Poisson, and Normal-Normal."
+  hint="The exponential family likelihood has the form p(x|theta) = h(x) exp(eta(theta) . T(x) - A(theta)). The conjugate prior mirrors this structure."
+  answer="An exponential family likelihood has the form p(x | theta) = h(x) exp(eta(theta) . T(x) - A(theta)), where T(x) is the sufficient statistic (the summary of the data that contains all information about theta). The conjugate prior is constructed to mirror this: p(theta) proportional to exp(nu . eta(theta) - tau . A(theta)), with hyperparameters (nu, tau). When you multiply prior by likelihood to get the posterior, the eta(theta) and A(theta) terms combine: the posterior has the same functional form, with hyperparameters updated to (nu + sum T(x_i), tau + n). This is exactly 'add the sufficient statistic to the prior parameter.' For Beta-Binomial: T(x) = (number of heads), and the prior pseudo-counts alpha, beta are exactly nu. For Gamma-Poisson: T(x) = sum of counts, and the Gamma prior's shape parameter absorbs it. For Normal-Normal: T(x) = sum of observations, and the prior mean (weighted by precision) absorbs it. The reason conjugacy exists at all is that the exponential family is closed under multiplication of this form — the prior and posterior live in the same family because the likelihood's exponential structure matches the prior's. This is why every common one-parameter model (Binomial, Poisson, Normal, Exponential, Multinomial) has a conjugate prior: they are all in the exponential family."
+/>
+
+---
+
+**Up next:** [Bayesian Inference in Practice →](/courses/probability/23-bayesian-inference-in-practice)

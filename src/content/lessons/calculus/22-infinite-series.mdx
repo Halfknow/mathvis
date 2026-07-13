@@ -18,12 +18,16 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { SeriesExplorer } from '../../../components/interactive/calculus/SeriesExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-An infinite series is a sum: $a_1 + a_2 + a_3 + \cdots = \sum_{n=1}^{\infty} a_n$. The question is never "what's the total?" (you can't add infinitely many numbers). The question is: **does the sequence of partial sums converge?** The harmonic series is the great cautionary tale of calculus. Its terms shrink ($1/n \to 0$), yet the sum diverges. It shrinks too slowly -- the partial sums keep growing, always adding just enough to creep upward forever.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+You can never actually add infinitely many numbers — addition is a finite operation. So what could <MathInline expression={"\\sum_{n=1}^{\\infty} a_n"} /> possibly mean? The brilliant answer, refined over centuries, is to replace the infinite sum with a **sequence of finite partial sums** and ask whether *that sequence* converges. A series, in other words, is just a sequence in disguise — the [sequences](/courses/calculus/21-sequences) of the previous lesson do all the work. This single reframing is the foundation of everything that follows, and it comes with a famous warning: the **harmonic series** $\sum 1/n$ diverges even though its terms shrink to zero, because they shrink too slowly. "Terms going to zero" is necessary for convergence but nowhere near sufficient.
 
 <InteractiveCanvas
   title="Series Explorer"
@@ -33,64 +37,163 @@ An infinite series is a sum: $a_1 + a_2 + a_3 + \cdots = \sum_{n=1}^{\infty} a_n
   <SeriesExplorer client:visible />
 </InteractiveCanvas>
 
-## Partial sums
+## The precise definition: partial sums
 
-Define the $N$-th partial sum:
+The series <MathInline expression={"\\sum_{n=1}^{\\infty} a_n"} /> does not stand alone. It is defined through its **partial sums**:
 
 <MathBlock expression={"S_N = \\sum_{n=1}^{N} a_n = a_1 + a_2 + \\cdots + a_N"} />
 
-The series **converges** if the sequence of partial sums $S_1, S_2, S_3, \ldots$ converges to a finite limit $S$. Otherwise it **diverges**.
+Each $S_N$ is an honest finite number — no infinity involved. The infinite series is then *defined* by taking the limit of this sequence:
 
-## The geometric series
+## Theorem: Definition of series convergence
 
-The most important example:
+The series <MathInline expression={"\\sum_{n=1}^{\\infty} a_n"} /> **converges** to the sum $S$ if the sequence of partial sums $(S_N)$ converges to $S$:
 
-<MathBlock expression={"\\sum_{n=0}^{\\infty} r^n = \\frac{1}{1-r} \\quad \\text{when } |r| < 1"} />
+<MathBlock expression={"\\sum_{n=1}^{\\infty} a_n = S \\;\\iff\\; \\lim_{N \\to \\infty} S_N = S"} />
 
-Each term is $r$ times the previous one. When $|r| < 1$, the terms shrink fast enough that the partial sums converge. When $|r| \geq 1$, the terms don't shrink (or grow), and the series diverges.
+If $(S_N)$ diverges (runs to $\pm\infty$ or oscillates), the series **diverges**.
 
-Example: $1 + \frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \cdots = \frac{1}{1 - 1/2} = 2$.
+**The key insight:** we have *defined away* the infinite sum by reducing it to the convergence of a sequence — exactly the concept from [Lesson 21](/courses/calculus/21-sequences). Every convergence test in the next lesson is, at bottom, a way to prove the partial-sum sequence converges without computing its limit.
 
-## The harmonic series — a surprise
+## The geometric series — the prototype
+
+The single most important series in mathematics is the **geometric series**, where each term is a fixed ratio $r$ times the previous one:
+
+<MathBlock expression={"\\sum_{n=0}^{\\infty} r^n = 1 + r + r^2 + r^3 + \\cdots"} />
+
+## Theorem: Geometric series convergence
+
+The geometric series <MathInline expression={"\\sum_{n=0}^{\\infty} r^n"} /> **converges if and only if** $|r| < 1$, and when it converges its sum is:
+
+<MathBlock expression={"\\sum_{n=0}^{\\infty} r^n = \\frac{1}{1 - r} \\quad (|r| < 1)"} />
+
+**Proof sketch.** The $N$-th partial sum has a closed form: multiply $S_N = 1 + r + \cdots + r^N$ by $r$ to get <MathInline expression={"r S_N = r + r^2 + \\cdots + r^{N+1}"} />, subtract, and solve: <MathInline expression={"S_N = \\frac{1 - r^{N+1}}{1 - r}"} /> for $r \neq 1$. Now take $N \to \infty$. The term <MathInline expression={"r^{N+1} \\to 0"} /> exactly when $|r| < 1$, leaving <MathInline expression={"S = \\frac{1}{1-r}"} />. If $|r| \ge 1$ then <MathInline expression={"r^{N+1}"} /> does not vanish (it grows or oscillates), so $S_N$ has no finite limit.
+
+**Example:** <MathInline expression={"1 + \\tfrac12 + \\tfrac14 + \\tfrac18 + \\cdots = \\frac{1}{1 - 1/2} = 2"} />.
+
+The geometric series is the prototype against which every other series is measured. Most convergence tests work by *comparing* a given series to a geometric one. Memorize the formula <MathInline expression={"\\frac{1}{1-r}"} /> — it appears in the [power series](/courses/calculus/24-power-series) for <MathInline expression={"\\frac{1}{1-x}"} />, in probability (geometric distribution), in finance (present value of a perpetuity), and in the [Taylor series](/courses/calculus/26-taylor-series) for many functions.
+
+## The harmonic series — the great cautionary tale
+
+Now the warning. Consider:
 
 <MathBlock expression={"\\sum_{n=1}^{\\infty} \\frac{1}{n} = 1 + \\frac{1}{2} + \\frac{1}{3} + \\frac{1}{4} + \\cdots = \\infty"} />
 
-The terms $1/n$ shrink to zero, but the series still diverges! The terms shrink too slowly. This is the classic counterexample showing that $a_n \to 0$ is **necessary** for convergence but not **sufficient**.
+The terms $1/n$ shrink to zero — yet the series **diverges**. The partial sums creep upward without bound, forever. Why? The terms shrink too slowly. The classic proof groups terms in powers of two:
 
-## The divergence test
+<MathBlock expression={"1 + \\tfrac12 + \\underbrace{\\tfrac13 + \\tfrac14}_{> \\, 1/2} + \\underbrace{\\tfrac15 + \\cdots + \\tfrac18}_{> \\, 1/2} + \\cdots"} />
 
-If $\lim_{n \to \infty} a_n \neq 0$, then $\sum a_n$ **diverges**. Contrapositive: if the series converges, then the terms must go to zero. But terms going to zero doesn't guarantee convergence (harmonic series).
+Each block from <MathInline expression={"1/(2^k{+}1)"} /> to <MathInline expression={"1/2^{k+1}"} /> has at least $2^k$ terms each at least <MathInline expression={"1/2^{k+1}"} />, so each block exceeds $1/2$. Adding infinitely many blocks each bigger than $1/2$ blows up to infinity. The harmonic series is the canonical demonstration that **$a_n \to 0$ is necessary for convergence but not sufficient**.
+
+This is not a curiosity — it is the central trap of infinite series. The divergence test below rules out the *obvious* failures; the [convergence tests](/courses/calculus/23-convergence-tests) of the next lesson handle the subtle ones like the harmonic series.
+
+## Theorem: The nth-Term (Divergence) Test
+
+If $\sum a_n$ converges, then <MathInline expression={"\\lim_{n \\to \\infty} a_n = 0"} />. Equivalently (the contrapositive):
+
+<MathBlock expression={"\\lim_{n \\to \\infty} a_n \\neq 0 \\;\\Longrightarrow\\; \\sum a_n \\text{ diverges}"} />
+
+**Hypotheses:** none. **Conclusion:** if the terms do not tend to zero, the series definitely diverges — stop, do not apply other tests.
+
+**The crucial caveat:** the converse is *false*. The harmonic series has $\lim a_n = 0$ but diverges. The divergence test can only ever prove divergence, never convergence. It is the very first check in the flowchart: quick, cheap, and sometimes decisive. If the terms do not approach zero, nothing else matters.
 
 ## Telescoping series
 
-Some series simplify dramatically when you expand the partial sums:
+Some series simplify dramatically when you expand the partial sums — most terms cancel like a collapsing telescope. The prototype:
 
 <MathBlock expression={"\\sum_{n=1}^{\\infty} \\frac{1}{n(n+1)} = \\sum_{n=1}^{\\infty} \\left(\\frac{1}{n} - \\frac{1}{n+1}\\right)"} />
 
-The partial sum telescopes: $S_N = 1 - \frac{1}{N+1} \to 1$. Almost everything cancels.
+Writing out $S_N$:
+
+<MathBlock expression={"S_N = \\left(1 - \\tfrac12\\right) + \\left(\\tfrac12 - \\tfrac13\\right) + \\cdots + \\left(\\tfrac{1}{N} - \\tfrac{1}{N+1}\\right) = 1 - \\frac{1}{N+1}"} />
+
+Almost everything cancels — only <MathInline expression={"1 - \\frac{1}{N+1}"} /> survives — and as $N \to \infty$ this tends to $1$. So <MathInline expression={"\\sum_{n=1}^{\\infty} \\frac{1}{n(n+1)} = 1"} />. Telescoping works whenever you can write <MathInline expression={"a_n = b_n - b_{n+1}"} /> for some sequence $(b_n)$ that tends to a finite limit; the sum is then $b_1 - \lim b_n$.
+
+## The algebraic properties of series
+
+Convergent series behave like finite sums **only when every series involved converges**:
+
+- **Linearity:** if $\sum a_n = A$ and $\sum b_n = B$ both converge, then $\sum(\alpha a_n + \beta b_n) = \alpha A + \beta B$.
+- **Finite insertions:** changing finitely many terms changes the sum by a finite amount and does not affect convergence.
+
+**Warning — the dangerous false move:** $\sum (a_n + b_n) = \sum a_n + \sum b_n$ is guaranteed *only* if both series on the right converge. Splitting a convergent series into two divergent pieces (e.g. rearranging the alternating harmonic series) can produce any sum you like — a pathology that motivates **absolute convergence** in [Lesson 23](/courses/calculus/23-convergence-tests).
+
+<FormulaReadout formulas={[
+  { label: "级数收敛（部分和定义）", expression: "\\sum_{n=1}^{\\infty} a_n = S \\;\\iff\\; \\lim_{N\\to\\infty} S_N = S" },
+  { label: "几何级数（|r| < 1）", expression: "\\sum_{n=0}^{\\infty} r^n = \\frac{1}{1-r}" },
+  { label: "调和级数发散", expression: "\\sum_{n=1}^{\\infty} \\frac{1}{n} = \\infty" },
+  { label: "n 项判别法（发散）", expression: "\\lim_{n\\to\\infty} a_n \\neq 0 \\Rightarrow \\sum a_n \\text{ 发散}" },
+]} />
+
+## The many faces of series
+
+- **Finance:** the present value of a perpetuity (an infinite stream of payments) is a geometric series. A bond paying $C$ forever, discounted at rate $r$, is worth $C/r$ — straight from <MathInline expression={"\\frac{1}{1-r}"} />.
+- **Probability:** the geometric and negative binomial distributions are normalized by convergent geometric series; the expected number of trials until the first success is <MathInline expression={"\\sum n p (1-p)^{n-1} = 1/p"} />.
+- **Physics:** perturbation series in quantum mechanics, Feynman diagram expansions, and lattice sums are all infinite series whose convergence is physically meaningful.
+- **Computer science:** the running time of divide-and-conquer algorithms is analyzed via series; geometric decay of subproblem sizes gives logarithmic total work.
+
+## Modern applications
+
+In **machine learning**, the infinite-sum viewpoint underlies Bayesian inference: the marginal likelihood and posterior predictive are often infinite mixtures (sums over all possible parameter values or model structures). Variational methods approximate these sums by truncation, and the convergence rate of the underlying series determines how good the approximation is.
+
+In **signal processing and compression**, many signals are represented as infinite series of basis functions (Fourier series, wavelet series). Whether the series converges to the original signal — and how fast — determines whether lossy compression is faithful.
+
+In **reinforcement learning**, the value of a state is the discounted sum of future rewards <MathInline expression={"\\sum_{t=0}^{\\infty} \\gamma^t r_t"} />, a geometric-like series that converges precisely because $\gamma < 1$. The discount factor is literally the ratio $r$ of a geometric series; setting $\gamma$ near $1$ makes the agent far-sighted but threatens divergence.
 
 <KeyInsight>
-A series converges when its partial sums approach a finite limit. Terms going to zero is necessary but not sufficient — the harmonic series proves it. The geometric series (|r| < 1) is the gold standard of convergent series.
+An infinite series is defined through its sequence of partial sums S_N: the series converges iff (S_N) converges as a sequence. This reduces "infinite addition" to the limits of Lesson 21. The geometric series ∑ rⁿ converges iff |r| < 1, summing to 1/(1−r) — the prototype every other series is compared against. The harmonic series ∑ 1/n diverges despite terms → 0, the canonical proof that "terms shrink" is necessary but not sufficient. The nth-term test is the cheap first check (terms not → 0 ⇒ diverge), but it can never prove convergence. Telescoping series collapse to a closed form by massive cancellation.
 </KeyInsight>
+
+## Connections
+
+This lesson takes the [sequences](/courses/calculus/21-sequences) of the previous lesson and feeds them into a summation machine: a series converges exactly when its partial-sum sequence converges, so every fact about sequences (squeeze theorem, monotone convergence) becomes a tool for series. The geometric series formula <MathInline expression={"\\frac{1}{1-r}"} /> is the seed of the [power series](/courses/calculus/24-power-series) for <MathInline expression={"\\frac{1}{1-x}"} />, and from there of the [Taylor series](/courses/calculus/26-taylor-series) for most elementary functions. The harmonic series divergence is explained rigorously by the **integral test** in [Lesson 23](/courses/calculus/23-convergence-tests), and the question "is convergence fragile?" motivates absolute vs conditional convergence there too.
+
+Across disciplines, an infinite series is the language of "the total accumulated effect of infinitely many small contributions": discounted future rewards in economics, perturbation expansions in physics, mixture models in statistics, and Fourier/wavelet decompositions in signal processing. Whether the total stays finite is the question this lesson teaches you to ask, and the next lesson teaches you to answer.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Does the series ∑ (3/5)ⁿ converge? If so, find its sum."
+  prompt="Does the series ∑_{n=0}^∞ (3/5)ⁿ converge? If so, find its sum."
   hint="This is a geometric series with r = 3/5. Is |r| < 1?"
-  answer="Yes, |3/5| < 1. Sum = 1/(1 − 3/5) = 1/(2/5) = 5/2 = 2.5."
+  answer="Yes, |3/5| = 0.6 < 1, so the geometric series converges. Sum = 1/(1 − 3/5) = 1/(2/5) = 5/2 = 2.5. The terms shrink by a factor of 0.6 each step, fast enough that the partial sums approach a finite limit."
 />
 
 <ExerciseBlock number={2}
-  prompt="Does ∑ sin(n) converge or diverge?"
-  hint="Apply the divergence test: does sin(n) approach 0 as n → ∞?"
-  answer="sin(n) does not approach 0 as n → ∞ (it oscillates between −1 and 1). By the divergence test, the series diverges."
+  prompt="Apply the nth-term (divergence) test to ∑ sin(n). What can you conclude?"
+  hint="Does sin(n) approach 0 as n → ∞? If not, the series must diverge."
+  answer="As n runs through the integers, sin(n) does not approach any limit — it oscillates densely in [−1, 1] and in particular does not tend to 0. By the nth-term test, ∑ sin(n) diverges. Note carefully: the test proves divergence, not convergence. If sin(n) had tended to 0, we would still need other tests — the divergence test is a one-way street. (It never actually tends to 0 here, so the conclusion is decisive.)"
 />
 
 <ExerciseBlock number={3}
-  prompt="Show that ∑ 1/[(2n−1)(2n+1)] converges by writing it as a telescoping series."
-  hint="Decompose using partial fractions: 1/[(2n−1)(2n+1)] = A/(2n−1) + B/(2n+1)."
-  answer="1/[(2n−1)(2n+1)] = 1/2 · [1/(2n−1) − 1/(2n+1)]. The partial sum telescopes: S_N = 1/2 · [1 − 1/(2N+1)] → 1/2."
+  prompt="Show that ∑_{n=1}^∞ 1/[(2n−1)(2n+1)] converges by writing it as a telescoping series, and find its sum."
+  hint="Decompose using partial fractions: 1/[(2n−1)(2n+1)] = A/(2n−1) + B/(2n+1). Solve for A and B."
+  answer="Partial fractions: 1/[(2n−1)(2n+1)] = (1/2)[1/(2n−1) − 1/(2n+1)] (check: (1/2)[(2n+1) − (2n−1)]/[(2n−1)(2n+1)] = (1/2)·2/denom = 1/denom ✓). The partial sum telescopes: S_N = (1/2)[1/1 − 1/3 + 1/3 − 1/5 + ··· + 1/(2N−1) − 1/(2N+1)] = (1/2)[1 − 1/(2N+1)]. As N → ∞, 1/(2N+1) → 0, so the sum is 1/2. Telescoping turned a hard-looking series into a single subtraction."
 />
 
-[Next Lesson →](/courses/calculus/23-convergence-tests)
+<ExerciseBlock number={4}
+  prompt="Prove that the harmonic series ∑ 1/n diverges by grouping terms in blocks of powers of 2. Then explain in one sentence why this does NOT contradict the fact that 1/n → 0."
+  hint="Group as 1 + 1/2 + (1/3 + 1/4) + (1/5 + ... + 1/8) + ... Show each block exceeds 1/2."
+  answer="Write the series as 1 + 1/2 + (1/3 + 1/4) + (1/5 + 1/6 + 1/7 + 1/8) + (1/9 + ... + 1/16) + ···. The block from 1/(2^{k-1}+1) to 1/2^k contains 2^{k-1} terms, each at least 1/2^k, so the block sum is at least 2^{k-1} · (1/2^k) = 1/2. There are infinitely many such blocks, each exceeding 1/2, so the partial sums exceed 1 + 1/2 + (1/2) + (1/2) + ··· = ∞. This does NOT contradict 1/n → 0: terms going to zero is necessary but not sufficient for convergence. The harmonic terms go to zero too slowly — each block still contributes a fixed 1/2 no matter how far out you go. Convergence requires the terms to shrink *fast enough*, and 1/n is on the wrong side of that threshold."
+/>
+
+<ExerciseBlock number={5}
+  prompt="For what values of r does ∑_{n=0}^∞ (2r + 1)ⁿ converge? Find the sum when it converges."
+  hint="This is a geometric series with ratio (2r + 1). What condition on the ratio guarantees convergence?"
+  answer="The series is geometric with ratio (2r + 1). It converges iff |2r + 1| < 1, i.e. −1 < 2r + 1 < 1, i.e. −2 < 2r < 0, i.e. −1 < r < 0. When it converges, the sum is 1/(1 − (2r+1)) = 1/(−2r) = −1/(2r). The geometric condition |ratio| < 1 translates directly to a condition on the parameter r."
+/>
+
+<ExerciseBlock number={6}
+  prompt="A perpetuity pays $1000 at the end of every year, forever, and the annual interest rate is 5%. What is its present value? Treat this as a geometric series and use the formula."
+  hint="The first payment is discounted by 1/(1.05), the second by 1/(1.05)², and so on. Factor out 1000/1.05 and you get a geometric series."
+  answer="The present value is 1000/(1.05) + 1000/(1.05)² + 1000/(1.05)³ + ··· = (1000/1.05) · [1 + 1/1.05 + 1/1.05² + ···] = (1000/1.05) · 1/(1 − 1/1.05) = (1000/1.05) · (1.05/0.05) = 1000/0.05 = $20{,}000. Equivalently, a perpetuity paying C forever at rate r is worth C/r = 1000/0.05 = $20{,}000 — a clean geometric-series result. This is why the formula 1/(1−r) underlies all of discounted cash-flow valuation."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Suppose ∑ aₙ converges with sum A and ∑ bₙ converges with sum B. Prove that ∑ (aₙ + bₙ) converges to A + B. Then explain why the same reasoning fails if one of the series diverges (give a concrete counterexample)."
+  hint="Use the linearity of limits on the partial sums: the partial sum of (aₙ+bₙ) is the sum of the partial sums. For the counterexample, consider aₙ = 1 and bₙ = −1."
+  answer="Let S_N = ∑_{n=1}^N aₙ → A and T_N = ∑_{n=1}^N bₙ → B. The partial sum of the combined series is ∑_{n=1}^N (aₙ + bₙ) = S_N + T_N, and by the sum law for sequence limits, S_N + T_N → A + B. Hence ∑ (aₙ + bₙ) = A + B. Counterexample if a series diverges: take aₙ = 1 (so ∑ aₙ diverges) and bₙ = −1 (so ∑ bₙ diverges), but aₙ + bₙ = 0 for all n, so ∑ (aₙ + bₙ) = 0 converges. The linearity law requires *both* limits to exist; applying it when one does not is the classic error. This is precisely why absolute convergence (Lesson 23) is such a useful strengthening — absolutely convergent series can be rearranged and split freely, while conditionally convergent ones cannot."
+/>
+
+---
+
+**Up next:** [Convergence Tests](/courses/calculus/23-convergence-tests)

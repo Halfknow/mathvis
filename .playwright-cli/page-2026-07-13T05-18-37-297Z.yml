@@ -1,0 +1,295 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "MathViz" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img [ref=e6]
+        - generic [ref=e8]: MathViz
+      - navigation [ref=e9]:
+        - link "Linear Algebra" [ref=e10] [cursor=pointer]:
+          - /url: /courses/linear-algebra
+        - link "Calculus" [ref=e11] [cursor=pointer]:
+          - /url: /courses/calculus
+        - link "Probability" [ref=e12] [cursor=pointer]:
+          - /url: /courses/probability
+      - generic [ref=e13]:
+        - link "Search" [ref=e14] [cursor=pointer]:
+          - /url: /search
+          - img [ref=e15]
+        - link "中文" [ref=e18] [cursor=pointer]:
+          - /url: /zh/courses/calculus
+          - img [ref=e19]
+          - generic [ref=e22]: 中文
+        - button "Toggle theme" [ref=e23]:
+          - img [ref=e24]
+  - main [ref=e26]:
+    - generic [ref=e27]:
+      - generic [ref=e29]: ∫
+      - generic [ref=e30]:
+        - paragraph [ref=e31]: Course
+        - heading "Calculus" [level=1] [ref=e32]
+        - paragraph [ref=e33]: Derivatives, integrals, and the mathematics of change.
+        - generic [ref=e34]:
+          - generic [ref=e35]: Beginner
+          - generic [ref=e36]: 30 lessons · ~9h
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - paragraph [ref=e41]: Module 1
+            - heading "Notation" [level=2] [ref=e42]
+          - generic [ref=e43]: 1 lessons
+        - list [ref=e44]:
+          - listitem [ref=e45]:
+            - link "1 Calculus Notation Reference 20 min" [ref=e46] [cursor=pointer]:
+              - /url: /courses/calculus/00-notation
+              - generic [ref=e47]: "1"
+              - generic [ref=e48]: Calculus Notation Reference
+              - generic [ref=e49]: 20 min
+      - generic [ref=e50]:
+        - generic [ref=e51]:
+          - generic [ref=e52]:
+            - paragraph [ref=e53]: Module 2
+            - heading "Foundations of Differentiation" [level=2] [ref=e54]
+          - generic [ref=e55]: 4 lessons
+        - list [ref=e56]:
+          - listitem [ref=e57]:
+            - link "1 What is a Derivative? 14 min" [ref=e58] [cursor=pointer]:
+              - /url: /courses/calculus/01-what-is-a-derivative
+              - generic [ref=e59]: "1"
+              - generic [ref=e60]: What is a Derivative?
+              - generic [ref=e61]: 14 min
+          - listitem [ref=e62]:
+            - link "2 Limits and Continuity 16 min" [ref=e63] [cursor=pointer]:
+              - /url: /courses/calculus/02-limits-and-continuity
+              - generic [ref=e64]: "2"
+              - generic [ref=e65]: Limits and Continuity
+              - generic [ref=e66]: 16 min
+          - listitem [ref=e67]:
+            - link "3 Differentiation Rules 18 min" [ref=e68] [cursor=pointer]:
+              - /url: /courses/calculus/03-differentiation-rules
+              - generic [ref=e69]: "3"
+              - generic [ref=e70]: Differentiation Rules
+              - generic [ref=e71]: 18 min
+          - listitem [ref=e72]:
+            - link "4 Visualizing the Chain Rule 15 min" [ref=e73] [cursor=pointer]:
+              - /url: /courses/calculus/04-visualizing-the-chain-rule
+              - generic [ref=e74]: "4"
+              - generic [ref=e75]: Visualizing the Chain Rule
+              - generic [ref=e76]: 15 min
+      - generic [ref=e77]:
+        - generic [ref=e78]:
+          - generic [ref=e79]:
+            - paragraph [ref=e80]: Module 3
+            - heading "Function Behavior" [level=2] [ref=e81]
+          - generic [ref=e82]: 4 lessons
+        - list [ref=e83]:
+          - listitem [ref=e84]:
+            - link "1 Curve Sketching 18 min" [ref=e85] [cursor=pointer]:
+              - /url: /courses/calculus/05-curve-sketching
+              - generic [ref=e86]: "1"
+              - generic [ref=e87]: Curve Sketching
+              - generic [ref=e88]: 18 min
+          - listitem [ref=e89]:
+            - link "2 Optimization 20 min" [ref=e90] [cursor=pointer]:
+              - /url: /courses/calculus/06-optimization
+              - generic [ref=e91]: "2"
+              - generic [ref=e92]: Optimization
+              - generic [ref=e93]: 20 min
+          - listitem [ref=e94]:
+            - link "3 Related Rates 18 min" [ref=e95] [cursor=pointer]:
+              - /url: /courses/calculus/07-related-rates
+              - generic [ref=e96]: "3"
+              - generic [ref=e97]: Related Rates
+              - generic [ref=e98]: 18 min
+          - listitem [ref=e99]:
+            - link "4 L'Hopital's Rule 14 min" [ref=e100] [cursor=pointer]:
+              - /url: /courses/calculus/08-lhopitals-rule
+              - generic [ref=e101]: "4"
+              - generic [ref=e102]: L'Hopital's Rule
+              - generic [ref=e103]: 14 min
+      - generic [ref=e104]:
+        - generic [ref=e105]:
+          - generic [ref=e106]:
+            - paragraph [ref=e107]: Module 4
+            - heading "From Area to the Integral" [level=2] [ref=e108]
+          - generic [ref=e109]: 4 lessons
+        - list [ref=e110]:
+          - listitem [ref=e111]:
+            - link "1 Accumulation and Area 16 min" [ref=e112] [cursor=pointer]:
+              - /url: /courses/calculus/09-accumulation-and-area
+              - generic [ref=e113]: "1"
+              - generic [ref=e114]: Accumulation and Area
+              - generic [ref=e115]: 16 min
+          - listitem [ref=e116]:
+            - link "2 Riemann Sums 20 min" [ref=e117] [cursor=pointer]:
+              - /url: /courses/calculus/10-riemann-sums
+              - generic [ref=e118]: "2"
+              - generic [ref=e119]: Riemann Sums
+              - generic [ref=e120]: 20 min
+          - listitem [ref=e121]:
+            - link "3 The Definite Integral 18 min" [ref=e122] [cursor=pointer]:
+              - /url: /courses/calculus/11-the-definite-integral
+              - generic [ref=e123]: "3"
+              - generic [ref=e124]: The Definite Integral
+              - generic [ref=e125]: 18 min
+          - listitem [ref=e126]:
+            - link "4 The Fundamental Theorem of Calculus 22 min" [ref=e127] [cursor=pointer]:
+              - /url: /courses/calculus/12-the-fundamental-theorem
+              - generic [ref=e128]: "4"
+              - generic [ref=e129]: The Fundamental Theorem of Calculus
+              - generic [ref=e130]: 22 min
+      - generic [ref=e131]:
+        - generic [ref=e132]:
+          - generic [ref=e133]:
+            - paragraph [ref=e134]: Module 5
+            - heading "Techniques of Integration" [level=2] [ref=e135]
+          - generic [ref=e136]: 4 lessons
+        - list [ref=e137]:
+          - listitem [ref=e138]:
+            - link "1 Antiderivatives 16 min" [ref=e139] [cursor=pointer]:
+              - /url: /courses/calculus/13-antiderivatives
+              - generic [ref=e140]: "1"
+              - generic [ref=e141]: Antiderivatives
+              - generic [ref=e142]: 16 min
+          - listitem [ref=e143]:
+            - link "2 u-Substitution 18 min" [ref=e144] [cursor=pointer]:
+              - /url: /courses/calculus/14-u-substitution
+              - generic [ref=e145]: "2"
+              - generic [ref=e146]: u-Substitution
+              - generic [ref=e147]: 18 min
+          - listitem [ref=e148]:
+            - link "3 Integration by Parts 18 min" [ref=e149] [cursor=pointer]:
+              - /url: /courses/calculus/15-integration-by-parts
+              - generic [ref=e150]: "3"
+              - generic [ref=e151]: Integration by Parts
+              - generic [ref=e152]: 18 min
+          - listitem [ref=e153]:
+            - link "4 Partial Fractions and Strategies 20 min" [ref=e154] [cursor=pointer]:
+              - /url: /courses/calculus/16-partial-fractions
+              - generic [ref=e155]: "4"
+              - generic [ref=e156]: Partial Fractions and Strategies
+              - generic [ref=e157]: 20 min
+      - generic [ref=e158]:
+        - generic [ref=e159]:
+          - generic [ref=e160]:
+            - paragraph [ref=e161]: Module 6
+            - heading "Applications of Integration" [level=2] [ref=e162]
+          - generic [ref=e163]: 4 lessons
+        - list [ref=e164]:
+          - listitem [ref=e165]:
+            - link "1 Area Between Curves 16 min" [ref=e166] [cursor=pointer]:
+              - /url: /courses/calculus/17-area-between-curves
+              - generic [ref=e167]: "1"
+              - generic [ref=e168]: Area Between Curves
+              - generic [ref=e169]: 16 min
+          - listitem [ref=e170]:
+            - link "2 Volumes by Slicing 20 min" [ref=e171] [cursor=pointer]:
+              - /url: /courses/calculus/18-volumes-by-slicing
+              - generic [ref=e172]: "2"
+              - generic [ref=e173]: Volumes by Slicing
+              - generic [ref=e174]: 20 min
+          - listitem [ref=e175]:
+            - link "3 Volumes of Revolution 22 min" [ref=e176] [cursor=pointer]:
+              - /url: /courses/calculus/19-volumes-of-revolution
+              - generic [ref=e177]: "3"
+              - generic [ref=e178]: Volumes of Revolution
+              - generic [ref=e179]: 22 min
+          - listitem [ref=e180]:
+            - link "4 Arc Length and Surface Area 16 min" [ref=e181] [cursor=pointer]:
+              - /url: /courses/calculus/20-arc-length
+              - generic [ref=e182]: "4"
+              - generic [ref=e183]: Arc Length and Surface Area
+              - generic [ref=e184]: 16 min
+      - generic [ref=e185]:
+        - generic [ref=e186]:
+          - generic [ref=e187]:
+            - paragraph [ref=e188]: Module 7
+            - heading "Sequences and Series" [level=2] [ref=e189]
+          - generic [ref=e190]: 4 lessons
+        - list [ref=e191]:
+          - listitem [ref=e192]:
+            - link "1 Sequences 14 min" [ref=e193] [cursor=pointer]:
+              - /url: /courses/calculus/21-sequences
+              - generic [ref=e194]: "1"
+              - generic [ref=e195]: Sequences
+              - generic [ref=e196]: 14 min
+          - listitem [ref=e197]:
+            - link "2 Infinite Series 18 min" [ref=e198] [cursor=pointer]:
+              - /url: /courses/calculus/22-infinite-series
+              - generic [ref=e199]: "2"
+              - generic [ref=e200]: Infinite Series
+              - generic [ref=e201]: 18 min
+          - listitem [ref=e202]:
+            - link "3 Convergence Tests 20 min" [ref=e203] [cursor=pointer]:
+              - /url: /courses/calculus/23-convergence-tests
+              - generic [ref=e204]: "3"
+              - generic [ref=e205]: Convergence Tests
+              - generic [ref=e206]: 20 min
+          - listitem [ref=e207]:
+            - link "4 Power Series 18 min" [ref=e208] [cursor=pointer]:
+              - /url: /courses/calculus/24-power-series
+              - generic [ref=e209]: "4"
+              - generic [ref=e210]: Power Series
+              - generic [ref=e211]: 18 min
+      - generic [ref=e212]:
+        - generic [ref=e213]:
+          - generic [ref=e214]:
+            - paragraph [ref=e215]: Module 8
+            - heading "Taylor Series and Beyond" [level=2] [ref=e216]
+          - generic [ref=e217]: 5 lessons
+        - list [ref=e218]:
+          - listitem [ref=e219]:
+            - link "1 Taylor Polynomials 20 min" [ref=e220] [cursor=pointer]:
+              - /url: /courses/calculus/25-taylor-polynomials
+              - generic [ref=e221]: "1"
+              - generic [ref=e222]: Taylor Polynomials
+              - generic [ref=e223]: 20 min
+          - listitem [ref=e224]:
+            - link "2 Taylor Series 18 min" [ref=e225] [cursor=pointer]:
+              - /url: /courses/calculus/26-taylor-series
+              - generic [ref=e226]: "2"
+              - generic [ref=e227]: Taylor Series
+              - generic [ref=e228]: 18 min
+          - listitem [ref=e229]:
+            - link "3 Differential Equations 22 min" [ref=e230] [cursor=pointer]:
+              - /url: /courses/calculus/27-differential-equations
+              - generic [ref=e231]: "3"
+              - generic [ref=e232]: Differential Equations
+              - generic [ref=e233]: 22 min
+          - listitem [ref=e234]:
+            - link "4 Multivariable Preview 18 min" [ref=e235] [cursor=pointer]:
+              - /url: /courses/calculus/28-multivariable-preview
+              - generic [ref=e236]: "4"
+              - generic [ref=e237]: Multivariable Preview
+              - generic [ref=e238]: 18 min
+          - listitem [ref=e239]:
+            - link "5 Where Calculus Lives 16 min" [ref=e240] [cursor=pointer]:
+              - /url: /courses/calculus/29-where-calculus-lives
+              - generic [ref=e241]: "5"
+              - generic [ref=e242]: Where Calculus Lives
+              - generic [ref=e243]: 16 min
+  - contentinfo [ref=e244]:
+    - generic [ref=e245]:
+      - paragraph [ref=e246]: MathViz · An open-source platform for learning math through interactive animation.
+      - navigation [ref=e247]:
+        - link "Linear Algebra" [ref=e248] [cursor=pointer]:
+          - /url: /courses/linear-algebra
+        - link "Calculus" [ref=e249] [cursor=pointer]:
+          - /url: /courses/calculus
+        - link "Probability" [ref=e250] [cursor=pointer]:
+          - /url: /courses/probability
+      - paragraph [ref=e251]: © 2026 · MIT
+  - generic [ref=e254]:
+    - button "Menu" [ref=e255]:
+      - img [ref=e257]
+      - generic: Menu
+    - button "Inspect" [ref=e261]:
+      - img [ref=e263]
+      - generic: Inspect
+    - button "Audit" [ref=e265]:
+      - img [ref=e267]
+      - generic: Audit
+    - button "Settings" [ref=e270]:
+      - img [ref=e272]
+      - generic: Settings

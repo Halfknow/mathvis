@@ -12,6 +12,14 @@ duration: 16
 difficulty: "Advanced"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 import { RandomWalkVis } from '../../../components/interactive/probability/RandomWalkVis';
 
 Imagine a drunkard stumbling home. Each step goes either left or right, chosen by a coin flip. The path zigzags — no direction, no plan, no memory of where it has been. And yet, if you watch a thousand such drunkards, a shape emerges. The crowd spreads outward from the starting point like an ink drop in water. Not uniformly, but as a soft bell curve widening with time.
@@ -38,22 +46,32 @@ The walk has no drift. On average, you go nowhere. The coin flips cancel out. Bu
 
 The variance grows linearly:
 
-$$\text{Var}(S_n) = n$$
+<MathInline expression={"\\text{Var}(S_n) = n"} />
 
-so the standard deviation is $\sqrt{n}$. The typical distance from the origin after $n$ steps is about $\sqrt{n}$, not $n$. After 10,000 steps, the walker is typically about 100 steps from the start — not 10,000.
+so the standard deviation is <MathInline expression={"\\sqrt{n}"} />. The typical distance from the origin after $n$ steps is about <MathInline expression={"\\sqrt{n}"} />, not $n$. After 10,000 steps, the walker is typically about 100 steps from the start — not 10,000.
 
-This is the signature of **diffusion**. The spread grows like the square root of time. It is slow. If you double the number of steps, the spread increases by only a factor of $\sqrt{2} \approx 1.41$. The walk fans out, but reluctantly.
+### Theorem: The √n diffusion law
+
+For a simple symmetric random walk with $n$ steps of $\pm 1$:
+
+$$E[S_n] = 0, \qquad \text{Var}(S_n) = n, \qquad \text{SD}(S_n) = \sqrt{n}$$
+
+Furthermore, the expected absolute distance from the origin is <MathInline expression={"E[|S_n|] \\approx \\sqrt{2n/\\pi}"} /> (exact in the Brownian limit). The walk spreads like the square root of time, not linearly. Doubling the number of steps increases the spread by only <MathInline expression={"\\sqrt{2} \\approx 1.41"} />.
+
+*Proof of the variance.* Each step $X_i$ has $E[X_i] = 0$ and $E[X_i^2] = 1$ (since $X_i = \pm 1$). By independence, <MathInline expression={"\\text{Var}(S_n) = \\sum \\text{Var}(X_i) = n"} />. The standard deviation is the square root: <MathInline expression={"\\sqrt{n}"} />.
+
+This is the signature of **diffusion**. The spread grows like the square root of time. It is slow. If you double the number of steps, the spread increases by only a factor of <MathInline expression={"\\sqrt{2} \\approx 1.41"} />. The walk fans out, but reluctantly.
 
 Picture it: a bundle of a hundred paths all starting at the same point. At step 10, they form a narrow cloud. At step 100, the cloud has widened. At step 10,000, the cloud is wide and soft, shaped like a bell, with most paths still clustered within a few hundred steps of the origin. A few adventurous paths have wandered far, but they are the exception.
 
 ## The scaling law
 
-The relationship $E[|S_n|] \approx \sqrt{n}$ is a scaling law, and it appears everywhere in nature:
+The relationship <MathInline expression={"E[|S_n|] \\approx \\sqrt{n}"} /> is a scaling law, and it appears everywhere in nature:
 
-- **Brownian motion**: a pollen grain in water, jostled by invisible molecules. Its displacement scales as $\sqrt{t}$.
-- **Stock prices**: in the simplest model (geometric random walk), price fluctuations over a time horizon $t$ have typical size proportional to $\sqrt{t}$. This is why short-term trading is noise-dominated.
-- **Polymer chains**: a long molecule floating in solution folds back on itself. The end-to-end distance of a polymer with $n$ segments scales as $\sqrt{n}$.
-- **Diffusion of heat**: a drop of dye in still water spreads outward. The radius of the colored region grows as $\sqrt{t}$.
+- **Brownian motion**: a pollen grain in water, jostled by invisible molecules. Its displacement scales as <MathInline expression={"\\sqrt{t}"} />.
+- **Stock prices**: in the simplest model (geometric random walk), price fluctuations over a time horizon $t$ have typical size proportional to <MathInline expression={"\\sqrt{t}"} />. This is why short-term trading is noise-dominated.
+- **Polymer chains**: a long molecule floating in solution folds back on itself. The end-to-end distance of a polymer with $n$ segments scales as <MathInline expression={"\\sqrt{n}"} />.
+- **Diffusion of heat**: a drop of dye in still water spreads outward. The radius of the colored region grows as <MathInline expression={"\\sqrt{t}"} />.
 
 All of these are random walks in disguise.
 
@@ -61,15 +79,28 @@ Generate an ensemble of random walks below. Add 50 paths a few times and watch t
 
 <RandomWalkVis client:visible />
 
+<FormulaReadout formulas={[
+  { label: "随机游走位置", expression: "S_n = \\sum_{i=1}^n X_i, \\quad P(X_i=\\pm 1)=\\tfrac{1}{2}" },
+  { label: "均值与方差 (扩散律)", expression: "E[S_n]=0, \\quad \\mathrm{Var}(S_n)=n, \\quad \\mathrm{SD}(S_n)=\\sqrt{n}" },
+  { label: "赌徒破产概率 (公平博弈)", expression: "P(\\text{赢}) = \\frac{a}{a+b}" },
+  { label: "反射原理", expression: "P\\big(\\max_{k\\le n} S_k \\ge a\\big) = 2\\,P(S_n \\ge a) - P(S_n = a)" },
+]} />
+
 ## The gambler's ruin
 
 Consider a random walk with **absorbing barriers**. A gambler starts with $a$ dollars and plays against a casino with $b$ dollars. Each round, the gambler wins or loses $1 with equal probability. The game ends when one side goes broke.
 
 The question: what is the probability that the gambler walks away with all the money?
 
-For a fair game (equal win/loss probability), the answer is brutally simple:
+### Theorem: Gambler's ruin (fair game)
 
-$$P(\text{gambler wins}) = \frac{a}{a + b}$$
+For a fair game ($p = q = 1/2$) with the gambler starting at $a$ and the casino at $b$ (total $N = a + b$), the probability the gambler wins all $N$ dollars is:
+
+$$P(\text{gambler wins}) = \frac{a}{a+b}$$
+
+and the probability of ruin is $b/(a+b)$.
+
+*Proof idea.* Let $p_i$ be the probability of winning (reaching $N$) starting from fortune $i$. Then <MathInline expression={"p_i = \\tfrac{1}{2}p_{i+1} + \\tfrac{1}{2}p_{i-1}"} /> (condition on the next step), with boundary conditions $p_0 = 0$ (ruin) and $p_N = 1$ (win). The solution to this difference equation is linear: $p_i = i/N$. Setting $i = a$ gives $p_a = a/(a+b)$.
 
 If the gambler has $10 and the casino has $90, the gambler wins with probability $10/100 = 0.1$. The probability of ruin is proportional to the size of the adversary's bankroll. A random walk with finite barriers always hits a barrier eventually — there is no strategy, no lucky streak, that can hold out forever against a larger opponent.
 
@@ -77,28 +108,121 @@ This is why casinos do not need to cheat. They just need a bigger bankroll. The 
 
 ### The unfair game
 
-If the gambler has a slight disadvantage — say $P(\text{win}) = 0.49$ and $P(\text{loss}) = 0.51$ — the ruin probability becomes dramatically worse:
+If the gambler has a slight disadvantage — say <MathInline expression={"P(\\text{win}) = 0.49"} /> and <MathInline expression={"P(\\text{loss}) = 0.51"} /> — the ruin probability against an effectively infinite casino is:
 
-$$P(\text{ruin}) \approx 1 - \left(\frac{0.49}{0.51}\right)^a$$
+$$P(\text{ruin}) \approx 1 - \left(\frac{p}{q}\right)^a = 1 - \left(\frac{0.49}{0.51}\right)^a$$
 
-for a casino with effectively infinite resources. Even a 1% edge, compounded over thousands of rounds, drives the ruin probability to essentially 1. The house always wins.
+For $a = 100$, this is <MathInline expression={"1 - (0.49/0.51)^{100} \\approx 1 - 0.018 \\approx 0.982"} /> — a 98.2% chance of ruin. Even a 1% edge, compounded over thousands of rounds, drives the ruin probability to essentially 1. The house always wins.
+
+## The reflection principle
+
+One of the most elegant tools for analyzing random walks is the **reflection principle**. It answers questions about the *maximum* of a walk by reflecting paths across a barrier.
+
+### Theorem: The reflection principle
+
+For a symmetric random walk, the number of paths from $0$ to some level $a > 0$ in $n$ steps that ever touch or exceed $a + k$ (with $k > 0$) equals the number of paths from $0$ to $a + 2k$ in $n$ steps. Equivalently, for the maximum of the walk:
+
+<MathInline expression={"P\\!\\left(\\max_{1 \\le k \\le n} S_k \\ge a,\\; S_n = b\\right) = P(S_n = 2a - b)"} />
+
+for $b \leq a$. Geometrically: take any path that reaches $a$ and ends at $b \leq a$. Reflect the portion of the path after the first hitting time of $a$ across the level $a$. The reflected path ends at $2a - b$. This reflection is a bijection, so the two sets of paths have equal cardinality.
+
+The reflection principle turns "what is the probability the walk ever went above $a$?" into "what is the probability the walk ended above $a$?" — a much easier question. It is the key tool behind the ballot theorem, the distribution of the maximum of Brownian motion, and barrier option pricing in finance.
 
 ## Recurrence in one dimension
 
 A beautiful fact about the one-dimensional random walk: the walker returns to the origin **with probability 1**. Not just once, but infinitely many times. The walk is **recurrent** — it cannot escape its starting point forever. It will always come back.
 
-In two dimensions, the same is true: a random walk on the integer lattice in 2D returns to the origin with probability 1. But in three dimensions and higher, the walk is **transient** — there is a positive probability that it wanders away forever and never returns.
+### Theorem: Polya's recurrence theorem
 
-The transition happens because in three dimensions, there is simply too much room to get lost. The surface area of a sphere grows as $r^2$, so the probability of stumbling back to the origin thins out faster than the walk can compensate.
+The simple symmetric random walk on the $d$-dimensional integer lattice is **recurrent** (returns to the origin with probability 1) for $d = 1$ and $d = 2$, and **transient** (positive probability of never returning) for $d \geq 3$.
 
-## Key insight
+- In $d = 1$: the walker returns to the origin infinitely often, with probability 1.
+- In $d = 2$: also recurrent — a 2D random walk on the lattice returns to the origin with probability 1.
+- In $d \geq 3$: transient. There is a positive probability the walk wanders off to infinity and never returns.
 
-> A random walk spreads like $\sqrt{n}$, not $n$. Individual paths are wild and unpredictable, but the envelope of a thousand paths forms a smooth bell curve widening as the square root of time. This is diffusion — the universal scaling law of undirected randomness.
+The transition happens because in three dimensions, there is simply too much room to get lost. The surface area of a sphere grows as <MathInline expression={"r^{d-1}"} />, so the probability of stumbling back to the origin thins out faster than the walk can compensate. A drunk man will find his way home; a drunk bird might not. (This is the origin of Sidney Port's famous quip: "A drunk man will find his way home, but a drunk bird may get lost forever.")
+
+## From random walk to Brownian motion
+
+If you speed up the random walk — take smaller steps, more frequently — and pass to the continuous limit, you arrive at **Brownian motion** (also called the Wiener process). This is the continuous-time stochastic process <MathInline expression={"W(t)"} /> defined by:
+
+- $W(0) = 0$.
+- **Independent increments**: $W(t) - W(s)$ is independent of the past for $s < t$.
+- **Gaussian increments**: <MathInline expression={"W(t) - W(s) \\sim N(0,\\, t-s)"} /> — the increment over an interval of length $\Delta t$ is normal with variance $\Delta t$.
+- **Continuous paths**: $W(t)$ is a continuous function of $t$ (almost surely), though nowhere differentiable.
+
+Brownian motion is the scaling limit of the random walk: if <MathInline expression={"S_n"} /> is a random walk with step size <MathInline expression={"1/\\sqrt{n}"} /> run for $nt$ steps, then <MathInline expression={"S_{nt}/\\sqrt{n} \\to W(t)"} /> as $n \to \infty$. The <MathInline expression={"\\sqrt{n}"} /> diffusion law becomes the exact statement <MathInline expression={"\\text{Var}(W(t)) = t"} />.
+
+This is why Brownian motion appears as the continuous limit in physics (Einstein's 1905 model of Brownian motion established the existence of atoms), finance (the Black-Scholes option pricing model treats stock prices as geometric Brownian motion), and pure mathematics (it is the canonical example of a continuous martingale). The random walk is its discrete skeleton.
+
+## Three perspectives on the random walk
+
+1. **As a sum of independent increments.** <MathInline expression={"S_n = \\sum X_i"} /> with $X_i$ i.i.d. — this is the most elementary view. Linearity of expectation gives $E[S_n] = 0$; independence gives <MathInline expression={"\\text{Var}(S_n) = n"} />; the Central Limit Theorem implies <MathInline expression={"S_n/\\sqrt{n} \\to N(0,1)"} />. The walk is a textbook case of [lesson 06](/courses/probability/06-expectation-and-variance) and the CLT ([lesson 16](/courses/probability/16-central-limit-theorem)) in action.
+2. **As a Markov chain.** The position $S_n$ depends only on <MathInline expression={"S_{n-1}"} /> — the next state is the current state plus or minus 1. This makes the random walk the simplest nontrivial Markov chain (see [lesson 25](/courses/probability/25-markov-chains)). The Markov property is what lets us analyze hitting times, recurrence, and gambler's ruin via difference equations.
+3. **As a discrete approximation to Brownian motion.** Speed up the walk, shrink the steps, and you get the Wiener process. This is why the <MathInline expression={"\\sqrt{n}"} /> scaling law, the reflection principle, and the gambler's ruin formula all have continuous-time analogs in Brownian motion — and why Brownian motion is the foundation of continuous-time finance and stochastic differential equations.
+
+## Modern applications
+
+**Diffusion models in generative AI.** The breakthrough behind modern image generators (DALL-E, Stable Diffusion) is the **diffusion process**: gradually add Gaussian noise to an image until it is pure static (a random walk in pixel space), then train a neural network to reverse the process. The forward noise is a random walk in the space of images; the reverse denoising recovers realistic images from pure noise. The mathematics — Langevin dynamics, score matching, stochastic differential equations — is built directly on the random walk and Brownian motion theory. The <MathInline expression={"\\sqrt{n}"} /> diffusion law governs how fast the noise destroys structure, and the reverse process learns to "un-walk" the path.
+
+**Quantitative finance.** The Black-Scholes option pricing model treats stock prices as geometric Brownian motion — a continuous-time random walk on a logarithmic scale. The model's core assumption is that log-returns are independent and normally distributed with variance proportional to the time horizon (exactly the <MathInline expression={"\\sqrt{t}"} /> law). Every option price, every risk calculation, every portfolio optimization in modern finance rests on this random-walk foundation. The reflection principle directly prices barrier options (options that activate or expire when the underlying crosses a threshold).
+
+**Reinforcement learning and Monte Carlo methods.** Random walks are the simplest example of a Markov chain, and Markov chains underpin reinforcement learning (the agent's trajectory through state space) and Monte Carlo integration (random sampling to estimate high-dimensional integrals). The gambler's ruin formula appears in bandit algorithms and betting strategies; the recurrence theorem informs the design of random-walk-based graph algorithms (PageRank, random-walk image segmentation).
+
+<KeyInsight>
+A random walk spreads like the square root of the number of steps, not linearly — this is the universal diffusion law. Individual paths are wild and unpredictable, but the envelope of a thousand paths forms a smooth bell curve widening as root-n. The reflection principle turns questions about maxima into questions about endpoints; gambler's ruin shows that a fair game still dooms the smaller bankroll; and Polya's theorem reveals that recurrence holds in dimensions 1 and 2 but fails in 3 and up. In the continuous limit, the random walk becomes Brownian motion — the foundation of modern finance and generative AI.
+</KeyInsight>
+
+## Connections
+
+This lesson opens Module 7 (Stochastic Processes) and builds directly on [expectation and variance](/courses/probability/06-expectation-and-variance) — the random walk's mean and variance are pure applications of linearity and independence. The [Central Limit Theorem](/courses/probability/16-central-limit-theorem) explains why <MathInline expression={"S_n/\\sqrt{n}"} /> converges to a standard normal, which is exactly the bell-shaped envelope you see in the visualization. [Chebyshev's inequality](/courses/probability/15-concentration-inequalities) bounds the probability of straying far from the origin.
+
+Forward, the random walk is the gateway to [Markov chains](/courses/probability/25-markov-chains) (lesson 25): the walk's next position depends only on the current one, which is the Markov property. The gambler's ruin formula is a special case of first-passage-time analysis for Markov chains, and the recurrence theorem generalizes to recurrence vs transience of Markov chains. [Poisson processes](/courses/probability/26-poisson-processes) (lesson 26) provide the continuous-time analog: where the random walk counts steps in discrete time, the Poisson process counts events in continuous time. The Brownian motion limit connects to [the normal distribution](/courses/probability/09-the-normal-distribution) and underlies modern finance, statistical physics, and diffusion-based generative AI.
 
 ## Practice
 
-**Exercise 1.** A random walker starts at 0 and takes 400 steps of $+1$ or $-1$ with equal probability. What is the expected position? What is the standard deviation? Use Chebyshev's inequality to bound the probability that the walker is more than 60 steps from the origin after 400 steps.
+<ExerciseBlock number={1}
+  prompt="A random walker starts at 0 and takes 400 steps of +1 or -1 with equal probability. What is the expected position? What is the standard deviation? Use Chebyshev's inequality to bound the probability that the walker is more than 60 steps from the origin after 400 steps."
+  hint="E[S_n] = 0, Var(S_n) = n, SD = sqrt(n). Chebyshev: P(|S_n - 0| >= k*SD) <= 1/k^2."
+  answer="Expected position E[S_400] = 0. Variance Var(S_400) = 400, so SD = sqrt(400) = 20. Chebyshev: P(|S_400 - 0| >= k*SD) <= 1/k^2. We want P(|S_400| >= 60), so k = 60/20 = 3. Chebyshev gives P(|S_400| >= 60) <= 1/9 ≈ 0.111. So there is at most an 11.1% chance the walker is more than 60 steps from the origin. (The actual probability is much smaller — about 0.3% — because the normal approximation gives P(|Z| >= 3) ≈ 0.003. Chebyshev is a loose bound.) The key point: after 400 steps, the typical distance is only 20 (the SD), not 400 — the square-root diffusion law in action."
+/>
 
-**Exercise 2.** In the gambler's ruin problem, the gambler starts with $5 and the casino has $15. Each round is fair ($P(\text{win}) = 0.5$). What is the probability the gambler goes broke? Now suppose the casino has infinite resources. Explain in words why the gambler is certain to go broke eventually, even though the game is fair.
+<ExerciseBlock number={2}
+  prompt="In the gambler's ruin problem, the gambler starts with $5 and the casino has $15. Each round is fair (P(win) = 0.5). What is the probability the gambler goes broke? Now suppose the casino has infinite resources. Explain in words why the gambler is certain to go broke eventually, even though the game is fair."
+  hint="Fair game ruin probability: P(ruin) = b/(a+b). For an infinite casino, consider the limit as b -> infinity."
+  answer="With a = 5 and b = 15: P(ruin) = b/(a+b) = 15/20 = 0.75. So the gambler goes broke with 75% probability. (Equivalently, P(win all 20) = 5/20 = 0.25.) For an infinite casino (b -> infinity): P(ruin) = b/(a+b) -> 1 as b -> infinity. The gambler is certain to go broke. Why, if the game is fair? Because the random walk is recurrent in 1D — it visits every integer infinitely often, including 0 (ruin) and a+b (win). With finite barriers, both are hit eventually and the probability of hitting ruin first is proportional to the casino's bankroll. With an infinite barrier on the casino's side, the gambler's absorbing barrier at 0 is still eventually hit (recurrence guarantees it), while the 'win' barrier at infinity is never reached. A fair game with one finite barrier and one infinite barrier guarantees ruin. This is why you cannot win long-term against an infinitely wealthy opponent, even at a fair game."
+/>
 
-**Exercise 3.** A particle undergoes a random walk on the integers starting at 0, taking $+1$ or $-1$ steps with equal probability. Explain why the walk must cross the level $S_n = +10$ infinitely often. (Hint: the walk returns to the origin infinitely often with probability 1, and from the origin, there is a nonzero chance of reaching $+10$ before returning.)
+<ExerciseBlock number={3}
+  prompt="Use the reflection principle to argue: for a symmetric random walk, the probability that the walk reaches level +10 at some point in the first n steps is approximately 2 * P(S_n >= 10) for large n. Explain the factor of 2 intuitively."
+  hint="Reflect paths that reach +10 and end below +10. Each such path pairs with a path ending above +10."
+  answer="By the reflection principle: the number of paths from 0 to a value b < 10 in n steps that touched or crossed +10 equals the number of paths from 0 to 2*10 - b = 20 - b in n steps (reflect the post-hit portion across +10). Summing over all b < 10: the number of paths that reached +10 and ended below it equals the number of paths ending above +10. So the total number of paths that reached +10 = (paths ending >= 10) + (paths that reached 10 and ended < 10) = (paths ending >= 10) + (paths ending > 10, by reflection) = 2*(paths ending > 10) + (paths ending exactly 10). For large n, P(S_n exactly 10) is small, so approximately P(max >= 10) ≈ 2*P(S_n > 10) ≈ 2*P(S_n >= 10). The factor of 2 is the reflection: every path that crossed +10 and came back is matched by a reflected path that stayed above +10. So the set of 'ever reached +10' paths is roughly twice the set of 'ended above +10' paths. Intuitively: if a walk ends above +10, it certainly reached +10; and for every walk that reached +10 but ended below, there is a mirror-image walk ending above — doubling the count."
+/>
+
+<ExerciseBlock number={4}
+  prompt="A particle undergoes a random walk on the integers starting at 0, taking +1 or -1 steps with equal probability. Explain why the walk must cross the level S_n = +10 infinitely often. (Hint: the walk returns to the origin infinitely often with probability 1, and from the origin, there is a nonzero chance of reaching +10 before returning.)"
+  hint="Combine Polya's recurrence theorem (1D walk returns to 0 infinitely often) with the strong Markov property at each return."
+  answer="By Polya's recurrence theorem, the 1D symmetric random walk returns to the origin with probability 1, and in fact returns infinitely often. Each time the walk is at the origin, consider the event 'reach +10 before returning to 0.' This event has a fixed positive probability (call it p > 0) each time we are at the origin — it is the probability that a random walk starting at 0 hits +10 before hitting 0 again, which is 1/10 by the gambler's ruin formula (a = 1, target 10). By the strong Markov property, each visit to the origin is an independent 'trial' — the future is independent of the past given the current state. So the probability of NEVER reaching +10 after infinitely many visits to 0 is (1-p)^infinity = 0. Therefore the walk reaches +10 at least once with probability 1. But by the same argument applied after each hit of +10 (returning to +10 infinitely often), it reaches +10 infinitely often. This is the power of recurrence plus the Markov property: any level is crossed infinitely often in a 1D symmetric random walk."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Explain the difference between recurrence (dimensions 1 and 2) and transience (dimension 3+) for random walks. Why does the dimension matter? Give the physical intuition for why a 3D walk can get 'lost.'"
+  hint="The expected number of returns to the origin is sum over n of P(S_n = 0). This sum diverges for d=1,2 and converges for d>=3."
+  answer="A random walk is recurrent if it returns to the origin with probability 1 (and infinitely often); transient if there is a positive probability it never returns. The criterion: compute the expected number of visits to the origin, sum_{n} P(S_n = 0). If this sum diverges (infinite), the walk is recurrent; if it converges (finite), the walk is transient. In d=1, P(S_n=0) ~ 1/sqrt(n), so the sum diverges (like the harmonic series of sqrt). In d=2, P(S_n=0) ~ 1/n, so the sum still diverges (harmonic series). In d=3, P(S_n=0) ~ 1/n^(3/2), so the sum converges — finite expected returns means transience. Physical intuition: in d=3, the number of sites at distance r from the origin grows as r^2 (surface of a sphere). The probability of being at a specific site at distance r shrinks faster than the number of sites grows, so the walk 'spreads thin' and has a genuine chance of wandering off forever. In d=1 and d=2, the walk is confined enough that it keeps coming back. A drunk man finds his way home; a drunk bird may get lost forever."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Describe how the random walk connects to Brownian motion via the scaling limit. What happens to the step size and the time step as n -> infinity? Why does the result have continuous but nowhere-differentiable paths?"
+  hint="Scale step size as 1/sqrt(n) and take n*dt = t steps. The position S_{nt}/sqrt(n) converges to W(t)."
+  answer="To get Brownian motion as the limit of a random walk: take steps of size delta = 1/sqrt(n) (shrinking) at time intervals dt = 1/n (speeding up), so that after nt steps (total time t), the position is S_{nt} * (1/sqrt(n)). The variance is Var(S_{nt}) * (1/n) = (nt)*(1/n) = t, matching Brownian motion's Var(W(t)) = t. By the CLT, the increments converge to Gaussian, and Donsker's theorem (the functional CLT) makes this rigorous: S_{nt}/sqrt(n) converges in distribution to W(t). The resulting paths are continuous (infinitesimal steps shrink to zero) but nowhere differentiable: the 'velocity' (S_{t+dt} - S_t)/dt has variance (sqrt(dt))^2/dt = 1/dt -> infinity as dt -> 0, so the instantaneous slope does not converge anywhere. Brownian motion is continuous but has infinite variation on every interval — it is 'rougher' than any differentiable curve. This roughness is exactly what makes stochastic calculus (Ito calculus) necessary: ordinary calculus rules fail because the paths are too jagged."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Suppose you model a stock's daily log-returns as independent steps of a random walk with SD sigma = 0.02 (2% per day). Over a 252-trading-day year, what is the expected log-return and the SD of the annual log-return? Use the sqrt-n law. Explain why this makes short-term stock movements 'mostly noise.'"
+  hint="E[S_252] = 0 (no drift assumed). SD over n days = sigma * sqrt(n)."
+  answer="Expected annual log-return E[S_252] = 0 (we assumed zero drift per day; in reality there is a small positive drift, but it is dominated by the noise). SD of annual log-return = sigma * sqrt(n) = 0.02 * sqrt(252) = 0.02 * 15.87 = 0.317, about 31.7%. So the stock's annual return is a draw from a distribution centered near zero with SD ~32%. The sqrt-n law means the typical magnitude of price swings grows as sqrt(time), not linearly with time. This is why short-term stock movements are mostly noise: over one day, the SD is 2%, but the expected drift (say 0.03% per day for a 10% annual return) is 60 times smaller. The signal (drift) is dwarfed by the noise (volatility) over short horizons. Only over long horizons (many years) does the linearly-growing drift catch up to the sqrt-growing noise. This is the mathematical reason day-trading is dominated by luck and why long-term investing has better odds: the signal-to-noise ratio improves as sqrt(time)."
+/>
+
+---
+
+**Up next:** [Markov Chains →](/courses/probability/25-markov-chains)

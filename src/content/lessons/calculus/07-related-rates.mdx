@@ -18,12 +18,16 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { RelatedRatesVis } from '../../../components/interactive/calculus/RelatedRatesVis';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-A balloon is being inflated. As the radius grows, so does the volume — and they're connected by a formula. If you know how fast the radius is changing, you can figure out how fast the volume is changing. This is the world of **related rates**.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+A balloon is being inflated. As the radius grows, so does the volume — and they're connected by a formula. If you know how fast the radius is changing, you can figure out how fast the volume is changing. This is the world of **related rates**: two or more quantities tied together by a geometric relationship, all evolving in time, their speeds linked by the chain rule.
 
 <InteractiveCanvas
   title="Related Rates Explorer"
@@ -33,72 +37,140 @@ A balloon is being inflated. As the radius grows, so does the volume — and the
   <RelatedRatesVis client:visible />
 </InteractiveCanvas>
 
-## The setup
+## The hidden structure: the chain rule in disguise
 
-Related rates problems always have the same structure:
-
-1. Find an equation relating the two quantities.
-2. Differentiate **both sides** with respect to time $t$ (using the chain rule).
-3. Plug in the known rate and solve for the unknown rate.
-
-The key insight that makes this work: **all variables share the same clock $t$**. The radius $r$ and the volume $V$ are not independent — they're both functions of time, tied together by the geometry. When $t$ ticks forward, every variable moves in lockstep, and the chain rule captures those coupled motions.
-
-The chain rule is the engine here. When you differentiate an equation like $V = \frac{4}{3}\pi r^3$ with respect to $t$, every $r$ becomes $r(t)$ and picks up a factor of $dr/dt$. The chain rule creates a web of connections: when one variable moves, it pulls on all the others through the geometric relationship.
-
-## Example: the inflating balloon
-
-A spherical balloon is inflated at a rate of $dV/dt = 100$ cm³/s. How fast is the radius increasing when $r = 5$ cm?
-
-The relationship: $V = \frac{4}{3}\pi r^3$.
-
-Differentiate both sides with respect to $t$:
+The key idea is that **every variable is secretly a function of time**. When you write <MathInline expression={"V = \\frac{4}{3}\\pi r^3"} />, you're really writing <MathInline expression={"V(t) = \\frac{4}{3}\\pi r(t)^3"} /> — both $V$ and $r$ depend on a shared clock $t$. Differentiating with respect to $t$ forces the chain rule to appear:
 
 <MathBlock expression={"\\frac{dV}{dt} = 4\\pi r^2 \\cdot \\frac{dr}{dt}"} />
 
-Plug in: $100 = 4\pi(25) \cdot \frac{dr}{dt}$, so:
+The factor <MathInline expression={"\\frac{dr}{dt}"} /> is the chain rule at work: $r$ is a function of $t$, so differentiating $r^3$ (with respect to $t$, not $r$) produces <MathInline expression={"3r^2 \\cdot \\frac{dr}{dt}"} />. This is exactly the same chain rule you learned in [differentiation rules](/courses/calculus/03-differentiation-rules) — it's just hiding behind the fact that the "inner function" is time itself. Related rates problems are the **chain rule applied to geometric relationships in time**.
+
+## The 4-step modeling procedure
+
+Every related rates problem follows the same systematic procedure. Memorize the procedure, not the individual problems:
+
+1. **Identify the variables.** What quantities are changing? Which rate is given (known), and which rate is asked for (unknown)? Draw a picture and label everything. *Introduce notation consistently — let $x$, $y$, $r$, $V$, etc. denote quantities that depend on time $t$.*
+2. **Relate with an equation.** Find a geometric or physical formula connecting the variables (a circle's area, the Pythagorean theorem, similar triangles, a volume formula). *This equation must hold for all time $t$, not just at one instant.*
+3. **Differentiate both sides with respect to $t$.** Apply the chain rule implicitly — every variable picks up a factor of <MathInline expression={"d(\\text{var})/dt"} />. *Differentiate BEFORE substituting specific values.*
+4. **Substitute known values and solve.** Plug in the instant-specific numbers (the given rate, and the current measurements) and solve for the unknown rate. *The answer depends on the specific state of the system — this is why the problem always says 'at the moment when...'*
+
+The order of steps 3 and 4 matters: differentiate the *general* equation first (so the chain rule applies cleanly to variables), then substitute the *specific* numbers. If you plug in numbers before differentiating, the variables become constants and the chain rule produces nothing.
+
+<FormulaReadout formulas={[
+  { label: "隐函数对时间求导", expression: "\\frac{d}{dt}[f(r)] = f'(r) \\cdot \\frac{dr}{dt}" },
+  { label: "链式法则（时间版）", expression: "\\frac{dV}{dt} = \\frac{dV}{dr} \\cdot \\frac{dr}{dt}" },
+  { label: "勾股定理对 t 求导", expression: "\\frac{d}{dt}[x^2 + y^2] = 2x\\frac{dx}{dt} + 2y\\frac{dy}{dt}" },
+  { label: "球体体积的链式", expression: "\\frac{dV}{dt} = 4\\pi r^2 \\cdot \\frac{dr}{dt}" },
+]} />
+
+## Example 1: the inflating balloon
+
+A spherical balloon is inflated at a rate of $dV/dt = 100$ cm³/s. How fast is the radius increasing when $r = 5$ cm?
+
+**Step 1 — Variables:** Given $dV/dt = 100$, asked for $dr/dt$ at $r = 5$.
+
+**Step 2 — Equation:** <MathInline expression={"V = \\frac{4}{3}\\pi r^3"} />.
+
+**Step 3 — Differentiate** with respect to $t$:
+
+<MathBlock expression={"\\frac{dV}{dt} = 4\\pi r^2 \\cdot \\frac{dr}{dt}"} />
+
+**Step 4 — Substitute** at $r = 5$: <MathInline expression={"100 = 4\\pi(25) \\cdot \\frac{dr}{dt}"} />, so:
 
 <MathBlock expression={"\\frac{dr}{dt} = \\frac{100}{100\\pi} = \\frac{1}{\\pi} \\approx 0.318 \\text{ cm/s}"} />
 
-## Example: the sliding ladder
+Notice the answer depends on $r$: the same volume influx makes the radius grow *slower* as the balloon gets bigger (because the surface area $4\pi r^2$ through which the new volume spreads is larger).
+
+## Example 2: the sliding ladder
 
 A 10-foot ladder leans against a wall. The bottom slides away at 1 ft/s. How fast is the top sliding down when the bottom is 6 feet from the wall?
 
-The relationship (Pythagorean theorem): $x^2 + y^2 = 100$.
+**Step 1 — Variables:** $x$ = bottom distance, $y$ = top height. Given $dx/dt = 1$, asked for $dy/dt$ at $x = 6$.
 
-Differentiate: $2x\frac{dx}{dt} + 2y\frac{dy}{dt} = 0$.
+**Step 2 — Equation:** $x^2 + y^2 = 100$ (Pythagorean theorem).
 
-At $x = 6$: $y = \sqrt{100 - 36} = 8$. So:
+**Step 3 — Differentiate** with respect to $t$:
+
+<MathBlock expression={"2x\\frac{dx}{dt} + 2y\\frac{dy}{dt} = 0"} />
+
+**Step 4 — Substitute.** At $x = 6$: <MathInline expression={"y = \\sqrt{100 - 36} = 8"} />. So:
 
 <MathBlock expression={"12 \\cdot 1 + 16 \\cdot \\frac{dy}{dt} = 0 \\implies \\frac{dy}{dt} = -\\frac{12}{16} = -0.75 \\text{ ft/s}"} />
 
 The top slides down at 0.75 ft/s. The negative sign means $y$ is decreasing.
 
+## Example 3: the lengthening shadow
+
+A 6-foot-tall person walks away from a 15-foot-tall street lamp at 5 ft/s. How fast is the tip of their shadow moving when they are 40 feet from the lamp?
+
+By similar triangles, <MathInline expression={"\\frac{s}{15} = \\frac{s - x}{6}"} /> where $s$ is the shadow-tip distance from the lamp and $x$ is the person's distance. Solving: $6s = 15s - 15x$, so <MathInline expression={"s = \\frac{5}{3}x"} />. Differentiating: <MathInline expression={"\\frac{ds}{dt} = \\frac{5}{3}\\frac{dx}{dt} = \\frac{5}{3}(5) = \\frac{25}{3} \\approx 8.33"} /> ft/s. The shadow tip races away faster than the person walks — a lovely consequence of similar-triangle geometry, and notably the rate is *constant*, independent of $x$.
+
 ## The pattern
 
-In every related rates problem, the chain rule creates a link: the rate of change of one quantity depends on the current value of the other quantity. This is why related rates problems always ask for the rate "at the moment when..." — the answer depends on the specific state of the system.
+In every related rates problem, the chain rule creates a link: the rate of change of one quantity depends on the current value of the other quantity. This is why related rates problems always ask for the rate "at the moment when..." — the answer depends on the specific state of the system. The web of connections means that when one variable moves, it pulls on all the others through the geometric relationship.
+
+## Modern applications
+
+Related rates is not just a textbook trope — it underlies real modeling:
+
+- **Computer graphics and physics engines:** collisions and contacts are resolved by differentiating geometric constraints (distances, angles) with respect to time. A ragdoll's limbs are a system of related rates.
+- **Economics — marginal analysis:** if revenue $R$ and cost $C$ both depend on production quantity $q(t)$, then the rate of change of profit <MathInline expression={"\\frac{d}{dt}(R - C)"} /> is a related-rates computation.
+- **Epidemiology:** in an SIR model, the rates <MathInline expression={"\\frac{dS}{dt}"} />, <MathInline expression={"\\frac{dI}{dt}"} />, <MathInline expression={"\\frac{dR}{dt}"} /> are coupled by the constraint $S + I + R = N$ (constant population) — differentiating gives a related-rates link between the compartments.
 
 <KeyInsight>
-Related rates problems are the chain rule applied to geometric relationships. Differentiate the relationship with respect to time, plug in the known rate, and solve for the unknown rate.
+Related rates problems are the chain rule applied to geometric relationships. The four steps are: identify the variables, relate them with an equation, differentiate both sides with respect to time (using the chain rule), then substitute known values and solve. Differentiate before you substitute — the variables must remain variables so the chain rule can act on them.
 </KeyInsight>
+
+## Connections
+
+This lesson is a direct application of the [chain rule](/courses/calculus/03-differentiation-rules) and the technique of [implicit differentiation](/courses/calculus/03-differentiation-rules), now pointed at quantities evolving in time. If you found the implicit differentiation in lesson 03 natural, related rates is the same idea with $t$ as the hidden inner function.
+
+The "differentiate both sides with respect to $t$" step is a preview of **differential equations** (lesson 27), where we study equations that directly relate a function to its derivative. Related rates is the simplest case: a single equation linking several rates. In multivariable calculus, the chain rule generalizes to functions of several variables, and the related-rates idea becomes the **total derivative** $dF = F_x\,dx + F_y\,dy$ — the engine behind gradient computation in machine learning.
 
 ## Practice
 
 <ExerciseBlock number={1}
   prompt="A circle's radius increases at 2 cm/s. How fast is the area increasing when r = 5 cm?"
-  hint="The relationship is A = πr². Differentiate both sides with respect to t."
-  answer="dA/dt = 2πr · dr/dt = 2π(5)(2) = 20π ≈ 62.8 cm²/s."
+  hint="The relationship is A = πr². Differentiate both sides with respect to t (Step 3) before substituting r = 5 (Step 4)."
+  answer="Step 3: dA/dt = 2πr · dr/dt. Step 4: at r = 5, dA/dt = 2π(5)(2) = 20π ≈ 62.8 cm²/s. The area grows faster as the radius grows — the circumference (2πr) through which new area accumulates is larger."
 />
 
 <ExerciseBlock number={2}
   prompt="Water pours into a cone (tip pointing down) at 3 m³/min. The cone has height 10 m and base radius 5 m. How fast is the water level rising when the depth is 4 m?"
-  hint="The cone formula is V = (1/3)πr²h. Use similar triangles to relate r and h: r/h = 5/10 = 1/2, so r = h/2."
-  answer="Substituting r = h/2: V = (π/12)h³. Differentiating: dV/dt = (π/4)h² · dh/dt. At h = 4: 3 = (π/4)(16) · dh/dt, so dh/dt = 3/(4π) ≈ 0.239 m/min."
+  hint="The cone formula is V = (1/3)πr²h. Use similar triangles to relate r and h: r/h = 5/10 = 1/2, so r = h/2. Substitute this into V before differentiating."
+  answer="Similar triangles: r = h/2. So V = (π/3)(h/2)²h = (π/12)h³. Differentiating: dV/dt = (π/4)h² · dh/dt. At h = 4: 3 = (π/4)(16) · dh/dt, so dh/dt = 3/(4π) ≈ 0.239 m/min. The trick was using similar triangles to eliminate r, reducing V to a function of h alone before differentiating."
 />
 
 <ExerciseBlock number={3}
   prompt="Two cars leave an intersection. Car A heads north at 60 km/h; Car B heads east at 80 km/h. How fast is the distance between them increasing after 2 hours?"
-  hint="Let x = B's distance east, y = A's distance north, d = distance between them. Then d² = x² + y²."
-  answer="After 2 hours: x = 160, y = 120, d = 200. Differentiating: d · dd/dt = x · dx/dt + y · dy/dt. So 200 · dd/dt = 160(80) + 120(60) = 20000. dd/dt = 100 km/h."
+  hint="Let x = B's distance east, y = A's distance north, d = distance between them. Then d² = x² + y². Differentiate with respect to t, then substitute the 2-hour values."
+  answer="After 2 hours: x = 160, y = 120, d = √(160² + 120²) = 200. Differentiating d² = x² + y²: 2d·(dd/dt) = 2x·(dx/dt) + 2y·(dy/dt). So 200·(dd/dt) = 160(80) + 120(60) = 12800 + 7200 = 20000. dd/dt = 100 km/h. (Notice this equals √(60² + 80²) = 100 — the cars' velocities combine like perpendicular vectors.)"
 />
 
-[Next Lesson →](/courses/calculus/08-lhopitals-rule)
+<ExerciseBlock number={4}
+  prompt="A 13-foot ladder leans against a wall. The bottom is pulled away at 2 ft/s. How fast is the top sliding down when the bottom is 5 feet from the wall? At that moment, is the top moving faster or slower than the bottom?"
+  hint="Use x² + y² = 169. Differentiate, then substitute x = 5. Compute y from the Pythagorean theorem first."
+  answer="At x = 5: y = √(169 − 25) = √144 = 12. Differentiating 2x(dx/dt) + 2y(dy/dt) = 0: 2(5)(2) + 2(12)(dy/dt) = 0, so 20 + 24(dy/dt) = 0, giving dy/dt = −20/24 ≈ −0.83 ft/s. The top moves down at 0.83 ft/s — slower than the bottom's 2 ft/s. As the ladder nears horizontal, the top accelerates dramatically (this is why falling ladders are dangerous)."
+/>
+
+<ExerciseBlock number={5}
+  prompt="A spherical snowball melts so that its volume decreases at a rate of 2 cm³/min. How fast is the radius decreasing when the radius is 3 cm?"
+  hint="Use V = (4/3)πr³. The given rate is dV/dt = −2 (negative because the volume is decreasing)."
+  answer="Differentiating: dV/dt = 4πr² · dr/dt. Substituting r = 3 and dV/dt = −2: −2 = 4π(9) · dr/dt, so dr/dt = −2/(36π) = −1/(18π) ≈ −0.018 cm/min. The radius shrinks at about 0.018 cm/min. The negative sign confirms the radius is decreasing."
+/>
+
+<ExerciseBlock number={6}
+  prompt="A kite flies at a height of 40 m, moving horizontally at 3 m/s away from the person holding the string. The string is let out at a constant rate. How fast is the string being let out when 50 m of string are out?"
+  hint="Let x = horizontal distance, y = 40 (constant height), s = string length. Then x² + y² = s². Identify which rate is known (dx/dt) and which is asked (ds/dt)."
+  answer="x² + 40² = s², i.e. x² + 1600 = s². Differentiating: 2x(dx/dt) = 2s(ds/dt), so x(dx/dt) = s(ds/dt). When s = 50: x = √(2500 − 1600) = √900 = 30. So 30(3) = 50(ds/dt), giving ds/dt = 90/50 = 1.8 m/s. The string is let out at 1.8 m/s — slower than the kite's horizontal speed because some of the kite's motion goes into lengthening the hypotenuse less than one-for-one."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Explain in your own words why we differentiate the relating equation (Step 3) BEFORE substituting the specific numerical values (Step 4). What goes wrong if you substitute first?"
+  hint="Think about what the chain rule does. It needs to see variables (functions of t), not numbers. If a variable is replaced by a number, what happens to its derivative?"
+  answer="The chain rule produces factors like dr/dt, dx/dt, dy/dt precisely because it differentiates variables that are functions of time. If you substitute a specific value (say r = 5) into the equation before differentiating, then r has become a constant 5, and the derivative of a constant is zero — the chain rule produces no dr/dt term at all. You lose the rate you're trying to solve for. The whole point is that the equation x² + y² = 100 describes a relationship holding at every instant, so it must be differentiated as an identity in t; only then can you plug in the particular instant you care about. Substitute first and you've frozen time prematurely."
+/>
+
+---
+
+**Up next:** [L'Hopital's Rule](/courses/calculus/08-lhopitals-rule)

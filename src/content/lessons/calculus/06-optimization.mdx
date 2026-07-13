@@ -18,16 +18,24 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { OptimizationExplorer } from '../../../components/interactive/calculus/OptimizationExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-You want the best outcome — the most profit, the least cost, the shortest path. Calculus gives you a systematic way to find it: **set the derivative to zero and check**.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+You want the best outcome — the most profit, the least cost, the shortest path. Calculus gives you a systematic way to find it: **set the derivative to zero and check**. That single equation, $f'(x) = 0$, encodes the geometric fact that at a peak or valley the tangent line is perfectly flat. Optimization is the art of turning "what's the best?" into "where is the slope zero?"
 
 ## The idea
 
-A smooth function's peaks and valleys are where the tangent line is flat — where $f'(x) = 0$. These points are called **critical points**. Not every critical point is a maximum or minimum, but every maximum and minimum (in the interior) is a critical point.
+A smooth function's peaks and valleys are where the tangent line is flat — where $f'(x) = 0$. These points are called **critical points**. The optimality condition is the cornerstone of all of optimization:
+
+<MathBlock expression={"f'(x) = 0 \\quad \\Longleftrightarrow \\quad \\text{the tangent line is flat (a candidate extremum)"} />
+
+Not every critical point is a maximum or minimum, but every interior maximum and minimum is a critical point. (Endpoints and corners can also be extrema without satisfying $f'(x) = 0$.)
 
 <InteractiveCanvas
   title="Optimization Explorer"
@@ -41,6 +49,23 @@ Watch the $f'$ readout as you drag. When it approaches zero, you're near a peak 
 - $f'' < 0$ at the critical point → **local maximum** (dome shape, marked red)
 - $f'' > 0$ at the critical point → **local minimum** (bowl shape, marked green)
 
+## Local vs. global extrema
+
+It is crucial to distinguish two flavors of "best":
+
+- A **local (relative) extremum** is the best value *in a neighborhood*. The function may do better elsewhere.
+- A **global (absolute) extremum** is the best value *on the entire domain*. There is at most one global maximum value and one global minimum value.
+
+Every global extremum is either a local extremum or occurs at an endpoint (boundary) of the domain. This is why the optimization recipe below includes the final "check the boundaries" step — the global winner is often hiding at the edge, not at a critical point.
+
+## Theorem: The Extreme Value Theorem
+
+If $f$ is **continuous** on a **closed** (and bounded) interval $[a, b]$, then $f$ attains both an absolute maximum and an absolute minimum on $[a, b]$.
+
+<MathBlock expression={"\\exists\\, c_{\\max}, c_{\\min} \\in [a,b] \\;\\text{ such that }\\; f(c_{\\min}) \\le f(x) \\le f(c_{\\max}) \\;\\forall x \\in [a,b]"} />
+
+Both hypotheses matter. Drop continuity — for example a jump discontinuity — and the function can "skip over" the value that should be the extremum. Drop closedness (an open interval) and the extremum can escape: $f(x) = x$ on $(0, 1)$ has no max or min, because the values $0$ and $1$ are never attained. The theorem guarantees *existence*; the optimization recipe below tells you *how to find* them — check all critical points plus both endpoints, and the largest/smallest value wins.
+
 ## The shortest path: a deeper example
 
 Imagine you need to travel from point $A$ on land to point $B$ in the water. You run faster on land than you swim in water. What's the fastest path?
@@ -51,11 +76,13 @@ Today, this same idea powers **gradient descent**, the engine behind machine lea
 
 ## The optimization recipe
 
-1. **Model**: express the quantity to optimize as a function $f(x)$.
+1. **Model**: express the quantity to optimize as a function $f(x)$. (This is the hardest step — translating the word problem into math.)
 2. **Differentiate**: compute $f'(x)$.
-3. **Find critical points**: solve $f'(x) = 0$.
+3. **Find critical points**: solve $f'(x) = 0$ (and note where $f'$ does not exist).
 4. **Classify**: use the second derivative test or the sign-change test.
-5. **Check boundaries**: the global optimum might be at the edge of the domain.
+5. **Check boundaries**: if the domain is closed, evaluate $f$ at the endpoints too — the global optimum might be at the edge.
+
+The final step is what the Extreme Value Theorem buys you: on a closed interval you are *guaranteed* a global max and min, and they are among the critical points and endpoints. Compare all candidates and pick the winner.
 
 ## A classic example
 
@@ -66,32 +93,91 @@ Let $x$ = width, $y$ = height. The constraint is $2y + x = 100$, so $y = (100 - 
 Area: $A(x) = x \cdot y = x(100 - x)/2 = 50x - x^2/2$.
 
 <MathBlock expression={"A'(x) = 50 - x = 0 \\implies x = 50"} />
-<MathBlock expression={"A''(x) = -1 < 0 \\implies \\text{local max"} />
+<MathBlock expression={"A''(x) = -1 < 0 \\implies \\text{local maximum"} />
 
-The optimal rectangle is 50m wide and 25m tall, giving $A = 1250$ m². The second derivative is negative everywhere — the parabola opens downward, so this is indeed the global maximum.
+The optimal rectangle is 50m wide and 25m tall, giving $A = 1250$ m². The second derivative is negative everywhere — the parabola opens downward, so this local maximum is also the global maximum. (On the boundary $x = 0$ or $x = 100$, the area is zero, confirming the interior critical point wins.)
+
+<FormulaReadout formulas={[
+  { label: "最优性条件", expression: "f'(x) = 0 \\;\\Rightarrow\\; \\text{候选极值点}" },
+  { label: "二阶导数判别法", expression: "f''(c) > 0 \\Rightarrow \\text{极小值}, \\quad f''(c) < 0 \\Rightarrow \\text{极大值}" },
+  { label: "极值定理", expression: "f \\text{ 在 } [a,b] \\text{ 连续} \\Rightarrow \\exists \\max, \\min" },
+  { label: "梯度下降", expression: "\\theta_{\\text{new}} = \\theta - \\alpha \\cdot \\nabla L(\\theta)" },
+]} />
+
+## Gradient descent — optimization in many dimensions
+
+In machine learning, we minimize a loss function $L(\theta)$ where $\theta$ is a vector of parameters (often millions of them). The derivative generalizes to the **gradient** $\nabla L$ — a vector pointing in the direction of steepest ascent. Gradient descent takes a step in the *opposite* direction:
+
+<MathBlock expression={"\\theta_{\\text{new}} = \\theta - \\alpha \\cdot \\nabla L(\\theta)"} />
+
+where $\alpha$ is the learning rate (step size). This is the multivariable analogue of "set $f'(x) = 0$ and solve" — except in millions of dimensions, solving $\nabla L = 0$ directly is impossible, so we instead *walk downhill* following the gradient until we reach a (local) minimum. Every neural network trained today runs this loop millions of times.
+
+The optimality condition $f'(x) = 0$ is exactly the condition $\nabla L = 0$ at the bottom of a valley: the gradient vanishes because the tangent plane is flat. The second derivative test generalizes too — to the **Hessian** matrix of second partial derivatives, whose eigenvalues classify critical points as minima, maxima, or saddle points.
+
+## When the second derivative test fails
+
+The test gives no information when $f''(c) = 0$ at a critical point. Three failure cases to watch for:
+
+- **Inflection with a flat tangent:** $f(x) = x^3$ at $x = 0$. Here $f'(0) = 0$ and $f''(0) = 0$, but it's neither a max nor a min — the function keeps increasing right through the origin.
+- **Higher-order minimum:** $f(x) = x^4$ at $x = 0$. $f''(0) = 0$ but it's a genuine minimum; you need the fourth derivative (or the First Derivative Test) to see it.
+- **Endpoints:** the test only classifies interior critical points. A global max can sit at a boundary where $f'$ is not zero.
+
+When the second derivative test is inconclusive, fall back to the **First Derivative Test** (check the sign of $f'$ on either side) or evaluate $f$ at the point and compare to neighbors directly.
 
 <KeyInsight>
-To find the optimum, set the derivative to zero and verify the concavity. A negative second derivative confirms a maximum (dome); a positive second derivative confirms a minimum (bowl).
+To find the optimum, set the derivative to zero and verify the concavity. A negative second derivative confirms a maximum (dome); a positive second derivative confirms a minimum (bowl). On a closed interval, the Extreme Value Theorem guarantees a global winner exists — find it by comparing all critical points and endpoints. The condition $f'(x)=0$ is the geometric statement "the tangent is flat."
 </KeyInsight>
+
+## Connections
+
+This lesson applies the [curve-sketching toolkit](/courses/calculus/05-curve-sketching) to a single purpose: finding the best value. The classification tests (First and Second Derivative Test) are borrowed directly, and the concept of critical points is identical. The Extreme Value Theorem sits beside the **Intermediate Value Theorem** from [limits and continuity](/courses/calculus/02-limits-and-continuity) — both guarantee that continuous functions on closed intervals behave the way geometric intuition says they should.
+
+Optimization is the bridge to machine learning. The update rule <MathInline expression={"\\theta_{\\text{new}} = \\theta - \\alpha \\nabla L"} /> is the multivariable cousin of "set $f'(x)=0$," and the entire field of deep learning is built on navigating high-dimensional optimization landscapes. We will return to this in multivariable calculus, where the gradient and Hessian replace $f'$ and $f''$.
 
 ## Practice
 
 <ExerciseBlock number={1}
   prompt="Find the minimum value of f(x) = x² − 6x + 10."
   hint="Compute f'(x), set it to zero, and check f''."
-  answer="f'(x) = 2x − 6 = 0 gives x = 3. f''(x) = 2 > 0, so it's a minimum. f(3) = 9 − 18 + 10 = 1. The minimum value is 1."
+  answer="f'(x) = 2x − 6 = 0 gives x = 3. f''(x) = 2 > 0, so it's a minimum. f(3) = 9 − 18 + 10 = 1. The minimum value is 1, occurring at x = 3."
 />
 
 <ExerciseBlock number={2}
-  prompt="In the interactive, switch to f(x) = −x² + 4. Where is the maximum, and what is the second derivative there?"
-  hint="The only critical point is at x = 0. Check f''."
-  answer="f'(0) = 0. f''(x) = −2 < 0, confirming a maximum. The peak is at (0, 4). The dome-shaped second derivative is constant and negative."
+  prompt="In the interactive, switch to f(x) = −x² + 4. Where is the maximum, and what is the second derivative there? Is this a local or global maximum?"
+  hint="The only critical point is at x = 0. Check f''. Since the parabola opens downward, what kind of maximum is it?"
+  answer="f'(x) = −2x = 0 at x = 0. f''(x) = −2 < 0, confirming a maximum. The peak is at (0, 4). Because −x² grows without bound negative as |x| → ∞, this local maximum is also the global maximum."
 />
 
 <ExerciseBlock number={3}
   prompt="You have a piece of wire 40 cm long, bent to form a rectangle. What dimensions maximize the area?"
   hint="If the sides are x and y, the perimeter constraint is 2x + 2y = 40. Express area in terms of one variable."
-  answer="Perimeter: 2x + 2y = 40, so y = 20 − x. Area: A(x) = x(20 − x) = 20x − x². A'(x) = 20 − 2x = 0 gives x = 10. Then y = 10. The optimal shape is a 10 × 10 square with area 100 cm²."
+  answer="Perimeter: 2x + 2y = 40, so y = 20 − x. Area: A(x) = x(20 − x) = 20x − x². A'(x) = 20 − 2x = 0 gives x = 10. Then y = 10. A''(x) = −2 < 0 confirms a maximum. The optimal shape is a 10 × 10 square with area 100 cm²."
 />
 
-[Next Lesson →](/courses/calculus/07-related-rates)
+<ExerciseBlock number={4}
+  prompt="Find the absolute maximum and minimum of f(x) = x³ − 3x on the closed interval [−2, 2]."
+  hint="Find the critical points inside the interval, then compare f at the critical points and at both endpoints. The Extreme Value Theorem guarantees the winners exist."
+  answer="f'(x) = 3x² − 3 = 0 gives x = ±1, both in [−2, 2]. Evaluate: f(−2) = −8 + 6 = −2; f(−1) = −1 + 3 = 2; f(1) = 1 − 3 = −2; f(2) = 8 − 6 = 2. Absolute maximum is 2 (at x = −1 and x = 2); absolute minimum is −2 (at x = −2 and x = 1). Note both endpoints tie with interior critical points — checking boundaries was essential."
+/>
+
+<ExerciseBlock number={5}
+  prompt="In gradient descent, the update rule is θ_new = θ − α · L'(θ). Suppose L'(θ) = 6 at your current parameter θ = 2 and the learning rate α = 0.1. What is θ_new? Are you moving uphill or downhill, and why?"
+  hint="The negative sign means you step against the derivative. A positive derivative means the function increases as θ increases."
+  answer="θ_new = 2 − 0.1 × 6 = 2 − 0.6 = 1.4. Since the derivative is positive (the loss is increasing as θ grows), stepping in the negative direction moves downhill — toward smaller loss. This is the core mechanic of training neural networks: the gradient is a compass pointing uphill, so we walk against it."
+/>
+
+<ExerciseBlock number={6}
+  prompt="A box with a square base and open top must have a volume of 32 m³. Find the dimensions that minimize the amount of material used (surface area)."
+  hint="Let the base be x by x and the height be h. Volume: x²h = 32, so h = 32/x². Surface area (open top): S = x² + 4xh. Substitute h and minimize S as a function of x."
+  answer="S(x) = x² + 4x(32/x²) = x² + 128/x. S'(x) = 2x − 128/x² = 0 gives 2x³ = 128, so x³ = 64 and x = 4. Then h = 32/16 = 2. S''(x) = 2 + 256/x³ > 0, confirming a minimum. The optimal box is 4 m × 4 m × 2 m, using 48 m² of material."
+/>
+
+<ExerciseBlock number={7}
+  prompt="State the Extreme Value Theorem and explain why both hypotheses (continuity AND a closed interval) are necessary. Give one counterexample violating each hypothesis where the conclusion fails."
+  hint="Think about what 'attains its max and min' means. A function can fail to attain its extremum if it has a jump, or if the domain is open so the extremum 'wants' to occur at a missing endpoint."
+  answer="Theorem: if f is continuous on a closed bounded interval [a, b], then f attains an absolute maximum and an absolute minimum on [a, b]. Counterexample to continuity: f(x) = x on [0,1] except f(1/2) is undefined (a gap). The function approaches values near 1/2 but never attains the supremum/infimum there — continuity is needed to guarantee the value is actually achieved. Counterexample to closedness: f(x) = x on the open interval (0, 1). The values 0 and 1 are the natural extrema, but neither belongs to the domain, so the function attains neither a max nor a min — only a supremum and infimum. Both hypotheses are doing real work."
+/>
+
+---
+
+**Up next:** [Related Rates](/courses/calculus/07-related-rates)

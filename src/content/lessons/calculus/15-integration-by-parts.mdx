@@ -18,12 +18,50 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { PartsExplorer } from '../../../components/interactive/calculus/PartsExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-The product rule says: $(uv)' = u'v + uv'$. Integrate both sides and rearrange. Integration by parts is the product rule filmed in reverse. Geometrically, the rectangle area $uv$ gets split into two pieces -- one piece is the integral you want, the other is the integral you compute. You trade one area for another, hoping the new one is simpler.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+The product rule says: $(uv)' = u'v + uv'$. Integrate both sides and rearrange, and you get integration by parts — the product rule filmed in reverse. Geometrically, the rectangle of area $uv$ gets split into two pieces: one piece is the integral you wanted, the other is the integral you must compute in its place. You trade one area for another, hoping the new one is simpler. The strategy is to **differentiate** one part of the integrand (so it shrinks) and **integrate** the other (so it absorbs). When the parts are chosen well, the trade is pure profit; when chosen poorly, the new integral is worse than the original.
+
+## Theorem: Integration by Parts (the product rule in reverse)
+
+If $u = u(x)$ and $v = v(x)$ are differentiable functions with continuous derivatives, then:
+
+<MathBlock expression={"\\int u\\, dv = uv - \\int v\\, du"} />
+
+**Hypotheses:** $u$ and $v$ differentiable with continuous derivatives on the interval. **Conclusion:** the integral of $u\,dv$ equals $uv$ minus the integral of $v\,du$.
+
+**Proof:** integrate the product rule <MathInline expression={"\\frac{d}{dx}[uv] = u\\,dv/dx + v\\,du/dx"} /> to get $uv = \int u\,dv + \int v\,du$, then rearrange. Integration by parts is *literally* the product rule rearranged — there is no new mathematics, only a clever reorganization that trades one integral for another.
+
+<FormulaReadout formulas={[
+  { label: "分部积分公式（乘积法则的逆运算）", expression: "\\int u\\, dv = uv - \\int v\\, du" },
+  { label: "等价的导数形式", expression: "\\frac{d}{dx}[uv] = u'v + uv' \\;\\Longleftrightarrow\\; d(uv) = u\\,dv + v\\,du" },
+  { label: "LIATE 选 u 的优先级", expression: "u: \\;\\text{Log} > \\text{Inverse-trig} > \\text{Algebraic} > \\text{Trig} > \\text{Exp} = dv" },
+  { label: "循环情形的代数解", expression: "I = \\int e^{x}\\sin x\\, dx \\;\\Longrightarrow\\; 2I = e^{x}(\\sin x - \\cos x) + C" },
+]} />
+
+## The strategy: how to split $u$ and $dv$
+
+Given an integrand that is a product of two *different function types*, assign one to $u$ (to differentiate) and the other to $dv$ (to integrate):
+
+- $u$: the part you want to **differentiate** — it should simplify under differentiation.
+- $dv$: the part you want to **integrate** — you must be able to find $v = \int dv$.
+
+The **LIATE heuristic** tells you which factor to pick as $u$. Pick $u$ to be the function type that comes *first* in this priority list:
+
+1. **L**ogarithmic — $\ln x$, $\log_b x$
+2. **I**nverse trigonometric — $\arctan x$, $\arcsin x$, $\arccos x$
+3. **A**lgebraic (polynomial) — $x^n$, $3x^2 + 1$
+4. **T**rigonometric — $\sin x$, $\cos x$, $\tan x$
+5. **E**xponential — $e^x$, $2^x$
+
+The rationale: logarithmic and inverse-trig functions have *no* elementary antiderivative on their own (you cannot pick them as $dv$), but they *simplify* under differentiation ($(\ln x)' = 1/x$, $(\arctan x)' = 1/(1+x^2)$). So LIATE assigns them to $u$. Exponentials and trig functions do not disappear under differentiation, so they go to $dv$ where they integrate cleanly. LIATE is a heuristic, not a theorem — it fails occasionally — but it is right the vast majority of the time.
 
 <InteractiveCanvas
   title="Integration by Parts Explorer"
@@ -33,82 +71,128 @@ The product rule says: $(uv)' = u'v + uv'$. Integrate both sides and rearrange. 
   <PartsExplorer client:visible />
 </InteractiveCanvas>
 
-<MathBlock expression={"\\int u\\, dv = uv - \\int v\\, du"} />
+## Example 1: $\int x e^x\, dx$ (LIATE: A before E)
 
-This is **integration by parts**. You trade one integral ($\int u\, dv$) for another ($\int v\, du$). The hope is that the new integral is simpler.
-
-## The strategy
-
-Choose $u$ and $dv$ from the integrand:
-
-- $u$: the part you want to **differentiate** (it should simplify when you take its derivative).
-- $dv$: the part you want to **integrate** (you need to be able to find $v = \int dv$).
-
-A common mnemonic is **LIATE** — choose $u$ to be the function type that comes first in this list:
-1. **L**ogarithmic ($\ln x$)
-2. **I**nverse trig ($\arctan x$, $\arcsin x$)
-3. **A**lgebraic ($x^n$)
-4. **T**rigonometric ($\sin x$, $\cos x$)
-5. **E**xponential ($e^x$)
-
-## Example 1: $\int x e^x\, dx$
-
-Let $u = x$ (algebraic, simplifies to 1 when differentiated), $dv = e^x\, dx$ (easy to integrate).
-
-Then $du = dx$, $v = e^x$.
+By LIATE, $u = x$ (algebraic, comes before E), $dv = e^x\, dx$. Then $du = dx$, $v = e^x$.
 
 <MathBlock expression={"\\int x e^x\\, dx = x e^x - \\int e^x\\, dx = x e^x - e^x + C = e^x(x - 1) + C"} />
 
-## Example 2: $\int x^2 \sin x\, dx$
+The new integral $\int e^x\, dx$ is trivial — the trade worked because differentiating $x$ collapsed it to the constant $1$.
+
+## Example 2: $\int x^2 \sin x\, dx$ (apply parts repeatedly)
 
 Let $u = x^2$, $dv = \sin x\, dx$. Then $du = 2x\, dx$, $v = -\cos x$.
 
 <MathBlock expression={"\\int x^2 \\sin x\\, dx = -x^2 \\cos x + \\int 2x \\cos x\\, dx"} />
 
-The remaining integral $\int 2x \cos x\, dx$ still needs parts, but it's simpler (lower power of $x$). Apply parts again: $u = 2x$, $dv = \cos x\, dx$.
+The remaining integral $\int 2x \cos x\, dx$ still needs parts, but its $x$-power dropped from $2$ to $1$. Apply parts again: $u = 2x$, $dv = \cos x\, dx$.
 
 <MathBlock expression={"\\int 2x \\cos x\\, dx = 2x \\sin x - \\int 2 \\sin x\\, dx = 2x \\sin x + 2\\cos x + C"} />
 
-Combining: $\int x^2 \sin x\, dx = -x^2 \cos x + 2x \sin x + 2\cos x + C$.
+Combining: $\int x^2 \sin x\, dx = -x^2 \cos x + 2x \sin x + 2\cos x + C$. Each application of parts *reduces the polynomial degree by one* — so an $x^n$ times a trig/exponential function takes $n$ applications. This is the **tabular method** sweet spot.
 
-## Example 3: The circular case — $\int e^x \sin x\, dx$
+## Tabular integration: the shortcut for <MathInline expression={"\\int x^n \\cdot (\\text{trig or exp})\\, dx"} />
+
+When you differentiate one factor repeatedly to zero and integrate the other repeatedly, lay out a table. For $\int x^2 e^x\, dx$:
+
+| Sign | Differentiate $u = x^2$ | Integrate $dv = e^x\, dx$ |
+|---|---|---|
+| $+$ | $x^2$ | $e^x$ |
+| $-$ | $2x$ | $e^x$ |
+| $+$ | $2$ | $e^x$ |
+| $-$ | $0$ | $e^x$ |
+
+Read the answer off the diagonals: $+x^2 e^x - 2x e^x + 2 e^x + C = e^x(x^2 - 2x + 2) + C$. The signs alternate $+, -, +, -, \ldots$ and you stop when one column hits zero. Tabular integration is nothing but parts applied $n$ times, with the bookkeeping compressed into a grid.
+
+## The cyclic / circular case: $\int e^x \sin x\, dx$
+
+This is the famous case where parts, applied twice, *brings back the original integral*. That sounds like a failure — but it is actually a gift: you solve for the integral algebraically.
 
 Let $u = e^x$, $dv = \sin x\, dx$. Then $du = e^x\, dx$, $v = -\cos x$.
 
 <MathBlock expression={"\\int e^x \\sin x\\, dx = -e^x \\cos x + \\int e^x \\cos x\\, dx"} />
 
-Apply parts again to the remaining integral with $u = e^x$, $dv = \cos x\, dx$:
+Apply parts to the new integral, keeping $u = e^x$, $dv = \cos x\, dx$:
 
 <MathBlock expression={"\\int e^x \\cos x\\, dx = e^x \\sin x - \\int e^x \\sin x\\, dx"} />
 
-The original integral reappears! This is the "circular" case. Substitute back and solve:
+The original integral reappears! Substitute back and *solve algebraically* — call the original integral $I$:
 
-<MathBlock expression={"\\int e^x \\sin x\\, dx = -e^x \\cos x + e^x \\sin x - \\int e^x \\sin x\\, dx"} />
-<MathBlock expression={"2\\int e^x \\sin x\\, dx = e^x(\\sin x - \\cos x) + C"} />
+<MathBlock expression={"I = -e^x \\cos x + e^x \\sin x - I \\;\\Longrightarrow\\; 2I = e^x(\\sin x - \\cos x)"} />
+
 <MathBlock expression={"\\int e^x \\sin x\\, dx = \\frac{e^x(\\sin x - \\cos x)}{2} + C"} />
 
+The constant $C$ appears because we divided both sides of an equation by $2$; we must have an arbitrary constant on the right. This circular trick works whenever both factors cycle under repeated differentiation/integration — the products of exponential-times-trig, or powers of secant-times-tan. **Pro tip:** keep $u$ *consistent* across both applications of parts (here, always $u = e^x$). If you switch $u$ midway, the two applications cancel each other and you get $I = I$ — the trivial identity.
+
+## The many faces of integration by parts
+
+- **Geometry:** the formula $\int u\, dv = uv - \int v\, du$ expresses the area of the rectangle $uv$ as the sum of two complementary "areas" under the $u$-vs-$v$ curve. Drawing it in the $uv$-plane makes the trade visible.
+- **Physics:** integration by parts underlies Green's identities, integration by parts in higher dimensions (the divergence theorem is a giant parts), and the weak formulation of PDEs in finite element methods.
+- **Probability:** the covariance identity <MathInline expression={"\\text{Cov}(X, Y) = \\mathbb{E}[XY] - \\mathbb{E}[X]\\mathbb{E}[Y]"} /> is a discrete cousin; integration by parts for expectations yields *Stein's lemma*, which underlies the score function estimator in variational inference.
+- **Quantum mechanics:** the boundary term $uv$ in integration by parts is why wavefunctions must vanish at infinity — otherwise the integration-by-parts step in deriving the Hermiticity of <MathInline expression={"\\hat{p}"} /> fails.
+
+## Modern applications
+
+In **machine learning**, the **score function estimator** (REINFORCE) and the **reparameterization trick** — the two main ways to estimate gradients through random variables — both rely on integration by parts. Stein's lemma, <MathInline expression={"\\text{Cov}(X, h(X)) = \\mathbb{E}[h'(X)]"} /> for Gaussian $X$, is a one-line integration-by-parts result that powers the score-matching objective in generative modeling.
+
+In **physics and engineering**, the finite element method discretizes PDEs by **integrating the highest-derivative term by parts**, moving derivatives off the unknown function and onto test functions. The $uv$ boundary term gives the natural boundary conditions; the remaining $\int v\, du$ is symmetric and sparse, which is why FEM matrices are nice to invert.
+
+In **probability and statistics**, integration by parts yields tail-bound identities (e.g. Stein-Chen method for Poisson approximation) and underlies the derivation of the Black-Scholes equation in mathematical finance.
+
 <KeyInsight>
-Integration by parts trades one integral for another by exploiting the product rule in reverse. Choose u to be the part that simplifies when differentiated, and hope the new integral is easier. When the original integral reappears, you've hit the circular case — solve algebraically.
+Integration by parts is the product rule read backwards: $\int u\, dv = uv - \int v\, du$. Pick u to be the factor that simplifies under differentiation (use the LIATE priority — Log, Inverse-trig, Algebraic, Trig, Exponential — and pick u from the earlier type). When the integrand is $x^n$ times a trig or exponential function, repeated parts reduces the power by one each time, and the tabular method compresses the bookkeeping into a grid. The celebrated cyclic case ($\int e^x \sin x\, dx$) arises when both factors cycle under differentiation: apply parts twice, keep u consistent, and solve algebraically for the original integral. Integration by parts is not just a trick — it underlies Green's identities, the finite element method, Stein's lemma in ML, and the Hermiticity of quantum observables.
 </KeyInsight>
+
+## Connections
+
+This lesson reverses the [product rule](/courses/calculus/03-differentiation-rules) just as [u-substitution](/courses/calculus/14-u-substitution) reverses the [chain rule](/courses/calculus/04-visualizing-the-chain-rule). Together with [partial fractions](/courses/calculus/16-partial-fractions), these three techniques form your core integration toolkit: substitution for composites, parts for products of unrelated function types, partial fractions for rational functions. Each finds an antiderivative by recognizing the integrand as a derivative-rule pattern run backwards — exactly what [the Fundamental Theorem](/courses/calculus/12-the-fundamental-theorem) requires to turn definite integrals into subtractions.
+
+Across disciplines, the "integrate by parts" pattern is the gateway to **weak formulations** of differential equations: moving a derivative from one function to another via the boundary term $uv$ is what makes the finite element method, quantum-mechanical Hermiticity arguments, and the Stein identities in probability theory all work. Wherever derivatives meet integrals in higher dimensions, integration by parts is the structural backbone.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Evaluate ∫ x cos(x) dx using integration by parts."
-  hint="Let u = x, dv = cos(x) dx. Then du = dx, v = sin(x)."
-  answer="∫ x cos(x) dx = x sin(x) − ∫ sin(x) dx = x sin(x) + cos(x) + C."
+  prompt="Evaluate ∫ x cos(x) dx. Identify your choices of u and dv using LIATE."
+  hint="Algebraic (x) comes before Trig (cos x), so u = x, dv = cos(x) dx."
+  answer="By LIATE, u = x (algebraic), dv = cos(x) dx. Then du = dx, v = sin(x). Applying parts: ∫ x cos(x) dx = x sin(x) − ∫ sin(x) dx = x sin(x) + cos(x) + C. Verify by differentiating: d/dx[x sin x + cos x] = sin x + x cos x − sin x = x cos x. Picking u = cos(x) instead would have given du = −sin x dx, v = x²/2, producing ∫ x² sin x dx — strictly worse."
 />
 
 <ExerciseBlock number={2}
-  prompt="Evaluate ∫ ln(x) dx. (Hint: there's no obvious 'product', but you can let u = ln(x) and dv = dx.)"
-  hint="u = ln(x), du = (1/x) dx, v = x."
-  answer="∫ ln(x) dx = x ln(x) − ∫ x · (1/x) dx = x ln(x) − ∫ dx = x ln(x) − x + C."
+  prompt="Evaluate ∫ ln(x) dx. There is no obvious product here — but you can let u = ln(x) and dv = dx."
+  hint="u = ln(x), du = (1/x) dx, v = x. The new integral should be elementary."
+  answer="Let u = ln(x), dv = dx. Then du = (1/x) dx, v = x. Applying parts: ∫ ln(x) dx = x ln(x) − ∫ x · (1/x) dx = x ln(x) − ∫ 1 dx = x ln(x) − x + C. The new integral ∫ 1 dx collapsed to a trivial constant. This is the canonical LIATE win: logarithmic must be u because it has no elementary antiderivative on its own, but differentiating it produces 1/x which is easy to integrate."
 />
 
 <ExerciseBlock number={3}
-  prompt="Evaluate ∫ x² eˣ dx. How many times do you need to apply integration by parts?"
-  hint="Each application reduces the power of x by 1. Start with u = x²."
-  answer="Apply twice. First: u = x², dv = eˣ dx → x²eˣ − ∫ 2xeˣ dx. Second: u = 2x, dv = eˣ dx → 2xeˣ − ∫ 2eˣ dx. Result: x²eˣ − 2xeˣ + 2eˣ + C = eˣ(x² − 2x + 2) + C. Two applications because x² has degree 2."
+  prompt="Evaluate ∫ x² eˣ dx. How many times do you need to apply parts, and why?"
+  hint="Each application of parts reduces the power of x by 1 (when u = xⁿ). Start with u = x²."
+  answer="Apply parts twice. First: u = x², dv = eˣ dx → du = 2x dx, v = eˣ → x²eˣ − ∫ 2x eˣ dx. Second: u = 2x, dv = eˣ dx → du = 2 dx, v = eˣ → 2xeˣ − ∫ 2eˣ dx. Result: x²eˣ − 2xeˣ + 2eˣ + C = eˣ(x² − 2x + 2) + C. Two applications because x² has degree 2; in general, ∫ xⁿ eˣ dx needs n applications. Equivalently, lay out a tabular grid with three rows."
 />
 
-[Next Lesson →](/courses/calculus/16-partial-fractions)
+<ExerciseBlock number={4}
+  prompt="Evaluate the cyclic integral ∫ eˣ cos(x) dx by applying parts twice and solving algebraically for the integral."
+  hint="Let u = eˣ both times (keep u consistent). After two applications, the original integral reappears with a minus sign."
+  answer="Let I = ∫ eˣ cos x dx. First application: u = eˣ, dv = cos x dx → du = eˣ dx, v = sin x. So I = eˣ sin x − ∫ eˣ sin x dx. Second application to the new integral: u = eˣ, dv = sin x dx → du = eˣ dx, v = -cos x. So ∫ eˣ sin x dx = -eˣ cos x + ∫ eˣ cos x dx = -eˣ cos x + I. Substituting back: I = eˣ sin x − (-eˣ cos x + I) = eˣ sin x + eˣ cos x − I. So 2I = eˣ(sin x + cos x), giving I = eˣ(sin x + cos x)/2 + C. Verify by differentiating — and notice the symmetry with ∫ eˣ sin x dx = eˣ(sin x − cos x)/2 + C."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Evaluate ∫ arctan(x) dx. (Hint: there is no obvious product, but inverse-trig functions are LIATE's first priority for u.)"
+  hint="Let u = arctan(x), dv = dx. Then du = 1/(1+x²) dx and v = x."
+  answer="Let u = arctan(x), dv = dx. Then du = 1/(1+x²) dx and v = x. Applying parts: ∫ arctan(x) dx = x arctan(x) − ∫ x/(1+x²) dx. The remaining integral is a u-substitution: let w = 1 + x², dw = 2x dx, so x dx = dw/2, giving ∫ x/(1+x²) dx = (1/2) ln(1+x²) + C. Therefore ∫ arctan(x) dx = x arctan(x) − (1/2) ln(1+x²) + C. This problem combines parts and substitution — a common pattern. LIATE correctly forces arctan(x) to be u because it has no elementary antiderivative on its own."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Use the tabular method to compute ∫ x³ e^{2x} dx. Lay out the differentiations of x³ and integrations of e^{2x}, then read off the answer with alternating signs."
+  hint="Differentiate x³ → 3x² → 6x → 6 → 0. Integrate e^{2x} repeatedly: e^{2x}/2 → e^{2x}/4 → e^{2x}/8 → e^{2x}/16. Signs alternate +, −, +, −."
+  answer="Tabular grid: row 0: +x³, e^{2x}/2. Row 1: −3x², e^{2x}/4. Row 2: +6x, e^{2x}/8. Row 3: −6, e^{2x}/16. Row 4: +0, stop. Reading off the diagonals (sign × left × right from the next row): (x³)(e^{2x}/2) − (3x²)(e^{2x}/4) + (6x)(e^{2x}/8) − (6)(e^{2x}/16) + C = e^{2x}[x³/2 − 3x²/4 + 6x/8 − 6/16] + C = e^{2x}[x³/2 − 3x²/4 + 3x/4 − 3/8] + C. The power x³ dropped by one each row, and the exponential's coefficient picked up a factor of 1/2 each time. Tabular integration is just three back-to-back parts applications, with the bookkeeping compressed into a grid."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Derive the integration-by-parts formula from the product rule. State the hypotheses and explain why the continuity of u' and v' matters."
+  hint="Start from d(uv)/dx = (du/dx)·v + u·(dv/dx). Integrate both sides. What must be continuous for the Fundamental Theorem to apply to each side?"
+  answer="Start from the product rule: d/dx[uv] = u'·v + u·v', equivalently d(uv) = v·du + u·dv. Integrate both sides over the relevant interval: uv = ∫ v du + ∫ u dv (the left side integrates to uv + C because d(uv) integrates to uv). Rearrange: ∫ u dv = uv − ∫ v du. The hypotheses: u and v must be differentiable with continuous derivatives so that (a) the product rule applies, (b) the Fundamental Theorem of Calculus lets us recover uv from d(uv) (continuity of u'v + uv' is needed for the FTC), and (c) the remaining integral ∫ v du is well-defined and finite. Continuity of u' and v' ensures all three steps are legitimate. So integration by parts is the product rule plus the FTC — no new ideas, only a reorganization that trades one integral for another."
+/>
+
+---
+
+**Up next:** [Partial Fractions and Strategies](/courses/calculus/16-partial-fractions)

@@ -18,12 +18,24 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { VolumeSlicer3D } from '../../../components/interactive/calculus/VolumeSlicer3D';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-We've computed areas -- 2D regions. Now we compute **volumes** -- 3D solids. The strategy is the same: slice, compute each piece, and integrate. The key insight is that slicing reduces a 3D problem to a 2D problem. At each x-position, you see a 2D cross-section with area $A(x)$. Stack all the areas and you get volume -- the integral does the stacking for you, adding up infinitely many paper-thin slices.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+We have computed areas — 2D regions. Now we compute **volumes** — 3D solids. The strategy is the same one that turned [accumulation](/courses/calculus/09-accumulation-and-area) into area: slice, compute each piece, and integrate. The key insight is that **slicing reduces a 3D problem to a 2D problem**. At each position $x$, the solid intersects a plane in a 2D cross-section with some area $A(x)$. Stack all these cross-sectional areas along the $x$-axis and you get volume — the integral does the stacking for you, adding up infinitely many paper-thin slices. This single idea — volume = integral of cross-sectional area — unifies a huge family of volume formulas, from cones and spheres to solids with square or triangular cross-sections.
+
+## The volume formula
+
+Imagine slicing a solid with a knife perpendicular to the $x$-axis. Each slice is a thin slab with cross-sectional area $A(x)$ and thickness $dx$. The volume of each slice is approximately $A(x)\, dx$. Stack all the slices:
+
+<MathBlock expression={"V = \\int_a^b A(x)\\, dx"} />
+
+**Hypothesis:** $A(x)$ is the cross-sectional area at position $x$, integrable on $[a, b]$. **Conclusion:** the volume of the solid between $x = a$ and $x = b$ is the integral of $A(x)$. This is just the Riemann-sum definition of the integral applied to a 3D context — the slice sum converges to the exact volume exactly as the rectangle sum converged to the area.
 
 <InteractiveCanvas
   title="Volume Slicer 3D"
@@ -33,68 +45,133 @@ We've computed areas -- 2D regions. Now we compute **volumes** -- 3D solids. The
   <VolumeSlicer3D client:visible />
 </InteractiveCanvas>
 
-## The idea
+<FormulaReadout formulas={[
+  { label: "切片体积公式（核心）", expression: "V = \\int_a^b A(x)\\, dx" },
+  { label: "圆盘法（旋转体的特例）", expression: "A(x) = \\pi [f(x)]^{2} \\;\\Longrightarrow\\; V = \\pi \\int_a^b [f(x)]^{2}\\, dx" },
+  { label: "垫圈法（带孔旋转体）", expression: "A(x) = \\pi \\bigl[R(x)^{2} - r(x)^{2}\\bigr]" },
+  { label: "卡瓦列里原理", expression: "A_1(x) = A_2(x) \\;\\forall x \\;\\Longrightarrow\\; V_1 = V_2" },
+]} />
 
-Imagine slicing a solid with a knife perpendicular to the x-axis. Each slice is a thin disk with some cross-sectional area $A(x)$ and thickness $dx$. The volume of each slice is $A(x)\, dx$. Stack all the slices:
+## Cavalieri's principle
 
-<MathBlock expression={"V = \\int_a^b A(x)\\, dx"} />
+A remarkable consequence of $V = \int A(x)\, dx$ is **Cavalieri's principle**: if two solids have the *same cross-sectional area at every height*, then they have the *same volume*, regardless of how different their shapes look. The cross-sections can be circles, squares, stars — if their areas match at every $x$, the volumes match.
 
-The integral adds up infinitely many infinitesimally thin slices. Just as the Riemann sum converges to the area under a curve, the slice sum converges to the exact volume.
+Cavalieri's principle is why a slanted cylinder has the same volume as a right cylinder of the same base and height: at every height, both have the same circular cross-section. It is also why a wedge cut from a cylinder can have the same volume as a cone. The principle is not just a curiosity — it is the statement that the integral "sees" only the cross-sectional area function, not the shape of the cross-sections themselves.
 
-## The disk method
+## The disk method: cross-sections are circles
 
-When the solid is formed by rotating $y = f(x)$ around the x-axis, each cross-section is a circular disk of radius $f(x)$:
+When the solid is formed by rotating $y = f(x)$ around the $x$-axis, each cross-section perpendicular to the $x$-axis is a circular disk of radius $f(x)$:
 
-<MathBlock expression={"A(x) = \\pi [f(x)]^2"} />
-
-So:
-
-<MathBlock expression={"V = \\pi \\int_a^b [f(x)]^2\\, dx"} />
+<MathBlock expression={"A(x) = \\pi [f(x)]^2, \\qquad V = \\pi \\int_a^b [f(x)]^2\\, dx"} />
 
 ### Example: Volume of a cone
 
-A cone of height $h$ and base radius $R$ is formed by rotating the line $y = (R/h)x$ from $x = 0$ to $x = h$.
+A cone of height $h$ and base radius $R$ is formed by rotating the line $y = (R/h)\,x$ from $x = 0$ to $x = h$.
 
 <MathBlock expression={"V = \\pi \\int_0^h \\left(\\frac{R}{h}x\\right)^2 dx = \\pi \\frac{R^2}{h^2} \\int_0^h x^2\\, dx = \\pi \\frac{R^2}{h^2} \\cdot \\frac{h^3}{3} = \\frac{1}{3}\\pi R^2 h"} />
 
-The familiar formula $V = \frac{1}{3}\pi r^2 h$ emerges from the integral.
+The familiar formula <MathInline expression={"V = \\frac{1}{3}\\pi r^2 h"} /> — which you probably memorized in geometry — *emerges from the integral*. This is one of the great payoffs of calculus: the volume formulas of classical geometry become special cases of one general principle.
 
-## The washer method
+### Example: Volume of a sphere
 
-When the solid has a hole (rotating the region between two curves), the cross-section is a ring — a disk with a disk removed:
+Rotating <MathInline expression={"y = \\sqrt{R^2 - x^2}"} /> from $x = -R$ to $x = R$ gives a sphere of radius $R$:
 
-<MathBlock expression={"A(x) = \\pi [R(x)]^2 - \\pi [r(x)]^2"} />
+<MathBlock expression={"V = \\pi \\int_{-R}^{R} (R^{2} - x^{2})\\, dx = \\pi \\left[R^{2}x - \\frac{x^{3}}{3}\\right]_{-R}^{R} = \\pi \\cdot \\frac{4R^{3}}{3} = \\frac{4}{3}\\pi R^{3}"} />
+
+## The washer method: cross-sections are rings
+
+When the solid has a hole (e.g. rotating the region *between* two curves), the cross-section is a ring — a disk with a disk removed:
+
+<MathBlock expression={"A(x) = \\pi [R(x)]^2 - \\pi [r(x)]^2 = \\pi\\bigl(R(x)^2 - r(x)^2\\bigr)"} />
 
 where $R(x)$ is the outer radius and $r(x)$ is the inner radius.
 
 ### Example: A bowl
 
-Rotate the region between $y = \sqrt{x}$ and $y = x/2$ from $x = 0$ to $x = 4$ around the x-axis.
+Rotate the region between <MathInline expression={"y = \\sqrt{x}"} /> (outer) and $y = x/2$ (inner) from $x = 0$ to $x = 4$ around the $x$-axis:
 
-<MathBlock expression={"V = \\pi \\int_0^4 [\\sqrt{x}]^2 - [x/2]^2\\, dx = \\pi \\int_0^4 [x - x^2/4]\\, dx = \\pi [x^2/2 - x^3/12]_0^4 = \\pi[8 - 64/12] = \\frac{8\\pi}{3}"} />
+<MathBlock expression={"V = \\pi \\int_0^4 \\bigl[\\sqrt{x}\\bigr]^2 - [x/2]^2\\, dx = \\pi \\int_0^4 \\bigl[x - x^2/4\\bigr]\\, dx = \\pi \\bigl[x^2/2 - x^3/12\\bigr]_0^4 = \\pi\\bigl[8 - 64/12\\bigr] = \\frac{8\\pi}{3}"} />
+
+## Known cross-sections: beyond circles
+
+The slicing method is not restricted to circular cross-sections. If a solid's cross-sections are **squares**, **semicircles**, **equilateral triangles**, or any other shape with a computable area as a function of $x$, the formula $V = \int A(x)\, dx$ applies directly.
+
+**Example:** Suppose the base of a solid is the disk $x^2 + y^2 \le R^2$, and every cross-section perpendicular to the $x$-axis is a **square** whose base lies in the $xy$-plane. At position $x$, the base of the square runs from <MathInline expression={"y = -\\sqrt{R^2 - x^2}"} /> to <MathInline expression={"y = +\\sqrt{R^2 - x^2}"} />, so its side length is <MathInline expression={"2\\sqrt{R^2 - x^2}"} /> and its area is $4(R^2 - x^2)$. The volume is:
+
+<MathBlock expression={"V = \\int_{-R}^{R} 4(R^{2} - x^{2})\\, dx = 4\\left[R^{2}x - \\frac{x^{3}}{3}\\right]_{-R}^{R} = 4 \\cdot \\frac{2R^{3}}{3} = \\frac{16R^{3}}{3}"} />
+
+If the cross-sections were instead **semicircles** with their flat side on the base, the area at position $x$ would be <MathInline expression={"\\frac{1}{2}\\pi(\\sqrt{R^2 - x^2})^2 = \\frac{\\pi}{2}(R^2 - x^2)"} />, giving <MathInline expression={"V = \\frac{\\pi}{2}\\int_{-R}^R (R^2 - x^2)\\, dx = \\frac{\\pi}{2} \\cdot \\frac{4R^3}{3} = \\frac{2\\pi R^3}{3}"} />. The cross-section's shape changes $A(x)$; the integral structure is unchanged.
+
+## Three perspectives on volume by slicing
+
+- **Accumulation (calculus):** volume = $\int A(x)\, dx$. The cross-sectional area is accumulated along the axis.
+- **Geometry (Cavalieri):** two solids with matching cross-sections have matching volumes — shape doesn't matter, only the area function.
+- **Approximation (Riemann sum):** volume = sum of thin slabs of area $A(x_i)\,\Delta x$, in the limit $\Delta x \to 0$.
+
+## Modern applications
+
+In **medical imaging**, CT and MRI scanners reconstruct 3D anatomy from a stack of 2D cross-sectional "slices" — each slice is a cross-sectional image, and the volume of an organ is computed by integrating its cross-sectional areas along the scan axis. The slicing method is literally how radiologists measure tumor volumes and organ sizes.
+
+In **computer graphics and CAD**, 3D models are often represented as a stack of 2D layers (e.g. in 3D printing, each layer is a cross-section). Volume calculations, material estimates, and slicing algorithms all rely on integrating cross-sectional area.
+
+In **civil and mechanical engineering**, earthwork volumes (cut and fill for roads, dams, excavation) are computed by the "average end area" method — a discrete approximation of $V = \int A(x)\, dx$, where $A(x)$ is the cross-sectional area of the cut at station $x$.
+
+In **physics**, the moment of inertia and center of mass of an extended body are computed by integrating over cross-sections — volume-by-slicing is the geometric backbone.
 
 <KeyInsight>
-Volume by slicing: cut the solid into thin disks (or washers), compute each slice's area A(x), and integrate A(x) dx from one end to the other. The integral replaces an infinite stack of infinitesimal slices.
+Volume by slicing reduces a 3D problem to a 2D one: at each position x, measure the cross-sectional area A(x), then integrate V = ∫ A(x) dx. The disk method (A = π f²) and washer method (A = π(R² − r²)) are special cases for solids of revolution, but A(x) can be any shape — squares, triangles, semicircles — and the formula still holds. Cavalieri's principle follows: two solids with the same cross-sectional area at every height have the same volume, regardless of shape. The classical volume formulas (cone = πr²h/3, sphere = 4πr³/3) emerge as special cases of one general integral. This is the structural idea behind CT scanning, 3D printing, and earthwork volume calculation.
 </KeyInsight>
+
+## Connections
+
+This lesson generalizes [accumulation](/courses/calculus/09-accumulation-and-area) and [the definite integral](/courses/calculus/11-the-definite-integral) from 2D areas to 3D volumes — the same "slice and integrate" strategy, one dimension up. It builds directly toward [volumes of revolution](/courses/calculus/19-volumes-of-revolution), which focuses on the special (but extremely common) case where cross-sections are circles or rings produced by rotating a curve around an axis. The cross-sectional area function $A(x)$ is also the starting point for computing **moments of inertia** and **centers of mass** in physics — both of which integrate a density-weighted $A(x)$.
+
+Across disciplines, "volume = integral of cross-section" is universal: CT/MRI reconstruction in medicine, layer-based modeling in 3D printing, cut-and-fill estimation in civil engineering, and mass-properties computation in mechanical CAD. Wherever a 3D object is analyzed as a stack of 2D slices, this lesson's central formula is at work.
 
 ## Practice
 
 <ExerciseBlock number={1}
   prompt="Find the volume of the solid formed by rotating y = x² from x = 0 to x = 2 around the x-axis."
-  hint="Use the disk method: A(x) = π(x²)² = πx⁴."
-  answer="V = π∫₀² x⁴ dx = π[x⁵/5]₀² = π(32/5) = 32π/5."
+  hint="Use the disk method: A(x) = π(x²)² = πx⁴. Integrate from 0 to 2."
+  answer="V = π ∫₀² x⁴ dx = π [x⁵/5]₀² = π(32/5 − 0) = 32π/5. The radius of each disk is f(x) = x², so each disk's area is π(x²)² = πx⁴, and stacking these disks from 0 to 2 gives the volume. Verify the shape: at x = 0 the disk has radius 0 (a point), at x = 2 it has radius 4 — a flared trumpet bell."
 />
 
 <ExerciseBlock number={2}
-  prompt="Find the volume of a sphere of radius R using the disk method."
-  hint="The sphere is y = √(R²−x²) rotated around the x-axis, from x = −R to x = R."
-  answer="V = π∫_{−R}^R (R²−x²) dx = π[R²x − x³/3]_{−R}^R = π[(R³ − R³/3) − (−R³ + R³/3)] = π(4R³/3) = 4πR³/3."
+  prompt="Derive the formula V = (4/3)πR³ for a sphere of radius R using the disk method."
+  hint="The sphere is the surface y = √(R² − x²) rotated around the x-axis, from x = −R to x = R. Each disk has radius √(R² − x²)."
+  answer="Set up: V = π ∫_{−R}^R (√(R² − x²))² dx = π ∫_{−R}^R (R² − x²) dx. Compute: π [R²x − x³/3]_{−R}^R = π [(R³ − R³/3) − (−R³ + R³/3)] = π [(2R³/3) − (−2R³/3)] = π · 4R³/3 = 4πR³/3. The sphere's volume formula — known since Archimedes — emerges from one integral. Note the integrand R² − x² is even, so we could have used symmetry: 2π ∫₀^R (R² − x²) dx. This is the same calculation Archimedes did by exhaustion, now compressed into one line of calculus."
 />
 
 <ExerciseBlock number={3}
-  prompt="A solid has cross-sectional area A(x) = 3 + x at position x. Find its volume from x = 0 to x = 4."
-  hint="No rotation needed — just integrate A(x) directly."
-  answer="V = ∫₀⁴ (3 + x) dx = [3x + x²/2]₀⁴ = 12 + 8 = 20 cubic units."
+  prompt="A solid has cross-sectional area A(x) = 3 + x at position x. Find its volume from x = 0 to x = 4. Note there is no rotation — A(x) is given directly."
+  hint="No rotation needed — just integrate A(x) directly. V = ∫₀⁴ A(x) dx."
+  answer="V = ∫₀⁴ (3 + x) dx = [3x + x²/2]₀⁴ = (12 + 8) − 0 = 20 cubic units. This is the most general form of the slicing method: the cross-section can be any shape, and you need only know its area as a function of x. Cavalieri's principle guarantees that any other solid with the same A(x) = 3 + x — circles, squares, stars, anything — also has volume 20."
 />
 
-[Next Lesson →](/courses/calculus/19-volumes-of-revolution)
+<ExerciseBlock number={4}
+  prompt="The base of a solid is the region between y = x and y = x² in the xy-plane (on [0, 1]). Every cross-section perpendicular to the x-axis is a square with one side in the base. Find the volume."
+  hint="At position x, the side of the square has length (top − bottom) = x − x². So A(x) = (x − x²)²."
+  answer="At position x ∈ [0, 1], the base runs from y = x² (bottom) to y = x (top), giving a side length of s(x) = x − x². The cross-section is a square of area A(x) = s(x)² = (x − x²)² = x² − 2x³ + x⁴. Integrate: V = ∫₀¹ (x² − 2x³ + x⁴) dx = [x³/3 − x⁴/2 + x⁵/5]₀¹ = 1/3 − 1/2 + 1/5 = (10 − 15 + 6)/15 = 1/15. The volume is 1/15. If the cross-sections had been semicircles, the area would be (π/8)(x − x²)² instead — same side length, different shape."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Use Cavalieri's principle to argue that a right circular cylinder and an oblique (slanted) cylinder with the same base radius R and the same height h have the same volume. Then compute that volume."
+  hint="At every height above the base, what is the cross-sectional area of each cylinder?"
+  answer="Cavalieri's principle: at every height z above the base plane, both the right cylinder and the oblique cylinder have a circular cross-section of radius R. (For the right cylinder this is obvious; for the oblique cylinder, the slant shifts each cross-section sideways but does not change its size or shape — every slice is still a disk of radius R.) Since the cross-sectional areas match at every height, the volumes are equal: V = πR²h for both. This is why the volume of a cylinder depends only on base area and height, not on slant. The same principle explains why shearing a deck of cards doesn't change its volume — the cross-sections are preserved."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Find the volume of the solid whose base is the disk x² + y² ≤ 4, and whose cross-sections perpendicular to the x-axis are equilateral triangles with one side in the base."
+  hint="At position x, the base of the triangle runs from y = −√(4 − x²) to y = +√(4 − x²), so the side length is 2√(4 − x²). The area of an equilateral triangle with side s is (√3/4)s²."
+  answer="Side length at position x: s(x) = 2√(4 − x²). Area of equilateral triangle with side s: (√3/4)s². So A(x) = (√3/4)·(2√(4 − x²))² = (√3/4)·4(4 − x²) = √3·(4 − x²). Integrate from x = −2 to x = 2: V = ∫_{−2}^2 √3·(4 − x²) dx = √3·[4x − x³/3]_{−2}^2 = √3·[(8 − 8/3) − (−8 + 8/3)] = √3·[(16/3) − (−16/3)] = √3·(32/3) = 32√3/3. Compare to exercise 4's solid (square cross-sections over a disk of radius R): the square version gave 16R³/3, and here with R = 2 and triangular cross-sections we get 32√3/3. Different cross-section shapes give different volumes, even over the same base — only the cross-sectional area function matters."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Prove Cavalieri's principle: if two solids have the same cross-sectional area at every height (A₁(x) = A₂(x) for all x in [a, b]), then they have the same volume. Use the volume-by-slicing formula."
+  hint="Apply V = ∫ A(x) dx to each solid. If A₁(x) = A₂(x), what can you conclude about the two integrals?"
+  answer="Theorem (Cavalieri's principle): if two solids S₁ and S₂ occupy the same x-interval [a, b] and have equal cross-sectional areas at every x — A₁(x) = A₂(x) for all x ∈ [a, b] — then their volumes are equal. Proof: by the volume-by-slicing formula, V₁ = ∫_a^b A₁(x) dx and V₂ = ∫_a^b A₂(x) dx. Since A₁(x) = A₂(x) pointwise on [a, b], the integrands are identical functions. Identical integrands over the same interval give identical integrals: V₁ = V₂. (Strictly, we need A₁ and A₂ to be integrable, which is guaranteed if they are continuous — the standard hypothesis for volume computation.) This is the whole content of Cavalieri's principle: the integral 'sees' only the cross-sectional area function, so two solids with the same A(x) must have the same volume, however different their shapes appear. The principle was first stated by Bonaventura Cavalieri in 1635, before Newton and Leibniz formalized calculus — he anticipated the integral by reasoning about 'indivisibles.'"
+/>
+
+---
+
+**Up next:** [Volumes of Revolution](/courses/calculus/19-volumes-of-revolution)

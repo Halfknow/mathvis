@@ -18,26 +18,16 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { TaylorExplorer } from '../../../components/interactive/calculus/TaylorExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
+import { MathBlock, MathInline } from '../../../components/math/Math';
 
-Can you approximate any smooth function with a polynomial? Yes -- and the recipe is: match derivatives at a single point. Taylor's idea is to encode everything about a function at a single point into its derivatives. The first derivative gives the slope, the second gives the curvature, the third gives the rate of change of curvature, and so on. More derivatives means a better approximation -- each additional term captures a finer detail of how the function bends.
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
-## The Taylor polynomial
-
-The $n$-th degree Taylor polynomial of $f$ centered at $a$ is:
-
-<MathBlock expression={"T_n(x) = \\sum_{k=0}^{n} \\frac{f^{(k)}(a)}{k!} (x-a)^k"} />
-
-Each term matches an additional derivative at $x = a$:
-- $k = 0$: matches the **value** $f(a)$
-- $k = 1$: matches the **slope** $f'(a)$
-- $k = 2$: matches the **curvature** $f''(a)$
-- Higher $k$: match higher-order bending behavior
-
-## Watch the polynomial hug the function
+Can you approximate *any* smooth function with a polynomial? Yes — and the recipe is breathtakingly simple: **match derivatives at a single point.** The value, the slope, the curvature, the rate of change of curvature, and so on. Each derivative you match captures one more layer of how the function bends away from that point, so each additional term in the polynomial makes the approximation faithful over a wider interval. Brook Taylor's 1715 insight was that a function's local behavior — its derivatives at one point — completely determines a polynomial that mimics it nearby. The natural follow-up question — *how nearby, and how good is the approximation?* — is answered by Taylor's Remainder Theorem with the **Lagrange error bound**, the centerpiece of this lesson and the bridge from finite polynomial approximations to the infinite [Taylor series](/courses/calculus/26-taylor-series) of the next lesson.
 
 <InteractiveCanvas
   title="Taylor Polynomial Explorer"
@@ -47,54 +37,164 @@ Each term matches an additional derivative at $x = a$:
   <TaylorExplorer client:visible />
 </InteractiveCanvas>
 
-Start with $f(x) = \sin(x)$ at center $= 0$:
-- $n = 1$: a straight line through the origin — matches the slope.
-- $n = 3$: a cubic that hugs one full arch of sine.
+## The Taylor polynomial
+
+The **n-th degree Taylor polynomial** of $f$ centered at $a$ is:
+
+<MathBlock expression={"T_n(x) = \\sum_{k=0}^{n} \\frac{f^{(k)}(a)}{k!} (x - a)^k"} />
+
+Written out, it matches one derivative per term:
+
+- $k = 0$: the constant term $f(a)$ — matches the **value**.
+- $k = 1$: the linear term $f'(a)(x - a)$ — matches the **slope**. (This is just the tangent-line approximation.)
+- $k = 2$: the quadratic term <MathInline expression={"\\tfrac{1}{2}f''(a)(x - a)^2"} /> — matches the **curvature**.
+- Higher $k$: match higher-order bending behavior — jerk, snap, and beyond.
+
+**Why these coefficients?** If you demand a polynomial $p(x) = c_0 + c_1(x-a) + \cdots + c_n(x-a)^n$ with $p(a) = f(a)$, $p'(a) = f'(a)$, $\ldots$, <MathInline expression={"p^{(n)}(a) = f^{(n)}(a)"} />, then differentiating $p$ repeatedly and evaluating at $a$ forces <MathInline expression={"c_k = f^{(k)}(a) / k!"} />. The $k!$ appears because each derivative of $(x-a)^k$ brings down a falling factor: $k, k-1, \ldots, 1$, whose product is $k!$. The Taylor polynomial is the *unique* degree-$n$ polynomial matching those $n+1$ derivative values.
+
+**The linear case** ($n = 1$) is the tangent-line approximation you already know: $T_1(x) = f(a) + f'(a)(x-a)$. Taylor's idea generalizes the tangent line to a "tangent parabola" ($n = 2$), "tangent cubic" ($n = 3$), and so on — each one hugs the function more tightly.
+
+## Maclaurin polynomials (centered at $a = 0$)
+
+When the center is $a = 0$, the Taylor polynomial is called a **Maclaurin polynomial**. The most common ones are worth memorizing — they appear everywhere:
+
+| Function | Maclaurin polynomial $T_n$ (general pattern) |
+|----------|-----------------------------------------------|
+| $e^x$ | <MathInline expression={"1 + x + \\frac{x^2}{2!} + \\frac{x^3}{3!} + \\cdots + \\frac{x^n}{n!}"} /> |
+| $\sin x$ | <MathInline expression={"x - \\frac{x^3}{3!} + \\frac{x^5}{5!} - \\cdots"} /> (odd powers only) |
+| $\cos x$ | <MathInline expression={"1 - \\frac{x^2}{2!} + \\frac{x^4}{4!} - \\cdots"} /> (even powers only) |
+| $\ln(1+x)$ | <MathInline expression={"x - \\frac{x^2}{2} + \\frac{x^3}{3} - \\cdots"} /> |
+
+Note $\cos x$ contains only even powers because cosine is an *even* function ($\cos(-x) = \cos x$), so all its odd derivatives at $0$ vanish. Symmetry of the function imprints on the polynomial.
+
+## Why higher order means better approximation
+
+Watch the polynomial hug the function. Try $f(x) = \sin(x)$ at center $= 0$:
+
+- $n = 1$: $T_1(x) = x$, a straight line through the origin — matches the slope only.
+- $n = 3$: $T_3(x) = x - x^3/6$, a cubic that follows one full arch of sine accurately.
 - $n = 9$: the polynomial and sine are visually indistinguishable over $[-4, 4]$.
 
-Now try $f(x) = \ln(1+x)$. The red dashed lines mark the radius of convergence ($R = 1$). Beyond $x = 1$, no amount of Taylor terms will help — the series simply doesn't converge there.
+Each added term cancels more of the *gap* between $f$ and the previous polynomial. Near $a$, the gap is dominated by the lowest-order *unmatched* term, which is why adding one more derivative shrinks the error dramatically — the error scales like <MathInline expression={"(x-a)^{n+1}"} />, a high power that vanishes fast as $x \to a$.
 
-## The error: Taylor's Remainder Theorem
+Now try $f(x) = \ln(1+x)$. The red dashed lines mark the radius of convergence ($R = 1$, from [Lesson 24](/courses/calculus/24-power-series)). Beyond $x = 1$, no amount of Taylor terms will help — the approximation cannot reach outside the convergence disk. Higher degree buys you *accuracy*, not *reach*.
 
-How good is the approximation? The remainder term tells us:
+## Taylor's Theorem with the Lagrange Remainder (the key result)
 
-<MathBlock expression={"f(x) - T_n(x) = \\frac{f^{(n+1)}(c)}{(n+1)!}(x-a)^{n+1}"} />
+How good is the approximation? This is the question Taylor's theorem answers rigorously. The gap between $f$ and $T_n$ is called the **remainder** $R_n(x) = f(x) - T_n(x)$, and the **Lagrange form** pins it down.
 
-for some $c$ between $a$ and $x$. The error is bounded by the $(n+1)$-th derivative at an unknown point, divided by $(n+1)!$. Since factorials grow astronomically fast, the error usually shrinks quickly.
+## Theorem: Taylor's Theorem (Lagrange Remainder)
 
-## Maclaurin series (Taylor at $a = 0$)
+Let $f$ have $n+1$ continuous derivatives on an interval containing $a$ and $x$. Then for each $x$ there exists a point $c$ strictly between $a$ and $x$ such that:
 
-Most commonly, we center at $a = 0$:
+<MathBlock expression={"f(x) = T_n(x) + R_n(x), \\qquad R_n(x) = \\frac{f^{(n+1)}(c)}{(n+1)!} (x - a)^{n+1}"} />
 
-| Function | Maclaurin series |
-|----------|-----------------|
-| $e^x$ | $1 + x + x^2/2! + x^3/3! + \cdots$ |
-| $\sin x$ | $x - x^3/3! + x^5/5! - \cdots$ |
-| $\cos x$ | $1 - x^2/2! + x^4/4! - \cdots$ |
-| $\ln(1+x)$ | $x - x^2/2 + x^3/3 - \cdots$ |
+**Hypotheses:** <MathInline expression={"f^{(n+1)}"} /> exists and is continuous between $a$ and $x$. **Conclusion:** the error equals the $(n+1)$-th derivative at *some* unknown interior point $c$, times <MathInline expression={"(x-a)^{n+1}/(n+1)!"} />.
+
+## Theorem: The Lagrange Error Bound
+
+If <MathInline expression={"|f^{(n+1)}(t)| \\le M"} /> for all $t$ between $a$ and $x$, then:
+
+<MathBlock expression={"\\bigl| R_n(x) \\bigr| = \\bigl| f(x) - T_n(x) \\bigr| \\le \\frac{M}{(n+1)!} \\, |x - a|^{n+1}"} />
+
+**Why this is so useful:** you do not need to know the exact point $c$ (which depends on $x$ and is generally unknowable). You only need an upper bound $M$ on <MathInline expression={"|f^{(n+1)}|"} /> over the interval, and the formula gives a *guaranteed* worst-case error. The factorial $(n+1)!$ in the denominator grows astronomically fast, which is why Taylor approximations are usually excellent for small $|x - a|$ and modest $n$.
+
+## A fully worked example: approximating $e$ with a guaranteed error bound
+
+**Goal:** approximate $e = e^1$ using $T_n(1)$ for $f(x) = e^x$ centered at $a = 0$, and find the minimum $n$ that guarantees 3 decimal places of accuracy (error $< 0.0005$).
+
+**Step 1 — the polynomial.** Since every derivative of $e^x$ is $e^x$ and $e^0 = 1$, we have <MathInline expression={"f^{(k)}(0) = 1"} /> for all $k$, giving:
+
+<MathBlock expression={"T_n(1) = 1 + 1 + \\frac{1}{2!} + \\frac{1}{3!} + \\cdots + \\frac{1}{n!}"} />
+
+**Step 2 — bound the remainder.** Here <MathInline expression={"f^{(n+1)}(t) = e^t"} />. On $[0, 1]$, $e^t \le e^1 < 3$, so we may take $M = 3$. The Lagrange error bound gives:
+
+<MathBlock expression={"|e - T_n(1)| \\le \\frac{M}{(n+1)!} \\cdot |1 - 0|^{n+1} = \\frac{3}{(n+1)!}"} />
+
+**Step 3 — find the minimum $n$.** We need <MathInline expression={"\\frac{3}{(n+1)!} < 0.0005"} />, i.e. $(n+1)! > 6000$. Compute: $6! = 720$, $7! = 5040$, $8! = 40320$. So $(n+1)! > 6000$ first at $n+1 = 8$, i.e. $n = 7$.
+
+**Conclusion:** $T_7(1) = 1 + 1 + 1/2 + 1/6 + 1/24 + 1/120 + 1/720 + 1/5040 \approx 2.71825$, and the Lagrange bound guarantees the error is at most $3/8! = 3/40320 \approx 0.0000744 < 0.0005$. So $T_7(1)$ gives $e$ accurate to 3 decimal places (in fact much better), with a *rigorous* guarantee — we did not need to know the true value of $e$ to certify the accuracy.
+
+<FormulaReadout formulas={[
+  { label: "n 阶泰勒多项式", expression: "T_n(x) = \\sum_{k=0}^{n} \\frac{f^{(k)}(a)}{k!}(x-a)^k" },
+  { label: "拉格朗日余项", expression: "R_n(x) = \\frac{f^{(n+1)}(c)}{(n+1)!}(x-a)^{n+1}" },
+  { label: "拉格朗日误差界", expression: "|f(x) - T_n(x)| \\le \\frac{M}{(n+1)!}|x-a|^{n+1}" },
+  { label: "eˣ 的麦克劳林多项式", expression: "T_n(x) = 1 + x + \\frac{x^2}{2!} + \\cdots + \\frac{x^n}{n!}" },
+]} />
+
+## The many faces of Taylor polynomials
+
+- **Scientific computing:** every call to `sin`, `cos`, `exp` in a math library evaluates a Taylor polynomial (with clever argument reduction and Chebyshev tuning for speed). The Lagrange bound tells the library how many terms to keep.
+- **Physics:** the **small-angle approximation** $\sin\theta \approx \theta$ is just $T_1(\theta)$ for sine. The pendulum equation linearizes via this single step; higher-order Taylor terms give the nonlinear corrections that govern real pendulums.
+- **Engineering:** linearization of a nonlinear system around an operating point *is* taking $T_1$ — the Jacobian is the first-derivative term, the Hessian the second.
+- **Numerical methods:** finite-difference formulas for derivatives are derived by Taylor expansion and truncation; their error order (e.g. "second-order accurate") is read straight off the first omitted Taylor term.
+
+## Modern applications
+
+In **machine learning and optimization**, Taylor polynomials are the engine of second-order methods. **Newton's method** for minimizing a loss $L(w)$ builds $T_2$ around the current weights $w_k$ — a quadratic whose minimum is found in one step — and jumps to that minimum:
+
+<MathBlock expression={"w_{k+1} = w_k - H^{-1} \\nabla L(w_k)"} />
+
+The Hessian $H$ is the second-derivative term of the Taylor expansion; the gradient is the first. Newton converges quadratically (doubling correct digits each step) precisely because $T_2$ captures curvature, unlike gradient descent which sees only the slope. **Trust-region methods** explicitly track the radius in which $T_2$ is trustworthy — a direct analogue of the radius of convergence.
+
+In **deep learning**, ** Xavier/He weight initialization** is derived from a Taylor analysis of how signal variance propagates through layers — the first-order Taylor expansion of the activation function around zero determines the right initialization scale.
+
+In **control theory** and **robotics**, every nonlinear controller is designed by taking $T_1$ (feedback linearization) or $T_2$ (LQR around a trajectory) of the system dynamics; the remainder bound tells you how far the linear controller is valid before nonlinear effects reassert themselves.
 
 <KeyInsight>
-A Taylor polynomial matches a function's value, slope, curvature, and higher-order bends at a single point. As the degree increases, the polynomial hugs the function over a wider interval — but only within the radius of convergence.
+The n-th degree Taylor polynomial Tₙ(x) = ∑ f^(k)(a)/k! · (x−a)^k is the unique polynomial matching f's first n derivatives at a — generalizing the tangent line (n=1) to higher-order "tangent" curves. Each added term captures one more layer of how the function bends, so Tₙ hugs f over a wider interval as n grows. Taylor's Theorem with the Lagrange remainder gives a rigorous error bound: |f(x) − Tₙ(x)| ≤ M/(n+1)! · |x−a|^(n+1), where M bounds |f^(n+1)| on the interval. The factorial denominator grows so fast that the error usually shrinks quickly — which is why we could bound the error in approximating e by T₇(1) under 0.0005 with a guaranteed certificate, without knowing e in advance. The Lagrange bound is the foundation of rigorous numerical approximation.
 </KeyInsight>
+
+## Connections
+
+This lesson takes the [power series](/courses/calculus/24-power-series) of the previous lesson and answers the inverse question: *given a function, what power series represents it?* The Taylor polynomial is the finite truncation of that series, and the Lagrange remainder is what measures the gap. The next lesson, [Taylor series](/courses/calculus/26-taylor-series), lets $n \to \infty$ — when the Lagrange remainder $R_n(x) \to 0$, the Taylor series converges to $f(x)$ exactly. The Lagrange error bound is the discrete cousin of the [Leibniz bound](/courses/calculus/23-convergence-tests) for alternating series — both give rigorous, easy-to-compute accuracy guarantees from a single quantity (the next derivative, or the next term).
+
+Across disciplines, "linearize, then analyze" is the universal strategy whenever a system is too complex to handle directly: Newton's method in optimization, small-angle approximations in physics, feedback linearization in control, finite-difference schemes in numerical analysis. Each is a Taylor polynomial — usually $T_1$ or $T_2$ — and the remainder bound tells you when the approximation is safe to trust. Master Taylor polynomials and you have mastered the most widely used approximation tool in science and engineering.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Find the 3rd degree Taylor polynomial of f(x) = eˣ centered at a = 0."
+  prompt="Find the 3rd degree Taylor polynomial of f(x) = eˣ centered at a = 0. Then evaluate T₃(1) and compare to e ≈ 2.71828."
   hint="All derivatives of eˣ equal eˣ. At a = 0, they all equal 1."
-  answer="T₃(x) = f(0) + f′(0)x + f″(0)x²/2! + f‴(0)x³/3! = 1 + x + x²/2 + x³/6."
+  answer="Since every derivative of eˣ is eˣ and e⁰ = 1, we have f^(k)(0) = 1 for all k. So T₃(x) = 1 + x + x²/2! + x³/3! = 1 + x + x²/2 + x³/6. Evaluating at x = 1: T₃(1) = 1 + 1 + 0.5 + 0.1667 = 2.6667. The true value e ≈ 2.71828, so the error is about 0.0516 — T₃ captures e to within ~2%. Adding the x⁴/24 term gives T₄(1) = 2.7083, error ~0.01. Each term roughly halves-to-thirds the error here, courtesy of the factorial denominator."
 />
 
 <ExerciseBlock number={2}
-  prompt="In the interactive, set f(x) = sin(x) and center = 0. How does T₁(x) compare to T₃(x) visually?"
-  hint="T₁ is a line. T₃ is a cubic. Which one curves to follow sin(x)?"
-  answer="T₁(x) = x is a straight line through the origin. T₃(x) = x − x³/6 adds the first correction term, curving downward to follow sin(x) for a wider range. T₃ is noticeably better than T₁ for |x| > 1."
+  prompt="In the interactive, set f(x) = sin(x) and center = 0. How does T₁(x) compare to T₃(x) visually? Why is T₃ a better approximation for sin(x) than for, say, eˣ?"
+  hint="T₁ is a line. T₃ is a cubic. Which one curves to follow sin(x)? Think about what sin's higher derivatives do."
+  answer="T₁(x) = x is a straight line through the origin — it matches only the slope of sin at 0. T₃(x) = x − x³/6 adds the first correction term, curving downward to follow sin(x) for a much wider range. T₃ is visibly better than T₁ for |x| > 1. It is especially good for sin(x) because sin's next nonzero Taylor term is x⁵/120 — very small for moderate x. (eˣ, by contrast, has all-positive terms xⁿ/n!, so its Taylor error is dominated by the very next term with no cancellation.) The alternating signs in sin's Taylor series make consecutive errors partially cancel, mirroring the [alternating series behavior](/courses/calculus/23-convergence-tests) — and indeed the Lagrange bound is conservative here, the true error is often much smaller."
 />
 
 <ExerciseBlock number={3}
   prompt="The Maclaurin series for cos(x) contains only even powers. Why?"
   hint="cos(x) is an even function: cos(−x) = cos(x). What does symmetry imply for the Taylor series?"
-  answer="cos(x) is an even function (symmetric about x = 0). Its odd derivatives at 0 are all zero: cos′(0) = −sin(0) = 0, cos‴(0) = sin(0) = 0, etc. Only even-order terms survive, giving the series 1 − x²/2! + x⁴/4! − ···."
+  answer="cos(x) is an even function (symmetric about x = 0: cos(−x) = cos(x)). Its odd derivatives at 0 are all zero: cos′(x) = −sin(x), so cos′(0) = 0; cos‴(0) = sin(0) = 0; and so on — every odd-order derivative vanishes at 0 because it equals ±sin(0) = 0. Only even-order terms survive, giving the series 1 − x²/2! + x⁴/4! − x⁶/6! + ···. This is a general principle: the Taylor series of an even function contains only even powers, and that of an odd function (like sin) contains only odd powers. Symmetry of the function imprints directly on the polynomial."
 />
 
-[Next Lesson →](/courses/calculus/26-taylor-series)
+<ExerciseBlock number={4}
+  prompt="Use the Lagrange error bound to determine the minimum n such that the Maclaurin polynomial Tₙ(0.5) approximates e^{0.5} with error less than 0.0001."
+  hint="All derivatives of eˣ are eˣ, bounded on [0, 0.5] by e^{0.5} < 2. So take M = 2. Bound: 2/(n+1)! · (0.5)^{n+1} < 0.0001. Find the smallest n."
+  answer="For f(x) = eˣ, f^{(n+1)}(t) = e^t, and on [0, 0.5] we have e^t ≤ e^{0.5} < 2, so take M = 2. The Lagrange bound: |e^{0.5} − Tₙ(0.5)| ≤ M/(n+1)! · |0.5|^{n+1} = 2 · (0.5)^{n+1}/(n+1)! = 1/(2^n (n+1)!). Set this < 0.0001 = 1/10000, i.e. 2^n (n+1)! > 10000. Check: n = 2: 4 · 6 = 24, no. n = 3: 8 · 24 = 192, no. n = 4: 16 · 120 = 1920, no. n = 5: 32 · 720 = 23040 > 10000, yes. So n = 5 suffices. T₅(0.5) = 1 + 0.5 + 0.125 + 0.0208 + 0.0026 + 0.00026 ≈ 1.6487, and the true e^{0.5} ≈ 1.6487 — the bound was conservative (the actual error is far below 0.0001). The factorial + the shrinking (0.5)^{n+1} make convergence very fast for small x."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Approximate sin(0.1) using T₃(0.1) and bound the error using the Lagrange remainder. (Reminder: the derivatives of sin cycle through sin, cos, −sin, −cos.)"
+  hint="T₃(x) = x − x³/6 for sin. The 4th derivative of sin is sin itself, bounded by 1 everywhere. So M = 1 and the bound is 1/4! · |0.1|^4."
+  answer="T₃(x) = x − x³/6 for sin centered at 0. So T₃(0.1) = 0.1 − (0.1)³/6 = 0.1 − 0.000167 = 0.099833. The 4th derivative of sin is sin itself, so |f^(4)(t)| = |sin t| ≤ 1 on any interval; take M = 1. Lagrange bound: |sin(0.1) − T₃(0.1)| ≤ 1/4! · (0.1)^4 = (1/24)(0.0001) ≈ 0.0000042. So T₃(0.1) ≈ 0.099833 is guaranteed accurate to within 4.2 × 10⁻⁶. The true sin(0.1) ≈ 0.0998334 — well within the bound. This is why T₃ is the standard 'small angle' approximation in physics: for θ up to about 0.3, T₃(θ) = θ − θ³/6 gives 5+ decimal places."
+/>
+
+<ExerciseBlock number={6}
+  prompt="A physicist approximates sin(θ) ≈ θ (the small-angle approximation) for a pendulum. Using the Lagrange error bound, find the largest |θ| for which the error is guaranteed below 0.01. Why does this matter for the simple-pendulum period formula?"
+  hint="T₁(θ) = θ. The 2nd derivative of sin is −sin, bounded by 1. So M = 1, and the bound is 1/2! · |θ|². Solve < 0.01."
+  answer="T₁(θ) = θ for sin centered at 0. The 2nd derivative of sin is −sin, with |−sin t| ≤ 1 everywhere, so take M = 1. Lagrange bound: |sin θ − θ| ≤ M/2! · |θ|² = |θ|²/2. We need |θ|²/2 < 0.01, i.e. |θ|² < 0.02, i.e. |θ| < √0.02 ≈ 0.141 radians ≈ 8.1°. So the small-angle approximation sin θ ≈ θ is guaranteed accurate to within 0.01 only for angles below about 8°. This matters because the simple-pendulum period formula T = 2π√(L/g) is derived by replacing sin θ with θ in the equation of motion — valid only for small angles. Beyond ~10°, the true period grows (the pendulum is *slower* than the linear prediction), and engineers must use the full nonlinear equation or elliptic-function corrections. The Lagrange bound quantifies exactly when the textbook formula breaks down."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Prove that the Lagrange remainder for $f(x) = e^x$ centered at any $a$ tends to 0 as $n \to \infty$ for every fixed $x$. Conclude that the Taylor series of $e^x$ converges to $e^x$ for all $x$."
+  hint="Bound |f^{(n+1)}(c)| on the interval between a and x (it is e^c, bounded by a constant depending on a and x but not on n). Then show M · |x−a|^{n+1}/(n+1)! → 0 because factorials dominate exponentials."
+  answer="For f(x) = e^x, every derivative is e^x, so f^{(n+1)}(c) = e^c for the unknown c between a and x. Since c lies between a and x, e^c ≤ max(e^a, e^x) — call this M (a constant depending on a and x but NOT on n). The Lagrange remainder satisfies |R_n(x)| ≤ M · |x − a|^{n+1} / (n+1)!. Now use the fact that for any fixed number r, r^{n+1}/(n+1)! → 0 as n → ∞ (factorials grow faster than exponentials — verifiable by the ratio test: the ratio of consecutive terms is r/(n+2) → 0). Taking r = |x − a|, we get |R_n(x)| ≤ M · |x−a|^{n+1}/(n+1)! → 0. Since the remainder vanishes, Tₙ(x) → e^x for every x — the Taylor series of e^x converges to e^x for all real x. (The same argument, with M depending on the function, works for sin and cos — their Taylor series converge everywhere too. This is the gateway to the next lesson.)"
+/>
+
+---
+
+**Up next:** [Taylor Series](/courses/calculus/26-taylor-series)

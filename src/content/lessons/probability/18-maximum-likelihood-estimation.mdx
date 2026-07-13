@@ -12,94 +12,230 @@ duration: 20
 difficulty: "Intermediate"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 import { MLEVis } from '../../../components/interactive/probability/MLEVis';
 
 You have collected data. You have chosen a family of distributions — say, a normal, or an exponential, or a Bernoulli. The family has one or more unknown parameters. Which member of the family produced your data?
 
 **Maximum likelihood estimation** answers this question with a simple principle: pick the parameter that makes the data you actually observed the most probable. Think of the parameter space as a landscape. Each point on the landscape is a possible value of the parameter. The height at that point is the probability of your data given that parameter value. You climb to the highest peak. That peak is your estimate.
 
+The MLE is the workhorse of modern statistics and machine learning. It is *consistent* (converges to the truth), *asymptotically normal* (its sampling distribution becomes a bell curve), and — remarkably — *efficient*: it achieves the lowest possible variance of any unbiased estimator, a bound made precise by the **Fisher information** and the **Cramér-Rao lower bound**. And in a beautiful unification, training a logistic regression classifier by minimizing **cross-entropy loss** is exactly maximum likelihood estimation in disguise.
+
 ## The likelihood function
 
 For independent observations $x_1, x_2, \ldots, x_n$ drawn from a distribution with density $f(x \mid \theta)$, the **likelihood function** is:
 
-$$L(\theta) = \prod_{i=1}^{n} f(x_i \mid \theta)$$
+$<MathInline expression={"L(\\theta) = \\prod_{i=1}^{n} f(x_i \\mid \\theta)"} />$
 
-This looks like a probability, but notice the shift in perspective. In probability, $\theta$ is fixed and you vary $x$ — "given this parameter, how likely is each outcome?" In likelihood, $x$ is fixed (you already observed the data) and you vary $\theta$ — "given this data, how well does each parameter value explain it?"
+This looks like a probability, but notice the shift in perspective. In probability, $\theta$ is fixed and you vary $x$ — "given this parameter, how likely is each outcome?" In likelihood, $x$ is fixed (you already observed the data) and you vary $\theta$ — "given this data, how well does each parameter value explain it?" The likelihood is not a probability distribution over $\theta$; it does not integrate to 1 over $\theta$. It is a *score* for each candidate parameter.
 
 The **maximum likelihood estimator** (MLE) is the value of $\theta$ that maximizes $L(\theta)$:
 
-$$\hat{\theta}_{\text{MLE}} = \arg\max_{\theta} L(\theta)$$
+$<MathInline expression={"\\hat{\\theta}_{\\text{MLE}} = \\arg\\max_{\\theta} L(\\theta)"} />$
 
 ## The log-likelihood
 
 Products are awkward to differentiate and prone to numerical underflow (multiplying many small probabilities produces an extremely small number). The fix: take the logarithm.
 
-$$\ell(\theta) = \log L(\theta) = \sum_{i=1}^{n} \log f(x_i \mid \theta)$$
+$<MathInline expression={"\\ell(\\theta) = \\log L(\\theta) = \\sum_{i=1}^{n} \\log f(x_i \\mid \\theta)"} />$
 
 The logarithm is a strictly increasing function, so it preserves the order. The peak of $L(\theta)$ and the peak of $\ell(\theta)$ occur at exactly the same $\theta$. But $\ell(\theta)$ is a sum, not a product — far easier to work with. To find the MLE, differentiate $\ell(\theta)$ with respect to $\theta$, set the derivative to zero, and solve.
 
-Try it below. Click "Flip coin" to add data and watch the log-likelihood curve reshape. The diamond marks the MLE — the peak of the curve. Notice how the peak migrates toward the true proportion as data accumulates.
+The derivative of the log-likelihood is so important it has a name: the **score function** <MathInline expression={"S(\\theta) = \\frac{\\partial}{\\partial\\theta}\\ell(\\theta)"} />. Setting $S(\theta) = 0$ and solving gives the MLE.
+
+Try it below. Click "Flip coin" to add data and watch the log-likelihood curve reshape. The diamond marks the MLE — the peak of the curve. Notice how the peak migrates toward the true proportion as data accumulates, and how the curve sharpens (the Fisher information grows) with more data.
 
 <MLEVis client:visible />
 
-## Example: coin flips
+## Example: coin flips (Bernoulli MLE)
 
-You flip a coin $n$ times and observe $k$ heads. The coin has an unknown probability $p$ of landing heads. Each flip is a Bernoulli trial: $f(x_i \mid p) = p^{x_i}(1-p)^{1-x_i}$, where $x_i$ is 1 for heads and 0 for tails.
+You flip a coin $n$ times and observe $k$ heads. The coin has an unknown probability $p$ of landing heads. Each flip is a Bernoulli trial: <MathInline expression={"f(x_i \\mid p) = p^{x_i}(1-p)^{1-x_i}"} />, where $x_i$ is 1 for heads and 0 for tails.
 
 The likelihood:
 
-$$L(p) = \prod_{i=1}^{n} p^{x_i}(1-p)^{1-x_i} = p^k (1-p)^{n-k}$$
+$<MathInline expression={"L(p) = \\prod_{i=1}^{n} p^{x_i}(1-p)^{1-x_i} = p^k (1-p)^{n-k}"} />$
 
 The log-likelihood:
 
 $$\ell(p) = k \log p + (n - k)\log(1-p)$$
 
-Differentiate and set to zero:
+Differentiate (the score function):
 
-$$\frac{d\ell}{dp} = \frac{k}{p} - \frac{n-k}{1-p} = 0$$
+$<MathInline expression={"S(p) = \\frac{\\partial\\ell}{\\partial p} = \\frac{k}{p} - \\frac{n-k}{1-p}"} />$
 
-Solving: $\hat{p}_{\text{MLE}} = k/n$. The MLE is the proportion of heads. The most likely coin, given your data, is the one whose heads probability equals the observed fraction of heads. Intuitive and clean.
+Set $S(p) = 0$ and solve: <MathInline expression={"\\hat{p}_{\\text{MLE}} = k/n"} />. The MLE is the proportion of heads. The most likely coin, given your data, is the one whose heads probability equals the observed fraction of heads. Intuitive and clean.
 
-## Example: exponential distribution
+## Example: exponential MLE
 
-You observe waiting times $x_1, \ldots, x_n$ from an exponential distribution with rate $\lambda$. The density is $f(x \mid \lambda) = \lambda e^{-\lambda x}$ for $x > 0$.
+You observe waiting times $x_1, \ldots, x_n$ from an exponential distribution with rate $\lambda$. The density is <MathInline expression={"f(x \\mid \\lambda) = \\lambda e^{-\\lambda x}"} /> for $x > 0$.
 
 The log-likelihood:
 
-$$\ell(\lambda) = n\log\lambda - \lambda\sum_{i=1}^{n} x_i$$
+$<MathInline expression={"\\ell(\\lambda) = n\\log\\lambda - \\lambda\\sum_{i=1}^{n} x_i"} />$
 
 Differentiate and set to zero:
 
-$$\frac{d\ell}{d\lambda} = \frac{n}{\lambda} - \sum_{i=1}^{n} x_i = 0$$
+$<MathInline expression={"\\frac{\\partial\\ell}{\\partial\\lambda} = \\frac{n}{\\lambda} - \\sum_{i=1}^{n} x_i = 0"} />$
 
-Solving: $\hat{\lambda}_{\text{MLE}} = n / \sum x_i = 1/\bar{x}$. The MLE of the rate is the reciprocal of the sample mean. If the average wait is 5 minutes, the estimated rate is 0.2 per minute.
+Solving: <MathInline expression={"\\hat{\\lambda}_{\\text{MLE}} = n / \\sum x_i = 1/\\bar{x}"} />. The MLE of the rate is the reciprocal of the sample mean. If the average wait is 5 minutes, the estimated rate is 0.2 per minute.
 
-## Example: normal distribution
+## Example: normal MLE
 
 For data from $N(\mu, \sigma^2)$ with both parameters unknown, the likelihood is a surface over a two-dimensional landscape — one axis for $\mu$, one for $\sigma^2$. The MLE is:
 
-$$\hat{\mu}_{\text{MLE}} = \bar{x}, \quad \hat{\sigma}^2_{\text{MLE}} = \frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})^2$$
+$<MathInline expression={"\\hat{\\mu}_{\\text{MLE}} = \\bar{x}, \\quad \\hat{\\sigma}^2_{\\text{MLE}} = \\frac{1}{n}\\sum_{i=1}^{n}(x_i - \\bar{x})^2"} />$
 
-The MLE of the mean is the sample mean. The MLE of the variance uses $n$ in the denominator — this makes it **biased** (recall the previous lesson). The unbiased estimator uses $n - 1$. The MLE trades a small bias for slightly lower variance. In practice, the difference is negligible for large $n$.
+The MLE of the mean is the sample mean. The MLE of the variance uses $n$ in the denominator — this makes it **biased** (recall [lesson 17](/courses/probability/17-sampling-and-point-estimation)). The unbiased estimator uses $n - 1$. The MLE trades a small bias for slightly lower variance. In practice, the difference is negligible for large $n$.
+
+## Fisher information and the Cramér-Rao lower bound
+
+Here is the deep result that explains why the MLE is the estimator of choice. The **Fisher information** $I(\theta)$ measures how much information a single observation carries about the parameter $\theta$:
+
+$<MathInline expression={"I(\\theta) = E\\!\\left[\\left(\\frac{\\partial}{\\partial\\theta}\\log f(X \\mid \\theta)\\right)^2\\right] = -E\\!\\left[\\frac{\\partial^2}{\\partial\\theta^2}\\log f(X \\mid \\theta)\\right]"} />$
+
+It is the expected squared score (or equivalently, the negative expected curvature of the log-likelihood). A sharp log-likelihood peak (high curvature) means the data pins down $\theta$ tightly — high information. A flat log-likelihood means the data is compatible with many $\theta$ values — low information.
+
+### Theorem: The Cramér-Rao lower bound
+
+Under regularity conditions, any unbiased estimator <MathInline expression={"\\hat{\\theta}"} /> of $\theta$ satisfies:
+
+$$\text{Var}(\hat{\theta}) \geq \frac{1}{n \cdot I(\theta)}$$
+
+where $n$ is the sample size and $I(\theta)$ is the Fisher information per observation.
+
+*Intuition.* The Fisher information $n \cdot I(\theta)$ is the total information in $n$ observations. The Cramér-Rao bound says: you cannot extract more precision than the information allows. The variance of any unbiased estimator is bounded below by the reciprocal of the total information. It is the Heisenberg uncertainty principle of statistics — there is a fundamental limit on how precisely you can estimate $\theta$ from $n$ samples.
+
+An estimator that achieves this bound (variance exactly $1/(nI(\theta))$) is called **efficient**. The MLE achieves it *asymptotically* — for large $n$, the MLE is unbiased and its variance equals the Cramér-Rao bound. No estimator can do better in the limit. This is why the MLE is called *asymptotically efficient*.
+
+### Example: Fisher information for the Bernoulli
+
+For the Bernoulli($p$), $\log f(x|p) = x\log p + (1-x)\log(1-p)$. The score is $x/p - (1-x)/(1-p)$. The second derivative is $-x/p^2 - (1-x)/(1-p)^2$. Taking the expectation: $I(p) = -E[\text{second derivative}] = E[X]/p^2 + (1-E[X])/(1-p)^2 = p/p^2 + (1-p)/(1-p)^2 = 1/p + 1/(1-p) = 1/(p(1-p))$.
+
+So the Cramér-Rao bound for estimating $p$ from $n$ Bernoulli observations is $p(1-p)/n$. And indeed, the sample proportion $\hat{p} = k/n$ has variance exactly $p(1-p)/n$ — it achieves the bound! The MLE for the Bernoulli is *exactly* efficient, not just asymptotically. This is a special case; most MLEs achieve the bound only as $n \to \infty$.
 
 ## Properties of the MLE
 
-The MLE has three properties that make it the default choice in practice:
+The MLE has three asymptotic properties that make it the default choice in practice:
 
 - **Consistency**: as $n \to \infty$, the MLE converges to the true parameter. The peak of the likelihood landscape sharpens and narrows until it collapses onto the correct value.
-- **Asymptotic normality**: for large $n$, the sampling distribution of the MLE is approximately normal, centered at the true parameter. This makes it easy to construct confidence intervals.
-- **Efficiency**: among all consistent estimators, the MLE achieves the smallest possible asymptotic variance. No other estimator can use the data more efficiently — the MLE extracts the most information per observation.
+- **Asymptotic normality**: for large $n$, the sampling distribution of the MLE is approximately <MathInline expression={"N\\!\\left(\\theta,\\; \\frac{1}{n\\,I(\\theta)}\\right)"} /> — normal, centered at the true parameter, with variance equal to the Cramér-Rao bound.
+- **Efficiency**: among all consistent estimators, the MLE achieves the smallest possible asymptotic variance (the Cramér-Rao bound). No other estimator can use the data more efficiently — the MLE extracts the most information per observation.
 
-These properties hold under regularity conditions (the likelihood must be smooth, the parameter must be identifiable, etc.). For most standard models, they apply.
+These properties hold under regularity conditions (the likelihood must be smooth, the parameter must be identifiable, the support of the distribution must not depend on $\theta$). For most standard models, they apply.
 
-## Key insight
+## Logistic regression is MLE: the cross-entropy connection
 
-> Maximum likelihood estimation turns the inference problem into an optimization problem. Instead of asking "what parameter is most reasonable?", it asks "what parameter makes the data most probable?" The answer is the peak of the likelihood landscape. As you collect more data, that peak sharpens — the landscape develops a single, narrow spike pointing at the true value.
+Here is one of the most important unifications in machine learning. When you train a **logistic regression** classifier by minimizing **cross-entropy loss**, you are doing maximum likelihood estimation — you just might not realize it.
+
+A logistic regression model outputs a probability $p_\theta(x) = \sigma(\theta^\top x) = 1/(1 + e^{-\theta^\top x})$ for each input $x$, where $\sigma$ is the sigmoid function. For a binary label $y_i \in \{0, 1\}$, the model says $y_i$ was drawn from a Bernoulli with parameter $p_\theta(x_i)$. The likelihood of the observed labels is:
+
+$<MathInline expression={"L(\\theta) = \\prod_{i=1}^{n} p_\\theta(x_i)^{y_i}\\,(1 - p_\\theta(x_i))^{1-y_i}"} />$
+
+This is exactly the Bernoulli likelihood, with $p$ depending on $x_i$ through the sigmoid. The log-likelihood is:
+
+$<MathInline expression={"\\ell(\\theta) = \\sum_{i=1}^{n} \\left[ y_i \\log p_\\theta(x_i) + (1-y_i)\\log(1 - p_\\theta(x_i))\\right]} />$
+
+The **cross-entropy loss** is defined as the *negative* of this (averaged over the data):
+
+$<MathInline expression={"\\text{CE}(\\theta) = -\\frac{1}{n}\\sum_{i=1}^{n} \\left[ y_i \\log p_\\theta(x_i) + (1-y_i)\\log(1 - p_\\theta(x_i))\\right] = -\\frac{1}{n}\\ell(\\theta)"} />$
+
+**Minimizing cross-entropy loss is exactly maximizing the log-likelihood.** The two are the same optimization problem, with opposite signs. Every time you train a logistic regression, a neural network classifier with softmax output, or any model trained with cross-entropy, you are doing maximum likelihood estimation.
+
+This is not a coincidence — it is the reason cross-entropy is the "right" loss for classification. It is the loss you get when you assume the labels are Bernoulli (or categorical, for multi-class) and you ask for the maximum likelihood estimate of the model parameters. The MLE framework provides the principled justification for the loss function.
+
+<FormulaReadout formulas={[
+  { label: "似然函数与对数似然", expression: "L(\\theta) = \\prod_{i=1}^n f(x_i|\\theta), \\quad \\ell(\\theta) = \\sum_{i=1}^n \\log f(x_i|\\theta)" },
+  { label: "伯努利/指数/正态 MLE", expression: "\\hat{p}=\\tfrac{k}{n}, \\quad \\hat{\\lambda}=\\tfrac{1}{\\bar{x}}, \\quad \\hat{\\mu}=\\bar{x},\\;\\hat{\\sigma}^2=\\tfrac{1}{n}\\sum(x_i-\\bar{x})^2" },
+  { label: "Fisher 信息量与 Cramér-Rao 下界", expression: "I(\\theta) = -E\\!\\left[\\tfrac{\\partial^2}{\\partial\\theta^2}\\log f\\right], \\quad \\text{Var}(\\hat{\\theta}) \\geq \\frac{1}{n\\,I(\\theta)}" },
+  { label: "交叉熵 = 负对数似然", expression: "\\text{CE}(\\theta) = -\\tfrac{1}{n}\\ell(\\theta)" },
+]} />
+
+## Three perspectives on maximum likelihood
+
+1. **As an optimization problem:** the MLE turns inference into maximization. "What parameter is most plausible?" becomes "what parameter maximizes the likelihood?" This is computationally attractive — you can use gradient ascent, Newton's method, or any optimization algorithm to find the peak. It is also why MLE is the default in the era of large-scale optimization (deep learning).
+2. **As information-efficient estimation:** the Fisher information measures how much each observation tells you about $\theta$. The Cramér-Rao bound says no unbiased estimator can beat $1/(nI)$. The MLE achieves this bound asymptotically — it is the most efficient estimator, squeezing every bit of information from the data. This is the information-theoretic justification for the MLE.
+3. **As the source of standard loss functions:** minimizing cross-entropy (classification), squared error (regression with Gaussian noise), and many other standard losses are all MLE problems in disguise. The likelihood principle provides a unified derivation of the loss functions that power modern machine learning.
+
+## Modern applications
+
+**Deep learning and cross-entropy.** Every image classifier (ResNet, ViT), language model (GPT, BERT), and speech recognition system is trained by minimizing cross-entropy loss — which, as shown above, is maximum likelihood estimation. The "training" of a neural network is, mathematically, the search for the MLE of the model parameters. The success of deep learning is, in part, the success of maximum likelihood: it provides a principled, well-understood objective that scales to models with billions of parameters.
+
+**Survival analysis and reliability.** In medical statistics and engineering reliability, the exponential, Weibull, and Cox proportional hazards models are fit by maximum likelihood. The likelihood handles censored data (patients who drop out of a study, components that have not yet failed) naturally — you just modify the likelihood to account for the censoring mechanism. This flexibility is a major advantage of the likelihood framework over ad hoc methods.
+
+**Generalized linear models.** Logistic regression (Bernoulli), Poisson regression (count data), and probit regression are all maximum likelihood estimators for different choices of the response distribution. The unified framework of GLMs — link function + exponential family + MLE — covers a huge range of practical regression problems. The `glm()` function in R is literally a maximum likelihood fitter.
+
+**Phylogenetics and computational biology.** Reconstructing evolutionary trees from DNA sequences is a maximum likelihood problem: given the observed sequences and a model of mutation, find the tree (topology + branch lengths) that maximizes the probability of the data. Modern phylogenetics is built entirely on MLE (and its Bayesian cousin). The same framework models protein folding, gene expression, and population genetics.
+
+<KeyInsight>
+Maximum likelihood estimation turns inference into optimization: pick the parameter that makes the data most probable. The MLE is consistent, asymptotically normal, and efficient — it achieves the Cramér-Rao lower bound (Var >= 1/(n*I)), where the Fisher information I measures how much each observation reveals about the parameter. In modern machine learning, training a logistic regression or neural network classifier by minimizing cross-entropy loss is exactly maximum likelihood estimation — cross-entropy is just the negative log-likelihood in disguise.
+</KeyInsight>
+
+## Connections
+
+This lesson builds directly on [lesson 17](/courses/probability/17-sampling-and-point-estimation): both are methods for constructing point estimators. The method of moments matches moments; the MLE matches the full likelihood. The MLE is generally more efficient (lower variance) because it uses the entire distributional shape, not just the first few moments — but it requires specifying the distribution family correctly. The bias-variance tradeoff from lesson 17 appears here in the MLE's asymptotic variance $1/(nI(\theta))$: more information means lower variance, just as more data does.
+
+The forward link is to **confidence intervals** ([lesson 19](/courses/probability/19-confidence-intervals)): the MLE's asymptotic normality — <MathInline expression={"\\hat{\\theta}_{\\text{MLE}} \\approx N(\\theta,\\, 1/(nI(\\theta)))"} /> — is exactly what you need to build a confidence interval: <MathInline expression={"\\hat{\\theta}_{\\text{MLE}} \\pm 1.96/\\sqrt{nI(\\theta)}"} />. The Fisher information determines the width. The MLE then feeds into **hypothesis testing** ([lesson 20](/courses/probability/20-hypothesis-testing)) via the **likelihood ratio test**, which compares the likelihood under the null and alternative hypotheses and is the most powerful test for nested hypotheses (by the Neyman-Pearson lemma).
+
+Cross-disciplinarily, the likelihood principle is the foundation of both frequentist statistics (MLE, likelihood ratio tests) and Bayesian inference (where the posterior is proportional to likelihood times prior). The **information geometry** of the Fisher information matrix — treating the parameter space as a Riemannian manifold with metric $I(\theta)$ — connects statistics to differential geometry. And the cross-entropy / MLE equivalence is the bridge between statistics and modern deep learning: every neural network trained with cross-entropy is an MLE estimator, and the theoretical guarantees of MLE (consistency, efficiency) are the foundation on which the statistical understanding of deep learning is being built.
 
 ## Practice
 
-1. You observe 3 calls arriving at a switchboard at times (measured in minutes from some reference): 2.1, 3.4, 7.8. Assume the inter-arrival times follow an exponential distribution with rate $\lambda$. Compute the MLE of $\lambda$. What is the estimated average time between calls?
+<ExerciseBlock
+  number={1}
+  prompt="You observe 3 inter-arrival times at a switchboard (in minutes): 2.1, 3.4, 7.8. Assume these are i.i.d. exponential with rate lambda. Compute the MLE of lambda. What is the estimated average time between calls? Then compute the Fisher information for a single exponential observation and the Cramér-Rao bound on the variance of any unbiased estimator of lambda from n observations."
+  hint="For exponential, lambda-hat_MLE = 1/x_bar. x_bar = (2.1 + 3.4 + 7.8)/3 = 13.3/3. For Fisher information: log f = log(lambda) - lambda*x, second derivative wrt lambda is -1/lambda^2, so I(lambda) = 1/lambda^2."
+  answer="x_bar = (2.1 + 3.4 + 7.8)/3 = 13.3/3 approximately 4.433 minutes. The MLE of the rate is lambda-hat = 1/x_bar = 3/13.3 approximately 0.2256 per minute. The estimated average time between calls is 1/lambda-hat = x_bar approximately 4.43 minutes. Fisher information: log f(x|lambda) = log(lambda) - lambda*x. First derivative (score): d/dlambda = 1/lambda - x. Second derivative: d^2/dlambda^2 = -1/lambda^2. So I(lambda) = -E[second derivative] = 1/lambda^2. For n observations, the Cramér-Rao bound is Var(lambda-hat) >= 1/(n*I(lambda)) = lambda^2/n. With n = 3 and lambda-hat = 0.2256: the bound is 0.2256^2/3 approximately 0.017. So no unbiased estimator of lambda from 3 observations can have variance below about 0.017. Note: the MLE 1/x_bar is actually biased (by Jensen's inequality, E[1/x_bar] > 1/E[x_bar] = lambda), so the Cramér-Rao bound does not directly apply to it — but for large n, the bias vanishes and the MLE's variance approaches the bound."
+/>
 
-2. You flip a coin 20 times and get 8 heads. Write down the log-likelihood $\ell(p)$ and verify that the maximum occurs at $p = 0.4$. Now sketch $\ell(p)$ for $p$ from 0 to 1 — what shape is the curve? Where does it peak?
+<ExerciseBlock
+  number={2}
+  prompt="You flip a coin 20 times and get 8 heads. Write down the log-likelihood ell(p) and verify that the maximum occurs at p = 0.4. Then verify the Cramér-Rao bound: the Fisher information for Bernoulli(p) is I(p) = 1/(p(1-p)), and the variance of the MLE p-hat = k/n is p(1-p)/n. Confirm that the MLE achieves the bound exactly (it is efficient)."
+  hint="ell(p) = k*log(p) + (n-k)*log(1-p) with k = 8, n = 20. Score = k/p - (n-k)/(1-p) = 0 at the maximum. Fisher info: second derivative of log f(x|p) = x*log(p) + (1-x)*log(1-p) is -x/p^2 - (1-x)/(1-p)^2. Take expectation."
+  answer="Log-likelihood: ell(p) = 8*log(p) + 12*log(1-p). Score: d ell/dp = 8/p - 12/(1-p). Set to zero: 8/p = 12/(1-p), so 8(1-p) = 12p, 8 - 8p = 12p, 8 = 20p, p = 8/20 = 0.4. Confirmed: the MLE is p-hat = 0.4. Second derivative: d^2 ell/dp^2 = -8/p^2 - 12/(1-p)^2. At the MLE p = 0.4: -8/0.16 - 12/0.36 = -50 - 33.33 = -83.33. The observed Fisher information is 83.33 (the curvature of the log-likelihood at the peak). The expected Fisher information per observation: I(p) = E[-second deriv of log f] = E[X/p^2 + (1-X)/(1-p)^2] = p/p^2 + (1-p)/(1-p)^2 = 1/p + 1/(1-p) = 1/(p(1-p)). At p = 0.4: I(0.4) = 1/(0.4*0.6) = 1/0.24 approximately 4.167. For n = 20 observations: Cramér-Rao bound = 1/(n*I) = 1/(20*4.167) = 1/83.33 approximately 0.012. The variance of the MLE p-hat = k/n: Var(k/n) = p(1-p)/n = 0.24/20 = 0.012. They match exactly! The Bernoulli MLE p-hat = k/n achieves the Cramér-Rao bound — it is exactly efficient (not just asymptotically). This is a special property of the Bernoulli/exponential family: the sample mean is always an efficient estimator of the population mean."
+/>
 
-3. For normal data, the MLE of $\sigma^2$ uses $n$ in the denominator while the unbiased estimator uses $n - 1$. For a sample of size $n = 10$, compute the ratio $\hat{\sigma}^2_{\text{MLE}} / S^2$. How large does $n$ need to be before this ratio exceeds 0.99 — that is, before the two estimates are practically identical?
+<ExerciseBlock
+  number={3}
+  prompt="For normal data, the MLE of sigma^2 uses n in the denominator while the unbiased estimator S^2 uses n-1. For a sample of size n = 10, compute the ratio sigma-hat^2_MLE / S^2. How large does n need to be before this ratio exceeds 0.99 — that is, before the two estimates are practically identical? Explain why the MLE is biased and whether this matters in practice."
+  hint="sigma-hat^2_MLE = (1/n)*sum(x_i - x_bar)^2 and S^2 = (1/(n-1))*sum(x_i - x_bar)^2. So the ratio is (n-1)/n. Set (n-1)/n >= 0.99 and solve."
+  answer="Both estimators have the same numerator sum(x_i - x_bar)^2; they differ only in the denominator. So the ratio is sigma-hat^2_MLE / S^2 = (1/n)/(1/(n-1)) = (n-1)/n. For n = 10: ratio = 9/10 = 0.90. The MLE is 10% smaller than the unbiased estimator. For the ratio to exceed 0.99: (n-1)/n >= 0.99, so n-1 >= 0.99n, 0.01n >= 1, n >= 100. By n = 100, the MLE and the unbiased estimator differ by only 1%. Why the MLE is biased: E[sigma-hat^2_MLE] = E[(n-1)/n * S^2] = (n-1)/n * sigma^2 (since E[S^2] = sigma^2). So the bias is -sigma^2/n, a downward bias that shrinks as n grows. The MLE systematically underestimates the variance because it uses the sample mean (which 'chases' the data) rather than the true mean. Does it matter? For n >= 30, the bias is under 3.3% and usually negligible. For small samples (n < 10), the bias is material and the unbiased S^2 is preferred. In practice, most software reports S^2 (the unbiased version) by default, but the MLE is used when it feeds into likelihood-based methods (confidence intervals, hypothesis tests) because of its optimality properties. The MLE's slight bias is the price of its efficiency: by using n instead of n-1, it achieves a slightly lower variance, and for most applications the total MSE is lower for the MLE than for S^2."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Logistic regression as MLE. A logistic regression model predicts P(y=1|x) = sigmoid(w*x + b) = 1/(1+e^(-(w*x+b))). For a dataset with points (x_i, y_i), write down the log-likelihood and show that maximizing it is equivalent to minimizing the binary cross-entropy loss. Then explain why cross-entropy is the 'natural' loss for classification — what assumption does it encode?"
+  hint="The model says y_i ~ Bernoulli(p_i) where p_i = sigmoid(w*x_i + b). The likelihood is the product of Bernoulli terms. The log-likelihood is the sum of y_i*log(p_i) + (1-y_i)*log(1-p_i). Cross-entropy is the negative of this sum."
+  answer="The model treats each label y_i as drawn from Bernoulli(p_i) where p_i = sigmoid(w*x_i + b). The likelihood of all the labels is L(w,b) = product over i of p_i^(y_i) * (1-p_i)^(1-y_i). The log-likelihood is ell(w,b) = sum over i of [y_i*log(p_i) + (1-y_i)*log(1-p_i)]. The binary cross-entropy loss is CE(w,b) = -(1/n)*sum over i of [y_i*log(p_i) + (1-y_i)*log(1-p_i)] = -(1/n)*ell(w,b). So minimizing CE is exactly maximizing ell (with a 1/n scaling that doesn't affect the location of the minimum). To train the logistic regression, you compute the gradient of CE with respect to w and b and do gradient descent — which is equivalent to gradient ascent on the log-likelihood. Why cross-entropy is natural: it is the loss you get when you assume the labels are Bernoulli random variables and you ask for the maximum likelihood estimate of the parameters. The assumption it encodes is that the label is a random draw from a Bernoulli whose parameter is the model's predicted probability. This is exactly the right model for binary classification: the model outputs a probability, and the label is a 0/1 draw from that probability. Cross-entropy penalizes the model for being confident and wrong (if y_i = 1 and p_i is near 0, the -log(p_i) term blows up), and barely penalizes it for being confident and right. This is the principled behavior you want from a classification loss, and it falls out directly from the likelihood principle."
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="Derive the MLE for the parameter theta of a uniform distribution on [0, theta]. (Careful: this is a non-regular case where the support depends on the parameter.) Write down the likelihood, note the constraint, and find the maximizer. Is this MLE unbiased? Compute the Cramér-Rao bound if it applies, or explain why it does not."
+  hint="The density is f(x|theta) = 1/theta for 0 <= x <= theta, and 0 otherwise. The likelihood is L(theta) = 1/theta^n, but ONLY if all x_i <= theta. If any x_i > theta, the likelihood is 0. So the likelihood is (1/theta^n) for theta >= max(x_i), and 0 otherwise."
+  answer="The density is f(x|theta) = 1/theta for 0 <= x <= theta. The likelihood is L(theta) = product of (1/theta) = 1/theta^n, but this is valid ONLY when theta >= max(x_i) (all observations must fall within [0, theta]). If theta < max(x_i), at least one observation has density 0, so L(theta) = 0. So the likelihood is: L(theta) = 1/theta^n for theta >= max(x_i), and 0 for theta < max(x_i). To maximize: for theta >= max(x_i), L = 1/theta^n is a decreasing function of theta. So the maximum is at the smallest allowed value of theta, which is theta = max(x_i). Therefore theta-hat_MLE = max(x_i) = X_(n), the maximum order statistic. This is a non-regular case because the support depends on theta — the usual regularity conditions (which allow differentiating under the integral sign) fail. The Cramér-Rao bound does NOT apply here. Is the MLE unbiased? No. E[max(x_i)] < theta because the maximum of n uniform[0,theta] variables is always strictly less than theta (with probability 1). In fact, E[X_(n)] = theta*n/(n+1), so the bias is -theta/(n+1). The unbiased estimator is ((n+1)/n)*max(x_i), which has E[.] = theta. This example shows the MLE is not always unbiased (nor always efficient): when the support depends on the parameter, the standard asymptotic theory breaks down, and the MLE can be substantially biased. The uniform[0,theta] case is the textbook example of this pathology."
+/>
+
+<ExerciseBlock
+  number={6}
+  prompt="The score function S(theta) = partial ell / partial theta has a remarkable property: E[S(theta)] = 0 (at the true parameter value). Prove this, and explain its connection to the Fisher information. Then explain why setting S(theta) = 0 is the MLE equation: it is asking 'where does the average score vanish?'"
+  hint="ell(theta) = sum log f(x_i|theta). S(theta) = sum of (partial/partial theta) log f(x_i|theta). To show E[S] = 0: use the fact that integral f(x|theta) dx = 1, differentiate under the integral sign with respect to theta."
+  answer="Proof that E[S(theta)] = 0 at the true parameter: The score for a single observation is S_1(theta) = (partial/partial theta) log f(X|theta) = f'(X|theta)/f(X|theta) where f' denotes the derivative with respect to theta. Take expectation: E[S_1(theta)] = integral [f'(x|theta)/f(x|theta)] * f(x|theta) dx = integral f'(x|theta) dx. Now, since f(x|theta) is a density, integral f(x|theta) dx = 1 for all theta. Differentiating both sides with respect to theta (under the integral sign, which is the regularity condition): integral f'(x|theta) dx = d/dtheta [1] = 0. So E[S_1(theta)] = 0. For n observations, E[S(theta)] = n*E[S_1] = 0. Connection to Fisher information: The Fisher information is I(theta) = E[S_1(theta)^2] = Var(S_1(theta)) (since E[S_1] = 0, the second moment equals the variance). It is also I(theta) = -E[S_1'(theta)] = -E[d^2/dtheta^2 log f] (the negative expected curvature of the log-likelihood). So the Fisher information is the variance of the score, or equivalently, the expected sharpness of the log-likelihood peak. Why S(theta) = 0 is the MLE equation: The score S(theta) is the derivative of the log-likelihood. Setting it to zero finds the critical points of ell — the peaks and troughs of the likelihood landscape. At the true parameter, E[S] = 0 on average (the scores fluctuate around zero). The MLE asks: for THIS particular dataset, at what theta does the realized score S(theta) = 0? That is the peak of the likelihood for the observed data. As n grows, the law of large numbers ensures (1/n)*S(theta) approaches E[S_1(theta)], which is zero at the true theta — so the MLE converges to the true value. This is the intuitive proof of MLE consistency: the score equation S(theta)=0, when averaged over many observations, is solved by the true parameter."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="Explain the likelihood ratio test and its connection to the MLE. Suppose you want to test H_0: theta = theta_0 (a fixed value) vs H_1: theta != theta_0. The likelihood ratio statistic is Lambda = L(theta_0) / L(theta-hat_MLE). Explain why large values of -2*log(Lambda) are evidence against H_0. State (without proof) the asymptotic distribution of -2*log(Lambda) under H_0, and explain how this gives a hypothesis test. How does this connect the MLE (lesson 18) to hypothesis testing (lesson 20)?"
+  hint="L(theta_0) is the likelihood at the null value; L(theta-hat_MLE) is the maximized likelihood (always >= L(theta_0) since theta-hat is the maximizer). So Lambda <= 1. If theta_0 is far from the truth, L(theta_0) is much smaller than L(theta-hat), so Lambda is near 0, and -2*log(Lambda) is large."
+  answer="The likelihood ratio statistic is Lambda = L(theta_0) / L(theta-hat_MLE). Since theta-hat_MLE maximizes the likelihood, L(theta-hat_MLE) >= L(theta_0) for any theta_0, so Lambda is always between 0 and 1. If H_0 is true (theta = theta_0), then theta_0 is close to the true parameter, so L(theta_0) is close to L(theta-hat_MLE), and Lambda is near 1. If H_0 is false (theta != theta_0), then theta_0 is far from the MLE, L(theta_0) is much smaller than L(theta-hat_MLE), and Lambda is near 0. So small Lambda (equivalently, large -2*log(Lambda)) is evidence against H_0. Wilks' theorem: under H_0 and regularity conditions, as n -> infinity, -2*log(Lambda) converges in distribution to a chi-squared distribution with degrees of freedom equal to the difference in dimensionality between the full and restricted parameter spaces. For testing a single parameter (H_0: theta = theta_0 vs H_1: theta free), this is chi-squared with 1 degree of freedom. So the test is: compute -2*log(Lambda), compare to the chi-squared_1 critical value (e.g., 3.84 for alpha = 0.05), and reject H_0 if -2*log(Lambda) > 3.84. This is the likelihood ratio test (LRT) — the most general and powerful class of hypothesis tests. Connection to lesson 20: the LRT uses the MLE (the unconstrained maximizer) and the restricted MLE (the maximizer under H_0) to measure how much the constraint H_0 costs in likelihood. A large cost means H_0 is implausible. The Wald test (uses the MLE's asymptotic normality: |theta-hat - theta_0|/SE) and the score test (uses the score function at theta_0) are asymptotically equivalent to the LRT — they are the three 'trinity' of tests based on the likelihood. All three rely on the MLE's asymptotic properties (consistency, normality, efficiency), which is why MLE theory (this lesson) is the foundation of hypothesis testing (lesson 20)."
+/>
+
+---
+
+**Up next:** [Confidence intervals →](/courses/probability/19-confidence-intervals)

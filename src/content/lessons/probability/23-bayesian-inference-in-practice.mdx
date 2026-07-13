@@ -12,31 +12,38 @@ duration: 20
 difficulty: "Advanced"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 Bayesian updating sounds elegant in theory: multiply prior by likelihood, normalize, done. In practice, the normalization step requires computing an integral — and for most real models, that integral has no closed form. For centuries, this computational wall kept Bayesian methods in the realm of theory.
 
-But there is a shortcut. When the prior and the likelihood are chosen to work together — when they are **conjugate** — the integral solves itself. The posterior lands in the same family as the prior, with updated parameters you can write down by hand. No integrals. No approximations. Exact updating, one observation at a time.
-
-This lesson walks through the most important conjugate pair — Beta and Binomial — and shows how Bayesian inference looks when the machinery actually runs.
+There are two ways through that wall. The first is **conjugate priors** — when prior and likelihood are matched, the integral solves itself, and updating becomes pure arithmetic. The second is **computation** — Markov Chain Monte Carlo and variational inference, which let you approximate any posterior, no matter how complex the model. This lesson covers both: the elegant special case, and the general engine that powers modern Bayesian inference.
 
 ## Conjugate priors: the idea
 
 A prior is **conjugate** to a likelihood if the posterior belongs to the same distribution family as the prior.
 
-$$\text{Prior: } p(\theta) \in \mathcal{F} \quad + \quad \text{Likelihood: } p(\text{data} \mid \theta) \quad \Longrightarrow \quad \text{Posterior: } p(\theta \mid \text{data}) \in \mathcal{F}$$
+<MathInline expression={"\\text{Prior: } p(\\theta) \\in \\mathcal{F} \\quad + \\quad \\text{Likelihood: } p(\\text{data} \\mid \\theta) \\quad \\Longrightarrow \\quad \\text{Posterior: } p(\\theta \\mid \\text{data}) \\in \\mathcal{F}"} />
 
-The family $\mathcal{F}$ is preserved. Only the parameters change.
+The family <MathInline expression={"\\mathcal{F}"} /> is preserved. Only the parameters change.
 
 Why does this matter? Because it means you can update your beliefs **analytically** — with algebra, not with numerical integration. Each new data point adjusts the parameters of the distribution, and you can do it sequentially, one observation at a time, without ever going back to the raw data.
 
-Conjugate pairs exist for many common models:
+Conjugate pairs exist for every distribution in the exponential family (which we develop below):
 
-| Likelihood | Conjugate Prior | Posterior |
+| Likelihood | Conjugate Prior | Posterior Update |
 |---|---|---|
-| Binomial (coin flips) | Beta | Beta |
-| Poisson (counts) | Gamma | Gamma |
-| Normal (known variance) | Normal | Normal |
-| Normal (known mean) | Inverse-Gamma | Inverse-Gamma |
-| Multinomial (categories) | Dirichlet | Dirichlet |
+| Binomial (k heads in n flips) | <MathInline expression={"\\text{Beta}(\\alpha, \\beta)"} /> | <MathInline expression={"\\text{Beta}(\\alpha+k, \\, \\beta+n-k)"} /> |
+| Poisson (counts) | <MathInline expression={"\\text{Gamma}(a, b)"} /> | <MathInline expression={"\\text{Gamma}(a+\\sum x_i, \\, b+n)"} /> |
+| Normal (mean, known var) | <MathInline expression={"N(\\mu_0, \\sigma_0^2)"} /> | precision-weighted update |
+| Normal (variance, known mean) | Inverse-Gamma | Inverse-Gamma |
+| Exponential (rate) | <MathInline expression={"\\text{Gamma}(a, b)"} /> | <MathInline expression={"\\text{Gamma}(a+n, \\, b+\\sum x_i)"} /> |
+| Multinomial (categories) | Dirichlet | Dirichlet, add counts |
 
 The Beta-Binomial pair is the most intuitive entry point, so that is where we start.
 
@@ -46,7 +53,7 @@ The **Beta distribution** is a family of distributions defined on $[0, 1]$. It i
 
 Its density is:
 
-$$f(\theta) = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)} \theta^{\alpha - 1} (1 - \theta)^{\beta - 1}$$
+<MathInline expression={"f(\\theta) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\theta^{\\alpha - 1} (1 - \\theta)^{\\beta - 1}"} />
 
 Do not let the gamma functions intimidate you. The shape is controlled entirely by two parameters, $\alpha$ and $\beta$, and the geometry is intuitive:
 
@@ -60,78 +67,197 @@ Think of $\alpha$ as "imaginary heads" and $\beta$ as "imaginary tails." A Beta(
 
 ## The Beta-Binomial update
 
-Here is the beautiful part. Suppose your prior for a coin's probability of heads $\theta$ is $\text{Beta}(\alpha, \beta)$. You flip the coin $n$ times and observe $k$ heads. The posterior is:
+Here is the beautiful part. Suppose your prior for a coin's probability of heads $\theta$ is <MathInline expression={"\\text{Beta}(\\alpha, \\beta)"} />. You flip the coin $n$ times and observe $k$ heads. The posterior is:
 
-$$\theta \mid \text{data} \sim \text{Beta}(\alpha + k,\; \beta + n - k)$$
+<MathInline expression={"\\theta \\mid \\text{data} \\sim \\text{Beta}(\\alpha + k,\\; \\beta + n - k)"} />
+
+### Theorem: Beta-Binomial conjugacy
+
+If <MathInline expression={"\\theta \\sim \\text{Beta}(\\alpha, \\beta)"} /> and <MathInline expression={"k \\mid \\theta \\sim \\text{Binomial}(n, \\theta)"} />, then:
+
+$$\theta \mid k \sim \text{Beta}(\alpha + k,\; \beta + n - k)$$
+
+*Proof sketch.* The Binomial likelihood is <MathInline expression={"\\binom{n}{k} \\theta^k (1-\\theta)^{n-k}"} />. The Beta prior is proportional to <MathInline expression={"\\theta^{\\alpha-1}(1-\\theta)^{\\beta-1}"} />. Multiplying: the posterior is proportional to <MathInline expression={"\\theta^{\\alpha+k-1}(1-\\theta)^{\\beta+n-k-1}"} />, which is exactly the kernel of <MathInline expression={"\\text{Beta}(\\alpha+k, \\beta+n-k)"} />. The normalizing constant is absorbed automatically. The parameters simply add.
 
 That is it. Add the observed heads to $\alpha$. Add the observed tails to $\beta$. The posterior is a Beta distribution with the updated parameters.
 
-The update is **additive** and **sequential**. Each new flip either increments $\alpha$ (if it is a head) or $\beta$ (if it is a tail). You do not need to store the full history — the running sums $\alpha + k$ and $\beta + (n - k)$ are sufficient statistics.
+The update is **additive** and **sequential**. Each new flip either increments $\alpha$ (if it is a head) or $\beta$ (if it is a tail). You do not need to store the full history — the running sums $\alpha + k$ and $\beta + (n - k)$ are **sufficient statistics**.
 
 ## Watching the distribution evolve
 
-Start with a **flat prior**: $\text{Beta}(1, 1)$. This is a horizontal line at height 1 across the entire $[0, 1]$ interval. You are saying: "the coin's probability of heads could be anything, and I have no preference."
+Start with a **flat prior**: <MathInline expression={"\\text{Beta}(1, 1)"} />. This is a horizontal line at height 1 across the entire $[0, 1]$ interval. You are saying: "the coin's probability of heads could be anything, and I have no preference."
 
-**Flip 1: heads.** The posterior becomes $\text{Beta}(2, 1)$. The distribution tilts to the right — a gentle upward slope from left to right. The peak is at the right edge (the mode is 1). The data says "heads," and the prior had nothing to say, so the posterior follows the data strongly. But this is just one flip. The distribution is still very wide.
+**Flip 1: heads.** The posterior becomes <MathInline expression={"\\text{Beta}(2, 1)"} />. The distribution tilts to the right — a gentle upward slope from left to right. The peak is at the right edge (the mode is 1). The data says "heads," and the prior had nothing to say, so the posterior follows the data strongly. But this is just one flip. The distribution is still very wide.
 
-**Flip 2: heads.** The posterior becomes $\text{Beta}(3, 1)$. The tilt sharpens. More mass piles up near 1. The coin has shown two heads in a row — the distribution is beginning to suspect this is a biased coin, but it is still very uncertain.
+**Flip 2: heads.** The posterior becomes <MathInline expression={"\\text{Beta}(3, 1)"} />. The tilt sharpens. More mass piles up near 1. The coin has shown two heads in a row — the distribution is beginning to suspect this is a biased coin, but it is still very uncertain.
 
-**Flip 3: tails.** The posterior becomes $\text{Beta}(3, 2)$. Now something interesting happens. The distribution shifts left — the single tail pulls mass away from 1 and toward the center. The peak moves to around 0.75. The shape is no longer a monotone slope; it is a genuine hill with a mode somewhere in the interior.
+**Flip 3: tails.** The posterior becomes <MathInline expression={"\\text{Beta}(3, 2)"} />. Now something interesting happens. The distribution shifts left — the single tail pulls mass away from 1 and toward the center. The peak moves to around 0.75. The shape is no longer a monotone slope; it is a genuine hill with a mode somewhere in the interior.
 
-**Flip 4: heads.** $\text{Beta}(4, 2)$. The hill shifts right again, peaking near 0.8.
+**Flip 4: heads.** <MathInline expression={"\\text{Beta}(4, 2)"} />. The hill shifts right again, peaking near 0.8.
 
-**Continue flipping...** Each flip nudges the hill. Heads push it right and sharpen it. Tails push it left and sharpen it. After 100 flips with 58 heads, the posterior is $\text{Beta}(59, 43)$ — a narrow bell centered at about 0.578. The width of the bell has shrunk dramatically from the flat line you started with.
+**Continue flipping...** Each flip nudges the hill. Heads push it right and sharpen it. Tails push it left and sharpen it. After 100 flips with 58 heads, the posterior is <MathInline expression={"\\text{Beta}(59, 43)"} /> — a narrow bell centered at about 0.578. The width of the bell has shrunk dramatically from the flat line you started with.
 
 The pattern is clear: **the distribution sharpens as data accumulates.** Uncertainty shrinks. The peak converges toward the true proportion. The shape evolves from a flat sheet of ignorance into a tight spike of knowledge.
 
-## The role of the prior parameters
+## The exponential family: why conjugacy works
 
-What if you had started with $\text{Beta}(10, 10)$ instead of $\text{Beta}(1, 1)$? This prior says: "I have strong reason to think the coin is fair — it is as if I have already seen 20 flips with 10 heads."
+Conjugate priors are not lucky accidents. They exist for a systematic reason: every distribution in the **exponential family** has a conjugate prior derived by matching the likelihood's functional form.
 
-After observing 58 heads in 100 flips, the posterior would be $\text{Beta}(68, 52)$. The peak is at about 0.567 — pulled toward 0.5 compared to the $\text{Beta}(59, 43)$ result. The prior's 10-10 is pulling the posterior toward fairness, and it takes real data to drag it away.
+### Theorem: The exponential family
 
-The prior parameters $\alpha$ and $\beta$ act as **pseudo-counts**. They represent the weight of your initial belief in units of "equivalent observations." A Beta(100, 100) prior would need hundreds of flips to be moved significantly. A Beta(1, 1) prior gets out of the way almost immediately.
+A distribution belongs to the (natural) **exponential family** if its density can be written:
 
-This gives you a dial: choose $\alpha + \beta$ to match how strongly you want the prior to resist the data.
+$$p(x \mid \eta) = h(x)\,\exp\!\big(\eta \cdot T(x) - A(\eta)\big)$$
 
-## Credible intervals
+where $\eta$ is the **natural parameter**, $T(x)$ is the **sufficient statistic**, $A(\eta)$ is the **log-partition function** (a normalizer), and $h(x)$ is the base measure.
+
+The sufficient statistic $T(x)$ is remarkable: it is a *summary of the data* that contains everything you need to know about $\eta$. For the Binomial, $T(x) = \sum x_i$ (the total count of heads). For the Normal with known variance, $T(x) = \sum x_i$. For the Poisson, $T(x) = \sum x_i$. You can throw away the raw data and keep only $T(x)$ without losing any information about the parameter — this is the **sufficiency principle**.
+
+The conjugate prior for an exponential family likelihood has the form:
+
+<MathInline expression={"p(\\eta) \\propto \\exp\\big(\\nu \\cdot \\eta - \\tau A(\\eta)\\big)"} />
+
+with hyperparameters $(\nu, \tau)$ that play the role of **prior pseudo-statistics**: $\nu$ is a prior guess at the sufficient statistic, and $\tau$ is the prior sample size (pseudo-count). When data arrives, the posterior updates to $(\nu + \sum T(x_i),\, \tau + n)$ — literally adding the data's sufficient statistic to the prior's. This is *why* every conjugate pair exhibits the "add to the parameter" pattern: the math forces it.
+
+The exponential family includes: Bernoulli, Binomial, Poisson, Geometric, Normal, Exponential, Gamma, Multinomial, Dirichlet, and many more. Almost every model in introductory statistics is in this family — which is why conjugate priors cover almost every common case.
+
+<FormulaReadout formulas={[
+  { label: "Beta-二项共轭更新", expression: "\\theta \\sim \\text{Beta}(\\alpha,\\beta),\\; k \\sim \\text{Bin}(n,\\theta) \\;\\Rightarrow\\; \\theta \\mid k \\sim \\text{Beta}(\\alpha+k,\\,\\beta+n-k)" },
+  { label: "指数族似然", expression: "p(x \\mid \\eta) = h(x)\\exp\\!\\big(\\eta \\cdot T(x) - A(\\eta)\\big)" },
+  { label: "指数族共轭先验", expression: "p(\\eta) \\propto \\exp\\!\\big(\\nu \\cdot \\eta - \\tau A(\\eta)\\big)" },
+  { label: "可信区间 (贝叶斯)", expression: "P(a \\leq \\theta \\leq b \\mid \\text{data}) = 1 - \\alpha" },
+]} />
+
+## Credible intervals vs confidence intervals
 
 Once you have the posterior, you can extract a **credible interval** — the Bayesian analog of a confidence interval.
 
 For a 95% credible interval, you find the range $[a, b]$ such that:
 
-$$P(a \leq \theta \leq b \mid \text{data}) = 0.95$$
+<MathInline expression={"P(a \\leq \\theta \\leq b \\mid \\text{data}) = 0.95"} />
 
 This is an area under the posterior curve. You shade the central 95% of the posterior distribution, and the boundaries of that shaded region are your interval.
 
-The interpretation is the one most people intuitively want: **"there is a 95% probability that the true $\theta$ lies in this interval."** This is a valid statement for Bayesians because $\theta$ has a distribution. For frequentists, this statement is meaningless — $\theta$ is a fixed constant, not a random variable.
+The interpretation is the one most people intuitively want: **"there is a 95% probability that the true $\theta$ lies in this interval."** This is a valid statement for Bayesians because $\theta$ has a distribution. For frequentists, this statement is meaningless — $\theta$ is a fixed constant, not a random variable. This is the sharpest concrete difference between the two schools, developed in [lesson 21](/courses/probability/21-two-schools-of-thought).
 
-For the Beta posterior, the credible interval can be computed exactly using the quantile function of the Beta distribution. For $\text{Beta}(59, 43)$, the 95% credible interval is approximately $[0.484, 0.670]$. You can report: "given the data and a flat prior, there is a 95% probability that the coin's probability of heads is between 0.484 and 0.670."
+For the Beta posterior, the credible interval can be computed exactly using the quantile function of the Beta distribution. For <MathInline expression={"\\text{Beta}(59, 43)"} />, the 95% credible interval is approximately $[0.484, 0.670]$. You can report: "given the data and a flat prior, there is a 95% probability that the coin's probability of heads is between 0.484 and 0.670."
 
 ### Highest posterior density intervals
 
-There is a subtlety. The standard credible interval splits the remaining 5% equally: 2.5% in each tail. But for asymmetric posteriors (like $\text{Beta}(3, 1)$ after just a few flips), there is a more natural choice: the **highest posterior density** (HPD) interval. This is the narrowest interval that contains 95% of the posterior mass.
+There is a subtlety. The standard credible interval splits the remaining 5% equally: 2.5% in each tail. But for asymmetric posteriors (like <MathInline expression={"\\text{Beta}(3, 1)"} /> after just a few flips), there is a more natural choice: the **highest posterior density** (HPD) interval. This is the narrowest interval that contains 95% of the posterior mass.
 
 For symmetric posteriors, the HPD interval and the equal-tailed interval are the same. For skewed posteriors, the HPD interval is shorter and shifted toward the peak. It is the tightest summary of where the parameter probably lives.
 
-## Beyond coin flips
+## When conjugacy breaks: the computational engine
 
-The Beta-Binomial is the cleanest example, but the same logic applies everywhere Bayesian inference is used:
+Conjugate priors are elegant but limited. They exist only for the exponential family, and only for single-parameter or carefully structured multi-parameter models. Real models — hierarchical models, mixture models, Bayesian neural networks with millions of parameters — have posteriors that no conjugate prior can tame. For these, the normalization integral is intractable, and Bayesian inference needs computational engines.
 
-- **A/B testing**: each variant's conversion rate gets a Beta posterior. You can directly compute the probability that variant A beats variant B.
-- **Medical trials**: the treatment effect has a prior, the trial data provides the likelihood, and the posterior tells you the probability the treatment works.
-- **Sequential updating**: as patients enroll one by one, the posterior updates in real time. You can stop the trial early if the posterior probability of effectiveness exceeds a threshold.
+### MCMC: Markov Chain Monte Carlo
 
-In each case, the workflow is the same: specify a prior, observe data, compute the posterior, extract the quantities you need. Conjugate priors make this clean. When conjugacy is not available, the same workflow is powered by numerical methods — Markov chain Monte Carlo, variational inference — but the conceptual structure is identical.
+The breakthrough that made modern Bayesian inference practical is **Markov Chain Monte Carlo**. The idea is profound: instead of computing the posterior analytically, construct a Markov chain whose **stationary distribution** is the posterior, then run the chain and collect samples. After enough steps, the samples approximate the posterior — no integration required.
 
-## Key insight
+The most foundational MCMC algorithm is **Metropolis-Hastings**:
 
-> Conjugate priors turn Bayesian updating from an integral calculus problem into simple arithmetic. The Beta-Binomial update — add heads to $\alpha$, add tails to $\beta$ — is the purest illustration: each observation increments a counter, and the distribution sharpens a little more. Bayesian inference is not mysterious. It is counting with uncertainty.
+1. Start at some parameter value <MathInline expression={"\\theta^{(0)}"} />.
+2. Propose a new value $\theta^*$ from a proposal distribution (e.g., a Gaussian centered at the current value).
+3. Compute the **acceptance ratio**: <MathInline expression={"r = \\frac{p(\\text{data} \\mid \\theta^*)\\, p(\\theta^*)}{p(\\text{data} \\mid \\theta^{(t)})\\, p(\\theta^{(t)})}"} />.
+4. Accept the proposal with probability $\min(1, r)$. If accepted, <MathInline expression={"\\theta^{(t+1)} = \\theta^*"} />; otherwise stay put.
+5. Repeat for thousands of iterations.
+
+The magic: the acceptance ratio involves only the **unnormalized** posterior (likelihood times prior) — the nasty normalizing constant <MathInline expression={"p(\\text{data})"} /> cancels in the ratio. This is why MCMC works: it sidesteps the integral that was the computational wall.
+
+### Theorem: MCMC convergence
+
+Under mild conditions (the chain is irreducible, aperiodic, and has the posterior as its stationary distribution — guaranteed by detailed balance), the empirical distribution of MCMC samples converges to the posterior:
+
+$$\frac{1}{N}\sum_{t=1}^N f(\theta^{(t)}) \;\xrightarrow{N \to \infty}\; E_{\text{posterior}}[f(\theta)]$$
+
+This is the **ergodic theorem** for Markov chains (see [lesson 25](/courses/probability/25-markov-chains)): time averages converge to ensemble averages. Any posterior expectation — the posterior mean, a credible interval, the probability of a hypothesis — can be estimated by averaging over MCMC samples. This is why MCMC is the universal engine of modern Bayesian inference: it reduces integration to sampling.
+
+Modern variants — Hamiltonian Monte Carlo (HMC), the No-U-Turn Sampler (NUTS) — exploit gradient information to propose much more efficient moves, making MCMC practical for high-dimensional models. These power the probabilistic programming languages Stan, PyMC, and NumPyro.
+
+### Variational inference: the scalable alternative
+
+When the model is too large for MCMC (millions of parameters, massive datasets), **variational inference (VI)** offers a faster alternative. Instead of sampling from the posterior, VI turns inference into **optimization**:
+
+1. Choose a tractable family of distributions $q_\phi(\theta)$ parameterized by $\phi$ (e.g., a mean-field Gaussian — independent across dimensions).
+2. Find the member of the family closest to the true posterior by minimizing the KL divergence <MathInline expression={"\\text{KL}(q_\\phi \\| p(\\theta \\mid \\text{data}))"} />.
+3. Equivalently, maximize the **evidence lower bound (ELBO)**:
+
+<MathInline expression={"\\text{ELBO}(\\phi) = E_{q_\\phi}[\\log p(\\text{data}, \\theta)] - E_{q_\\phi}[\\log q_\\phi(\\theta)]"} />
+
+The ELBO is a lower bound on <MathInline expression={"\\log p(\\text{data})"} /> (the log evidence), and maximizing it minimizes the KL divergence. The first term rewards fitting the data (likelihood); the second term penalizes $q$ for being too far from the prior (a complexity penalty).
+
+VI trades accuracy for speed: the approximate posterior $q_\phi$ will never be exactly the true posterior (because the tractable family rarely contains it), but it can be fit with stochastic gradient descent and scales to enormous models. This is the engine behind variational autoencoders and large-scale Bayesian deep learning.
+
+## Three perspectives on Bayesian computation
+
+1. **As exact arithmetic (conjugate case).** For exponential-family models with conjugate priors, Bayesian inference reduces to updating parameters by adding sufficient statistics. No integrals, no approximation. This is the cleanest expression of Bayesian updating and the right mental model for understanding what Bayesian inference *means*. Limitation: only works for specially matched prior-likelihood pairs.
+2. **As sampling (MCMC).** For models without conjugacy, MCMC samples from the posterior by constructing a Markov chain with the right stationary distribution. The samples are the posterior — you compute any quantity you need by averaging over them. Limitation: slow to converge for complex or high-dimensional models, and diagnosing convergence is subtle.
+3. **As optimization (variational inference).** VI approximates the posterior with a tractable family, fit by optimizing the ELBO. Faster than MCMC and scales to massive models, but biased — the approximation is never exact, and choosing the variational family is an art. This is the workhorse of large-scale Bayesian deep learning.
+
+## Modern applications
+
+**Probabilistic programming (Stan, PyMC, NumPyro).** These frameworks let you specify a Bayesian model in a few lines of code and automatically fit it with HMC or NUTS. A hierarchical regression, a mixture model, a pharmacokinetic model — all become posterior samples with a single `fit()` call. The MCMC engine runs under the hood, and diagnostics (R-hat, effective sample size) tell you when the chain has converged. This has democratized Bayesian inference: you no longer need to derive a sampler by hand.
+
+**Variational autoencoders (VAEs).** In generative AI, VAEs perform variational inference on the latent variables of a generative model. The encoder network outputs the parameters of $q_\phi(z \mid x)$ (the approximate posterior over the latent code), and training maximizes the ELBO. The prior $p(z)$ is typically a standard normal. VAEs are probabilistic graphical models trained with variational inference — the same machinery as this lesson, applied inside a neural network.
+
+**Bayesian deep learning.** Putting prior distributions over neural network weights and computing the posterior (via variational inference or Laplace approximation) gives **uncertainty estimates** on predictions — critical for safety in self-driving cars, medical diagnosis, and scientific applications where knowing what the model does *not* know matters as much as what it does. Bayesian neural networks treat every weight as a distribution rather than a point estimate.
+
+<KeyInsight>
+Bayesian inference has two computational regimes. For exponential-family models with conjugate priors, updating is exact arithmetic — the Beta-Binomial update (add heads to alpha, tails to beta) is the purest illustration: counting with uncertainty. For everything else, Markov Chain Monte Carlo samples from the posterior by constructing a Markov chain whose stationary distribution is the target (sidestepping the intractable normalizing integral), and variational inference turns inference into optimization for scalability. Together these three methods — conjugacy, MCMC, and VI — let Bayesians fit any model they can write down.
+</KeyInsight>
+
+## Connections
+
+This lesson operationalizes the prior-likelihood-posterior framework of [lesson 22](/courses/probability/22-prior-likelihood-posterior). The conjugate-prior table and the Beta-Binomial derivation make concrete the "pseudo-count" intuition developed there. The exponential family connects back to the named distributions of Module 2 — the Normal ([lesson 09](/courses/probability/09-the-normal-distribution)), Poisson ([lesson 08](/courses/probability/08-continuous-distributions)), Binomial ([lesson 07](/courses/probability/07-the-binomial-distribution)) are all members, which is why they all have conjugate priors.
+
+Forward, MCMC depends on the theory of [Markov chains](/courses/probability/25-markov-chains) — the sampler is literally a Markov chain whose stationary distribution is the posterior, and the convergence guarantee is the ergodic theorem (lesson 25's central result). [Poisson processes](/courses/probability/26-poisson-processes) (lesson 26) give the Gamma-Poisson conjugate pair its modeling context. The credible-interval vs confidence-interval distinction connects back to [confidence intervals](/courses/probability/19-confidence-intervals) and the frequentist-Bayesian divide of [lesson 21](/courses/probability/21-two-schools-of-thought). Variational inference and the ELBO connect forward to the course finale ([lesson 27](/courses/probability/27-where-probability-meets-the-world)), where information theory (KL divergence, entropy) explains what the ELBO is really measuring.
 
 ## Practice
 
-**Exercise 1.** You start with a Beta(2, 2) prior for a coin's probability of heads. You flip the coin 20 times and observe 14 heads. Write down the posterior distribution. What is the posterior mean? Compare it to the sample proportion 14/20 = 0.7 — is the posterior mean larger, smaller, or equal? Explain why.
+<ExerciseBlock number={1}
+  prompt="You start with a Beta(2, 2) prior for a coin's probability of heads. You flip the coin 20 times and observe 14 heads. Write down the posterior distribution. What is the posterior mean? Compare it to the sample proportion 14/20 = 0.7 — is the posterior mean larger, smaller, or equal? Explain why."
+  hint="The posterior is Beta(2+14, 2+6). The mean of Beta(a,b) is a/(a+b)."
+  answer="The posterior is Beta(2+14, 2+6) = Beta(16, 8). Posterior mean = 16/(16+8) = 16/24 = 0.667. The sample proportion is 14/20 = 0.7. The posterior mean (0.667) is smaller than the sample proportion (0.7). This is the prior shrinking the estimate toward 0.5: the Beta(2,2) prior has mean 0.5 and pseudo-count 4, which pulls the posterior mean from 0.7 down toward 0.5. The posterior mean can be written as a weighted average: (4*0.5 + 20*0.7)/(4+20) = (2+14)/24 = 0.667, where 4 is the prior pseudo-count and 20 is the data count. With more data, this shrinkage would diminish."
+/>
 
-**Exercise 2.** Start with a Beta(1, 1) (flat) prior. Flip a coin 5 times: H, H, T, H, T. Write down the posterior after each flip (there will be 5 posteriors). Describe how the shape of the distribution changes from step to step.
+<ExerciseBlock number={2}
+  prompt="Start with a Beta(1, 1) (flat) prior. Flip a coin 5 times: H, H, T, H, T. Write down the posterior after each flip (there will be 5 posteriors). Describe how the shape of the distribution changes from step to step."
+  hint="Each head adds 1 to alpha; each tail adds 1 to beta. Start at Beta(1,1)."
+  answer="After each flip: (1) H -> Beta(2,1); (2) H -> Beta(3,1); (3) T -> Beta(3,2); (4) H -> Beta(4,2); (5) T -> Beta(4,3). Shape evolution: Beta(1,1) is flat. Beta(2,1) tilts up to the right (monotone increasing). Beta(3,1) tilts more sharply right, mass piling near 1. Beta(3,2) develops an interior peak around 0.75 (the first tail pulls mass back from 1). Beta(4,2) sharpens the peak, shifts it right toward 0.8. Beta(4,3) shifts the peak slightly left toward 0.6, and the distribution becomes more symmetric. The pattern: each observation sharpens the distribution (increases concentration alpha+beta) and shifts the peak toward the running proportion. After 5 flips with 3 heads, the posterior mean is 4/7 = 0.571, close to the sample proportion 3/5 = 0.6."
+/>
 
-**Exercise 3.** Analyst A uses Beta(1, 1) and observes 30 heads in 50 flips. Analyst B uses Beta(50, 50) and observes the same data. Compute the posterior mean for each analyst. How much do their conclusions differ? Now suppose both observe 300 heads in 500 flips. How much do their conclusions differ now? Explain what this demonstrates about the role of the prior.
+<ExerciseBlock number={3}
+  prompt="Analyst A uses Beta(1, 1) and observes 30 heads in 50 flips. Analyst B uses Beta(50, 50) and observes the same data. Compute the posterior mean for each analyst. How much do their conclusions differ? Now suppose both observe 300 heads in 500 flips. How much do their conclusions differ now? Explain what this demonstrates about the role of the prior."
+  hint="Posterior mean = (alpha + heads)/(alpha + beta + n). For A: (1+30)/(2+50). For B: (50+30)/(100+50)."
+  answer="Analyst A: posterior Beta(31, 21), mean = 31/52 = 0.596. Analyst B: posterior Beta(80, 70), mean = 80/150 = 0.533. The difference is 0.596 - 0.533 = 0.063 — a meaningful gap. Analyst B's strong prior (pseudo-count 100, centered at 0.5) pulls the estimate toward 0.5, away from the sample proportion 0.6. With n=500 (300 heads): Analyst A posterior Beta(301, 201), mean = 301/502 = 0.5996. Analyst B posterior Beta(350, 250), mean = 350/600 = 0.5833. The difference is now only 0.016 — much smaller. As the data grows (50 to 500 flips), the prior's influence shrinks dramatically. This is the Bernstein-von Mises theorem: with enough data, the posterior concentrates near the MLE regardless of the prior. The prior matters most for small samples and washes out for large ones."
+/>
+
+<ExerciseBlock number={4}
+  prompt="Write the Poisson likelihood in exponential family form: identify the natural parameter, sufficient statistic, and log-partition function. Then state the Gamma-Poisson conjugate update: if the rate lambda has a Gamma(a, b) prior and you observe counts x_1, ..., x_n, what is the posterior?"
+  hint="Poisson PMF: p(x|lambda) = lambda^x e^{-lambda}/x!. Take log and match to eta*T(x) - A(eta)."
+  answer="Poisson PMF: p(x|lambda) = (lambda^x e^{-lambda})/x! = (1/x!) exp(x log lambda - lambda). In exponential family form: natural parameter eta = log(lambda), sufficient statistic T(x) = x, log-partition A(eta) = e^eta = lambda, base measure h(x) = 1/x!. For n observations, the sufficient statistic is sum of x_i. The conjugate prior on lambda is Gamma(a, b). After observing x_1,...,x_n, the posterior is Gamma(a + sum(x_i), b + n). Intuition: a is 'prior pseudo-counts' and b is 'prior observation time.' Real counts add to a; real observation time adds to b. The posterior mean (rate) is (a + sum x_i)/(b + n), a weighted blend of the prior mean a/b and the sample mean (sum x_i)/n. This is the same 'add to the pseudo-count' pattern as Beta-Binomial — both are exponential family."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Explain in your own words why MCMC sidesteps the intractable normalizing constant that blocks direct computation of the posterior. Reference the Metropolis-Hastings acceptance ratio specifically."
+  hint="The posterior is proportional to likelihood times prior. The normalizer p(data) is what is intractable. Look at the ratio in the acceptance step."
+  answer="The posterior is p(theta | data) = p(data | theta) p(theta) / p(data), where the denominator p(data) = integral of (likelihood times prior) over all theta is the intractable part — it is a high-dimensional integral with no closed form for most models. In Metropolis-Hastings, the acceptance ratio is r = [p(data|theta*) p(theta*)] / [p(data|theta_t) p(theta_t)]. The normalizing constant p(data) would appear in both numerator and denominator (since it does not depend on theta), so it CANCELS in the ratio. This means MCMC needs only the UNNORMALIZED posterior — the product of likelihood and prior, which is always easy to compute for any specific theta. The chain never needs to evaluate the integral; it only needs pointwise evaluation of likelihood times prior. That is the entire trick: by working with ratios, MCMC converts an integration problem into a sampling problem, sidestepping the intractable normalizer entirely."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Contrast MCMC and variational inference along three axes: (a) what they produce, (b) their accuracy, and (c) their scalability. When would you choose each?"
+  hint="MCMC samples from the exact posterior (asymptotically). VI fits an approximate distribution by optimization. Think about bias vs variance, and scalability to large models."
+  answer="(a) What they produce: MCMC produces SAMPLES from the posterior (an empirical approximation that becomes exact as the number of samples grows). VI produces a PARAMETRIC distribution q_phi (a specific, fixed approximation chosen from a tractable family). (b) Accuracy: MCMC is asymptotically exact — given enough iterations, the samples converge to the true posterior (by the ergodic theorem). The error is stochastic and shrinks like 1/sqrt(N). VI is biased — q_phi is never exactly the true posterior unless the true posterior happens to lie in the variational family (rare). VI typically UNDERESTIMATES posterior variance (it tends to fit the dominant mode and miss the tails). (c) Scalability: MCMC is slow per iteration and struggles with high-dimensional or multimodal posteriors; convergence diagnosis is subtle. VI is fast — it uses stochastic gradient descent and scales to millions of parameters and massive datasets. Choose MCMC when accuracy is critical and the model is moderate-dimensional (hierarchical models, scientific inference). Choose VI when scalability is critical (Bayesian deep learning, large generative models, real-time applications)."
+/>
+
+<ExerciseBlock number={7}
+  prompt="A 95% credible interval for a parameter theta is [2.1, 5.4]. A frequentist 95% confidence interval for the same parameter, from the same data, is also [2.1, 5.4]. Explain why these numerically identical intervals carry different meanings. Which one lets you say 'there is a 95% probability theta lies in this interval,' and why?"
+  hint="For the Bayesian, theta is random and the interval is fixed. For the frequentist, theta is fixed and the interval is a realization of a random procedure."
+  answer="The credible interval [2.1, 5.4] means: conditional on the observed data (and the prior), the posterior probability that theta lies in [2.1, 5.4] is 0.95. Here theta is a random variable with a posterior distribution, and the interval is a fixed region. The statement 'there is a 95% probability theta is in this interval' is valid and is exactly what the credible interval asserts. The confidence interval [2.1, 5.4] means: the procedure that generated this interval (compute a CI from fresh data) covers the true theta in 95% of repeated samples. Here theta is a fixed unknown constant, and this specific interval is just two numbers — either theta is in it (probability 1) or not (probability 0). The 95% is about the procedure, not about this interval. So only the credible interval licenses the '95% probability' statement. Numerical agreement is common in large samples (when the likelihood dominates and the Bernstein-von Mises theorem makes the posterior approximately normal, centered at the MLE), but the interpretations remain fundamentally distinct."
+/>
+
+---
+
+**Up next:** [Random Walks →](/courses/probability/24-random-walks)

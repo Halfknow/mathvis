@@ -18,30 +18,68 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { FTCExplorer } from '../../../components/interactive/calculus/FTCExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-This is the moment everything connects. The derivative and the integral — two ideas that seem completely different — are actually **inverse operations**. This single insight, the Fundamental Theorem of Calculus (FTC), is why calculus is one subject, not two.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+This is the moment everything connects. The derivative and the integral — two ideas that seem completely different — are actually **inverse operations**. This single insight, the Fundamental Theorem of Calculus (FTC), is why calculus is one subject, not two. It is widely regarded as the most important theorem in calculus, because it converts the agonizing problem of summing infinitely many rectangles into the easy problem of evaluating an antiderivative at two points.
 
 Think of the dashboard of a car. The **speedometer** reads instantaneous velocity — that's the derivative. The **odometer** records total distance traveled — that's the integral. The FTC says they're inverses of each other: if you know the speed at every moment, you can recover the total distance, and if you know how the distance is changing, you know the speed. Differentiation and integration are two sides of the same coin.
 
-## Part 1: The integral undoes the derivative
+## The area function
 
-If $F$ is an antiderivative of $f$ (meaning $F'(x) = f(x)$), then:
+Define the **accumulation function** (or area function):
+
+<MathBlock expression={"A(x) = \\int_{a}^{x} f(t)\\, dt"} />
+
+This is the net area accumulated from a fixed starting point $a$ up to a variable endpoint $x$. Think of $A(x)$ as a running total: as $x$ moves to the right, you sweep up more area, and $A(x)$ changes. The two parts of the Fundamental Theorem describe, from two directions, the precise relationship between $A$ and $f$.
+
+## Theorem: The Fundamental Theorem of Calculus, Part 1 (Evaluation)
+
+Suppose $f$ is **continuous** on $[a, b]$, and let $F$ be **any antiderivative** of $f$ on $[a, b]$ (meaning $F'(x) = f(x)$). Then:
 
 <MathBlock expression={"\\int_{a}^{b} f(x)\\, dx = F(b) - F(a)"} />
 
-To compute an area, you don't need rectangles. You just need an antiderivative. The integral of the derivative gives you back the original function's net change.
+**Hypotheses:** $f$ continuous on the closed interval, $F$ an antiderivative existing on that interval. **Conclusion:** the definite integral — defined as a painful limit of Riemann sums — equals a single subtraction of antiderivative values.
 
-## Part 2: The derivative undoes the integral
+**Intuition:** Integration and differentiation undo each other. The integral $\int_a^b f$ accumulates the rate $f$ over $[a,b]$; that accumulated total is exactly the net change $F(b) - F(a)$ of any antiderivative. You never have to compute a Riemann sum: find *any* antiderivative, subtract, done. This is why we spent [a whole lesson](/courses/calculus/13-antiderivatives) learning to reverse derivatives — Part 1 is the payoff.
 
-Define $A(x) = \int_a^x f(t)\, dt$ — the accumulated area from $a$ to $x$. Then:
+## Theorem: The Fundamental Theorem of Calculus, Part 2 (Differentiation)
+
+Suppose $f$ is **continuous** on an open interval containing $[a, b]$. Define $A(x) = \int_a^x f(t)\, dt$. Then $A$ is differentiable on that interval, and:
 
 <MathBlock expression={"A'(x) = f(x)"} />
 
-The rate at which the accumulated area changes is the original function. If you differentiate the integral, you get back the integrand.
+**Hypotheses:** $f$ continuous near $x$. **Conclusion:** the derivative of the area function is the integrand itself. The "rate at which accumulated area changes" is exactly the height of the curve at the moving boundary.
+
+**Intuition:** as you nudge the right endpoint $x$ by a tiny $dx$, the new sliver of area added is roughly a rectangle of height $f(x)$ and width $dx$, i.e. $f(x)\, dx$. So $\Delta A \approx f(x)\, dx$, giving <MathInline expression={"\\frac{dA}{dx} = f(x)"} />. Differentiating the integral returns the original function. Part 2 is what guarantees antiderivatives *exist* for every continuous function — the area function $A$ is one.
+
+## A proof sketch of Part 2, via the Mean Value Theorem
+
+The cleanest proof of Part 2 leans on the **Mean Value Theorem** for integrals. Here is the key idea.
+
+Start from the definition of the derivative:
+
+<MathBlock expression={"A'(x) = \\lim_{h \\to 0} \\frac{A(x+h) - A(x)}{h} = \\lim_{h \\to 0} \\frac{1}{h}\\int_{x}^{x+h} f(t)\\, dt"} />
+
+The numerator is the area of a thin sliver from $x$ to $x+h$. By the Mean Value Theorem for integrals (which itself comes from the Extreme Value Theorem and the Intermediate Value Theorem), this sliver's area equals the width $h$ times the function's value at *some* point $c$ inside the sliver:
+
+<MathBlock expression={"\\int_{x}^{x+h} f(t)\\, dt = f(c) \\cdot h \\quad \\text{for some } c \\in [x, x+h]"} />
+
+This is the crux: the average height of $f$ over $[x, x+h]$ is achieved *at* some point $c$ in that interval. Substitute:
+
+<MathBlock expression={"A'(x) = \\lim_{h \\to 0} \\frac{f(c) \\cdot h}{h} = \\lim_{h \\to 0} f(c)"} />
+
+As $h \to 0$, the interval $[x, x+h]$ shrinks to the point $x$, forcing $c \to x$. Because $f$ is **continuous**, $f(c) \to f(x)$. Therefore:
+
+<MathBlock expression={"A'(x) = f(x)"} />
+
+That last step — pulling the limit inside $f$ via continuity — is exactly where the continuity hypothesis does its work. Drop continuity and the proof (and often the theorem) fails. The Mean Value Theorem supplied the average-rate-equals-instantaneous-rate-at-some-point fact; continuity handed the limit to $f(x)$. And once we know $A'(x) = f(x)$, Part 1 follows quickly: any two antiderivatives differ by a constant, so $F = A + C$, and $\int_a^b f = A(b) - A(a) = F(b) - F(a)$.
 
 ## See both parts at once
 
@@ -55,50 +93,99 @@ The interactive below shows two linked panels. The top shows $f(x)$ with the sha
   <FTCExplorer client:visible />
 </InteractiveCanvas>
 
-Watch how the bottom curve's **steepness** matches the top curve's **height**. Where $f(x)$ is large (top panel), $F(x)$ rises steeply (bottom panel). Where $f(x)$ is near zero, $F(x)$ flattens out. This is Part 2 in action: $F'(x) = f(x)$.
+Watch how the bottom curve's **steepness** matches the top curve's **height**. Where $f(x)$ is large (top panel), $F(x)$ rises steeply (bottom panel). Where $f(x)$ is near zero, $F(x)$ flattens out. This is Part 2 in action: $F'(x) = f(x)$. And the total rise of $F$ from $a$ to $b$ — read off the bottom panel — equals the shaded area in the top panel. That equality *is* Part 1.
 
-## Why this theorem matters
+<FormulaReadout formulas={[
+  { label: "FTC 第一部分（求值）", expression: "\\int_{a}^{b} f(x)\\, dx = F(b) - F(a)" },
+  { label: "FTC 第二部分（求导）", expression: "\\frac{d}{dx}\\int_{a}^{x} f(t)\\, dt = f(x)" },
+  { label: "中值定理（证明核心）", expression: "\\int_{x}^{x+h} f(t)\\, dt = f(c) \\cdot h" },
+  { label: "银行账户类比", expression: "F'(t) = f(t), \\quad \\int_a^b f = F(b) - F(a)" },
+]} />
 
-Before the FTC, computing areas required infinite sums of infinitesimal rectangles — a philosophical headache. After the FTC, you just find an antiderivative and plug in the bounds.
+## The bank account analogy
 
-The FTC bridges two worlds:
+The FTC becomes obvious once you internalize one analogy. Think of a bank account:
+
+- $f(t)$ is your **income rate** at time $t$ (dollars per month) — the speedometer.
+- $F(t)$ is your total **balance** at time $t$ (dollars) — the odometer.
+- $\int_a^b f(t)\, dt$ is how much you **earned** between month $a$ and month $b$ — the accumulated deposits.
+- The rate of change of your balance *is* your income rate: $F'(t) = f(t)$ (Part 2).
+- Your earnings over $[a,b]$ equal the change in balance: $\int_a^b f = F(b) - F(a)$ (Part 1).
+
+The two parts of the FTC are just two ways of stating the same bookkeeping identity: "the rate at which money comes in" and "how the balance changes" are the same fact viewed from two directions. Substitute "velocity" for "income" and "distance" for "balance," and you have the car analogy. The structure is universal.
+
+## Why this is the most important theorem in calculus
+
+Before the FTC, computing areas required infinite sums of infinitesimal rectangles — a philosophical headache that tormented mathematicians for centuries. After the FTC, you just find an antiderivative and plug in the bounds. The theorem bridges two worlds:
+
 - **Differential calculus** (rates of change, slopes, derivatives)
 - **Integral calculus** (accumulation, areas, integrals)
 
-They are not separate subjects. They are two faces of the same coin. This is why calculus is one unified discipline — differentiation takes you from totals to rates, and integration takes you from rates back to totals.
+They are not separate subjects. They are two faces of the same coin. This is why calculus is one unified discipline — differentiation takes you from totals to rates, and integration takes you from rates back to totals. The FTC is the hinge.
 
-**Isaac Newton** and **Gottfried Wilhelm Leibniz** both discovered this connection independently in the late 17th century, each developing his own notation and approach. Newton thought in terms of "fluxions" (rates of change of flowing quantities), while Leibniz thought in terms of sums of infinitesimal differences. Their independent discovery of the same deep structure is one of the great parallel discoveries in the history of mathematics — and it sparked one of its bitterest priority disputes.
+**Isaac Newton** and **Gottfried Wilhelm Leibniz** both discovered this connection independently in the late 17th century, each developing his own notation and approach. Newton thought in terms of "fluxions" (rates of change of flowing quantities), while Leibniz thought in terms of sums of infinitesimal differences — his $\int$ and $dx$ notation is what we still use today. Their independent discovery of the same deep structure is one of the great parallel discoveries in the history of mathematics — and it sparked one of its bitterest priority disputes.
 
-## The intuition
+## The many faces of the FTC
 
-Think of it like a bank account:
-- $f(t)$ is your income rate at time $t$ (dollars per month).
-- $F(t)$ is your total balance at time $t$ (dollars).
-- $\int_a^b f(t)\, dt$ is how much you earned between month $a$ and month $b$ — which equals $F(b) - F(a)$.
-- The rate of change of your balance is your income rate: $F'(t) = f(t)$.
+- **Physics:** position $s(t)$ and velocity $v(t)$ are an antiderivative pair: $s'(t) = v(t)$ and $s(b) - s(a) = \int_a^b v$. The same structure governs charge and current, momentum and force, energy and power.
+- **Probability:** the cumulative distribution function $F(x) = P(X \le x)$ is an antiderivative of the density $f(x)$: $F'(x) = f(x)$. The FTC is why densities and CDFs are interchangeable representations of a distribution.
+- **Machine learning:** backpropagation and autodifferentiation are essentially the FTC in high dimensions — the chain rule (a derivative theorem) and integration by parts (its sibling) let us compute gradients of composed functions exactly. The "reverse mode" of automatic differentiation runs the derivative backward through the computation graph, mirroring how integration undoes differentiation.
+- **Differential equations:** any equation of the form $y' = f(x)$ is solved by $y = \int f$ — the FTC is the one-step solution to the simplest ODE, and the seed of all solution techniques for harder ones.
 
 <KeyInsight>
-Differentiation and integration are inverse operations. The derivative of the integral gives back the original function. The integral of the derivative gives back the net change. This is the Fundamental Theorem — the bridge between rates and totals.
+The Fundamental Theorem says differentiation and integration are inverses. Part 1 (Evaluation): ∫ₐᵇ f = F(b) − F(a) turns an infinite-sum problem into one subtraction. Part 2 (Differentiation): d/dx ∫ₐˣ f = f(x) means the area function's slope is the integrand itself. The proof of Part 2 hinges on the Mean Value Theorem: the average height of f over a thin sliver equals f at some point c, which continuity forces toward f(x) as the sliver shrinks. The bank-account analogy (income rate vs balance) makes both parts obvious.
 </KeyInsight>
+
+## Connections
+
+This lesson crowns the [integral module](/courses/calculus/09-accumulation-and-area): having built up [accumulation](/courses/calculus/09-accumulation-and-area), [Riemann sums](/courses/calculus/10-riemann-sums), and the [definite integral](/courses/calculus/11-the-definite-integral), the FTC collapses all of it into a single computation. The next lesson, [antiderivatives](/courses/calculus/13-antiderivatives), is where you build the technical fluency Part 1 demands — the reverse-derivative rules and the "+C" constant — followed by the integration techniques ([u-substitution](/courses/calculus/14-u-substitution), [integration by parts](/courses/calculus/15-integration-by-parts)) that find antiderivatives for harder integrands. The Mean Value Theorem at the heart of the proof is the same MVT from differential calculus — another bridge between the two halves of the subject.
+
+Across disciplines, the FTC's inverse-pair structure is everywhere: position/velocity in physics, CDF/density in probability, and the forward/reverse modes of automatic differentiation that train every modern neural network. Once you see "a function and its accumulated total are derivatives of each other," you see the FTC operating beneath a vast amount of science and engineering.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Find ∫₀² 3x² dx using the FTC. (Hint: what function has derivative 3x²?)"
-  hint="The antiderivative of 3x² is x³. Apply the FTC: F(2) − F(0)."
-  answer="F(x) = x³. ∫₀² 3x² dx = F(2) − F(0) = 8 − 0 = 8."
+  prompt="Find ∫₀² 3x² dx using Part 1 of the FTC. (Hint: what function has derivative 3x²?)"
+  hint="The antiderivative of 3x² is x³. Apply Part 1: F(2) − F(0)."
+  answer="An antiderivative is F(x) = x³ (since F'(x) = 3x²). By Part 1, ∫₀² 3x² dx = F(2) − F(0) = 8 − 0 = 8. Notice we never touched a Riemann sum — the FTC replaced an infinite-sum computation with one subtraction."
 />
 
 <ExerciseBlock number={2}
-  prompt="Define A(x) = ∫₀ˣ cos(t) dt. What is A'(x)?"
-  hint="Apply Part 2 of the FTC directly."
-  answer="By Part 2 of the FTC, A'(x) = cos(x). The derivative of the accumulated area function is the original integrand."
+  prompt="Define A(x) = ∫₀ˣ cos(t) dt. What is A'(x)? Which part of the FTC did you use, and what hypothesis guarantees the result?"
+  hint="Apply Part 2 of the FTC directly. What property of cos(t) matters?"
+  answer="By Part 2 of the FTC, A'(x) = cos(x). The derivative of the accumulated area function is the original integrand. The hypothesis is that cos(t) is continuous near x — which it is, everywhere — so Part 2 applies at every x. Note this also tells us A(x) = sin(x) + C, and since A(0) = 0 we get C = 0, so A(x) = sin(x). Part 2 confirms what Part 1 would have computed."
 />
 
 <ExerciseBlock number={3}
-  prompt="In the interactive, select f(x) = eˣ. Since eˣ is its own antiderivative, the two panels should show identical curves. Verify this visually. Why does this happen?"
-  hint="eˣ satisfies the special equation f'(x) = f(x). What does this mean for the FTC?"
-  answer="Since d/dx(eˣ) = eˣ, the function is its own antiderivative. The top panel (f(x) = eˣ) and bottom panel (F(x) = eˣ) show identical curves. The area under eˣ from 0 to x equals eˣ − 1, and the derivative of that area function is eˣ."
+  prompt="In the interactive, select f(x) = eˣ. Since eˣ is its own antiderivative, the two panels should show identical curves. Verify this visually. Why does this happen, and what does it say about the integral ∫₀ˣ eᵗ dt?"
+  hint="eˣ satisfies the special equation f'(x) = f(x). What does this mean for both parts of the FTC?"
+  answer="Since d/dx(eˣ) = eˣ, the function is its own antiderivative. The top panel (f(x) = eˣ) and bottom panel (an antiderivative F(x) = eˣ) show identical curves. By Part 1, ∫₀ˣ eᵗ dt = eˣ − e⁰ = eˣ − 1. By Part 2, the derivative of that integral is eˣ — consistent. The area under eˣ from 0 to x grows as eˣ − 1, and its rate of growth is eˣ itself. This is the unique function (up to scaling) that is its own derivative, which is why eˣ pervades growth and decay models."
 />
 
-[Next Lesson →](/courses/calculus/13-antiderivatives)
+<ExerciseBlock number={4}
+  prompt="Compute d/dx ∫₁ˣ (t³ + sin(t)) dt without evaluating the integral. Then compute ∫₀¹ (3x² + 2x) dx using Part 1."
+  hint="Part 2 lets you differentiate an integral without integrating. For the second part, find an antiderivative of 3x² + 2x."
+  answer="By Part 2, d/dx ∫₁ˣ (t³ + sin t) dt = x³ + sin(x). The lower limit being a constant (1) and the integrand being continuous means Part 2 applies directly — you simply replace the dummy variable t with x and read off the integrand. For the second part: an antiderivative is x³ + x² (derivative 3x² + 2x). By Part 1, ∫₀¹ (3x² + 2x) dx = (1³ + 1²) − (0 + 0) = 2."
+/>
+
+<ExerciseBlock number={5}
+  prompt="State precisely the two hypotheses of FTC Part 2, and give an example showing the conclusion can fail if the continuity hypothesis is dropped."
+  hint="Part 2 needs f continuous near x. Consider a step function with a jump. What is its area function's derivative at the jump?"
+  answer="Hypotheses of Part 2: f is continuous on an interval containing [a, x] (or at least continuous at the point x where we differentiate). Conclusion: A'(x) = f(x). Counterexample if continuity fails: let f(t) = 0 for t < 0 and f(t) = 1 for t ≥ 0 (a step function with a jump at 0). Take a = 0. Then A(x) = ∫₀ˣ f(t) dt = 0 for x < 0 and = x for x ≥ 0. At x = 0, A has a corner (slope jumps from 0 to 1), so A'(0) does not exist — yet f(0) = 1 is perfectly well defined. The conclusion A'(0) = f(0) fails because f is not continuous at 0. Continuity is doing real work: it is what lets the limit pass through f in the proof."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Sketch the proof of FTC Part 2. Specifically, explain the role of the Mean Value Theorem for integrals and why continuity of f is needed in the final limit step."
+  hint="Start from A'(x) = lim_{h→0} (1/h) ∫_x^{x+h} f(t) dt. The MVT for integrals rewrites the sliver area as f(c)·h for some c in [x, x+h]. Then take the limit."
+  answer="Proof sketch: A'(x) = lim_{h→0} (1/h) ∫_x^{x+h} f(t) dt. By the Mean Value Theorem for integrals, the sliver area equals f(c)·h for some point c in [x, x+h] — this is the statement that the average value of f over the sliver is attained at some interior point c (a consequence of the Extreme Value Theorem plus the Intermediate Value Theorem). So A'(x) = lim_{h→0} f(c), where c depends on h but stays in [x, x+h]. As h → 0, the interval collapses onto x, forcing c → x. Now continuity of f enters: because f is continuous, f(c) → f(x) as c → x. Hence A'(x) = f(x). If f had a jump at x, the limit of f(c) would depend on the direction of approach and might not equal f(x) — the continuity hypothesis is exactly what licenses the final 'pull the limit through f' step."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Using the bank-account analogy, explain in plain language why ∫ₐᵇ f(t) dt = F(b) − F(a) (Part 1) and F'(t) = f(t) (Part 2) are really the same statement. Then translate the analogy to the car (velocity and distance)."
+  hint="In the bank analogy, f is income rate and F is balance. What does 'how much I earned' equal? What does 'rate of change of balance' equal? Why are these two views of the same bookkeeping fact?"
+  answer="Bank account: f(t) is income rate (dollars/month), F(t) is balance (dollars). Part 1 says my total earnings from month a to month b equal the change in my balance, F(b) − F(a). Part 2 says the rate at which my balance changes is my income rate, F'(t) = f(t). These are the same fact: 'earnings = change in balance' (Part 1) and 'rate of balance change = income rate' (Part 2) are just the accumulated and instantaneous descriptions of identical bookkeeping. If you know your income rate at all times, you know how your balance changes (Part 2); integrate that over [a,b] and you get the total change in balance (Part 1). Car translation: f is velocity (speedometer), F is distance (odometer). Part 2: rate of change of distance = velocity. Part 1: total distance traveled = change in odometer reading. Same coin, two faces."
+/>
+
+---
+
+**Up next:** [Antiderivatives](/courses/calculus/13-antiderivatives)

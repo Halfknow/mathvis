@@ -18,10 +18,14 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { AccumulationVis } from '../../../components/interactive/calculus/AccumulationVis';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
 You're driving at variable speed. At each moment, the speedometer reads a different number. The question is: **how far have you traveled in total?**
 
@@ -48,6 +52,37 @@ Try each velocity profile:
 - **Linearly increasing**: the area grows faster and faster — each new slice is taller.
 - **Oscillating**: the area grows in bursts — speed up, slow down, speed up again.
 
+## From sigma to integral: the core intuition
+
+The leap from discrete sums to the integral is the heart of calculus. Suppose you sample the velocity once per second and add up $v(t_i) \cdot 1$ to estimate distance. That is a discrete sum, written with a capital sigma:
+
+<MathBlock expression={"\\text{distance} \\approx \\sum_{i=1}^{n} v(t_i)\\, \\Delta t"} />
+
+Now make the time step $\Delta t$ smaller — sample every half-second, then every tenth, then every millisecond. Each step gives a better approximation, and the bars of the histogram become thinner and more numerous. In the limit $\Delta t \to 0$ (equivalently $n \to \infty$), the sigma stretches into an integral:
+
+<MathBlock expression={"\\lim_{\\Delta t \\to 0} \\sum_{i=1}^{n} v(t_i)\\, \\Delta t \\;=\\; \\int_{a}^{b} v(t)\\, dt"} />
+
+The integral symbol $\int$ is literally a stretched "S" for "sum." It is the continuous version of addition — infinitely many infinitesimally thin contributions stacked together. This is why we **partition into rectangles**: a rectangle of height $f$ and width $dx$ is the geometric embodiment of "value × tiny slice," and stacking them is the picture of accumulation.
+
+## The area function
+
+For a rate $f(t)$, define the **area function** (also called the accumulation function):
+
+<MathBlock expression={"A(x) = \\int_{a}^{x} f(t)\\, dt"} />
+
+This is the net amount accumulated from a fixed starting point $a$ up to a variable endpoint $x$. Think of $A(x)$ as a running total: as $x$ moves to the right, you sweep up more area, and $A(x)$ grows. The next lesson on the Fundamental Theorem will reveal the stunning fact that $A'(x) = f(x)$ — the rate of accumulation *is* the integrand. For now, hold onto the picture: $A(x)$ is "how much has piled up so far."
+
+## Net area vs. total area: the sign convention
+
+Area below the x-axis counts as **negative**. If your velocity goes negative (you reverse), the accumulated distance decreases. This makes the integral a **signed (net) area** — it measures net accumulation, counting direction. Two related but distinct quantities:
+
+- **Net area** (the integral): regions above the axis count positive, below count negative. A function that spends equal time above and below the axis has net area zero — even though it clearly "covered ground."
+- **Total area**: take the absolute value first, then integrate. This is the actual distance traveled regardless of direction, like a car's odometer.
+
+<MathBlock expression={"\\text{net area} = \\int_{a}^{b} f(x)\\, dx, \\qquad \\text{total area} = \\int_{a}^{b} |f(x)|\\, dx"} />
+
+The two agree when $f \ge 0$ everywhere, and differ whenever the function dips below the axis. The definite integral computes the **net** quantity; if you want the total, you must split the integral at every sign change and negate the negative pieces.
+
 ## From distance to the general idea
 
 This "stack up slices" idea works for any quantity, not just distance:
@@ -55,20 +90,45 @@ This "stack up slices" idea works for any quantity, not just distance:
 - Accumulate **rate of water flow** over time → total water volume
 - Accumulate **power consumption** over time → total energy used
 - Accumulate **force × displacement** over distance → total work done
+- Accumulate **probability density** over an interval → probability of an event
 
 In each case, you're computing the area under a curve. That area has a name: the **integral**.
 
-<MathBlock expression={"\\text{total accumulated} = \\int_{a}^{b} f(t)\\, dt = \\text{area under } f \\text{ from } a \\text{ to } b"} />
+<MathBlock expression={"\\text{total accumulated} = \\int_{a}^{b} f(t)\\, dt = \\text{(net) area under } f \\text{ from } a \\text{ to } b"} />
 
-The integral symbol $\int$ is a stretched "S" for "sum" — you're summing up infinitely many infinitesimal contributions.
+<FormulaReadout formulas={[
+  { label: "面积函数（累积）", expression: "A(x) = \\int_{a}^{x} f(t)\\, dt" },
+  { label: "离散和 → 积分", expression: "\\lim_{\\Delta t \\to 0} \\sum_{i=1}^{n} f(t_i)\\,\\Delta t = \\int_{a}^{b} f(t)\\, dt" },
+  { label: "净面积 vs 总面积", expression: "\\int_{a}^{b} f\\, dx \\;\\le\\; \\int_{a}^{b} |f|\\, dx" },
+  { label: "物理意义", expression: "\\int_{a}^{b} v(t)\\, dt = \\text{净位移}" },
+]} />
 
-## The sign convention
+## The many faces of accumulation
 
-Area below the x-axis counts as **negative**. If your velocity goes negative (you reverse), the distance decreases. This makes the integral a **signed area** — it measures net accumulation, counting direction.
+The same integral shows up in wildly different disciplines because "rate × tiny slice, summed" is a universal pattern:
+
+- **Physics**: work is $\int F\, dx$; impulse is $\int F\, dt$; the center of mass is a weighted integral of position. Wherever a quantity is distributed continuously, an integral gathers it up.
+- **Probability**: a probability density function $p(x)$ integrates to 1 over the whole line, and $\int_a^b p(x)\, dx$ gives the probability of landing in $[a, b]$. This is the foundation of continuous distributions in statistics and ML.
+- **Economics**: total cost is the integral of marginal cost; consumer surplus is the area between the demand curve and the price line.
+- **Machine learning**: the evidence lower bound (ELBO), expected loss, and entropy are all integrals over the data distribution. When you train a model, you minimize an *average* loss — an integral in disguise.
+
+## Modern applications
+
+In **physics**, accumulating a force over a distance gives work ($W = \int F\, dx$), and accumulating a charge density over a region gives total charge — Maxwell's equations are written in integral form.
+
+In **machine learning**, the cross-entropy loss <MathInline expression={"\\int p(x) \\log \\frac{p(x)}{q(x)} dx"} /> (the KL divergence) measures how far a model distribution $q$ is from the true distribution $p$. It is literally an accumulated log-ratio. Gradient methods minimize it, and every modern language model is trained by driving this integral down.
+
+In **signal processing and audio**, a waveform is integrated to recover the original signal from its derivative, or to compute total energy $\int |s(t)|^2 dt$.
 
 <KeyInsight>
-The integral is not about area — it's about accumulation. Area is just the geometric picture that happens when you accumulate height over width. The integral symbol ∫ means "sum up all the tiny pieces."
+The integral is not about area — it's about accumulation. Area is just the geometric picture that happens when you accumulate height over width. The sigma-to-integral leap turns a discrete sum into continuous addition, and the area function A(x) = ∫ₐˣ f(t)dt is the running total. Remember the sign convention: the integral is *net* area (above the axis positive, below negative); for total distance traveled you need ∫|f|.
 </KeyInsight>
+
+## Connections
+
+This lesson introduces the central idea of [the integral module](/courses/calculus/09-accumulation-and-area): accumulation. The next lesson, [Riemann sums](/courses/calculus/10-riemann-sums), makes the "stack up rectangles" picture rigorous — you will see exactly how the discrete sum converges to the integral as the slices thin. Then [the definite integral](/courses/calculus/11-the-definite-integral) formalizes the limit and states its algebraic properties, and [the Fundamental Theorem](/courses/calculus/12-the-fundamental-theorem) will reveal the deep surprise: the area function's derivative is the integrand itself, $A'(x) = f(x)$.
+
+Across disciplines, the same "rate accumulated over an interval" pattern appears: probability densities in statistics, work and energy in physics, and expected loss in machine learning. Once you see the integral as a continuous sum, you start seeing it everywhere a quantity is distributed continuously.
 
 ## Practice
 
@@ -85,9 +145,35 @@ The integral is not about area — it's about accumulation. Area is just the geo
 />
 
 <ExerciseBlock number={3}
-  prompt="If the velocity curve dips below the x-axis (v < 0), what does that mean physically? What happens to the accumulated distance?"
-  hint="Negative velocity means moving backward. Does the distance increase or decrease?"
-  answer="Negative velocity means the object is moving in the reverse direction. The accumulated distance decreases because the area below the axis contributes negatively to the total."
+  prompt="If the velocity curve dips below the x-axis (v < 0), what does that mean physically? What is the difference between the net area (the integral) and the total area (∫|v|dt) over the same interval?"
+  hint="Negative velocity means moving backward. Does the distance increase or decrease? Which quantity matches an odometer?"
+  answer="Negative velocity means the object is moving in the reverse direction, so the accumulated displacement decreases. The net area (the integral) gives the net displacement — how far you end up from where you started, counting direction. The total area ∫|v|dt gives the total distance traveled, like a car's odometer — it never decreases. If you drive 10 m forward then 3 m backward, net displacement is 7 m but total distance is 13 m."
 />
 
-[Next Lesson →](/courses/calculus/10-riemann-sums)
+<ExerciseBlock number={4}
+  prompt="Let f(x) = x - 1 on the interval [0, 3]. Compute both the net area ∫₀³ (x−1) dx and the total area ∫₀³ |x−1| dx. Why do they differ?"
+  hint="Find where f crosses the x-axis. Split the integral there. The net area counts the piece below the axis as negative; the total area counts it as positive."
+  answer="f(x) = x − 1 crosses zero at x = 1. For x in [0,1], f is negative; for x in [1,3], f is positive. Net area = ∫₀¹(x−1)dx + ∫₁³(x−1)dx = [½x² − x]₀¹ + [½x² − x]₁³ = (½ − 1) − 0 + (4.5 − 3) − (0.5 − 1) = (−0.5) + (1.5 + 0.5) = −0.5 + 2 = 1.5. Total area = |∫₀¹(x−1)dx| + ∫₁³(x−1)dx = 0.5 + 2 = 2.5. They differ because the function dips below the axis on [0,1]; the net area subtracts that region while the total area adds its absolute value."
+/>
+
+<ExerciseBlock number={5}
+  prompt="The area function is defined as A(x) = ∫₀ˣ f(t) dt. Explain in words what A(x) measures, and predict (without proof) the sign of A'(x) in terms of f."
+  hint="A(x) is a running total. As x increases by a tiny dx, how much new area gets added? What is its sign when f is positive?"
+  answer="A(x) measures the net area accumulated from 0 up to x — the running total of f from the starting point. As x increases by a tiny dx, the new area added is approximately f(x)·dx, so A grows when f(x) > 0 and shrinks when f(x) < 0. This means A'(x) should have the same sign as f(x) — and the Fundamental Theorem will confirm the precise statement A'(x) = f(x)."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Water flows into a tank at a rate of r(t) = 100 + 20t liters per minute (the rate itself increases over time). Approximate the total volume of water that enters between t = 0 and t = 3 by partitioning into 3 one-minute intervals and summing rectangles (left-endpoint heights). Then explain how the exact answer relates to an integral."
+  hint="Use Δt = 1. The left endpoints are t = 0, 1, 2. Sum r(tᵢ)·Δt. The exact total is the integral of the rate."
+  answer="Left-endpoint approximation: r(0)·1 + r(1)·1 + r(2)·1 = 100 + 120 + 140 = 360 liters. The exact total volume is ∫₀³ (100 + 20t) dt, which is the area of a trapezoid under the line r(t) = 100 + 20t: average height (100 + 160)/2 times width 3 = 130·3 = 390 liters. Our left-endpoint sum underestimated because the rate is increasing. This is the sigma-to-integral idea: thinner partitions give better approximations, and the exact answer is the limit — the integral."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Explain in your own words why the integral symbol ∫ is described as a 'stretched S,' and why partitioning the region into rectangles is the natural geometric picture of accumulation. Connect the discrete sum Σ to the continuous integral ∫."
+  hint="What does each symbol represent? What does a rectangle of height f and width dx embody? What happens to the sum as the rectangles get infinitely thin?"
+  answer="The ∫ symbol is literally an elongated letter S, standing for 'sum.' The discrete sum Σ adds finitely many terms; the integral ∫ adds continuously many infinitesimal contributions. Partitioning into rectangles is natural because a rectangle of height f and width dx is the geometric embodiment of 'value × tiny slice' — rate times time, or force times distance. As we let the slice width dx shrink to zero and the number of slices grow without bound, the discrete sum Σ f(xᵢ)Δx becomes the continuous integral ∫f dx. The rectangles 'melt' into the smooth area, and the approximation becomes exact. Accumulation is continuous addition; area is its picture."
+/>
+
+---
+
+**Up next:** [Riemann Sums](/courses/calculus/10-riemann-sums)

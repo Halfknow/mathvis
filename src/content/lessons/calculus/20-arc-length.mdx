@@ -18,12 +18,36 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { ArcLengthExplorer } from '../../../components/interactive/calculus/ArcLengthExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-We've computed areas and volumes. Now we measure **length** -- how long is a curve? -- and **surface area** -- how much paint to cover a surface of revolution? Arc length is the Pythagorean theorem distributed across infinitely many tiny right triangles. Each triangle has legs $dx$ and $dy$; the hypotenuse $\sqrt{dx^2 + dy^2}$ is the arc length element. The integral adds up all those tiny hypotenuses to get the total length.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+We have computed areas and volumes. Now we measure **length** — how long is a curve? — and **surface area** — how much paint covers a surface of revolution? Arc length is the **Pythagorean theorem distributed across infinitely many tiny right triangles**. Each triangle has legs $dx$ and $dy$; the hypotenuse <MathInline expression={"\\sqrt{dx^2 + dy^2}"} /> is the arc-length element $ds$. The integral adds up all those tiny hypotenuses to get the total length. The same $ds$, when multiplied by the circumference traced by rotating a point, gives surface area. Both formulas are applications of the Pythagorean theorem, lifted from a single right triangle to a continuous curve.
+
+## Theorem: Arc length
+
+If $y = f(x)$ is continuously differentiable on $[a, b]$ (meaning $f'$ exists and is continuous), then the length of the curve from $x = a$ to $x = b$ is:
+
+<MathBlock expression={"L = \\int_a^b \\sqrt{1 + \\bigl(f'(x)\\bigr)^{2}}\\, dx"} />
+
+**Hypothesis:** $f'$ continuous on $[a, b]$. **Conclusion:** the curve has a well-defined arc length given by the integral.
+
+### Derivation from the Pythagorean theorem
+
+Partition $[a, b]$ into tiny intervals of width $\Delta x$. Over each interval, the curve rises by approximately $\Delta y \approx f'(x) \cdot \Delta x$. The straight-line distance between two nearby points on the curve is, by the Pythagorean theorem:
+
+<MathBlock expression={"\\Delta s = \\sqrt{(\\Delta x)^2 + (\\Delta y)^2} = \\sqrt{(\\Delta x)^2 + \\bigl(f'(x)\\,\\Delta x\\bigr)^{2}} = \\sqrt{1 + \\bigl(f'(x)\\bigr)^{2}}\\,\\Delta x"} />
+
+Summing all these hypotenuses and taking the limit $\Delta x \to 0$ gives the integral. In differential form:
+
+<MathBlock expression={"ds^2 = dx^2 + dy^2, \\qquad ds = \\sqrt{1 + \\Big(\\frac{dy}{dx}\\Big)^2}\\, dx"} />
+
+This is the **arc-length element** $ds$ — the infinitesimal hypotenuse. The continuity of $f'$ is what guarantees the limit exists; without it, the curve could be infinitely crinkly (like the Weierstrass function) and have infinite or undefined length.
 
 <InteractiveCanvas
   title="Arc Length Explorer"
@@ -33,58 +57,137 @@ We've computed areas and volumes. Now we measure **length** -- how long is a cur
   <ArcLengthExplorer client:visible />
 </InteractiveCanvas>
 
-## Arc length
+<FormulaReadout formulas={[
+  { label: "弧长（毕达哥拉斯定理的积分版）", expression: "L = \\int_a^b \\sqrt{1 + \\bigl(f'(x)\\bigr)^{2}}\\, dx" },
+  { label: "弧长微元 $ds$", expression: "ds^{2} = dx^{2} + dy^{2}, \\quad ds = \\sqrt{1 + (dy/dx)^{2}}\\, dx" },
+  { label: "旋转曲面面积", expression: "S = 2\\pi \\int_a^b f(x)\\sqrt{1 + \\bigl(f'(x)\\bigr)^{2}}\\, dx" },
+  { label: "参数曲线的弧长", expression: "L = \\int_a^b \\sqrt{\\bigl(x'(t)\\bigr)^{2} + \\bigl(y'(t)\\bigr)^{2}}\\, dt" },
+]} />
 
-A curve $y = f(x)$ from $x = a$ to $x = b$ can be approximated by many short line segments. Each segment has length $\sqrt{(\Delta x)^2 + (\Delta y)^2}$ by the Pythagorean theorem. Sum them and take the limit:
+### Example: Length of <MathInline expression={"y = x^{3/2}"} /> from $x = 0$ to $x = 4$
 
-<MathBlock expression={"L = \\int_a^b \\sqrt{1 + [f'(x)]^2}\\, dx"} />
+<MathBlock expression={"f'(x) = \\frac{3}{2}x^{1/2}, \\quad \\bigl(f'(x)\\bigr)^{2} = \\frac{9}{4}x"} />
 
-The formula is the integral version of the Pythagorean theorem: at each point, the infinitesimal arc length is $\sqrt{dx^2 + dy^2} = \sqrt{1 + (dy/dx)^2}\, dx$.
+<MathBlock expression={"L = \\int_0^4 \\sqrt{1 + \\tfrac{9}{4}x}\\, dx = \\frac{4}{9} \\cdot \\frac{2}{3}\\left(1 + \\tfrac{9}{4}x\\right)^{3/2}\\Big|_0^4 = \\frac{8}{27}\\bigl(10^{3/2} - 1\\bigr)"} />
 
-### Example: Length of $y = x^{3/2}$ from $x = 0$ to $x = 4$
+Here a u-substitution (<MathInline expression={"u = 1 + \\tfrac{9}{4}x"} />) made the integral tractable. The numerical value is about $9.07$.
 
-<MathBlock expression={"f'(x) = \\frac{3}{2}x^{1/2}, \\quad [f'(x)]^2 = \\frac{9}{4}x"} />
-<MathBlock expression={"L = \\int_0^4 \\sqrt{1 + \\frac{9}{4}x}\\, dx = \\frac{4}{9} \\cdot \\frac{2}{3}\\left(1 + \\frac{9}{4}x\\right)^{3/2}\\Big|_0^4 = \\frac{8}{27}(10^{3/2} - 1)"} />
+## Why arc-length integrals are often hard
 
-## Surface area
+Unlike area and volume integrals, arc-length integrals have a **square root** of a sum in the integrand. That structure resists the standard techniques:
 
-When $y = f(x)$ from $x = a$ to $x = b$ is rotated around the x-axis, the surface area is:
+<MathBlock expression={"L = \\int \\sqrt{1 + \\bigl(f'(x)\\bigr)^{2}}\\, dx"} />
 
-<MathBlock expression={"S = 2\\pi \\int_a^b f(x) \\sqrt{1 + [f'(x)]^2}\\, dx"} />
+The <MathInline expression={"\\sqrt{1 + (\\ldots)^2}"} /> form rarely matches the [antiderivative table](/courses/calculus/13-antiderivatives). It often requires trigonometric substitution (as in the <MathInline expression={"\\int \\sqrt{1 + 9x^2}\\, dx"} /> type), and even then the result is usually messy. Many "innocent-looking" curves — $y = \sin x$, $y = e^x$ — have arc lengths expressible only through **elliptic integrals**, which are *special functions* outside the elementary toolkit. The practical lesson: set up the integral symbolically (it is always <MathInline expression={"\\int \\sqrt{1 + f'^2}\\, dx"} />), then evaluate numerically if no closed form exists.
 
-This is the circumference ($2\pi r = 2\pi f(x)$) times the arc length element, integrated over the curve.
+### The parametric escape hatch
+
+When the curve is given parametrically as $(x(t), y(t))$ for $t \in [a, b]$, the arc-length formula becomes:
+
+<MathBlock expression={"L = \\int_a^b \\sqrt{\\bigl(x'(t)\\bigr)^{2} + \\bigl(y'(t)\\bigr)^{2}}\\, dt"} />
+
+This is the same <MathInline expression={"ds = \\sqrt{dx^2 + dy^2}"} />, just divided through by $dt^2$. The parametric form is often **cleaner** — for example, a circle of radius $R$ parametrized by $(R\cos t, R\sin t)$ gives <MathInline expression={"L = \\int_0^{2\\pi} \\sqrt{R^2\\sin^2 t + R^2\\cos^2 t}\\, dt = \\int_0^{2\\pi} R\\, dt = 2\\pi R"} />. The Pythagorean identity collapses the integrand to a constant. Parametric curves are the natural language for arc length, which is why the [parametric and polar lessons](/courses/calculus) later generalize these formulas.
+
+## Surface area of revolution
+
+When $y = f(x) \ge 0$ from $x = a$ to $x = b$ is rotated around the $x$-axis, the curve sweeps out a **surface of revolution**. Its area is:
+
+<MathBlock expression={"S = 2\\pi \\int_a^b f(x) \\sqrt{1 + \\bigl(f'(x)\\bigr)^{2}}\\, dx"} />
+
+**Geometric meaning:** the integrand has two factors. The $2\pi f(x)$ is the **circumference** traced by the point $(x, f(x))$ as it rotates — a thin band of width $2\pi r$ where $r = f(x)$ is the radius. The <MathInline expression={"\\sqrt{1 + f'(x)^2}\\, dx"} /> is the **arc-length element** $ds$ of the generating curve. Multiplying the two gives the area of an infinitesimal **frustum** (a sliced cone), and integrating adds up all the frustums. This is the surface-area analog of the disk method: circumference × arc-length, integrated.
 
 ### Example: Surface area of a sphere
 
-Rotate $y = \sqrt{R^2 - x^2}$ from $x = -R$ to $x = R$ around the x-axis.
+Rotate <MathInline expression={"y = \\sqrt{R^2 - x^2}"} /> from $x = -R$ to $x = R$ around the $x$-axis:
 
-<MathBlock expression={"f'(x) = \\frac{-x}{\\sqrt{R^2 - x^2}}, \\quad 1 + [f'(x)]^2 = \\frac{R^2}{R^2 - x^2}"} />
+<MathBlock expression={"f'(x) = \\frac{-x}{\\sqrt{R^2 - x^2}}, \\quad 1 + \\bigl(f'(x)\\bigr)^{2} = 1 + \\frac{x^2}{R^2 - x^2} = \\frac{R^2}{R^2 - x^2}"} />
+
 <MathBlock expression={"S = 2\\pi \\int_{-R}^{R} \\sqrt{R^2 - x^2} \\cdot \\frac{R}{\\sqrt{R^2 - x^2}}\\, dx = 2\\pi R \\int_{-R}^{R} dx = 4\\pi R^2"} />
 
-The classic formula $S = 4\pi R^2$ emerges naturally from the integral.
+The radical cancels beautifully, and the classic formula $S = 4\pi R^2$ emerges. Notice the cancellation happens because <MathInline expression={"f(x) \\cdot \\sqrt{1 + f'^2}"} /> simplifies for a circle — a small miracle tied to the circle's constant curvature.
+
+### Gabriel's Horn: a famous paradox
+
+Rotate $y = 1/x$ from $x = 1$ to $\infty$ around the $x$-axis. The volume is:
+
+<MathBlock expression={"V = \\pi \\int_1^{\\infty} \\frac{1}{x^2}\\, dx = \\pi"} />
+
+— a finite volume. But the surface area is:
+
+<MathBlock expression={"S = 2\\pi \\int_1^{\\infty} \\frac{1}{x}\\sqrt{1 + \\frac{1}{x^4}}\\, dx \\ge 2\\pi \\int_1^{\\infty} \\frac{1}{x}\\, dx = \\infty"} />
+
+— infinite surface area. Gabriel's Horn has **finite volume but infinite surface area**: you could fill it with $\pi$ units of paint, but you could never paint its surface. This "paradox" is resolved by noting that real paint has thickness, and the surface-area calculation assumes infinitesimally thin paint — a nice lesson in the difference between mathematical idealization and physical reality.
+
+## Three perspectives on arc length
+
+- **Geometry (Pythagorean):** at every point, <MathInline expression={"ds = \\sqrt{dx^2 + dy^2}"} />. The integral sums the infinitesimal hypotenuses.
+- **Approximation (polygonal):** approximate the curve by $n$ line segments; the total length converges to the arc length as $n \to \infty$. This is how computers compute arc length numerically.
+- **Parametric (invariant):** <MathInline expression={"L = \\int \\sqrt{x'(t)^2 + y'(t)^2}\\, dt"} /> is independent of parametrization — reparametrizing the curve gives the same length. Arc length is a *geometric* property of the curve, not of how you describe it.
+
+## Modern applications
+
+In **computer graphics and robotics**, arc length is essential for path planning, motion control, and rendering. Moving a robot arm along a curve at constant *speed* requires computing the arc-length parametrization — reparametrizing the curve so that equal increments of the parameter correspond to equal increments of distance. Spline curves in animation are sampled by arc length to produce smooth, even motion.
+
+In **geographic information systems (GIS)**, the length of roads, rivers, and coastlines is computed via arc-length integrals (or their discrete approximations). The famous **coastline paradox** — that a coastline's measured length depends on the ruler's length — is the discrete analog of arc-length integrals diverging for sufficiently crinkly curves (fractals).
+
+In **physics**, arc length parametrization simplifies the equations of motion: a particle's velocity vector has unit magnitude when parametrized by arc length, turning the kinematics into pure geometry. The action principle in mechanics minimizes an arc-length-like functional (geodesics on curved surfaces).
+
+In **machine learning**, manifold learning algorithms (isomap, t-SNE) estimate geodesic distances along data manifolds — generalizations of arc length to high-dimensional curved surfaces. The arc-length formula is the one-dimensional seed of Riemannian geometry.
 
 <KeyInsight>
-Arc length integrates the infinitesimal hypotenuse √(1 + f′²) along the curve. Surface area multiplies each arc length element by the circumference at that height. Both formulas extend the Pythagorean theorem to continuous curves.
+Arc length is the Pythagorean theorem lifted to a continuous curve: $L = \int_a^b \sqrt(1 + f'(x)^2)\, dx$, where $ds = \sqrt(dx^2 + dy^2)$ is the infinitesimal hypotenuse at each point. The continuity of f' guarantees the curve has a well-defined length. Arc-length integrals are often hard because the $\sqrt(1 + f'^2)$ structure resists elementary antiderivatives — many curves (sin, exp) require elliptic integrals. The parametric form $L = \int \sqrt(x'^2 + y'^2)\, dt$ is cleaner and parametrization-invariant. Surface area of revolution multiplies the arc-length element by the circumference: $S = 2\pi \int f(x)\sqrt(1 + f'^2)\, dx$. Gabriel's Horn (finite volume, infinite surface area) shows these two integrals can behave wildly differently. Arc length is the seed of geodesics, manifold learning, and motion planning.
 </KeyInsight>
+
+## Connections
+
+This lesson completes the **applications of integration** module, alongside [area between curves](/courses/calculus/17-area-between-curves), [volumes by slicing](/courses/calculus/18-volumes-by-slicing), and [volumes of revolution](/courses/calculus/19-volumes-of-revolution). The surface-area formula is the natural sibling of the [volume of revolution](/courses/calculus/19-volumes-of-revolution) — rotating a curve sweeps a surface (whose area we measure here), rotating a region sweeps a solid (whose volume we measured there). The arc-length element <MathInline expression={"ds = \\sqrt{1 + f'^2}\\, dx"} /> generalizes to parametric and polar curves, where it becomes the foundation for line integrals in multivariable calculus.
+
+Across disciplines, arc length is the one-dimensional seed of deep geometric ideas: geodesics on manifolds in physics and differential geometry, path-length estimation in robotics and GIS, even-distance sampling in computer animation, and manifold distance estimation in machine learning. Wherever you measure "how long is a curve" — in 2D, 3D, or high-dimensional curved spaces — the arc-length integral is the starting point.
 
 ## Practice
 
 <ExerciseBlock number={1}
   prompt="Find the length of y = ln(cos x) from x = 0 to x = π/4."
-  hint="f'(x) = −sin(x)/cos(x) = −tan(x). Compute 1 + tan²(x)."
-  answer="1 + tan²(x) = sec²(x). √(sec²(x)) = sec(x). L = ∫₀^{π/4} sec(x) dx = ln|sec(x) + tan(x)|₀^{π/4} = ln(√2 + 1)."
+  hint="f'(x) = −tan(x). Compute 1 + tan²(x) using a Pythagorean identity."
+  answer="f'(x) = −sin(x)/cos(x) = −tan(x), so [f'(x)]² = tan²(x). Then 1 + tan²(x) = sec²(x), so √(1 + [f']²) = √(sec²(x)) = sec(x) (positive on [0, π/4]). L = ∫₀^{π/4} sec(x) dx = [ln|sec(x) + tan(x)|]₀^{π/4} = ln(√2 + 1) − ln(1 + 0) = ln(√2 + 1). The Pythagorean identity 1 + tan² = sec² turned a messy radical into a clean trig function — the same trick that makes trigonometric substitution work."
 />
 
 <ExerciseBlock number={2}
   prompt="Find the arc length of y = (2/3)x^{3/2} from x = 0 to x = 3."
-  hint="f'(x) = x^{1/2} = √x. Compute 1 + x."
-  answer="1 + (√x)² = 1 + x. L = ∫₀³ √(1 + x) dx = [(2/3)(1 + x)^{3/2}]₀³ = (2/3)(8 − 1) = 14/3."
+  hint="f'(x) = x^{1/2} = √x. Compute 1 + (√x)² = 1 + x, then integrate √(1 + x)."
+  answer="f'(x) = √x, so [f'(x)]² = x, and 1 + [f'(x)]² = 1 + x. L = ∫₀³ √(1 + x) dx = [(2/3)(1 + x)^{3/2}]₀³ = (2/3)(4^{3/2} − 1^{3/2}) = (2/3)(8 − 1) = 14/3. The integrand √(1 + x) was a perfect u-substitution candidate (u = 1 + x). Note the curve was designed so that 1 + [f']² is a perfect square — a common textbook pattern that avoids elliptic integrals."
 />
 
 <ExerciseBlock number={3}
-  prompt="The surface area formula S = 2π∫ f(x)√(1+f′²) dx has two factors. What does each one represent geometrically?"
-  hint="2πf(x) is a circumference. √(1+f′²) dx is a length."
-  answer="2πf(x) is the circumference of the circle traced by the point (x, f(x)) as it rotates — the 'unwrapped' band width. √(1 + f′²) dx is the arc length of the curve element at that x. Their product is the area of a thin band, and integrating adds up all the bands."
+  prompt="Find the length of a circle of radius R using the parametric form. Parametrize as x = R cos t, y = R sin t for t ∈ [0, 2π]."
+  hint="Compute x'(t) and y'(t), then √(x'² + y'²). A Pythagorean identity should collapse the radical."
+  answer="x(t) = R cos t, y(t) = R sin t. Then x'(t) = −R sin t, y'(t) = R cos t. So x'² + y'² = R²sin²(t) + R²cos²(t) = R²(sin² + cos²) = R². Hence √(x'² + y'²) = R (taking the positive root). L = ∫₀^{2π} R dt = R · 2π = 2πR. The Pythagorean identity collapsed the integrand to a constant, giving the familiar circumference formula in one line. This is the parametric form's power: the circle's rotational symmetry makes the calculation trivial, whereas computing the same length using y = √(R² − x²) (with two pieces and a messy radical) would be much harder."
 />
 
-[Next Lesson →](/courses/calculus/21-sequences)
+<ExerciseBlock number={4}
+  prompt="Find the surface area of the surface formed by rotating y = x³ from x = 0 to x = 1 around the x-axis. Set up the integral and simplify as far as you can."
+  hint="f'(x) = 3x², so 1 + [f']² = 1 + 9x⁴. The surface area is S = 2π ∫₀¹ x³ √(1 + 9x⁴) dx. Try a u-substitution."
+  answer="f'(x) = 3x², so [f'(x)]² = 9x⁴, and 1 + [f'(x)]² = 1 + 9x⁴. Surface area: S = 2π ∫₀¹ x³ √(1 + 9x⁴) dx. Use u-substitution: let u = 1 + 9x⁴, du = 36x³ dx, so x³ dx = du/36. When x = 0: u = 1; when x = 1: u = 10. So S = 2π ∫₁^{10} √u · (du/36) = (2π/36) · (2/3) u^{3/2} |₁^{10} = (π/27)(10^{3/2} − 1). Numerically about 3.56. The substitution worked because the x³ outside the radical matched (up to a constant) the derivative of the 9x⁴ inside — the [u-substitution](/courses/calculus/14-u-substitution) fingerprint."
+/>
+
+<ExerciseBlock number={5}
+  prompt="The surface area formula S = 2π∫ f(x)√(1 + f'(x)²) dx has two factors in the integrand. Explain what each factor represents geometrically, and why the product gives surface area."
+  hint="2π f(x) is a circumference. √(1 + f'²) dx is the arc-length element ds. Their product is the lateral area of a thin frustum."
+  answer="Factor 1: 2π f(x) is the circumference of the circle traced by the point (x, f(x)) when rotated around the x-axis. As x varies, this is the radius-dependent circumference — a band of width 2πr at height f(x). Factor 2: √(1 + [f'(x)]²) dx is the arc-length element ds of the generating curve — the slanted width of the band along the curve's direction. Their product 2π f(x) · ds is the lateral surface area of an infinitesimal frustum (a thin slice of a cone): circumference × slant height. Integrating adds up all these frustums to give the total surface area. This is the surface-area analog of the disk method for volumes: disks stack cross-sectional areas, while frustums stack circumferences × arc lengths. The factor 2π f(x) is what distinguishes surface area from arc length — set it to 1 and you recover the arc-length integral."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Gabriel's Horn is the surface formed by rotating y = 1/x (for x ≥ 1) around the x-axis. Show that its volume is finite (V = π) but its surface area is infinite. Explain the apparent paradox: how can a finite-volume solid have infinite surface area?"
+  hint="Volume: V = π ∫_1^∞ (1/x)² dx = π ∫_1^∞ x^{-2} dx, which converges. Surface area: S = 2π ∫_1^∞ (1/x)√(1 + 1/x⁴) dx ≥ 2π ∫_1^∞ (1/x) dx, which diverges (harmonic series)."
+  answer="Volume: V = π ∫_1^∞ (1/x)² dx = π [−1/x]_1^∞ = π (0 − (−1)) = π. Finite. Surface area: S = 2π ∫_1^∞ (1/x)√(1 + 1/x⁴) dx. Since √(1 + 1/x⁴) ≥ 1, we have S ≥ 2π ∫_1^∞ (1/x) dx = 2π [ln x]_1^∞ = ∞. So the surface area diverges by comparison with the harmonic integral. The paradox: you can fill the horn with π cubic units of paint (finite volume), but you cannot paint its surface (infinite area). Resolution: 'painting' mathematically means coating with a layer of zero thickness, so the paint volume used is surface_area × 0, which is indeterminate — the idealization breaks down. Real paint has positive thickness δ, so painting requires volume ≥ S × δ = ∞. Conversely, filling with paint of finite volume V requires the paint to be thicker than V/S = 0 — which is consistent. There is no contradiction; the two operations (filling the interior vs. coating the surface) are physically and mathematically distinct. Gabriel's Horn is a beautiful demonstration that 'volume' and 'surface area' measure very different things."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Derive the arc-length formula L = ∫_a^b √(1 + [f'(x)]²) dx from the Pythagorean theorem. State the hypotheses and explain why the continuity of f' is necessary."
+  hint="Partition [a, b] into n subintervals. On each, approximate the curve by a line segment of length √(Δx² + Δy²). Use Δy ≈ f'(x)Δx. Take the limit as n → ∞."
+  answer="Partition [a, b] into n subintervals of width Δx = (b − a)/n, with partition points x_i = a + iΔx. On each subinterval [x_{i−1}, x_i], the curve y = f(x) is approximated by the line segment from (x_{i−1}, f(x_{i−1})) to (x_i, f(x_i)). The length of this segment, by the Pythagorean theorem, is √(Δx² + Δy_i²) where Δy_i = f(x_i) − f(x_{i−1}). By the Mean Value Theorem (which requires f differentiable on (x_{i−1}, x_i) and continuous on [x_{i−1}, x_i]), Δy_i = f'(c_i) Δx for some c_i in (x_{i−1}, x_i). So the segment length is √(Δx² + [f'(c_i)Δx]²) = √(1 + [f'(c_i)]²) · Δx. The total polygonal length is L_n = Σ_i √(1 + [f'(c_i)]²) Δx, which is a Riemann sum for the function g(x) = √(1 + [f'(x)]²). If f' is continuous on [a, b], then g is continuous (composition of continuous functions), hence integrable, and L_n → ∫_a^b √(1 + [f'(x)]²) dx as n → ∞. We define this limit to be the arc length L. Why continuity of f' is necessary: the convergence L_n → L requires g to be Riemann-integrable. Continuity of f' guarantees this. Without continuity, the curve could be infinitely crinkly (think of the Weierstrass function, which is continuous but nowhere differentiable, or functions with discontinuous derivatives that oscillate wildly), and the polygonal approximations might fail to converge — or converge to infinity. The continuity of f' is what makes the curve 'smooth enough' to have a well-defined, finite length."
+/>
+
+---
+
+**Up next:** [Sequences](/courses/calculus/21-sequences)

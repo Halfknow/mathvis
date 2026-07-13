@@ -12,31 +12,77 @@ duration: 18
 difficulty: "Intermediate"
 ---
 
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
 So far we have studied one random variable at a time — a single landscape of probability, a single curve. But the real world rarely deals in isolation. Height and weight arrive together. A stock's price today and tomorrow are entangled. Two dice land simultaneously. When two random variables share the same probability space, we need a map that shows them *both* at once.
 
-That map is the **joint distribution**. It tells you the probability of every possible *pair* of outcomes — not just how $X$ behaves on its own, and not just how $Y$ behaves on its own, but how they behave *together*.
+That map is the **joint distribution**. It tells you the probability of every possible *pair* of outcomes — not just how $X$ behaves on its own, and not just how $Y$ behaves on its own, but how they behave *together*. This is the leap from one dimension to two, and it is the gateway to every multivariate idea in statistics and machine learning.
 
 ## The discrete case: a table of pairs
 
-Suppose you roll two dice. Call the first die $X$ and the second $Y$. Each die has six faces, so there are $6 \times 6 = 36$ possible pairs. The joint probability mass function (joint PMF) assigns a probability to each cell in a grid:
+Suppose you roll two dice. Call the first die $X$ and the second $Y$. Each die has six faces, so there are $6 \times 6 = 36$ possible pairs. The **joint probability mass function** (joint PMF) assigns a probability to each cell in a grid:
 
-$$p(x_i, y_j) = P(X = x_i \text{ and } Y = y_j)$$
+$<MathInline expression={"p(x_i, y_j) = P(X = x_i \\text{ and } Y = y_j)"} />$
 
 For two fair dice, every cell gets $1/36$. The table is flat — no cell is brighter than any other. But now suppose the dice are loaded, or suppose $X$ and $Y$ are not dice at all but something entangled — say, daily temperature and ice cream sales. Now some cells glow bright (hot day, lots of ice cream) and others are nearly dark (hot day, zero ice cream). The pattern of brightness across the grid *is* the joint distribution.
 
-The only constraint: every probability must be non-negative, and all cells must sum to 1.
+### Theorem: Valid joint PMFs
+
+A function $p(x_i, y_j)$ is a valid joint PMF if and only if it satisfies two conditions:
+
+1. **Non-negativity:** $p(x_i, y_j) \geq 0$ for every pair $(x_i, y_j)$.
+2. **Normalization:** the total mass over all pairs is exactly 1.
 
 $$\sum_i \sum_j p(x_i, y_j) = 1$$
+
+The intuition is the probability axiom "total probability is 1," applied to the sample space of all *pairs* of outcomes. Every probability mass function, no matter how many variables, must be a non-negative thing that sums to one.
+
+### A fully worked joint PMF table
+
+Let $X$ be the number of heads in two coin flips, and let $Y$ be the number of heads on the first flip alone. The four equally likely outcomes are HH, HT, TH, TT (each with probability $1/4$). The joint PMF:
+
+| | Y = 0 | Y = 1 | $p_X(x)$ |
+|---|---|---|---|
+| **X = 0** | 1/4 (TT) | 0 | 1/4 |
+| **X = 1** | 1/4 (TH) | 1/4 (HT) | 1/2 |
+| **X = 2** | 0 | 1/4 (HH) | 1/4 |
+| **$p_Y(y)$** | 1/2 | 1/2 | 1 |
+
+Check normalization: $1/4 + 0 + 1/4 + 1/4 + 0 + 1/4 = 1$. Good. The zeros tell you something structural: if the first flip is heads ($Y = 1$), then $X$ cannot be 0 (you already have one head). And if the first flip is tails ($Y = 0$), then $X$ cannot be 2. The pattern of zeros and non-zeros in the grid is the fingerprint of the relationship between $X$ and $Y$. The row and column totals in the margins are the **marginal distributions**, which we will study in detail in the next lesson.
 
 ## The continuous case: a surface over the plane
 
 When $X$ and $Y$ are continuous, the table becomes a smooth surface. The **joint probability density function** (joint PDF) $f(x, y)$ is a landscape stretched over the $xy$-plane. There are hills where pairs are likely and valleys where pairs are rare.
 
-$$P(a \leq X \leq b \text{ and } c \leq Y \leq d) = \int_a^b \int_c^d f(x, y)\,dy\,dx$$
+$$P(a \leq X \leq b, \; c \leq Y \leq d) = \int_c^d \int_a^b f(x, y)\,dx\,dy$$
 
 The probability of a rectangular region is the **volume** under the surface — just as the probability for one continuous variable was the *area* under its curve. We have gone from a 2D picture (one variable) to a 3D picture (two variables). The total volume under the entire surface is 1.
 
-Picture a heat map laid flat on a table. Bright regions are high probability; dark regions are low probability. Now inflate the bright regions upward into hills and push the dark regions down into valleys. That inflated landscape is $f(x, y)$.
+### The support region
+
+A key new idea in the continuous case is the **support** — the region of the $xy$-plane where the density is positive. For a joint PDF, the support can be a rectangle (like $0 \leq x \leq 1$, $0 \leq y \leq 1$), but it can also be a triangle, a disk, or any other shape. The shape of the support already tells you a great deal about how the variables relate.
+
+Consider $f(x, y) = 2$ on the triangle $0 \leq y \leq x \leq 1$, and zero elsewhere. The support is the region *below* the line $y = x$. This triangular support encodes a relationship: $Y$ can never exceed $X$. The variables are entangled purely through the geometry of where they are allowed to live, before we even look at the height of the density. Verifying normalization:
+
+$$\int_0^1 \int_0^x 2\,dy\,dx = \int_0^1 2x\,dx = \left[x^2\right]_0^1 = 1$$
+
+Good — this is a valid joint PDF.
+
+### Theorem: Valid joint PDFs
+
+A function $f(x, y)$ is a valid joint PDF if and only if:
+
+1. **Non-negativity:** $f(x, y) \geq 0$ for all $(x, y)$.
+2. **Normalization:** the total integral over the entire plane is exactly 1.
+
+$<MathInline expression={"\\int_{-\\infty}^{\\infty} \\int_{-\\infty}^{\\infty} f(x, y)\\,dx\\,dy = 1"} />$
+
+This is the continuous analog of the PMF normalization condition. The density can be zero outside the support, but wherever it is positive, its total volume must be 1.
 
 ## The geometry of concentration
 
@@ -44,42 +90,100 @@ Where the mass concentrates tells you how $X$ and $Y$ relate. If the bright ridg
 
 This ridge direction is the visual signature of dependence. In the next lessons we will give it precise names — covariance, correlation, conditional distributions. But the raw geometry comes first. Before you compute anything, look at the landscape. Where is the mass?
 
-### A concrete example
+## The multivariate normal and the covariance matrix
 
-Let $X$ be the number of heads in two coin flips, and let $Y$ be the number of heads on the first flip alone. The joint PMF:
+The most important joint distribution in all of statistics is the **multivariate normal** (or multivariate Gaussian). For two variables, its density is a smooth bell-shaped hill over the $xy$-plane:
 
-| | Y = 0 | Y = 1 |
-|---|---|---|
-| X = 0 | 1/4 | 0 |
-| X = 1 | 1/4 | 1/2 |
-| X = 2 | 0 | 1/4 |
+$<MathInline expression={"f(\\mathbf{x}) = \\frac{1}{2\\pi\\,|\\Sigma|^{1/2}} \\exp\\!\\left(-\\tfrac{1}{2}(\\mathbf{x} - \\boldsymbol{\\mu})^\\top \\Sigma^{-1} (\\mathbf{x} - \\boldsymbol{\\mu})\\right)"} />$
 
-The zeros tell you something: if the first flip is heads ($Y = 1$), then $X$ cannot be 0 (you already have one head). And if the first flip is tails ($Y = 0$), then $X$ cannot be 2 (you need both flips to be heads, but the first is tails). The pattern of zeros and non-zeros in the grid is the fingerprint of the relationship between $X$ and $Y$.
+where <MathInline expression={"\\mathbf{x} = (x, y)^\\top"} />, <MathInline expression={"\\boldsymbol{\\mu} = (\\mu_X, \\mu_Y)^\\top"} /> is the vector of means, and $\Sigma$ is the **covariance matrix**:
 
-## From joint to individual: a preview
+$<MathInline expression={"\\Sigma = \\begin{pmatrix} \\text{Var}(X) & \\text{Cov}(X, Y) \\\\ \\text{Cov}(X, Y) & \\text{Var}(Y) \\end{pmatrix}"} />$
 
-If you have the full joint distribution, you can recover each variable's individual distribution. For the discrete case, sum along rows or columns:
+The level curves of this density are **ellipses**. The shape of those ellipses — their orientation, eccentricity, and size — is completely determined by $\Sigma$. This matrix is the central object in all of multivariate statistics, and we will devote the next two lessons to unpacking its entries: the variances on the diagonal and the covariance off the diagonal. For now, the key takeaway is this: the joint distribution of two correlated normal variables is an elliptical hill, and that ellipse *is* the geometric picture of the covariance matrix.
 
-$$p_X(x) = \sum_j p(x, y_j)$$
+<FormulaReadout formulas={[
+  { label: "联合 PMF (离散)", expression: "p(x_i, y_j) = P(X = x_i,\\, Y = y_j), \\quad \\sum_{i,j} p(x_i,y_j) = 1" },
+  { label: "联合 PDF (连续)", expression: "f(x,y) \\geq 0, \\quad \\iint f(x,y)\\,dx\\,dy = 1" },
+  { label: "矩形区域概率 = 体积", expression: "P(a \\leq X \\leq b,\\, c \\leq Y \\leq d) = \\int_c^d\\!\\!\\int_a^b f(x,y)\\,dx\\,dy" },
+  { label: "协方差矩阵 (二元正态)", expression: "\\Sigma = \\begin{pmatrix} \\text{Var}(X) & \\text{Cov}(X,Y) \\\\ \\text{Cov}(X,Y) & \\text{Var}(Y) \\end{pmatrix}" },
+]} />
 
-$$p_Y(y) = \sum_i p(x_i, y)$$
+## Three perspectives on joint distributions
 
-Geometrically: collapse the heat map by projecting all the brightness onto one axis. The result is the **marginal distribution** — the profile you see when you squint and look at only one variable, ignoring the other. We will explore this in depth in the next lesson.
+1. **Tabular (discrete):** the joint PMF is a grid of probabilities. Each cell is $P(X = x_i, Y = y_j)$, the cells sum to 1, and the pattern of zeros and bright spots encodes the relationship. This is the cleanest mental model — start here.
+2. **Geometric (continuous):** the joint PDF is a surface over the $xy$-plane, and probabilities are volumes under that surface. The **support region** (where the density is positive) and the **ridges** (where mass concentrates) are the two geometric features that matter most.
+3. **Algebraic (the covariance matrix):** for the multivariate normal, the entire shape of the joint distribution is captured by a single matrix $\Sigma$. This is the viewpoint that scales to high dimensions and powers modern statistics and machine learning.
 
-## Key insight
+## Modern applications
 
-> A joint distribution is a landscape of pairs — a heat map (discrete) or a surface (continuous) that shows where probability mass concentrates across all possible combinations of two variables. The shape of that landscape — its ridges, valleys, and symmetry — encodes everything about how the two variables relate.
+**Gaussian mixture models (GMMs).** Not every joint distribution is a single bell. A Gaussian mixture model expresses a joint distribution as a weighted sum of several multivariate Gaussians, each with its own mean and covariance matrix: <MathInline expression={"f(\\mathbf{x}) = \\sum_k \\pi_k \\, \\mathcal{N}(\\mathbf{x}; \\boldsymbol{\\mu}_k, \\Sigma_k)"} />. This produces a landscape with multiple hills — perfect for modeling data that clusters into several groups (different customer segments, different cell types in genomics, different topics in a document). The parameters are fit by the **EM algorithm** (Expectation-Maximization), which alternates between guessing which cluster each point belongs to (the E-step) and refitting the Gaussians (the M-step). GMMs are the backbone of unsupervised clustering, speaker identification, and density estimation.
+
+**Multivariate statistics and PCA.** The covariance matrix $\Sigma$ is the raw material of every dimensionality-reduction technique. **Principal Component Analysis** (PCA) diagonalizes $\Sigma$ — its eigenvectors point along the principal axes of the data cloud, and its eigenvalues measure the spread along those axes. The first principal component is the direction of maximum variance, which is exactly the long axis of the joint distribution's ellipse. This is how we compress high-dimensional data, denoise signals, and find structure in genetics, finance, and image processing.
+
+**Joint distributions in generative AI.** Modern generative models — variational autoencoders (VAEs), normalizing flows, diffusion models — are all, at their core, ways of learning and sampling from complex high-dimensional joint distributions. A diffusion model learns the joint distribution of an image and its successive noise-corrupted versions; the reverse process samples from this joint to generate new images. The multivariate Gaussian appears at every step as both the noise source and the variational approximation.
+
+<KeyInsight>
+A joint distribution is a landscape of pairs — a heat map (discrete) or a surface (continuous) over the $xy$-plane, with total mass 1. Its two defining features are the support region (where pairs are even possible) and the ridges of concentration (where pairs are likely). For the multivariate normal, this entire landscape is encoded in the covariance matrix $\Sigma$, whose diagonal entries are variances and whose off-diagonal entry is the covariance — the geometric blueprint of the elliptical hill.
+</KeyInsight>
+
+## Connections
+
+This lesson extends the **single-variable distributions** of [lesson 07](/courses/probability/07-discrete-distributions) and [lesson 08](/courses/probability/08-continuous-distributions) into two dimensions. The PMF and PDF machinery is the same — non-negative, sums or integrates to 1 — but now over *pairs* of outcomes. The mean and variance vocabulary of [lesson 06](/courses/probability/06-expectation-and-variance) becomes the **covariance matrix** here, the multivariate generalization that packages both variables' spreads and their shared rhythm into one object.
+
+Forward, this lesson is the foundation for the rest of Module 3. [Lesson 11](/courses/probability/11-marginal-and-conditional) shows how to extract single-variable information from the joint (marginals, by projecting) and how to ask "what does $X$ look like given $Y$?" (conditionals, by slicing). [Lesson 12](/courses/probability/12-covariance-and-correlation) names the off-diagonal entry of $\Sigma$ and turns the ridge direction into a number. [Lesson 13](/courses/probability/13-independence) identifies the special case where the joint landscape decomposes into two separate hills. The multivariate normal introduced here returns in force in the **central limit theorem** (lesson 16) and underpins all of inferential statistics (lessons 17-20). Cross-disciplinarily, the joint distribution is the bridge from probability to multivariate statistics, where the covariance matrix becomes the central computational object of modern data science.
 
 ## Practice
 
-**Exercise 1.** Two fair coins are flipped. Let $X$ be the number of heads on the first coin (0 or 1) and $Y$ be the total number of heads across both coins (0, 1, or 2). Build the joint PMF table. Which cells are zero, and why?
+<ExerciseBlock
+  number={1}
+  prompt="Two fair coins are flipped. Let X be the indicator of heads on the first coin (0 or 1) and Y be the total number of heads across both coins (0, 1, or 2). Build the joint PMF table. Which cells are zero, and why? Verify the table sums to 1."
+  hint="There are four equally likely outcomes: HH, HT, TH, TT. For each, record the pair (X, Y). For example, HH gives X=1, Y=2."
+  answer="The outcomes map to (X,Y) pairs as follows: HH -> (1,2), HT -> (1,1), TH -> (0,1), TT -> (0,0), each with probability 1/4. The joint PMF table: p(0,0)=1/4, p(0,1)=1/4, p(0,2)=0, p(1,0)=0, p(1,1)=1/4, p(1,2)=1/4. The cells p(0,2) and p(1,0) are zero. p(0,2)=0 because if the first coin is tails (X=0), you cannot have two heads total (Y=2). p(1,0)=0 because if the first coin is heads (X=1), you already have at least one head so Y cannot be 0. Sum: 1/4+1/4+0+0+1/4+1/4 = 1. Confirmed."
+/>
 
-*Hint:* For each possible pair of coin outcomes, compute $X$ and $Y$. There are four equally likely coin-pairs to consider.
+<ExerciseBlock
+  number={2}
+  prompt="A joint PDF is given by f(x, y) = 2 for 0 less than or equal to y less than or equal to x less than or equal to 1, and f(x, y) = 0 otherwise. (a) Sketch the support region and describe it in words. (b) Verify the total probability is 1. (c) Compute P(X + Y is less than or equal to 1)."
+  hint="(a) The support is a triangle below the line y = x in the unit square. (b) Integrate f over the triangle. (c) The region X + Y <= 1 inside the triangle is a smaller triangle; set up the bounds carefully."
+  answer="(a) The support is the triangle with vertices (0,0), (1,0), (1,1) — the region where 0 <= y <= x <= 1. This means Y can never exceed X. (b) Total probability = integral from x=0 to 1 of (integral from y=0 to x of 2 dy) dx = integral from 0 to 1 of 2x dx = [x^2] from 0 to 1 = 1. Confirmed valid. (c) The region X + Y <= 1 intersected with the support y <= x: for x from 0 to 1/2, y goes from 0 to x (since x <= 1/2 means x <= 1-x automatically). For x from 1/2 to 1, y goes from 0 to 1-x. So P = integral from 0 to 1/2 of 2x dx + integral from 1/2 to 1 of 2(1-x) dx = [x^2] from 0 to 1/2 + [2x - x^2] from 1/2 to 1 = 1/4 + (2 - 1 - 1 + 1/4) = 1/4 + 1/4 = 1/2. So P(X + Y <= 1) = 1/2."
+/>
 
-**Exercise 2.** A joint PDF is given by $f(x, y) = 2$ for $0 \leq x \leq 1$ and $0 \leq y \leq x$, and $f(x, y) = 0$ otherwise. Sketch the region where the density is nonzero. Does the total probability equal 1?
+<ExerciseBlock
+  number={3}
+  prompt="Using the joint PMF table from the worked example in the lesson (X = total heads in two flips, Y = heads on first flip), compute P(X = Y). Then compute P(X is greater than or equal to Y). Describe in words what each probability measures."
+  hint="Identify which cells satisfy X = Y: that is (0,0) and (1,1). For X >= Y, include cells where the row index is at least the column index."
+  answer="P(X = Y): the cells where X equals Y are (0,0) with p=1/4 and (1,1) with p=1/4. (Note X=2, Y=2 is impossible since Y is only 0 or 1.) So P(X = Y) = 1/4 + 1/4 = 1/2. This measures the probability that the total number of heads equals the number of heads on the first flip — which happens precisely when the second flip is tails. P(X >= Y): the qualifying cells are (0,0)=1/4, (1,0)=1/4, (1,1)=1/4, (2,1)=1/4. (Note (2,0) is impossible.) So P(X >= Y) = 1/4+1/4+1/4+1/4 = 1. This is always true: the total number of heads can never be less than the number of heads on the first flip alone (the total includes the first flip). This is a structural fact about how X and Y are defined, encoded in the pattern of zeros."
+/>
 
-*Hint:* The support region is a triangle below the line $y = x$. Integrate $f(x, y) = 2$ over that triangle. The inner integral over $y$ goes from 0 to $x$, and the outer integral over $x$ goes from 0 to 1.
+<ExerciseBlock
+  number={4}
+  prompt="A joint PDF is given by f(x, y) = c on the unit square 0 <= x <= 1, 0 <= y <= 1, and zero elsewhere. (a) Find the constant c. (b) Now suppose f(x, y) = c(x + y) on the same square. Find c. (c) Which of these two joint distributions shows dependence between X and Y?"
+  hint="(a) For a constant density on a unit square, the total integral is c times the area. (b) Integrate c(x+y) over the square and set equal to 1. (c) Ask whether f(x,y) factors as a product of a function of x alone times a function of y alone."
+  answer="(a) Total integral = c * (area of unit square) = c * 1 = 1, so c = 1. This is the uniform distribution on the square — a flat landscape, X and Y independent. (b) Total integral = integral from 0 to 1 integral from 0 to 1 of c(x+y) dx dy = c * integral from 0 to 1 of [x^2/2 + xy] from 0 to 1 dy = c * integral from 0 to 1 of (1/2 + y) dy = c * [y/2 + y^2/2] from 0 to 1 = c * (1/2 + 1/2) = c. Setting equal to 1 gives c = 1. (c) The first density f(x,y) = 1 factors trivially as 1 * 1, so X and Y are independent (no dependence). The second density f(x,y) = x + y does NOT factor into g(x)*h(y) — the cross-term xy is hidden in the sum. So in the second case, X and Y are dependent. The two distributions have the same support but completely different dependence structure, illustrating that the support alone does not determine the relationship — the height of the density matters too."
+/>
 
-**Exercise 3.** For the joint PMF in the coin-flip example above, compute $P(X = Y)$. Then compute $P(X \geq Y)$. Describe in words what each probability measures.
+<ExerciseBlock
+  number={5}
+  prompt="Suppose (X, Y) has a bivariate normal distribution with Var(X) = 4, Var(Y) = 9, and Cov(X, Y) = 0. Write down the covariance matrix Sigma. Describe the shape of the joint density's level curves (the equal-density contours). If you were to rescale X by dividing by its standard deviation and do the same for Y, what would the new covariance matrix be?"
+  hint="The covariance matrix has variances on the diagonal and covariance off the diagonal. Level curves of a bivariate normal with zero covariance are axis-aligned ellipses (or a circle if the variances are equal). Standardizing removes the units."
+  answer="Sigma = [[4, 0], [0, 9]]. Since the covariance is zero, the level curves are axis-aligned ellipses. Because Var(Y) = 9 is larger than Var(X) = 4, the ellipse is stretched more along the y-axis (the major axis is vertical), with semi-axis ratio sqrt(9)/sqrt(4) = 3/2. After standardizing (let X' = X/sigma_X = X/2, Y' = Y/sigma_Y = Y/3), the new variables each have variance 1, and the covariance becomes Cov(X/2, Y/3) = (1/6)Cov(X,Y) = 0. So the new covariance matrix is the identity [[1, 0], [0, 1]] — the level curves become circles. This is why standardization is so useful in multivariate statistics: it removes the effect of differing scales and units, revealing the pure correlation structure."
+/>
 
-*Hint:* Identify which cells in the table satisfy $X = Y$, sum their probabilities. Then do the same for $X \geq Y$.
+<ExerciseBlock
+  number={6}
+  prompt="A Gaussian mixture model has two components in 2D: component 1 with weight 0.6, mean (0, 0), and covariance matrix [[1, 0], [0, 1]]; component 2 with weight 0.4, mean (5, 5), and covariance matrix [[1, 0.8], [0.8, 1]]. Describe the overall shape of the joint density. What does the off-diagonal entry 0.8 tell you about the second component?"
+  hint="A mixture has a hill for each component, scaled by its weight. The off-diagonal entry is the covariance — positive covariance means the ridge runs from lower-left to upper-right."
+  answer="The joint density has two hills: a circular hill (covariance 0, so axis-aligned and equal variances) centered at (0,0) with total weight 0.6, and an elliptical hill centered at (5,5) with total weight 0.4. The second component has off-diagonal entry Cov(X,Y) = 0.8, meaning its ridge runs from lower-left to upper-right — within that cluster, large X tends to accompany large Y. The ellipse is tilted at 45 degrees and is fairly narrow (the correlation is 0.8/(1*1) = 0.8, a strong positive correlation). The overall landscape is a mixture: most of the mass sits in a circular blob near the origin, with a thinner, tilted ellipse of mass off to the northeast. This two-hill structure is exactly what GMMs capture — clustering that no single Gaussian could represent."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="Prove that the marginal PMF derived from a valid joint PMF is itself a valid PMF. That is, given p(x_i, y_j) that is non-negative and sums to 1, show that p_X(x) = sum over j of p(x, y_j) is non-negative and sums to 1. Then explain why this means every marginal is a legitimate probability distribution in its own right."
+  hint="Non-negativity: a sum of non-negative terms is non-negative. Normalization: swap the order of summation and use the joint normalization condition."
+  answer="Non-negativity: for each fixed x, p_X(x) = sum over j of p(x, y_j). Since every term p(x, y_j) >= 0, the sum is >= 0. Normalization: sum over x of p_X(x) = sum over x of (sum over j of p(x, y_j)) = sum over x sum over j of p(x, y_j) = 1, by the joint normalization condition (we just swapped the order of summation, which is always valid for finite or absolutely convergent sums). Therefore p_X is non-negative and sums to 1 — a valid PMF. The interpretation: every marginal distribution is a genuine probability distribution. You can compute means, variances, and all the usual quantities from it, exactly as if it were the distribution of a single random variable. The marginal 'forgets' the other variable, but it is still a complete, valid description of the one variable it captures. This is the formal justification for the projection picture of the next lesson."
+/>
+
+---
+
+**Up next:** [Marginal and conditional distributions →](/courses/probability/11-marginal-and-conditional)

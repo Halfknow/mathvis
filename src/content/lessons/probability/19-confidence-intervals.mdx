@@ -12,11 +12,21 @@ duration: 18
 difficulty: "Advanced"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 import { CIAnimation } from '../../../components/interactive/probability/CIAnimation';
 
 A point estimate gives you a single number — your best guess. But a single number carries no information about how precise that guess is. You might estimate the average height of a population as 172 cm, but is that 172 give or take 1 cm, or 172 give or take 20 cm? The answer determines whether your estimate is useful or meaningless.
 
-A **confidence interval** gives you a range instead of a point. It says: "based on the data, the true parameter likely lives somewhere in here." The width of that range encodes your uncertainty. Narrow interval: you know a lot. Wide interval: you know little. This lesson is about how to build those ranges and what they really mean.
+A **confidence interval** gives you a range instead of a point. It says: "based on the data, the true parameter likely lives somewhere in here." The width of that range encodes your uncertainty. Narrow interval: you know a lot. Wide interval: you know little. This lesson is about how to build those ranges, what they really mean, and the crucial distinction between the **z-interval** (when you know the population variance) and the **t-interval** (when you must estimate it from small samples).
+
+The most important thing you will learn is the *correct interpretation* of a confidence interval — because the common-sense reading ("there is a 95% probability the true value is in this interval") is subtly but critically wrong. Getting the interpretation right is what separates a statistician from someone who has merely memorized a formula.
 
 ## The correct interpretation
 
@@ -28,7 +38,17 @@ This is subtle, and it is the most commonly misunderstood concept in statistics.
 - The **interval** is random. Each new sample produces a new interval — different center, different width.
 - Over many repetitions, about 95% of those random intervals will enclose the fixed point.
 
-The incorrect interpretation — "there is a 95% probability that the true parameter lies inside this interval" — treats the parameter as random and the interval as fixed. That reverses the correct picture. The parameter is fixed; the interval dances around it.
+The incorrect interpretation — "there is a 95% probability that the true parameter lies inside this interval" — treats the parameter as random and the interval as fixed. That reverses the correct picture. The parameter is fixed; the interval dances around it. Once you have computed a specific interval, say $[170, 174]$, the true mean $\mu$ is either in it or not — there is no probability left. The 95% refers to the *procedure* that generated the interval, not to any single interval.
+
+### Theorem: the confidence interval for a normal mean (known variance)
+
+Let $X_1, \ldots, X_n$ be i.i.d. with mean $\mu$ and known variance $\sigma^2$ (or $n$ large enough for the CLT). Then a $100(1-\alpha)\%$ confidence interval for $\mu$ is:
+
+$$\bar{X} \pm z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}$$
+
+where $z_{\alpha/2}$ is the upper $\alpha/2$ quantile of the standard normal (for 95%, $z_{0.025} \approx 1.96$).
+
+*Proof (sketch).* By the CLT, <MathInline expression={"(\\bar{X} - \\mu)/(\\sigma/\\sqrt{n}) \\approx N(0,1)"} />. So $P(-z_{\alpha/2} \leq (\bar{X}-\mu)/(\sigma/\sqrt{n}) \leq z_{\alpha/2}) \approx 1 - \alpha$. Rearranging the inequality to isolate $\mu$ gives the interval.
 
 ## The dancing intervals
 
@@ -38,19 +58,23 @@ With a 95% confidence level, you expect to catch the line on 95 out of every 100
 
 If you could watch 100 intervals stacked vertically on the same plot, you would see most of them crossing the true $\mu$ line, with a few strays that miss entirely. Those strays are not mistakes. They are the 5%.
 
+Watch the dancing intervals below. Hit "Add 25 CIs" a few times. Green intervals catch the true mean; red ones miss. Count them — roughly 95 out of 100 will be green. Now change the confidence level to 80% and watch the red intervals multiply.
+
+<CIAnimation client:visible />
+
 ## The formula for a normal mean
 
 When the population is normal with known variance $\sigma^2$, or when the sample size is large enough for the Central Limit Theorem to kick in, the confidence interval for the mean is:
 
-$$\bar{X} \pm z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}$$
+$<MathInline expression={"\\bar{X} \\pm z_{\\alpha/2} \\cdot \\frac{\\sigma}{\\sqrt{n}}"} />$
 
 The pieces have clear geometric meanings:
 
-- $\bar{X}$ is the center of the interval — your point estimate.
-- $\sigma/\sqrt{n}$ is the standard error — how much the sample mean typically wanders from the true mean.
-- $z_{\alpha/2}$ is the multiplier that controls the confidence level. For 95%, $z_{0.025} \approx 1.96$. For 99%, $z_{0.005} \approx 2.576$.
+- <MathInline expression={"\\bar{X}"} /> is the center of the interval — your point estimate.
+- <MathInline expression={"\\sigma/\\sqrt{n}"} /> is the **standard error** — how much the sample mean typically wanders from the true mean (this is the $\sigma/\sqrt{n}$ from the CLT).
+- <MathInline expression={"z_{\\alpha/2}"} /> is the multiplier that controls the confidence level. For 95%, <MathInline expression={"z_{0.025} \\approx 1.96"} />. For 99%, <MathInline expression={"z_{0.005} \\approx 2.576"} />.
 
-The interval extends symmetrically from the estimate by an amount proportional to the standard error. The more your estimate typically wanders (large $\sigma/\sqrt{n}$), the wider the interval needs to be to catch the true value with the specified probability.
+The interval extends symmetrically from the estimate by an amount proportional to the standard error. The more your estimate typically wanders (large <MathInline expression={"\\sigma/\\sqrt{n}"} />), the wider the interval needs to be to catch the true value with the specified probability.
 
 ## Width, confidence, and sample size
 
@@ -58,32 +82,144 @@ Three forces control the width of the interval:
 
 **Higher confidence = wider interval.** Moving from 95% to 99% confidence replaces $z = 1.96$ with $z = 2.576$. You demand that more of the lassos catch the line, so each lasso must be bigger. There is no free lunch: more confidence costs more width.
 
-**More data = narrower interval.** The standard error $\sigma/\sqrt{n}$ shrinks as $n$ grows. The sample mean becomes a more precise estimator, and the interval tightens around it. To halve the width of the interval, you need four times as much data (because the $\sqrt{n}$ in the denominator means doubling $n$ only shrinks the width by $\sqrt{2}$).
+**More data = narrower interval.** The standard error <MathInline expression={"\\sigma/\\sqrt{n}"} /> shrinks as $n$ grows. The sample mean becomes a more precise estimator, and the interval tightens around it. To halve the width of the interval, you need four times as much data (because the <MathInline expression={"\\sqrt{n}"} /> in the denominator means doubling $n$ only shrinks the width by <MathInline expression={"\\sqrt{2}"} />).
 
 **More variability = wider interval.** A population with large $\sigma$ produces samples that spread more, which makes the sample mean wander more, which forces the interval wider. You cannot reduce this without reducing the population variability itself.
 
-## The t-distribution
+### Sample size determination
 
-When $\sigma$ is unknown (which is almost always the case in practice), you estimate it from the sample using $S$. This adds uncertainty on top of uncertainty. The **t-distribution** accounts for this extra uncertainty by having heavier tails than the normal.
+The width formula lets you *solve for* the sample size you need. If you want the margin of error <MathInline expression={"E = z_{\\alpha/2} \\cdot \\sigma/\\sqrt{n}"} /> to be at most $E_0$, solve for $n$:
+
+$<MathInline expression={"n \\geq \\left(\\frac{z_{\\alpha/2} \\cdot \\sigma}{E_0}\\right)^2"} />$
+
+This is the calculation behind every clinical trial (how many patients to enroll), every political poll (how many voters to survey), and every engineering tolerance study. The $\sigma^2$ in the numerator is why higher-variability populations need larger samples; the $E_0^2$ in the denominator is why tighter precision demands quadratically more data.
+
+## The t-distribution: small samples and unknown variance
+
+In practice, you almost never know the population variance $\sigma^2$. You must estimate it from the sample using $S$. This adds a second layer of uncertainty — you are not only uncertain about $\mu$, you are also uncertain about $\sigma$. The **t-distribution** accounts for this extra uncertainty by having heavier tails than the normal. It was discovered by William Sealy Gosset in 1908, who published under the pen name "Student" because his employer (the Guinness brewery) forbade employees from publishing.
 
 The interval becomes:
 
+$<MathInline expression={"\\bar{X} \\pm t_{\\alpha/2, \\, n-1} \\cdot \\frac{S}{\\sqrt{n}}"} />$
+
+The critical value <MathInline expression={"t_{\\alpha/2, \\, n-1}"} /> comes from the **t-distribution with $n-1$ degrees of freedom**. For small $n$, this value is noticeably larger than the normal $z$ — the interval is wider, reflecting the additional uncertainty from estimating $\sigma$. As $n$ grows, the t-distribution converges to the normal, and the two intervals become identical.
+
+### Theorem: the t-distribution and the t-interval
+
+Let $X_1, \ldots, X_n$ be i.i.d. $N(\mu, \sigma^2)$ with both parameters unknown. Define:
+
+$$T = \frac{\bar{X} - \mu}{S/\sqrt{n}}$$
+
+Then $T$ follows a **t-distribution with $n-1$ degrees of freedom**, denoted $t_{n-1}$. A $100(1-\alpha)\%$ confidence interval for $\mu$ is:
+
 $$\bar{X} \pm t_{\alpha/2, \, n-1} \cdot \frac{S}{\sqrt{n}}$$
 
-The critical value $t_{\alpha/2, \, n-1}$ comes from the t-distribution with $n - 1$ degrees of freedom. For small $n$, this value is noticeably larger than the normal $z$ — the interval is wider, reflecting the additional uncertainty from estimating $\sigma$. As $n$ grows, the t-distribution converges to the normal, and the two intervals become identical.
+*Why the heavier tails?* The z-statistic $(\bar{X}-\mu)/(\sigma/\sqrt{n})$ has only one source of randomness: $\bar{X}$. The t-statistic $(\bar{X}-\mu)/(S/\sqrt{n})$ has *two*: $\bar{X}$ in the numerator and $S$ in the denominator. When $S$ happens to be small (underestimating $\sigma$), the t-statistic blows up — producing more extreme values than the normal would predict. The t-distribution's heavier tails absorb this extra variability.
 
-Watch the dancing intervals below. Hit "Add 25 CIs" a few times. Green intervals catch the true mean; red ones miss. Count them — roughly 95 out of 100 will be green. Now change the confidence level to 80% and watch the red intervals multiply.
+### The shape of the t-distribution
 
-<CIAnimation client:visible />
+The t-distribution with $k$ degrees of freedom is symmetric and bell-shaped, like the normal, but with heavier tails. Its density is:
 
-## Key insight
+$<MathInline expression={"f(t) = \\frac{\\Gamma\\!\\left(\\frac{k+1}{2}\\right)}{\\sqrt{k\\pi}\\;\\Gamma\\!\\left(\\frac{k}{2}\\right)} \\left(1 + \\frac{t^2}{k}\\right)^{-(k+1)/2}"} />$
 
-> A confidence interval is a lasso thrown at a fixed target. The target does not move — your lasso does. A 95% confidence level means the lasso catches the target on 95% of throws. You can make the lasso bigger (higher confidence) or throw more rope (more data to tighten the loop), but you can never guarantee a catch — there will always be the 5% of throws that miss.
+As $k \to \infty$, the t-distribution converges to the standard normal. A rule of thumb: for $k \geq 30$, the t and normal are nearly indistinguishable, which is why "n >= 30" is the threshold for using the z-interval as an approximation. For small $k$, the difference is substantial:
+
+| Degrees of freedom | $t_{0.025}$ (95% CI) | vs $z_{0.025} = 1.96$ |
+|---|---|---|
+| 1 | 12.71 | 6.5x wider |
+| 5 | 2.571 | 31% wider |
+| 10 | 2.228 | 14% wider |
+| 30 | 2.042 | 4% wider |
+| $\infty$ | 1.960 | (normal) |
+
+With only 1 degree of freedom (a sample of 2), the 95% CI is *six and a half times* wider than the normal-based interval — a dramatic correction that honestly reflects how little you know from two data points.
+
+<FormulaReadout formulas={[
+  { label: "z-置信区间 (方差已知)", expression: "\\bar{X} \\pm z_{\\alpha/2}\\cdot\\frac{\\sigma}{\\sqrt{n}}" },
+  { label: "t-置信区间 (方差未知)", expression: "\\bar{X} \\pm t_{\\alpha/2,\\,n-1}\\cdot\\frac{S}{\\sqrt{n}}" },
+  { label: "样本量确定", expression: "n \\geq \\left(\\frac{z_{\\alpha/2}\\,\\sigma}{E_0}\\right)^2" },
+  { label: "t-分布 (自由度 k)", expression: "T = \\frac{\\bar{X} - \\mu}{S/\\sqrt{n}} \\sim t_{n-1}, \\quad t_k \\xrightarrow{k\\to\\infty} N(0,1)" },
+]} />
+
+## Three perspectives on confidence intervals
+
+1. **As a dancing lasso (the frequentist view):** the parameter is a fixed target; the interval is a random lasso thrown at it. The confidence level is the long-run fraction of lassos that catch the target. This is the correct frequentist interpretation, and it is what the math actually guarantees.
+2. **As inverted hypothesis tests:** a 95% confidence interval for $\mu$ is exactly the set of values $\mu_0$ that would NOT be rejected by a two-sided hypothesis test at the 5% level. Confidence intervals and hypothesis tests ([lesson 20](/courses/probability/20-hypothesis-testing)) are two sides of the same coin — the interval is the collection of "plausible" parameter values, where plausibility is defined by the test.
+3. **As a quantification of sampling uncertainty:** the width of the interval tells you how much the sample mean wanders, which is $\sigma/\sqrt{n}$. The interval is a point estimate plus or minus a measure of its own reliability. This is the practical use: the interval tells you not just your best guess but how much to trust it.
+
+## Modern applications
+
+**A/B testing.** Every tech company runs A/B tests to compare features, layouts, and algorithms. The confidence interval on the difference in conversion rates between version A and version B tells you not just which version is better but *how much* better, and whether the difference is large enough to matter. A common failure mode: a tiny, statistically significant difference with a narrow CI — "significant" but practically useless. The CI protects against this by showing the magnitude.
+
+**Clinical trials.** Drug approval hinges on confidence intervals. A new drug is approved if its effect size's confidence interval is entirely above the clinically meaningful threshold (not just above zero). The width of the CI determines the sample size needed — this is why trials are powered to detect a specific effect size with a specific precision. Sample size determination (the formula above) is how pharmaceutical companies decide how many patients to enroll.
+
+**Polling and election forecasting.** A political poll reports a "margin of error" of $\pm 3\%$, which is the half-width of a 95% CI: $1.96 \cdot \sqrt{0.25/1000} \approx 0.031$. Election forecasters (FiveThirtyEight, etc.) build CIs for each state's vote share and combine them via simulation. The CI is what makes a forecast "90% confident" vs "lean" — the width encodes the uncertainty.
+
+**Quality control and Six Sigma.** Manufacturing processes are monitored with confidence intervals on key parameters (dimensions, weights, defect rates). "Six Sigma" quality means the process mean is at least 6 standard deviations from the specification limit, so that defects are extremely rare (a few per million). The CI on the process mean determines whether the process is "in control."
+
+<KeyInsight>
+A confidence interval is a lasso thrown at a fixed target. The target does not move — your lasso does. A 95% confidence level means the lasso catches the target on 95% of throws (over repeated sampling), NOT that there is a 95% probability the true value is in any single interval. When the population variance is unknown (almost always), use the t-distribution (heavier tails, wider intervals for small samples), which converges to the normal as n grows. The width sigma/sqrt(n) ties the interval directly to the CLT and determines the sample size needed for any desired precision.
+</KeyInsight>
+
+## Connections
+
+This lesson is the direct continuation of [lesson 18](/courses/probability/18-maximum-likelihood-estimation): the confidence interval is built from the MLE's asymptotic normality — <MathInline expression={"\\hat{\\theta}_{\\text{MLE}} \\approx N(\\theta,\\, 1/(nI(\\theta)))"} /> gives the interval <MathInline expression={"\\hat{\\theta} \\pm 1.96/\\sqrt{nI(\\theta)}"} />. The Fisher information $I(\theta)$ determines the width. For the normal mean, $I(\mu) = 1/\sigma^2$, recovering the familiar $\bar{X} \pm 1.96\sigma/\sqrt{n}$. The **Central Limit Theorem** ([lesson 16](/courses/probability/16-central-limit-theorem)) is what justifies the normal approximation for large $n$, and the **sampling theory** of [lesson 17](/courses/probability/17-sampling-and-point-estimation) provides the standard error $\sigma/\sqrt{n}$.
+
+The forward link is to **hypothesis testing** ([lesson 20](/courses/probability/20-hypothesis-testing)): a 95% CI is exactly the set of parameter values that would not be rejected by a two-sided test at the 5% level. The two are mathematically equivalent — if the CI contains $\mu_0$, you fail to reject $H_0: \mu = \mu_0$; if it does not, you reject. This duality means every concept in this lesson (z, t, standard error, sample size) maps directly to the corresponding concept in hypothesis testing (test statistic, critical value, power).
+
+Cross-disciplinarily, the confidence interval is the frequentist answer to the question "what is the plausible range for the parameter?" The Bayesian answer is the **credible interval** ([lesson 04](/courses/probability/04-conditional-probability-and-bayes)), which CAN be interpreted as "95% probability the parameter is in this interval" — because the Bayesian treats the parameter as random (having a posterior distribution). The tension between these two interpretations is one of the great debates in statistics. In modern practice, most working scientists report confidence intervals alongside (or instead of) p-values, because the interval conveys both the estimate and its uncertainty — more informative than a single accept/reject verdict.
 
 ## Practice
 
-1. A sample of 50 light bulbs has a mean lifetime of 1020 hours with a known population standard deviation of 120 hours. Compute a 95% confidence interval for the true mean lifetime. Now compute a 99% interval. How much wider is the 99% interval? Is the extra width worth the extra confidence?
+<ExerciseBlock
+  number={1}
+  prompt="A sample of 50 light bulbs has a mean lifetime of 1020 hours with a known population standard deviation of 120 hours. Compute a 95% confidence interval for the true mean lifetime. Now compute a 99% interval. How much wider is the 99% interval? Is the extra width worth the extra confidence?"
+  hint="Use the z-interval since sigma is known: x_bar +/- z_alpha/2 * sigma/sqrt(n). For 95%, z = 1.96; for 99%, z = 2.576. Standard error = 120/sqrt(50)."
+  answer="Standard error = 120/sqrt(50) = 120/7.071 approximately 16.97 hours. 95% CI: 1020 +/- 1.96*16.97 = 1020 +/- 33.26 = [986.7, 1053.3]. 99% CI: 1020 +/- 2.576*16.97 = 1020 +/- 43.72 = [976.3, 1063.7]. The 99% CI is wider by 2*(43.72 - 33.26) = 20.9 hours total (about 10.5 hours on each side). Whether it's worth it depends on context: if the bulb warranty threshold is 1000 hours, both intervals clearly contain it, so the extra width doesn't change the decision. If you are trying to distinguish between two competing manufacturing processes whose means differ by 20 hours, the 95% CI might separate them while the 99% CI might not. There is no universally right answer — the choice of confidence level reflects how much you value certainty over precision."
+/>
 
-2. You want to estimate the average weight of apples from an orchard. Your scale gives you a sample mean of 150 grams with a sample standard deviation of 20 grams. How many apples do you need to weigh so that the 95% confidence interval has width at most 5 grams? (Hint: set $2 \cdot 1.96 \cdot S/\sqrt{n} \leq 5$ and solve for $n$.)
+<ExerciseBlock
+  number={2}
+  prompt="You want to estimate the average weight of apples from an orchard. Your scale gives you a sample mean of 150 grams with a sample standard deviation of 20 grams. How many apples do you need to weigh so that the 95% confidence interval has width at most 5 grams? (Use the z approximation for planning, then note the t correction.)"
+  hint="Width = 2 * z_alpha/2 * sigma/sqrt(n) <= 5. So z_alpha/2 * sigma/sqrt(n) <= 2.5. Use z = 1.96, sigma = 20 (use the sample SD as a planning estimate)."
+  answer="We want the margin of error E = z_alpha/2 * sigma/sqrt(n) <= 2.5 (half the width). Using the z approximation: 1.96 * 20/sqrt(n) <= 2.5, so sqrt(n) >= 1.96*20/2.5 = 15.68, n >= 245.9, so n >= 246 apples. T-correction: with n = 246, the degrees of freedom is 245, and t_{0.025, 245} is approximately 1.97 (very close to z = 1.96, since 245 df is large). So the t-based interval is essentially the same width. The correction matters for small n: if the sample SD had come from only 10 apples, we'd use t_{0.025, 9} = 2.262, which would inflate the required n. But for planning, the z approximation is standard (you don't know n yet, so you can't know the df), and the t-correction is applied after collecting the data. Key insight: to halve the width (from 10g to 5g), you need 4x the sample size. The width scales as 1/sqrt(n), so precision is expensive — quadratic in the sample size."
+/>
 
-3. A researcher computes a 95% confidence interval for a mean and gets $[12.3, 15.7]$. A colleague says: "There is a 95% chance the true mean is between 12.3 and 15.7." Explain why this statement is incorrect, and give the correct interpretation using the "dancing intervals" picture.
+<ExerciseBlock
+  number={3}
+  prompt="A researcher computes a 95% confidence interval for a mean and gets [12.3, 15.7]. A colleague says: 'There is a 95% chance the true mean is between 12.3 and 15.7.' Explain why this statement is incorrect, and give the correct interpretation using the 'dancing intervals' picture. What would the Bayesian (credible interval) interpretation be, and how does it differ?"
+  hint="The true mean is a fixed number — it is either in [12.3, 15.7] or it isn't. There is no probability left after the interval is computed. The 95% refers to the procedure, not to this specific interval."
+  answer="The colleague's statement is incorrect because it treats the true mean as random (as if it could be anywhere with some probability) and the interval as fixed. But the correct picture is the reverse: the true mean is a fixed (unknown) number, and the interval is the random quantity. The interval [12.3, 15.7] either contains the true mean or it doesn't — there is no probability involved. The 95% refers to the PROCEDURE: if you repeated the sampling and interval-construction many times, 95% of the resulting intervals would contain the true mean. This particular interval is one realization of that procedure — it is either a 'hit' or a 'miss,' and you don't know which. The Bayesian interpretation is different and DOES allow the statement the colleague made — but for a credible interval, not a confidence interval. A Bayesian treats the parameter as having a probability distribution (the posterior), so a 95% credible interval CAN be interpreted as 'there is a 95% probability the true mean is in this interval.' This is because the Bayesian framework puts a prior on the parameter and updates it with the data, producing a genuine posterior distribution. The frequentist framework refuses to put a probability distribution on a fixed parameter, which is why the confidence interval interpretation is so contorted. The two intervals are often numerically similar (especially with flat priors), but their interpretations are philosophically distinct. This is the heart of the frequentist-Bayesian debate."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="You measure the blood pressure of 6 patients and get readings: 118, 125, 130, 122, 135, 128 mmHg. Compute the sample mean and sample standard deviation. Construct a 95% confidence interval for the true mean using BOTH the z-interval (pretending sigma is known and equal to S) and the t-interval. How much wider is the t-interval? Explain why the t-interval is the correct choice here."
+  hint="Compute x_bar and S from the 6 values. For the z-interval, use z_{0.025} = 1.96. For the t-interval, use t_{0.025, 5} = 2.571 (5 degrees of freedom). The t critical value is larger, so the t-interval is wider."
+  answer="x_bar = (118+125+130+122+135+128)/6 = 758/6 approximately 126.33 mmHg. Sample variance S^2 = (1/5)*sum(x_i - 126.33)^2. Deviations: -8.33, -1.33, 3.67, -4.33, 8.67, 1.67. Squared: 69.4, 1.77, 13.5, 18.7, 75.2, 2.79. Sum = 181.3. S^2 = 181.3/5 = 36.27, S = 6.02. Standard error = S/sqrt(6) = 6.02/2.449 = 2.458. Z-interval: 126.33 +/- 1.96*2.458 = 126.33 +/- 4.82 = [121.5, 131.2]. T-interval: 126.33 +/- 2.571*2.458 = 126.33 +/- 6.32 = [120.0, 132.7]. The t-interval is wider by 2*(6.32 - 4.82) = 3.0 mmHg (about 31% wider). The t-interval is the correct choice because sigma is unknown and the sample is small (n = 6). The z-interval PRETENDS you know sigma exactly, which you don't — you are using S as an estimate, and S itself is uncertain with only 6 data points. The t-distribution honestly accounts for this extra uncertainty by widening the interval. Using the z-interval here would give a false sense of precision: the interval would be too narrow, and the true coverage would be less than 95% (more like 90%). For n >= 30, the difference vanishes (t converges to z), but for small samples, always use the t-interval."
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="Sample size determination for a poll. You want to estimate the proportion of voters who support a ballot measure. You want a 95% confidence interval with a margin of error of at most 3 percentage points. What is the minimum sample size? (Use the conservative estimate p = 0.5, which maximizes the variance.) What if you want the margin of error to be 1 percentage point? How does the required sample size scale with the desired precision?"
+  hint="Margin of error E = z_alpha/2 * sqrt(p(1-p)/n) <= 0.03. With p = 0.5 (worst case) and z = 1.96: 1.96*sqrt(0.25/n) <= 0.03. Solve for n."
+  answer="E = 1.96 * sqrt(0.25/n) <= 0.03. So sqrt(0.25/n) <= 0.03/1.96 = 0.01531. Then 0.25/n <= 0.0002344, so n >= 0.25/0.0002344 approximately 1067. For a 3% margin of error, you need about 1067 voters — this is the standard sample size for political polls, which is why almost all major polls survey around 1000 people. For a 1% margin of error: 1.96*sqrt(0.25/n) <= 0.01, sqrt(0.25/n) <= 0.005102, 0.25/n <= 0.00002603, n >= 9604. So 9604 voters for 1% precision. Scaling: the required n scales as 1/E^2. To halve the margin of error (from 3% to 1.5%), you need 4x the sample size. To reduce it by a factor of 3 (from 3% to 1%), you need 9x the sample size. This quadratic scaling is why polls rarely achieve sub-1% margins — it would require nearly 10,000 respondents, which is expensive. The 3% standard is a compromise between cost and precision. Note: if you have prior knowledge that p is far from 0.5 (e.g., a minor candidate polling at 5%), you can use a smaller n because p(1-p) is smaller — but the conservative p = 0.5 ensures the margin holds regardless."
+/>
+
+<ExerciseBlock
+  number={6}
+  prompt="Two scientists compute 95% confidence intervals for the same parameter from different data. Scientist A gets [10.2, 12.8]. Scientist B gets [13.1, 15.5]. The intervals do not overlap. Does this mean the two estimates are statistically significantly different at the 5% level? (Careful — this is a common pitfall.) Explain why non-overlapping 95% CIs imply a difference at a stricter significance level than 5%, and what the correct test for comparing two means is."
+  hint="Non-overlapping 95% CIs do NOT correspond to a 5% significance test for the difference. The correct comparison is a CI for the DIFFERENCE of the two means, which has a different (larger) standard error than the individual CIs suggest."
+  answer="Surprisingly, non-overlapping 95% confidence intervals do NOT imply statistical significance at the 5% level for the difference. Here's why: each 95% CI is constructed to contain the true mean with 95% probability. The probability that BOTH intervals contain their respective true means simultaneously is approximately 0.95*0.95 = 0.9025 (if independent). So non-overlap corresponds roughly to a 10% significance level (alpha approximately 0.10), not 5%. To get a 5% significance test for the difference, you would need the individual CIs to overlap less, or equivalently, you need to look at the CI for the DIFFERENCE of the two means. The correct procedure: construct a 95% CI for (mu_A - mu_B). If this CI excludes 0, the difference is significant at 5%. The standard error of the difference is sqrt(SE_A^2 + SE_B^2) (for independent samples), which is larger than either individual SE. So the CI for the difference is wider than the gap between the individual CIs might suggest. In this example: A = [10.2, 12.8], B = [13.1, 15.5]. The difference (B - A) is approximately 13.1 - 11.5 = 1.6 to 15.5 - 10.2 = 5.3, roughly in [1.6, 5.3] (this is a rough estimate; the exact CI for the difference is narrower because it accounts for the joint uncertainty). Since the intervals don't overlap at all, the difference IS significant, but at a level stricter than 5% (closer to 1% or lower). The practical lesson: do not use overlap of individual CIs as a substitute for a formal test of the difference. Always construct the CI for the difference directly."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="Derive the confidence interval for the mean of a normal distribution with known variance from first principles, using the CLT. Start from the fact that (X_bar - mu)/(sigma/sqrt(n)) is approximately N(0,1) for large n. Write down the probability statement P(-z <= Z <= z) = 1 - alpha, substitute the standardized mean, and rearrange to isolate mu. Explain each step and why the rearrangement is valid."
+  hint="Start with P(-z_alpha/2 <= (X_bar - mu)/(sigma/sqrt(n)) <= z_alpha/2) = 1 - alpha. This is a statement about the standard normal. The inequality involves three quantities: X_bar (random), mu (fixed unknown), sigma/sqrt(n) (known). Rearrange to put mu in the center."
+  answer="Step 1: By the CLT (lesson 16), for large n, Z = (X_bar - mu)/(sigma/sqrt(n)) is approximately standard normal. So P(-z_alpha/2 <= Z <= z_alpha/2) = 1 - alpha, where z_alpha/2 is the upper alpha/2 quantile of N(0,1). For 95% confidence, alpha = 0.05 and z_alpha/2 = 1.96. Step 2: Substitute the definition of Z: P(-z_alpha/2 <= (X_bar - mu)/(sigma/sqrt(n)) <= z_alpha/2) = 1 - alpha. Step 3: Multiply all three parts of the inequality by sigma/sqrt(n) (positive, so the inequalities don't flip): P(-z_alpha/2 * sigma/sqrt(n) <= X_bar - mu <= z_alpha/2 * sigma/sqrt(n)) = 1 - alpha. Step 4: Subtract X_bar from all parts (this flips the direction of the inequalities): P(-X_bar - z_alpha/2*sigma/sqrt(n) <= -mu <= -X_bar + z_alpha/2*sigma/sqrt(n)) = 1 - alpha. Step 5: Multiply by -1 (flipping inequalities again): P(X_bar - z_alpha/2*sigma/sqrt(n) <= mu <= X_bar + z_alpha/2*sigma/sqrt(n)) = 1 - alpha. Step 6: This says that the random interval [X_bar - z*sigma/sqrt(n), X_bar + z*sigma/sqrt(n)] contains the fixed parameter mu with probability 1 - alpha. This is the confidence interval. The rearrangement is valid because we only applied operations that preserve the truth of inequalities: multiplying by a positive number, and adding/subtracting the same quantity. The key subtlety: after the rearrangement, the random quantity is the INTERVAL (it depends on X_bar), and the fixed quantity is mu. The probability statement is about the interval, not about mu. This is why the correct interpretation is '95% of intervals constructed this way contain mu,' not '95% probability that mu is in this interval.' The interval is random; mu is fixed. The derivation makes this explicit."
+/>
+
+---
+
+**Up next:** [Hypothesis testing →](/courses/probability/20-hypothesis-testing)

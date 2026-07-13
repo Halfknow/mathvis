@@ -12,75 +12,118 @@ duration: 16
 difficulty: "Advanced"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 Picture a timeline stretching from left to right. Dots appear on it — each dot is an event. They do not come at regular intervals. Sometimes two arrive close together; sometimes there is a long gap. But on average, they arrive at a steady rate. Emails into your inbox. Earthquakes along a fault line. Photons hitting a detector. Radioactive decays in a sample.
 
 All of these are modeled by the same mathematical object: the **Poisson process**. It is the simplest model for events occurring randomly in continuous time, and it captures a surprisingly wide slice of reality.
 
-## The setup
+## The axioms: what makes a process Poisson
 
-A Poisson process with rate $\lambda$ satisfies three assumptions:
+A Poisson process with rate $\lambda$ is defined by three axioms. These are not just modeling assumptions — they are the *defining properties* from which everything else follows.
 
-1. **Independence**: the number of events in disjoint time intervals are independent. What happens between 2:00 and 2:05 has nothing to do with what happens between 2:05 and 2:10.
-2. **Stationarity**: the probability of an event in a small interval of length $\Delta t$ is approximately $\lambda \Delta t$, regardless of where the interval sits on the timeline.
-3. **No simultaneity**: the probability of two or more events occurring in the same infinitesimal instant is zero.
+### Theorem: The Poisson process axioms
 
-From these three assumptions, everything follows.
+A counting process <MathInline expression={"\\{N(t) : t \\geq 0\\}"} /> (where $N(t)$ is the number of events in $[0, t]$) is a **Poisson process** with rate $\lambda > 0$ if:
+
+1. **Independent increments**: the numbers of events in disjoint time intervals are independent. What happens in $[0, s]$ has no influence on what happens in $(s, t]$.
+2. **Stationary increments**: the distribution of the count in an interval depends only on the interval's length, not its location. Formally, <MathInline expression={"N(t+s) - N(t)"} /> has the same distribution as <MathInline expression={"N(s)"} />.
+3. **Rare events (orderliness)**: the probability of two or more events in a tiny interval of length $\Delta t$ is negligible (<MathInline expression={"o(\\Delta t)"} />), while the probability of exactly one event is <MathInline expression={"\\lambda \\Delta t + o(\\Delta t)"} />.
+
+These three axioms — independence, stationarity, and rarity — are the mathematical distillation of "completely random arrivals at a constant rate." From them, two distributions emerge: the **Poisson distribution** for counts, and the **exponential distribution** for waiting times.
 
 ## Counting events: the Poisson distribution
 
 Let $N(t)$ be the number of events that occur in a time interval of length $t$. Then:
 
+### Theorem: Poisson counts
+
 $$N(t) \sim \text{Poisson}(\lambda t)$$
 
-$$P(N(t) = k) = \frac{(\lambda t)^k e^{-\lambda t}}{k!}$$
+$$P(N(t) = k) = \frac{(\lambda t)^k e^{-\lambda t}}{k!}, \qquad k = 0, 1, 2, \ldots$$
 
-The mean and variance are both $\lambda t$. If emails arrive at rate $\lambda = 5$ per hour, then in a 3-hour window the number of emails is Poisson with mean $15$. The most likely count is near 15, but the actual count will fluctuate — occasionally you get 8, occasionally 22.
+with <MathInline expression={"E[N(t)] = \\text{Var}(N(t)) = \\lambda t"} />.
 
-Picture the distribution as a lump centered at $\lambda t$, with a width (standard deviation) of $\sqrt{\lambda t}$. As $\lambda t$ grows, the lump becomes smoother and more symmetric, approximating a bell curve.
+*Sketch.* Chop $[0, t]$ into $n$ tiny intervals of length $t/n$. In each, the probability of one event is approximately $\lambda t/n$ (axiom 3), and two or more is negligible. So <MathInline expression={"N(t)"} /> is approximately <MathInline expression={"\\text{Binomial}(n, \\lambda t/n)"} />. Taking $n \to \infty$ gives the Poisson limit — this is the origin of the Poisson distribution ([lesson 07](/courses/probability/07-the-binomial-distribution)). The mean and variance are both $\lambda t$.
+
+If emails arrive at rate $\lambda = 5$ per hour, then in a 3-hour window the number of emails is Poisson with mean $15$. The most likely count is near 15, but the actual count will fluctuate — occasionally you get 8, occasionally 22.
+
+Picture the distribution as a lump centered at $\lambda t$, with a width (standard deviation) of <MathInline expression={"\\sqrt{\\lambda t}"} />. As $\lambda t$ grows, the lump becomes smoother and more symmetric, approximating a bell curve (the normal approximation to Poisson, a special case of the CLT).
 
 ## Waiting times: the exponential distribution
 
-Flip the question. Instead of asking "how many events in time $t$?", ask "how long until the next event?" The answer is:
+Flip the question. Instead of asking "how many events in time $t$?", ask "how long until the next event?" The answer is the other face of the Poisson process.
 
-$$T \sim \text{Exponential}(\lambda)$$
+### Theorem: Exponential inter-arrival times
 
-$$f(t) = \lambda e^{-\lambda t}, \quad t \geq 0$$
+The waiting time $T$ until the next event in a Poisson process of rate $\lambda$ follows an exponential distribution:
 
-The mean waiting time is $1/\lambda$. If emails arrive at rate 5 per hour, the average gap between emails is 12 minutes. But the distribution is heavily skewed — short gaps are common, long gaps are rare but possible.
+$$T \sim \text{Exponential}(\lambda), \qquad f(t) = \lambda e^{-\lambda t}, \quad t \geq 0$$
 
-Picture the density: a steep drop from height $\lambda$ at $t = 0$, decaying exponentially. Most of the mass is packed near zero. The probability of waiting more than $1/\lambda$ is $e^{-1} \approx 0.37$. The probability of waiting more than $3/\lambda$ is $e^{-3} \approx 0.05$. Long waits are exponentially unlikely.
+with <MathInline expression={"E[T] = 1/\\lambda"} /> and <MathInline expression={"\\text{Var}(T) = 1/\\lambda^2"} />.
+
+*Proof of the duality.* <MathInline expression={"P(T > t) = P(N(t) = 0) = e^{-\\lambda t}"} /> — the waiting time exceeds $t$ exactly when no events arrive in $[0, t]$. Differentiating gives the density <MathInline expression={"f(t) = \\lambda e^{-\\lambda t}"} />. This is the deep connection: the Poisson count distribution and the exponential waiting time distribution are two views of the same process.
+
+If emails arrive at rate 5 per hour, the average gap between emails is 12 minutes ($1/\lambda = 1/5$ hour). But the distribution is heavily skewed — short gaps are common, long gaps are rare but possible.
+
+Picture the density: a steep drop from height $\lambda$ at $t = 0$, decaying exponentially. Most of the mass is packed near zero. The probability of waiting more than $1/\lambda$ is <MathInline expression={"e^{-1} \\approx 0.37"} />. The probability of waiting more than $3/\lambda$ is <MathInline expression={"e^{-3} \\approx 0.05"} />. Long waits are exponentially unlikely.
 
 ### Inter-arrival times are i.i.d.
 
-The gaps between consecutive events — call them $T_1, T_2, T_3, \ldots$ — are independent and identically distributed exponential random variables, all with rate $\lambda$. This is what makes the Poisson process so tractable: the gaps are a sequence of coin flips (in continuous time), each independent of the others.
+The gaps between consecutive events — call them $T_1, T_2, T_3, \ldots$ — are independent and identically distributed exponential random variables, all with rate $\lambda$. This is what makes the Poisson process so tractable: the gaps are a sequence of independent draws, each from the same exponential distribution, with no memory of the previous gap.
 
-The timeline of events looks like a series of dots with irregular spacing — sometimes bunched, sometimes spread out — but each gap is drawn fresh from the same exponential distribution, with no memory of the previous gap.
+The timeline of events looks like a series of dots with irregular spacing — sometimes bunched, sometimes spread out — but each gap is drawn fresh from the same exponential distribution.
+
+<FormulaReadout formulas={[
+  { label: "泊松计数分布", expression: "N(t) \\sim \\text{Poisson}(\\lambda t), \\quad P(N=k)=\\frac{(\\lambda t)^k e^{-\\lambda t}}{k!}" },
+  { label: "指数等待时间", expression: "T \\sim \\text{Exp}(\\lambda), \\quad f(t) = \\lambda e^{-\\lambda t}, \\quad E[T]=\\frac{1}{\\lambda}" },
+  { label: "无记忆性", expression: "P(T > s+t \\mid T > s) = P(T > t) = e^{-\\lambda t}" },
+  { label: "叠加 (合并速率)", expression: "N_1 + N_2 \\sim \\text{Poisson}((\\lambda_1+\\lambda_2)t)" },
+]} />
 
 ## The memoryless property
 
 The exponential distribution has a property that feels wrong at first:
 
-$$P(T > s + t \mid T > s) = P(T > t)$$
+### Theorem: Memorylessness of the exponential
+
+For <MathInline expression={"T \\sim \\text{Exponential}(\\lambda)"} /> and any $s, t \geq 0$:
+
+$$P(T > s + t \mid T > s) = P(T > t) = e^{-\lambda t}$$
 
 If you have already waited $s$ minutes for an event, the probability of waiting at least $t$ *more* minutes is the same as if you had not waited at all. The distribution does not remember how long you have been waiting.
 
-This is the **memoryless property**, and the exponential is the *only* continuous distribution that has it. It is both a mathematical convenience and a genuine modeling assumption. For radioactive decay, it is physically accurate: an atom that has existed for a billion years is no more or less likely to decay in the next second than a freshly created atom. For bus arrivals, it is often wrong — if the bus is late, it is probably coming soon.
+*Proof.* <MathInline expression={"P(T > s+t \\mid T > s) = P(T > s+t, T > s)/P(T > s) = P(T > s+t)/P(T > s) = e^{-\\lambda(s+t)}/e^{-\\lambda s} = e^{-\\lambda t} = P(T > t)"} />.
+
+The exponential is the *only* continuous distribution with this property. (Among discrete distributions, only the geometric shares it.) Memorylessness is both a mathematical convenience and a genuine modeling assumption.
+
+- For **radioactive decay**, it is physically accurate: an atom that has existed for a billion years is no more or less likely to decay in the next second than a freshly created atom. The decay process has no memory.
+- For **server failures** (in the constant-hazard regime), it is roughly accurate: a well-maintained server fails at a roughly constant rate, regardless of age.
+- For **bus arrivals**, it is often wrong: if the bus is late, it is probably coming soon (the schedule introduces memory). Use it only when arrivals are genuinely memoryless.
 
 ## Superposition and thinning
 
-Two elegant operations on Poisson processes:
+Two elegant operations on Poisson processes preserve the Poisson structure. Both follow from the independence axiom.
 
-### Superposition
+### Theorem: Superposition
 
-Suppose you have two independent Poisson processes: emails arrive at rate $\lambda_1$ and text messages arrive at rate $\lambda_2$. The combined stream of notifications is also a Poisson process, with rate $\lambda_1 + \lambda_2$.
+If <MathInline expression={"\\{N_1(t)\\}"} /> and <MathInline expression={"\\{N_2(t)\\}"} /> are independent Poisson processes with rates $\lambda_1$ and $\lambda_2$, then the combined process <MathInline expression={"\\{N_1(t) + N_2(t)\\}"} /> is a Poisson process with rate $\lambda_1 + \lambda_2$.
 
-Picture two timelines, one blue (emails) and one red (texts). Merge them onto a single timeline. The result is another Poisson process — same structure, faster rate. The sum of two independent Poisson random variables is Poisson with the sum of the rates.
+*Picture.* Two timelines, one blue (emails) and one red (texts). Merge them onto a single timeline. The result is another Poisson process — same structure, faster rate. The sum of two independent Poisson random variables is Poisson with the sum of the rates. This is why a customer service center receiving calls from two independent sources can model the total call stream as a single Poisson process.
 
-### Thinning
+### Theorem: Thinning (coloring)
 
-Start with a Poisson process of rate $\lambda$. For each event, flip a biased coin: keep it with probability $p$, discard it with probability $1-p$. The kept events form a Poisson process with rate $\lambda p$.
+If each event of a Poisson process of rate $\lambda$ is independently classified as type $i$ with probability $p_i$ (where $\sum p_i = 1$), then the type-$i$ events form a Poisson process with rate $\lambda p_i$, and these processes are independent of each other.
 
-This is useful for modeling filtered streams. If customers arrive at a store at rate $\lambda$ and each independently makes a purchase with probability $p$, then purchases arrive as a Poisson process of rate $\lambda p$. The thinning preserves the Poisson structure because of independence.
+*Picture.* Start with a Poisson process of rate $\lambda$. For each event, flip a biased coin: keep it with probability $p$, discard it with probability $1-p$. The kept events form a Poisson process with rate $\lambda p$. This is useful for modeling filtered streams. If customers arrive at a store at rate $\lambda$ and each independently makes a purchase with probability $p$, then purchases arrive as a Poisson process of rate $\lambda p$. The thinning preserves the Poisson structure because of independence.
+
+*Application: the M/M/1 queue.* Customers arrive as a Poisson process of rate $\lambda$, service times are exponential with rate $\mu$. The number of customers in the system is a birth-death process (a continuous-time Markov chain) with stationary distribution <MathInline expression={"\\pi_n = (1 - \\rho)\\rho^n"} /> where <MathInline expression={"\\rho = \\lambda/\\mu < 1"} />. This is the foundation of queueing theory — and it works precisely because both arrivals and services are memoryless.
 
 ## The full timeline picture
 
@@ -88,16 +131,78 @@ Imagine drawing a horizontal line — the time axis. Events appear as dots. The 
 
 If you zoom in on any small window, the dots look the same — same average density, same randomness. If you zoom out and count dots in a large window, the count is Poisson with mean proportional to the window length.
 
-This scale-invariant randomness is the hallmark of the Poisson process. No preferred timescale. No periodicity. No clustering beyond what pure chance produces.
+This **scale-invariant randomness** is the hallmark of the Poisson process. No preferred timescale. No periodicity. No clustering beyond what pure chance produces. It is the maximally random point process on the line — which is why it appears as the limit whenever many independent rare events combine.
 
-## Key insight
+## Three perspectives on the Poisson process
 
-> A Poisson process is the purest model of random events in time: events arrive independently at constant rate, the count in any interval is Poisson, and the gaps between events are exponential. Its most striking feature is the memoryless property — the waiting time distribution restarts from zero at every instant, as if the past never happened.
+1. **As a counting process.** $N(t)$ counts events in $[0, t]$. The Poisson distribution gives the count; the exponential distribution gives the gaps. The two are dual: $P(T > t) = P(N(t) = 0)$. This is the "events in time" view, natural for modeling arrivals, decays, and discoveries.
+2. **As a continuous-time Markov chain.** The Poisson process is the simplest continuous-time Markov chain: the state is the current count, and transitions go from $n$ to $n+1$ at rate $\lambda$. The memorylessness of the exponential inter-arrival times IS the Markov property in continuous time. This view generalizes to birth-death processes, queueing models, and continuous-time Markov chains broadly. See [lesson 25](/courses/probability/25-markov-chains).
+3. **As the law of rare events.** The Poisson process is the limit of many independent rare Bernoulli trials. Chop time into $n$ tiny bins, put one event in each with probability $\lambda/n$, and as $n \to \infty$ you get the Poisson process. This "law of rare events" explains why the Poisson distribution appears whenever many independent low-probability events combine — radioactive decays (each atom rarely decays), accidents, rare diseases, website hits (each of millions of users rarely visits).
+
+## Modern applications
+
+**Queueing theory and systems design.** Every customer service center, server farm, and cloud computing system is analyzed with queueing models built on Poisson processes. The M/M/1 queue (Poisson arrivals, exponential service, one server) gives closed-form results for average wait time, queue length, and utilization. The memoryless property of exponential service times is what makes these models tractable. When you wait on hold, the math of this lesson is governing your experience.
+
+**Network traffic and reliability.** Packet arrivals on a network link, failures of redundant systems, and session arrivals at a web server are routinely modeled as Poisson processes. The superposition property (many independent arrival streams combine into one Poisson process) justifies treating aggregate web traffic as Poisson even when individual users arrive idiosyncratically. Reliability engineering uses the exponential failure model (constant hazard rate) as the baseline — the "useful life" period before wear-out begins.
+
+**Event-driven simulation and computational finance.** Discrete-event simulators (for manufacturing, logistics, communication networks) are built around Poisson process generators. In finance, the jump-diffusion model adds Poisson-driven jumps to geometric Brownian motion, capturing the sudden crashes and spikes that pure Brownian motion misses. The Poisson component models rare, discrete events (earnings surprises, flash crashes) layered on top of the continuous noise.
+
+**Neural spiking and biology.** Many neurons in sensory systems fire approximately as Poisson processes, with a rate $\lambda$ that depends on the stimulus. The inter-spike intervals are approximately exponential, and the spike counts in fixed windows are approximately Poisson. This is the baseline model in computational neuroscience; deviations from Poisson firing (more regular or more bursty) carry information about the underlying neural code.
+
+<KeyInsight>
+A Poisson process is the purest model of random events in time, defined by three axioms: independent increments, stationary increments, and rare (orderly) events. From these axioms flow two dual distributions — the Poisson (for counts in a window) and the exponential (for gaps between events). The exponential's memoryless property (having waited s minutes does not change the distribution of additional waiting time) is the continuous-time analog of the Markov property. Superposition (merge two Poisson streams to get another) and thinning (filter a Poisson stream to get another) preserve the structure, making the Poisson process the universal building block of queueing theory, network modeling, reliability engineering, and computational neuroscience.
+</KeyInsight>
+
+## Connections
+
+This lesson is the continuous-time analog of [Markov chains](/courses/probability/25-markov-chains) (lesson 25). The Poisson process is the simplest continuous-time Markov chain: the memorylessness of the exponential inter-arrival times is exactly the Markov property in continuous time. The stationary distribution of the M/M/1 queue is derived from the same $\pi = \pi P$ machinery as discrete-time chains. The [exponential distribution](/courses/probability/08-continuous-distributions) (lesson 08) gets its starring role here — it is the waiting-time distribution of the Poisson process, just as the geometric is the waiting-time distribution of the first success in discrete trials.
+
+The Poisson count distribution connects back to the [Binomial](/courses/probability/07-the-binomial-distribution) (lesson 07) via the law of rare events (Binomial with small $p$ and large $n$ converges to Poisson). The [Central Limit Theorem](/courses/probability/16-central-limit-theorem) (lesson 16) explains why Poisson counts look bell-shaped for large $\lambda t$. Forward to [the finale](/courses/probability/27-where-probability-meets-the-world) (lesson 27): the Poisson process is the maximum-entropy point process on the line (it makes the fewest assumptions given a mean rate), connecting it to the information-theoretic and physics themes that close the course. The Gamma-Poisson conjugate pair ([lesson 23](/courses/probability/23-bayesian-inference-in-practice)) is the Bayesian inference framework for learning the rate $\lambda$ from observed counts.
 
 ## Practice
 
-**Exercise 1.** Calls arrive at a customer service center as a Poisson process with rate $\lambda = 10$ per hour. What is the probability of receiving exactly 8 calls in a given hour? What is the probability of receiving at least 15 calls in a two-hour window?
+<ExerciseBlock number={1}
+  prompt="Calls arrive at a customer service center as a Poisson process with rate lambda = 10 per hour. What is the probability of receiving exactly 8 calls in a given hour? What is the probability of receiving at least 15 calls in a two-hour window?"
+  hint="For one hour: N ~ Poisson(10). For two hours: N ~ Poisson(20). Use the Poisson PMF and CDF."
+  answer="One hour: N ~ Poisson(10). P(N=8) = (10^8 * e^(-10))/8! = (100000000 * 4.54e-5)/40320 = 4540/40320 ≈ 0.1126. So about 11.3% chance of exactly 8 calls. Two hours: N ~ Poisson(20). P(N >= 15) = 1 - P(N <= 14) = 1 - sum_{k=0}^{14} (20^k e^(-20))/k!. Computing the CDF: P(N <= 14) ≈ 0.1049 (from Poisson tables or software). So P(N >= 15) ≈ 1 - 0.1049 = 0.8951, about 89.5%. This makes sense: the mean is 20 and the SD is sqrt(20) ≈ 4.47, so 15 is just above one SD below the mean — getting at least 15 is quite likely."
+/>
 
-**Exercise 2.** Buses arrive as a Poisson process with rate 4 per hour. You arrive at the bus stop at a random time. What is the expected waiting time until the next bus? Now suppose you have already waited 20 minutes. What is the expected additional waiting time? Explain how the memoryless property applies.
+<ExerciseBlock number={2}
+  prompt="Buses arrive as a Poisson process with rate 4 per hour. You arrive at the bus stop at a random time. What is the expected waiting time until the next bus? Now suppose you have already waited 20 minutes. What is the expected additional waiting time? Explain how the memoryless property applies."
+  hint="Mean waiting time = 1/lambda. Memorylessness: P(T > s+t | T > s) = P(T > t)."
+  answer="Rate lambda = 4 per hour, so the mean waiting time is 1/lambda = 1/4 hour = 15 minutes. (Equivalently, 1/4 * 60 = 15 min.) After waiting 20 minutes, the expected ADDITIONAL waiting time is STILL 15 minutes — it has not decreased. This is the memoryless property: P(T > 20 + t | T > 20) = P(T > t), so the residual waiting time has the same exponential distribution as the original. The distribution 'restarts from zero' at every instant, as if the past never happened. Caveat: this is the model's prediction IF buses truly arrive as a Poisson process. For scheduled buses, the memoryless property is typically WRONG — if a bus is scheduled every 15 minutes and you have waited 14 minutes, the next bus is probably arriving soon. The Poisson model fits uncoordinated or overloaded systems (e.g., buses stuck in traffic with no schedule adherence) but not a punctual scheduled service. This is a classic example of checking modeling assumptions against reality."
+/>
 
-**Exercise 3.** Two independent Poisson processes generate events at rates $\lambda_1 = 3$ and $\lambda_2 = 5$ per hour. What is the probability that the next event (from either process) comes from process 1? (Hint: use superposition, then consider the probability that the minimum of two exponential waiting times comes from process 1.)
+<ExerciseBlock number={3}
+  prompt="Two independent Poisson processes generate events at rates lambda_1 = 3 and lambda_2 = 5 per hour. What is the probability that the next event (from either process) comes from process 1? (Hint: use superposition, then consider the probability that the minimum of two exponential waiting times comes from process 1.)"
+  hint="The combined process has rate lambda_1 + lambda_2 = 8. The next event comes from process 1 with probability proportional to its rate."
+  answer="By superposition, the combined process has rate lambda_1 + lambda_2 = 3 + 5 = 8 per hour. Let T_1 ~ Exp(3) and T_2 ~ Exp(5) be the waiting times to the next event from each process. The next event overall is min(T_1, T_2). P(next event from process 1) = P(T_1 < T_2). Compute: P(T_1 < T_2) = integral from 0 to infinity of P(T_2 > t) * f_1(t) dt = integral of e^(-5t) * 3*e^(-3t) dt = 3 * integral of e^(-8t) dt = 3 * (1/8) = 3/8 = 0.375. So the probability is lambda_1/(lambda_1 + lambda_2) = 3/8 = 0.375. The next event comes from process 1 with probability proportional to its rate relative to the total rate. This generalizes: for n independent Poisson processes, the probability the next event is from process i is lambda_i / sum_j lambda_j. This is the 'racing exponentials' result and is foundational for event-driven simulation and for the Gillespie algorithm in computational chemistry."
+/>
+
+<ExerciseBlock number={4}
+  prompt="Customers arrive at a store as a Poisson process of rate 12 per hour. Each customer independently makes a purchase with probability 0.25. What is the distribution of the arrival process of PURCHASING customers? What is the rate? Explain why thinning preserves the Poisson structure."
+  hint="Use the thinning theorem: each event is kept (becomes a purchase) with prob 0.25, discarded otherwise."
+  answer="By the thinning theorem, the purchasing customers form a Poisson process with rate lambda * p = 12 * 0.25 = 3 per hour. The non-purchasing customers form an independent Poisson process with rate 12 * 0.75 = 9 per hour. Why thinning works: the Poisson process has independent increments (axiom 1), so the classification of each event (purchase or not) is an independent Bernoulli trial applied to each arrival. Independent thinning of independent increments yields independent increments; the rate scales by p. Formally, N_purchases(t) ~ Poisson(lambda*p*t). This is why we can decompose a Poisson process into independent sub-processes by random coloring — and it underlies the analysis of filtered queues, multi-class service systems, and probabilistic routing in networks."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Prove the duality between the Poisson count and the exponential waiting time: show that P(T > t) = P(N(t) = 0) = e^(-lambda*t), where T is the time of the first event and N(t) is the count in [0, t]. Explain why this means the Poisson distribution and the exponential distribution are two views of the same process."
+  hint="'The first event happens after time t' is the same event as 'no events happen in [0, t]'."
+  answer="The event {T > t} ('the first arrival happens after time t') is exactly the event {N(t) = 0} ('no arrivals happened in [0, t]'). These are the same event described two ways. By the Poisson PMF: P(N(t) = 0) = (lambda*t)^0 * e^(-lambda*t) / 0! = e^(-lambda*t). Therefore P(T > t) = e^(-lambda*t), which is the survival function of the Exponential(lambda) distribution. Differentiating gives the density f(t) = lambda*e^(-lambda*t). This duality is profound: the Poisson distribution (discrete, for counts) and the exponential distribution (continuous, for waiting times) are not separate facts but two faces of the same stochastic process. The Poisson process unifies them. Any question about counts can be rephrased as a question about waiting times, and vice versa. For example, P(N(t) >= 1) = 1 - e^(-lambda*t) = P(T <= t): the probability of at least one event in [0,t] equals the probability the first event arrives by time t — tautologically true once you see the duality."
+/>
+
+<ExerciseBlock number={6}
+  prompt="In the M/M/1 queue, customers arrive as a Poisson process of rate lambda = 5 per hour and service times are exponential with rate mu = 8 per hour. What is the traffic intensity rho? What is the probability the system is empty? What is the expected number of customers in the system? Comment on what happens as rho approaches 1."
+  hint="rho = lambda/mu. Stationary distribution: pi_n = (1-rho)*rho^n. Expected number in system: L = rho/(1-rho)."
+  answer="Traffic intensity rho = lambda/mu = 5/8 = 0.625. Probability the system is empty: pi_0 = 1 - rho = 1 - 0.625 = 0.375. Expected number in system: L = rho/(1-rho) = 0.625/0.375 = 1.667 customers. So on average, there are about 1.67 customers in the system (waiting or being served). As rho -> 1 (lambda approaches mu, arrivals nearly match service capacity): L = rho/(1-rho) -> infinity. The expected number of customers in the system blows up. This is the 'congestion collapse' of queues — when the arrival rate approaches the service rate, the queue length and waiting time explode. Even at rho = 0.9, L = 0.9/0.1 = 9 customers; at rho = 0.99, L = 99 customers. This is why systems are designed with significant spare capacity (rho well below 1) — the cost of being close to saturation is nonlinear and severe. This single formula governs capacity planning in call centers, server farms, emergency rooms, and traffic systems."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Explain why the Poisson process is the 'law of rare events' — the limit of many independent Bernoulli trials with small probability. Give the derivation showing how a Binomial(n, lambda/n) converges to Poisson(lambda) as n -> infinity, and explain why this justifies using the Poisson process to model phenomena like radioactive decay or website visits."
+  hint="Take n Bernoulli trials each with prob p = lambda/n. Show the Binomial PMF converges to the Poisson PMF. Use (1 - lambda/n)^n -> e^(-lambda)."
+  answer="Chop a time interval [0, t] into n tiny sub-intervals of length t/n. In each sub-interval, assume at most one event can occur (the 'rare events' axiom), with probability p = lambda*t/n (so the expected count over n sub-intervals is n*p = lambda*t, constant). The total count N is Binomial(n, p) = Binomial(n, lambda*t/n). As n -> infinity: P(N=k) = C(n,k) p^k (1-p)^(n-k). For fixed k, as n -> infinity: C(n,k) ~ n^k/k!, p^k = (lambda*t/n)^k, so C(n,k)*p^k -> (lambda*t)^k/k!. And (1-p)^(n-k) = (1 - lambda*t/n)^(n-k) -> e^(-lambda*t) as n -> infinity (using the limit (1-x/n)^n -> e^(-x)). So P(N=k) -> (lambda*t)^k * e^(-lambda*t) / k!, which is the Poisson(lambda*t) PMF. Why this justifies the Poisson model: radioactive decay is the sum of many independent atoms each rarely decaying (n ~ 10^23 atoms, each with tiny decay probability per second) — exactly the rare-events limit. Website visits are the sum of many independent users each rarely visiting (n ~ millions of users) — again the rare-events limit. Whenever a phenomenon is the aggregate of many independent low-probability events, the count is approximately Poisson. This is why the Poisson distribution appears so ubiquitously in nature and engineering: it is the universal limit of rare-event aggregation, just as the normal distribution is the universal limit of additive noise aggregation (CLT)."
+/>
+
+---
+
+**Up next:** [Where Probability Meets the World →](/courses/probability/27-where-probability-meets-the-world)

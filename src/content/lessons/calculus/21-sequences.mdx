@@ -18,12 +18,18 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { SequenceExplorer } from '../../../components/interactive/calculus/SequenceExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-A **sequence** is an infinite list of numbers: $a_1, a_2, a_3, \ldots$ Think of it as a function $a(n)$ where the input is a positive integer. A sequence is an infinite list; a series (coming in the next lesson) is the sum of that list. The central question: **does the sequence settle down to a fixed number, or does it run away?** Convergence asks whether the list settles down -- but be warned, the harmonic series shows that "terms going to zero" is not enough to guarantee that a sum converges.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+A **sequence** is an infinite list of numbers: $a_1, a_2, a_3, \ldots$ More precisely, it is a function whose domain is the positive integers — input an index $n$, get back a number $a_n$. Sequences are the discrete cousins of the functions you have been studying, and they deserve their own attention for one reason: an infinite series (next lesson) is just the sum of a sequence, and to understand sums we must first understand the sequence of terms *and* the sequence of partial sums. The central question of this lesson is the same one that drives all of calculus: **does it settle down, or does it run away?**
+
+The [limit](/courses/calculus/02-limits-and-continuity) — the heartbeat of calculus — is the right tool, but now the input $n$ marches along the integers toward infinity rather than sliding continuously toward a point. Remarkably, almost everything you learned about limits carries over.
 
 <InteractiveCanvas
   title="Sequence Explorer"
@@ -33,64 +39,164 @@ A **sequence** is an infinite list of numbers: $a_1, a_2, a_3, \ldots$ Think of 
   <SequenceExplorer client:visible />
 </InteractiveCanvas>
 
-## Convergence and divergence
+## The precise definition of convergence
 
-A sequence **converges** to a limit $L$ if the terms get arbitrarily close to $L$ as $n$ grows. Formally:
+Informally, a sequence **converges** to a limit $L$ if the terms get arbitrarily close to $L$ as $n$ grows. But "arbitrarily close" needs to be made rigorous, and the way we do it is the same $\varepsilon$-challenge that defined limits of functions. The result is the **$\varepsilon$-$N$ definition**.
 
-<MathBlock expression={"\\lim_{n \\to \\infty} a_n = L"} />
+## Theorem: Definition of sequence convergence
 
-A sequence **diverges** if it doesn't converge — it might oscillate, grow without bound, or behave chaotically.
+The sequence $(a_n)$ **converges** to the limit $L$, written <MathInline expression={"\\lim_{n \\to \\infty} a_n = L"} />, if for every $\varepsilon > 0$ there exists an integer $N$ such that:
 
-## Examples
+<MathBlock expression={"n > N \\;\\Longrightarrow\\; |a_n - L| < \\varepsilon"} />
+
+**Hypotheses:** none beyond the sequence existing. **Conclusion:** beyond some index $N$, *every* term lands within the $\varepsilon$-tube $(L - \varepsilon, L + \varepsilon)$.
+
+**Intuition:** you name any tolerance $\varepsilon$, no matter how small. I respond with an index $N$: "past this point, every term is within $\varepsilon$ of $L$." The smaller your $\varepsilon$, the larger my $N$ must be — but I can always find one. That is what it means to settle down. If a sequence does not converge, it **diverges**: it might run to $\pm\infty$, oscillate forever, or behave chaotically.
+
+A sequence **diverges to** $+\infty$ if for every $M$ there is an $N$ with $a_n > M$ for all $n > N$ — no matter how high a bar you set, the terms eventually clear it and stay above.
+
+## Limit laws for sequences
+
+Sequences inherit the same algebraic limit laws as functions. If $(a_n) \to A$ and $(b_n) \to B$, then:
+
+- **Sum/difference:** $\lim (a_n \pm b_n) = A \pm B$
+- **Product:** $\lim (a_n b_n) = AB$
+- **Quotient:** $\lim (a_n / b_n) = A / B$ provided $B \neq 0$
+- **Continuous function:** $\lim f(a_n) = f(A)$ for any function $f$ continuous at $A$
+
+There is also a squeeze principle, given below. The upshot: the limits you practiced in [Lesson 02](/courses/calculus/02-limits-and-continuity) work here with "n → ∞" replacing "x → a", as long as you avoid indeterminate forms. When $n$ appears in both numerator and denominator, divide through by the highest power of $n$.
+
+## Examples: convergent and divergent
 
 **Convergent sequences:**
-- $a_n = 1/n$ → converges to 0. The terms shrink toward nothing.
-- $a_n = (1 + 1/n)^n$ → converges to $e \approx 2.718$. This is the definition of Euler's number.
-- $a_n = \sin(1/n)$ → converges to 0.
+- $a_n = 1/n \to 0$. The terms shrink toward nothing.
+- $a_n = (1 + 1/n)^n \to e \approx 2.71828$. This is the *definition* of Euler's number, derived below from compound interest.
+- $a_n = \sin(1/n) \to 0$, since $1/n \to 0$ and sine is continuous at $0$.
+- $a_n = n/(n+1) \to 1$, since dividing by $n$ gives $1/(1 + 1/n) \to 1$.
 
 **Divergent sequences:**
-- $a_n = n$ → diverges to $\infty$.
-- $a_n = (-1)^n$ → oscillates between $-1$ and $1$, never settling.
-- $a_n = n \sin(n)$ → oscillates with growing amplitude.
+- $a_n = n \to +\infty$. Monotone and unbounded.
+- $a_n = (-1)^n$ oscillates between $-1$ and $1$, never settling. (Bounded but not monotone, not convergent.)
+- $a_n = (-1)^n n$ oscillates with growing amplitude — unbounded and oscillating.
 
-## Bounded and monotone
+Notice the pattern foreshadowing later tests: bounded *and* monotone guarantees convergence; bounded alone does not.
 
-Two useful properties:
+## Theorem: The Squeeze Theorem for sequences
 
-**Bounded**: there exists $M$ such that $|a_n| \leq M$ for all $n$.
+If $b_n \leq a_n \leq c_n$ for all $n$ sufficiently large, and $\lim b_n = \lim c_n = L$, then $\lim a_n = L$ as well.
 
-**Monotone**: the sequence is either always increasing or always decreasing.
+**Why it matters:** often you cannot find $\lim a_n$ directly, but you can *trap* it between two sequences whose limits you know. The classic application is to wipe out an annoying oscillating factor. For example:
 
-**Monotone Convergence Theorem**: A bounded monotone sequence converges. If it's always increasing and bounded above, it converges to its least upper bound. This theorem guarantees convergence without computing the limit.
+<MathBlock expression={"-\\frac{1}{n} \\;\\leq\\; \\frac{\\cos n}{n} \\;\\leq\\; \\frac{1}{n}"} />
 
-## The squeeze theorem for sequences
+Both bounds converge to $0$, so <MathInline expression={"\\lim_{n\\to\\infty} \\frac{\\cos n}{n} = 0"} />, no matter how erratically $\cos n$ jumps. The shrinking $1/n$ squeezes the whole expression to zero. This is exactly the same idea as the squeeze theorem for functions — the discrete version just runs along the integers.
 
-If $b_n \leq a_n \leq c_n$ and both $b_n$ and $c_n$ converge to the same limit $L$, then $a_n$ also converges to $L$.
+## Bounded and monotone sequences
 
-Example: $\lim_{n \to \infty} \frac{\cos n}{n} = 0$ because $-\frac{1}{n} \leq \frac{\cos n}{n} \leq \frac{1}{n}$ and both bounds converge to 0.
+Two properties turn out to be the key to guaranteeing convergence *without* knowing the limit in advance.
+
+**Bounded:** there exists $M$ such that $|a_n| \le M$ for all $n$. The sequence lives inside a fixed band. (Bounded *above*: $a_n \le M$; bounded *below*: $a_n \ge -M$.)
+
+**Monotone:** the sequence is either always increasing (<MathInline expression={"a_{n+1} \\ge a_n"} />) or always decreasing (<MathInline expression={"a_{n+1} \\le a_n"} />). Strictly monotone uses $<$ / $>$.
+
+## Theorem: The Monotone Convergence Theorem
+
+Every bounded monotone sequence converges. Specifically, a sequence that is increasing and bounded above converges to its **least upper bound** (supremum); a sequence that is decreasing and bounded below converges to its **greatest lower bound** (infimum).
+
+**Hypotheses:** the sequence is monotone *and* bounded. **Conclusion:** it converges — and we did not need to know the limit.
+
+**Why this is remarkable:** the theorem converts a statement about limits (an analytic notion) into a statement about order (a geometric/combinatorial notion). It is the backbone of the [real numbers](https://en.wikipedia.org/wiki/Completeness_of_the_real_numbers) being "complete" — having no gaps. Every convergent sequence is bounded, but not every bounded sequence converges (witness $(-1)^n$). Add monotonicity and convergence is forced. This theorem also *constructs* the limit as the supremum or infimum — a fact we will exploit when we meet the number $e$.
+
+## Recursive sequences: from compound interest to $e$
+
+Many sequences are defined **recursively**: give a starting value $a_0$ and a rule to compute <MathInline expression={"a_{n+1}"} /> from $a_n$. The most famous one builds the number $e$ out of compound interest.
+
+Suppose you deposit $1$ at $100\%$ annual interest. Compounding once a year gives $1 + 1 = 2$. Compounding twice gives $(1 + 1/2)^2 = 2.25$. Compounding $n$ times a year gives:
+
+<MathBlock expression={"a_n = \\left(1 + \\frac{1}{n}\\right)^n"} />
+
+The values climb — $2, 2.25, 2.37, 2.44, \ldots$ — but slowly, and the Monotone Convergence Theorem guarantees they settle: the sequence is increasing and bounded above (by $3$, which takes a short proof). The limit is Euler's number:
+
+<MathBlock expression={"e = \\lim_{n \\to \\infty} \\left(1 + \\frac{1}{n}\\right)^n \\approx 2.7182818"} />
+
+This is more than a neat formula. It is the bridge from discrete compounding to continuous growth — the seed of the exponential function, of differential equations, of everything that grows or decays at a rate proportional to its size. A recursive sequence, squeezed into existence by monotonicity and boundedness, becomes $e$.
+
+<FormulaReadout formulas={[
+  { label: "收敛的 ε-N 定义", expression: "\\forall \\varepsilon > 0,\\; \\exists N \\in \\mathbb{N}:\\; n > N \\Rightarrow |a_n - L| < \\varepsilon" },
+  { label: "夹逼定理", expression: "b_n \\le a_n \\le c_n,\\; b_n,c_n \\to L \\;\\Longrightarrow\\; a_n \\to L" },
+  { label: "单调收敛定理", expression: "\\text{有界单调序列 } \\Rightarrow \\text{ 收敛}" },
+  { label: "e 的定义（复利极限）", expression: "e = \\lim_{n \\to \\infty}\\left(1 + \\frac{1}{n}\\right)^n \\approx 2.71828" },
+]} />
+
+## The many faces of sequences
+
+- **Numerical analysis:** every iterative algorithm (Newton's method, gradient descent, power iteration) produces a *sequence* of iterates $x_0, x_1, x_2, \ldots$ and the central question is convergence — does the sequence approach a fixed point, a minimizer, an eigenvector?
+- **Probability:** the Law of Large Numbers says the sequence of sample averages $\bar X_n$ converges to the expected value $\mu$. The very notion of "long-run frequency" is a statement about the limit of a sequence of averages.
+- **Computer science:** a sequence of approximations with running time $a_n$ is "efficient" precisely when $a_n$ grows slowly — big-O notation classifies sequences by their growth rate.
+- **Finance:** compound interest, mortgage amortization, and annuity valuation are all recursive sequences whose limits give present values.
+
+## Modern applications
+
+In **machine learning**, training a neural network is the study of a recursive sequence: each step produces new weights <MathInline expression={"w_{n+1} = w_n - \\eta \\nabla L(w_n)"} />. Whether this sequence converges — and to what — is the whole game. Convergence proofs for stochastic gradient descent are essentially Monotone Convergence Theorem arguments applied to the loss, with careful handling of the noise.
+
+In **dynamical systems**, the long-run behavior of an iterated map (logistic map, Mandelbrot iteration) is the limit behavior of a recursive sequence. The boundary between convergent, periodic, and chaotic behavior is one of the deepest structures in mathematics.
+
+In **economics and finance**, the *discounted* sum of an infinite income stream is a series whose convergence hinges on the underlying sequence of payments decaying fast enough — a direct application of this lesson followed by the next.
 
 <KeyInsight>
-A sequence converges when its terms settle toward a fixed number. Bounded monotone sequences always converge — they can't oscillate or run away.
+A sequence is a function on the positive integers, and it converges to L when — for any tolerance ε you name — all terms past some index N land within ε of L (the ε-N definition). Two tools guarantee convergence without knowing the limit: the Squeeze Theorem (trap the sequence between two known limits) and the Monotone Convergence Theorem (bounded + monotone ⇒ convergent). Recursive sequences — like aₙ = (1 + 1/n)ⁿ, which is increasing and bounded above — converge to e, the seed of continuous growth. Sequences are the discrete scaffolding on which infinite series (next lesson) are built.
 </KeyInsight>
+
+## Connections
+
+This lesson takes the [concept of a limit](/courses/calculus/02-limits-and-continuity) — introduced for continuous functions — and adapts it to the discrete setting of integer-indexed sequences. The $\varepsilon$-$N$ definition is the discrete twin of the $\varepsilon$-$\delta$ definition. The very next lesson, [infinite series](/courses/calculus/22-infinite-series), builds directly on sequences: a series converges precisely when its *sequence of partial sums* converges. The Monotone Convergence Theorem will reappear in disguise when we prove the integral test and the alternating series test in [Lesson 23](/courses/calculus/23-convergence-tests).
+
+Across disciplines, sequences are the language of iteration: every algorithm that "keeps going" — Newton's method, gradient descent, the power method for eigenvalues, the Law of Large Numbers — is a sequence, and its limit is the answer it computes. Convergence is the difference between an algorithm that finishes and one that never settles.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Does the sequence aₙ = n/(n+1) converge? If so, to what value?"
-  hint="Divide numerator and denominator by n."
-  answer="aₙ = n/(n+1) = 1/(1 + 1/n) → 1/(1 + 0) = 1. Yes, it converges to 1."
+  prompt="Does the sequence aₙ = n/(n+1) converge? If so, to what value? Verify with the ε-N definition: given ε, find an N that works."
+  hint="Divide numerator and denominator by n. For the ε-N part, solve |n/(n+1) − 1| < ε for n."
+  answer="Dividing by n: aₙ = 1/(1 + 1/n) → 1/(1 + 0) = 1. So the limit is 1. For the ε-N proof: |n/(n+1) − 1| = |−1/(n+1)| = 1/(n+1). We need 1/(n+1) < ε, i.e. n > 1/ε − 1. So take N = ⌈1/ε − 1⌉. For example, if ε = 0.01, take N = 99: every term past a₉₉ is within 0.01 of 1. This is the ε-N definition in action — for any tolerance, we produce an explicit cutoff index."
 />
 
 <ExerciseBlock number={2}
   prompt="Prove that aₙ = (−1)ⁿ / n converges to 0 using the squeeze theorem."
   hint="Find upper and lower bounds that both converge to 0."
-  answer="−1/n ≤ (−1)ⁿ/n ≤ 1/n. Both −1/n and 1/n converge to 0. By the squeeze theorem, (−1)ⁿ/n → 0. The alternating sign doesn't matter — the shrinking denominator dominates."
+  answer="Since −1 ≤ (−1)ⁿ ≤ 1, dividing by n > 0 gives −1/n ≤ (−1)ⁿ/n ≤ 1/n. Both −1/n and 1/n converge to 0. By the squeeze theorem, (−1)ⁿ/n → 0. The alternating sign does not matter — the shrinking denominator 1/n squeezes the whole expression to zero. This is the standard trick for sequences with a bounded oscillating factor multiplied by a factor that tends to zero."
 />
 
 <ExerciseBlock number={3}
-  prompt="Is the sequence aₙ = n² bounded? Is it monotone?"
+  prompt="Is the sequence aₙ = n² bounded? Is it monotone? Does it converge?"
   hint="Does it stay within a fixed range? Does it always increase or always decrease?"
-  answer="It is monotone increasing (n² always grows) but not bounded (it exceeds any finite M for large enough n). Since it's monotone increasing but unbounded, it diverges to ∞."
+  answer="It is monotone increasing (n² always grows) but not bounded (it exceeds any finite M for large enough n). Since it is monotone increasing and unbounded, the Monotone Convergence Theorem does not apply (boundedness is essential), and indeed aₙ → +∞: the sequence diverges. This shows each hypothesis of the Monotone Convergence Theorem is doing real work — drop boundedness and convergence can fail."
 />
 
-[Next Lesson →](/courses/calculus/22-infinite-series)
+<ExerciseBlock number={4}
+  prompt="Consider the recursively defined sequence a₀ = 1, aₙ₊₁ = (aₙ + 2/aₙ)/2 (this is Newton's method for √2). Compute a₁, a₂, a₃. Is the sequence bounded? Is it monotone (after the first step)? What does it converge to?"
+  hint="Compute the first few terms by hand. If it converges to L, then L = (L + 2/L)/2 — solve for L. For monotonicity, compare aₙ₊₁ with aₙ assuming aₙ > √2."
+  answer="a₀ = 1. a₁ = (1 + 2)/2 = 1.5. a₂ = (1.5 + 2/1.5)/2 = (1.5 + 1.333)/2 ≈ 1.4167. a₃ = (1.4167 + 2/1.4167)/2 ≈ 1.41422 — already matching √2 ≈ 1.41421 to 4 decimals. The sequence is bounded below (by √2) and, from a₁ onward, monotone decreasing: if aₙ > √2 then aₙ₊₁ = (aₙ + 2/aₙ)/2 lies between √2 and aₙ (the arithmetic mean of aₙ and 2/aₙ). By the Monotone Convergence Theorem it converges; setting L = (L + 2/L)/2 and solving gives L² = 2, so L = √2. This is Newton's method — and a beautiful application of monotone convergence."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Use the squeeze theorem to find lim_{n→∞} (3 + (−1)ⁿ)/n. Then explain in one sentence why the bounded oscillation of (−1)ⁿ is irrelevant to the limit."
+  hint="Bound (−1)ⁿ between −1 and 1, then bound the whole expression."
+  answer="Since −1 ≤ (−1)ⁿ ≤ 1, we have 2 ≤ 3 + (−1)ⁿ ≤ 4, so 2/n ≤ (3 + (−1)ⁿ)/n ≤ 4/n. Both 2/n and 4/n converge to 0, so by the squeeze theorem the limit is 0. The oscillation of (−1)ⁿ is irrelevant because the factor 1/n drives the whole expression to zero regardless of how the numerator oscillates between 2 and 4 — the squeeze theorem formalizes that intuition."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Prove using the ε-N definition that the sequence aₙ = 3 + 1/n converges to 3. Give an explicit formula for N in terms of ε."
+  hint="Compute |aₙ − 3| and force it below ε."
+  answer="We have |aₙ − 3| = |1/n| = 1/n. Given ε > 0, we need 1/n < ε, i.e. n > 1/ε. Take N = ⌈1/ε⌉ (the smallest integer at least 1/ε). Then for every n > N, |aₙ − 3| = 1/n < 1/N ≤ ε. This proves aₙ → 3. For example, with ε = 0.001, take N = 1000: every term past a₁₀₀₀ is within 0.001 of 3. The explicit formula N = ⌈1/ε⌉ is the constructive heart of the ε-N definition."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Show that the sequence aₙ = (1 + 1/n)ⁿ is increasing and bounded above by 3, and conclude (via the Monotone Convergence Theorem) that it converges. You do not need to prove the bound rigorously — a clear argument using the binomial theorem is enough."
+  hint="Expand (1 + 1/n)ⁿ with the binomial theorem. Each term 1/k! · (n)(n−1)···(n−k+1)/nᵏ increases with n, and the partial sums are bounded by ∑ 1/k! which is less than 3."
+  answer="By the binomial theorem, (1 + 1/n)ⁿ = ∑_{k=0}^{n} (1/k!) · n(n−1)···(n−k+1)/nᵏ. Each factor (n)(n−1)···(n−k+1)/nᵏ = 1·(1−1/n)···(1−(k−1)/n) increases toward 1 as n grows, so each term of the sum increases with n. Moreover the number of nonzero terms increases with n. Hence the whole sum increases — aₙ is increasing. For the bound: each factor is ≤ 1, so each term is ≤ 1/k!, and (1+1/n)ⁿ ≤ ∑_{k=0}^{n} 1/k! < 1 + 1 + 1/2 + 1/4 + 1/8 + ··· = 1 + 2 = 3 (using k! ≥ 2^(k−1) for k ≥ 1). So the sequence is bounded above by 3. Increasing + bounded ⇒ converges by the Monotone Convergence Theorem. Its limit is, by definition, e. This is the rigorous birth of Euler's number from discrete compounding."
+/>
+
+---
+
+**Up next:** [Infinite Series](/courses/calculus/22-infinite-series)

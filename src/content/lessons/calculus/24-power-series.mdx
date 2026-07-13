@@ -18,12 +18,16 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { PowerSeriesVis } from '../../../components/interactive/calculus/PowerSeriesVis';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-A power series is a function in disguise. It looks like an infinite polynomial, but inside its radius of convergence, it behaves like any other function -- you can differentiate and integrate it term by term, add and multiply it like a polynomial, and evaluate it to any desired precision. The series defines the function completely within that disk of convergence.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+A power series is a **polynomial with infinitely many terms** — and that small change unlocks a revolution. Inside its **radius of convergence**, a power series behaves exactly like a polynomial: you can differentiate it term by term, integrate it term by term, add and multiply it like a finite expression. This means an enormous class of functions — exponentials, sines, cosines, logarithms — can be represented by infinite polynomials and manipulated with the same algebra you learned for finite ones. Power series are the bridge from the discrete world of [infinite series](/courses/calculus/22-infinite-series) to the continuous world of functions, and they are the foundation on which [Taylor series](/courses/calculus/26-taylor-series) are built.
 
 <InteractiveCanvas
   title="Power Series Explorer"
@@ -33,73 +37,161 @@ A power series is a function in disguise. It looks like an infinite polynomial, 
   <PowerSeriesVis client:visible />
 </InteractiveCanvas>
 
-<MathBlock expression={"\\sum_{n=0}^{\\infty} c_n (x - a)^n = c_0 + c_1(x-a) + c_2(x-a)^2 + \\cdots"} />
+## The definition
 
-For each value of $x$, you get a different series. Some converge, some diverge. The set of $x$-values where it converges is the **interval of convergence**.
+A **power series** centered at $a$ is an expression of the form:
 
-## The radius of convergence
+<MathBlock expression={"\\sum_{n=0}^{\\infty} c_n (x - a)^n = c_0 + c_1(x - a) + c_2(x - a)^2 + \\cdots"} />
 
-There exists a number $R$ (possibly 0 or $\infty$) such that:
+Think of $x$ as a variable and the $c_n$ as fixed coefficients. For each value of $x$ you plug in, you get a *different* infinite series in $n$ — some of those series converge, some diverge. The central question: **for which $x$ does the series converge?** The answer is remarkably clean.
+
+## The radius and interval of convergence
+
+## Theorem: Existence of a radius of convergence
+
+For every power series $\sum c_n (x-a)^n$, there is a number $R$ (the **radius of convergence**, with $0 \le R \le \infty$) such that:
 
 - $|x - a| < R$: the series **converges absolutely**
 - $|x - a| > R$: the series **diverges**
-- $|x - a| = R$: **check manually** (the ratio/root test is inconclusive at the boundary)
+- $|x - a| = R$ (the boundary $x = a \pm R$): the test is **inconclusive** — must be checked by hand
 
-The interval $(a - R, a + R)$ is the convergence interval. $R$ is the **radius of convergence**, found by:
+The set of all $x$ where the series converges is the **interval of convergence**: one of <MathInline expression={"(a{-}R, a{+}R)"} />, <MathInline expression={"[a{-}R, a{+}R)"} />, <MathInline expression={"(a{-}R, a{+}R]"} />, or <MathInline expression={"[a{-}R, a{+}R]"} /> (the endpoints are the only uncertainty). The interval is always *centered* at $a$ and symmetric — that is why $R$ is called a *radius*.
 
-<MathBlock expression={"R = \\frac{1}{\\lim_{n \\to \\infty} |c_{n+1}/c_n|}"} />
+**Finding $R$ with the ratio test.** Apply the [ratio test](/courses/calculus/23-convergence-tests) treating $x$ as a parameter:
 
-or equivalently by the root test.
+<MathBlock expression={"L = \\lim_{n \\to \\infty} \\left| \\frac{c_{n+1} (x-a)^{n+1}}{c_n (x-a)^n} \\right| = |x - a| \\cdot \\lim_{n \\to \\infty} \\left| \\frac{c_{n+1}}{c_n} \\right|"} />
 
-## Example: The geometric power series
+The series converges when $L < 1$, i.e. <MathInline expression={"|x - a| < 1 / \\lim |c_{n+1}/c_n|"} />. So:
 
-<MathBlock expression={"\\frac{1}{1-x} = \\sum_{n=0}^{\\infty} x^n = 1 + x + x^2 + x^3 + \\cdots \\quad \\text{for } |x| < 1"} />
+<MathBlock expression={"R = \\frac{1}{\\displaystyle\\lim_{n \\to \\infty} \\left| c_{n+1}/c_n \\right|} \\quad \\text{(ratio form)}, \\qquad R = \\frac{1}{\\displaystyle\\lim_{n \\to \\infty} \\sqrt[n]{|c_n|}} \\quad \\text{(root form)"} />
 
-This is just the geometric series formula with $r = x$. The radius of convergence is $R = 1$. At the boundary $x = \pm 1$, the series diverges.
+If the limit is $0$, then $R = \infty$ (converges everywhere). If the limit is $\infty$, then $R = 0$ (converges only at $x = a$). The boundary points $x = a \pm R$ always require a separate check — plug them in and apply a [convergence test](/courses/calculus/23-convergence-tests) directly.
 
-## Operations on power series
+## Example: the geometric power series
 
-**Differentiation**: Inside the radius of convergence, you can differentiate term-by-term:
+<MathBlock expression={"\\frac{1}{1 - x} = \\sum_{n=0}^{\\infty} x^n = 1 + x + x^2 + x^3 + \\cdots \\quad \\text{for } |x| < 1"} />
 
-<MathBlock expression={"\\frac{d}{dx}\\left[\\sum c_n x^n\\right] = \\sum n c_n x^{n-1}"} />
+This is just the [geometric series](/courses/calculus/22-infinite-series) with $r = x$. Here $c_n = 1$ for all $n$, so <MathInline expression={"\\lim |c_{n+1}/c_n| = 1"} /> and $R = 1$. At the boundary $x = 1$: $\sum 1 = \infty$ diverges. At $x = -1$: $\sum (-1)^n$ diverges (terms do not go to 0). So the interval of convergence is $(-1, 1)$. This single series is the prototype — every other power series is, in a sense, a generalization of it.
 
-**Integration**: Similarly, integrate term-by-term:
+## Term-by-term differentiation and integration
 
-<MathBlock expression={"\\int \\left[\\sum c_n x^n\\right] dx = \\sum \\frac{c_n}{n+1} x^{n+1} + C"} />
+The miraculous property of power series — the one that makes them so useful — is that *inside* the radius of convergence they behave like ordinary polynomials.
 
-**Addition and multiplication**: Power series add and multiply like polynomials, within the common interval of convergence.
+## Theorem: Differentiation and integration of power series
 
-## Why power series matter
+If <MathInline expression={"f(x) = \\sum_{n=0}^{\\infty} c_n (x - a)^n"} /> has radius of convergence $R > 0$, then $f$ is differentiable and integrable on $(a - R, a + R)$, and:
 
-Many important functions are defined by power series:
-- $e^x = \sum x^n / n!$ — the exponential function
-- $\sin x = \sum (-1)^n x^{2n+1} / (2n+1)!$ — sine
-- $\cos x = \sum (-1)^n x^{2n} / (2n)!$ — cosine
+<MathBlock expression={"f'(x) = \\sum_{n=1}^{\\infty} n\\, c_n (x - a)^{n-1}, \\qquad \\int f(x)\\, dx = C + \\sum_{n=0}^{\\infty} \\frac{c_n}{n+1} (x - a)^{n+1}"} />
 
-These definitions let you compute function values to any desired precision.
+Moreover, the differentiated and integrated series have the **same radius of convergence** $R$ as the original.
+
+**Why this works (and why it is not obvious).** For arbitrary infinite sums, you cannot simply differentiate term by term — limits and derivatives do not always commute. But power series **converge uniformly** on any strictly smaller interval $[a - r, a + r]$ with $r < R$, and uniform convergence is exactly the condition that lets you interchange limits with derivatives and integrals. The proof uses the Weierstrass M-test (compare to a geometric series $\sum |c_n| r^n$). The radius $R$ is preserved because <MathInline expression={"\\lim n|c_n|/|(n+1)c_{n+1}| \\to"} /> the same value as <MathInline expression={"\\lim |c_n/c_{n+1}|"} /> — the factor of $n$ washes out in the limit.
+
+**The consequence:** power series define functions that are infinitely differentiable inside their radius of convergence, and their derivatives of *every* order are obtained by term-by-term differentiation. This is what makes them "infinite polynomials" — not just in form, but in behavior.
+
+## Example: finding new series from old
+
+Start from <MathInline expression={"\\frac{1}{1-x} = \\sum_{n=0}^{\\infty} x^n"} /> for $|x| < 1$. Differentiate both sides term by term:
+
+<MathBlock expression={"\\frac{1}{(1-x)^2} = \\sum_{n=1}^{\\infty} n x^{n-1} = \\sum_{n=0}^{\\infty} (n+1) x^n = 1 + 2x + 3x^2 + 4x^3 + \\cdots"} />
+
+Or substitute $x \to -x^2$ and integrate to get a series for $\arctan$:
+
+<MathBlock expression={"\\arctan x = \\int_0^x \\frac{1}{1 + t^2}\\, dt = \\int_0^x \\sum_{n=0}^{\\infty} (-1)^n t^{2n}\\, dt = \\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n+1}}{2n+1}"} />
+
+These manipulations — differentiation, integration, substitution, multiplication — are the everyday algebra of power series, and they all work *automatically* inside the radius of convergence.
+
+## Functions defined by power series
+
+Many of the most important functions in mathematics are *defined* by their power series:
+
+| Function | Power series | Radius |
+|----------|--------------|--------|
+| $e^x$ | <MathInline expression={"\\sum_{n=0}^{\\infty} \\frac{x^n}{n!} = 1 + x + \\frac{x^2}{2!} + \\cdots"} /> | $R = \infty$ |
+| $\sin x$ | <MathInline expression={"\\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n+1}}{(2n+1)!}"} /> | $R = \infty$ |
+| $\cos x$ | <MathInline expression={"\\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n}}{(2n)!}"} /> | $R = \infty$ |
+| $\ln(1+x)$ | <MathInline expression={"\\sum_{n=1}^{\\infty} \\frac{(-1)^{n+1} x^n}{n}"} /> | $R = 1$ |
+
+These definitions are not just formal — they let you compute the function values to *any* desired precision, and they reveal deep structures (e.g. <MathInline expression={"e^{i\\theta} = \\cos\\theta + i\\sin\\theta"} /> falls out by combining the series). They are the launching point for the [Taylor series](/courses/calculus/26-taylor-series) of the next lessons.
+
+<FormulaReadout formulas={[
+  { label: "幂级数", expression: "\\sum_{n=0}^{\\infty} c_n (x - a)^n" },
+  { label: "收敛半径（比值法）", expression: "R = \\frac{1}{\\lim_{n\\to\\infty} |c_{n+1}/c_n|}" },
+  { label: "逐项求导", expression: "\\frac{d}{dx}\\sum c_n (x-a)^n = \\sum n c_n (x-a)^{n-1}" },
+  { label: "逐项积分", expression: "\\int \\sum c_n (x-a)^n dx = C + \\sum \\frac{c_n}{n+1}(x-a)^{n+1}" },
+]} />
+
+## The many faces of power series
+
+- **Approximation and computation:** computers evaluate $\sin$, $\cos$, $e^x$ by summing truncated power series. The factorial denominators make convergence spectacularly fast for small $|x|$.
+- **Differential equations:** many ODEs and PDEs are solved by assuming a power-series form for the unknown function and solving for the coefficients recursively (the *Frobenius method*). This is how special functions (Bessel, Legendre, Airy) are defined.
+- **Complex analysis:** in the complex plane, power series converge on a *disk* of radius $R$ — the same $R$ we compute here. This is the gateway to analytic functions, contour integration, and residue calculus.
+- **Generating functions in combinatorics:** a sequence $(a_n)$ is encoded as the coefficients of a power series $G(x) = \sum a_n x^n$, and combinatorial operations (counting, recursion) become algebraic operations on series.
+
+## Modern applications
+
+In **machine learning and statistics**, power series underlie the **moment generating function** and the **characteristic function** of a distribution — power series whose coefficients are the moments. Many distribution identities (sums of independent random variables, central limit theorem) are proven by multiplying their generating power series.
+
+In **numerical optimization**, second-order methods like Newton's method rely on the power-series (quadratic) approximation of the objective. The Hessian is the second-derivative term of a multivariate power series, and the whole field of trust-region methods is about deciding how far from the current point that power-series approximation can be trusted — i.e. estimating the radius of convergence on the fly.
+
+In **physics**, perturbation theory expresses the solution to a hard problem as a power series in a small parameter (a coupling constant, an amplitude). Quantum electrodynamics is a power series in the fine-structure constant $\alpha \approx 1/137$ — small enough that the first few terms give astonishing accuracy.
+
+In **signal processing**, a digital filter's behavior is described by a power series (the z-transform), and its stability is a convergence question about that series — exactly the radius-of-convergence question of this lesson, in engineering clothing.
 
 <KeyInsight>
-A power series is a polynomial with infinitely many terms. It converges inside a radius R centered at a, and defines a function there. You can differentiate and integrate term-by-term within this interval.
+A power series ∑ cₙ(x−a)ⁿ is an infinite polynomial. It converges absolutely inside a symmetric interval (a−R, a+R) called the interval of convergence, where R (the radius) is found by the ratio or root test: R = 1/lim|c_(n+1)/cₙ|. The boundary points must be checked by hand. Inside the radius, power series behave like ordinary polynomials — you can differentiate and integrate term by term, and the resulting series have the same radius R. This works because power series converge uniformly on smaller intervals, which licenses swapping limits with derivatives. Power series are how eˣ, sin x, cos x, and ln(1+x) are defined and computed, and they are the foundation on which Taylor series are built.
 </KeyInsight>
+
+## Connections
+
+This lesson takes the [convergence tests](/courses/calculus/23-convergence-tests) of the previous lesson and applies them to series that depend on a variable $x$ — the ratio and root tests become the machinery for computing the radius of convergence. The geometric series $\sum x^n = 1/(1-x)$ from [infinite series](/courses/calculus/22-infinite-series) is the prototype power series. The next two lessons — [Taylor polynomials](/courses/calculus/25-taylor-polynomials) and [Taylor series](/courses/calculus/26-taylor-series) — answer the inverse question: given a function, what is its power series? The term-by-term differentiation and integration theorems are what let you manipulate those Taylor series to find series for new functions, and they are the reason a Taylor series can be differentiated and integrated freely inside its radius.
+
+Across disciplines, "infinite polynomial" is the universal language of approximation: numerical evaluation of transcendental functions, perturbation expansions in physics, generating functions in combinatorics, z-transforms in signal processing, and moment/cumulant series in statistics. The radius of convergence is the universal question "how far can I trust this polynomial approximation?" — and this lesson teaches you to answer it with a single limit.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Find the radius of convergence of ∑ xⁿ/n."
-  hint="Use the ratio test: lim |x^{n+1}/(n+1)| / |xⁿ/n| = lim |x| · n/(n+1)."
-  answer="The limit is |x|. The series converges when |x| < 1, so R = 1. At x = 1: ∑ 1/n diverges (harmonic). At x = −1: ∑ (−1)ⁿ/n converges (alternating). So the interval is [−1, 1)."
+  prompt="Find the radius and interval of convergence of ∑_{n=1}^∞ xⁿ/n."
+  hint="Use the ratio test: lim |x^{n+1}/(n+1)| / |xⁿ/n| = lim |x| · n/(n+1). This gives R. Then check both boundary points x = 1 and x = −1 separately."
+  answer="Ratio test: |a_{n+1}/a_n| = |x| · n/(n+1) → |x| as n → ∞. The series converges when |x| < 1, so R = 1. Check boundary: x = 1 gives ∑ 1/n, the harmonic series, diverges. x = −1 gives ∑ (−1)ⁿ/n, the alternating harmonic series, converges by the AST. So the interval of convergence is [−1, 1): converges at the left endpoint (by cancellation), diverges at the right. This shows why the boundary must be checked by hand — the ratio test is silent there."
 />
 
 <ExerciseBlock number={2}
-  prompt="Find the radius of convergence of ∑ xⁿ/n!."
+  prompt="Find the radius of convergence of ∑_{n=0}^∞ xⁿ/n!."
   hint="Ratio test: lim |x^{n+1}/(n+1)!| / |xⁿ/n!| = lim |x|/(n+1)."
-  answer="The limit is 0 for any x. The ratio is always less than 1, so R = ∞. The series converges for all x — this is the power series for eˣ."
+  answer="Ratio test: |a_{n+1}/a_n| = |x|/(n+1) → 0 for any fixed x. Since 0 < 1 for every x, the series converges for all x — R = ∞. There are no boundary points to check. This is the power series for eˣ: it converges everywhere, which is why eˣ is defined and smooth on the whole real line. The factorial in the denominator grows so fast that it overwhelms any exponential xⁿ."
 />
 
 <ExerciseBlock number={3}
-  prompt="Starting from 1/(1−x) = ∑ xⁿ, differentiate to find the power series for 1/(1−x)²."
-  hint="d/dx [1/(1−x)] = 1/(1−x)². Differentiate the series term-by-term."
-  answer="d/dx ∑_{n=0}^∞ xⁿ = ∑_{n=1}^∞ nx^{n−1} = ∑_{n=0}^∞ (n+1)xⁿ. So 1/(1−x)² = 1 + 2x + 3x² + 4x³ + ···, valid for |x| < 1."
+  prompt="Starting from 1/(1−x) = ∑_{n=0}^∞ xⁿ (for |x| < 1), differentiate term by term to find the power series for 1/(1−x)². What is its radius of convergence?"
+  hint="d/dx [1/(1−x)] = 1/(1−x)². Differentiate the series term-by-term. The differentiated series has the same radius as the original."
+  answer="d/dx [1/(1−x)] = 1/(1−x)². Differentiating the series: d/dx ∑_{n=0}^∞ xⁿ = ∑_{n=1}^∞ n x^{n-1} = ∑_{n=0}^∞ (n+1) xⁿ. So 1/(1−x)² = 1 + 2x + 3x² + 4x³ + ···. The differentiated series has the same radius of convergence as the original, R = 1 (both have cₙ → 1 in the appropriate normalized sense). Check: at x = 1/2, ∑ (n+1)/2ⁿ should equal 1/(1/2)² = 4. Computing 1 + 2(1/2) + 3(1/4) + 4(1/8) + ··· = 1 + 1 + 3/4 + 1/2 + ··· → 4 ✓."
 />
 
-[Next Lesson →](/courses/calculus/25-taylor-polynomials)
+<ExerciseBlock number={4}
+  prompt="Find a power series for ln(1+x) by integrating the series for 1/(1+x). What is its radius of convergence?"
+  hint="1/(1+x) = 1/(1−(−x)) = ∑ (−x)ⁿ for |x| < 1. Integrate term by term from 0 to x."
+  answer="Substitute −x into 1/(1−x) = ∑ xⁿ: 1/(1+x) = ∑_{n=0}^∞ (−1)^n xⁿ for |x| < 1. Integrate from 0 to x: ln(1+x) = ∫_0^x 1/(1+t) dt = ∑_{n=0}^∞ (−1)^n x^{n+1}/(n+1) = x − x²/2 + x³/3 − x⁴/4 + ···. The integrated series has the same radius R = 1. Check boundary: x = 1 gives 1 − 1/2 + 1/3 − ··· = ln 2 (converges by AST). x = −1 gives −1 − 1/2 − 1/3 − ··· = −∞ (diverges). So the interval is (−1, 1]. This is how ln 2 = ∑ (−1)^{n+1}/n is derived — a payoff in [Lesson 23](/courses/calculus/23-convergence-tests)."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Find the radius of convergence of ∑_{n=0}^∞ n! xⁿ. Why is the answer concerning?"
+  hint="Apply the ratio test: lim |(n+1)! x^{n+1}| / |n! xⁿ| = lim (n+1)|x|."
+  answer="Ratio test: |a_{n+1}/a_n| = (n+1)|x| → ∞ for any x ≠ 0. So the series converges only at x = 0 — R = 0. This is concerning because it means the series defines a function only at a single point: it is essentially useless for representing a function. The factorial in the *numerator* grows so fast that no value of x (except 0) can tame it. Contrast with ∑ xⁿ/n! (R = ∞) where the factorial is in the denominator. Factorials are powerful — their placement determines everything."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Suppose the power series ∑ cₙ xⁿ converges at x = 3 and diverges at x = 5. What can you say about its convergence at x = −4, x = 4, x = −3, and x = 7? Explain your reasoning."
+  hint="Use the fact that the interval of convergence is symmetric about 0 (here a = 0). The radius R satisfies 3 ≤ R ≤ 5. What does this tell you about each point?"
+  answer="The interval of convergence is centered at 0 with some radius R. Since the series converges at x = 3, we have R ≥ 3 (so |x| < 3 ⇒ absolutely convergent). Since it diverges at x = 5, we have R ≤ 5 (so |x| > 5 ⇒ divergent). So 3 ≤ R ≤ 5. Now: x = −4 has |−4| = 4. If R > 4, converges; if R < 4, diverges — **inconclusive** without more info. x = 4: same situation, |4| = 4, **inconclusive**. x = −3: |−3| = 3 ≤ R, so **converges absolutely** (it is strictly inside or at the boundary; in fact since R ≥ 3 and |−3| = 3 ≤ R, and if R > 3 it converges absolutely; if R = 3 we cannot be sure — but the series converges at +3 so by symmetry of absolute convergence inside the radius, −3 also converges absolutely if R > 3, and conditionally if R = 3 and the endpoint converges). Safely: converges (at least conditionally). x = 7: |7| = 7 > 5 ≥ R, so **diverges**. The radius, once pinned down by two data points, controls convergence at every other point."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Explain in your own words why term-by-term differentiation of a power series is valid, but term-by-term differentiation of an arbitrary infinite series of functions might not be. What special property of power series makes the difference?"
+  hint="It has to do with how nicely the series converges. The key phrase is 'uniform convergence' on intervals strictly inside the radius."
+  answer="For a general series of functions ∑ fₙ(x), differentiating term by term (d/dx ∑ fₙ = ∑ fₙ′) requires the series of derivatives ∑ fₙ′ to converge *and* converge to the derivative of the sum — and this interchange of limits can fail for series that converge only pointwise. Power series are special: inside the radius of convergence R, a power series converges **uniformly** on every strictly smaller closed interval [a−r, a+r] with r < R (by the Weierstrass M-test, comparing to a convergent geometric series ∑ |cₙ| rⁿ). Uniform convergence is precisely the condition that lets you interchange the limit (sum) with the derivative. Moreover, the term-by-term differentiated series ∑ n cₙ (x−a)^{n-1} has the same radius R (the extra factor of n washes out in the ratio/root test), so it too converges uniformly on smaller intervals, and the interchange is justified. The upshot: power series are not just infinite sums — they are infinite sums that converge *so nicely* that all the algebraic manipulations of polynomials carry over. This is the deep reason 'infinite polynomials' behave like finite ones."
+/>
+
+---
+
+**Up next:** [Taylor Polynomials](/courses/calculus/25-taylor-polynomials)

@@ -18,18 +18,30 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { DerivativeSlope } from '../../../components/interactive/calculus/DerivativeSlope';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-If the derivative takes you from $F$ to $f$, the antiderivative takes you back from $f$ to $F$. It's the "undo" button for differentiation. Antidifferentiation is like running a film backward -- each derivative rule has a reverse. But there's a twist: the original function could have had any constant added, so you get a whole family of solutions, not just one.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+If the derivative takes you from $F$ to $f$, the antiderivative takes you back from $f$ to $F$. It's the "undo" button for differentiation. Antidifferentiation is like running a film backward — each derivative rule has a reverse. But there's a twist: the original function could have had any constant added, so you get a whole *family* of solutions, not just one. Mastering antiderivatives is the price of admission for the Fundamental Theorem — once you can reverse derivatives, every definite integral becomes a subtraction.
 
 ## The definition
 
 $F(x)$ is an **antiderivative** of $f(x)$ if $F'(x) = f(x)$.
 
-Simple enough. But there's a catch: antiderivatives are not unique. If $F(x)$ is an antiderivative, then so is $F(x) + C$ for any constant $C$. Derivatives destroy constant information; antiderivatives can't recover it.
+Simple enough. But there's a catch: antiderivatives are **not unique**. If $F(x)$ is an antiderivative, then so is $F(x) + C$ for any constant $C$, because the derivative of a constant is zero. Derivatives *destroy* constant information; antiderivatives can't recover it.
+
+## Theorem: Antiderivatives differ by a constant
+
+If $F$ and $G$ are both antiderivatives of the same function $f$ on an interval, then $F(x) - G(x) = C$ for some constant $C$. In other words, **all antiderivatives of $f$ are vertical shifts of one another**.
+
+The proof is one line: $(F - G)' = F' - G' = f - f = 0$, and the only functions with zero derivative everywhere on an interval are constants (a consequence of the Mean Value Theorem). So $F - G = C$.
+
+**Hypothesis:** both antiderivatives live on a single connected interval. **Conclusion:** they differ by a constant. **Intuition:** differentiating erases vertical position (the "$+C$"), so running it in reverse leaves that position unspecified — any vertical shift is equally valid.
 
 ## The family of antiderivatives
 
@@ -37,17 +49,32 @@ The **indefinite integral** captures the whole family:
 
 <MathBlock expression={"\\int f(x)\\, dx = F(x) + C"} />
 
-where $C$ is the "constant of integration" — an arbitrary constant representing the lost information.
+where $C$ is the "constant of integration" — an arbitrary constant representing the lost information. The notation intentionally mirrors the definite integral, because (by the Fundamental Theorem) the definite integral $\int_a^b f\, dx$ is computed by evaluating *any* antiderivative at the bounds.
 
-Common antiderivatives you should know:
+## The standard antiderivative table
 
-| $f(x)$ | $F(x) + C$ |
-|---------|-------------|
-| $x^n$ ($n \neq -1$) | $\frac{x^{n+1}}{n+1} + C$ |
-| $1/x$ | $\ln|x| + C$ |
-| $e^x$ | $e^x + C$ |
-| $\sin x$ | $-\cos x + C$ |
-| $\cos x$ | $\sin x + C$ |
+Every derivative rule you know has a reverse. Here is the core table — commit it to memory, because every integration technique (substitution, parts, partial fractions) is ultimately a strategy to rewrite an integral until it matches one of these forms.
+
+| $f(x)$ | $F(x) + C$ | Notes |
+|---|---|---|
+| $x^n \; (n \neq -1)$ | <MathInline expression={"\\dfrac{x^{n+1}}{n+1} + C"} /> | **Power rule in reverse.** Drop the exponent, divide by the new one. |
+| <MathInline expression={"\\dfrac{1}{x}"} /> | $\ln\lvert x\rvert + C$ | Absolute value: the log is defined for negative $x$ too. The $n=-1$ exception to the power rule. |
+| $e^x$ | $e^x + C$ | Exponential is its own antiderivative. |
+| $b^x$ | <MathInline expression={"\\dfrac{b^x}{\\ln b} + C"} /> | General exponential; divide by the natural log of the base. |
+| $\sin x$ | $-\cos x + C$ | Mind the sign — sine integrates to *negative* cosine. |
+| $\cos x$ | $\sin x + C$ | |
+| $\sec^2 x$ | $\tan x + C$ | |
+| <MathInline expression={"\\dfrac{1}{1+x^2}"} /> | $\arctan x + C$ | The reverse of the arctangent derivative. |
+| <MathInline expression={"\\dfrac{1}{\\sqrt{1-x^2}}"} /> | $\arcsin x + C$ | The reverse of the arcsine derivative. |
+
+Each row is just a derivative rule read backwards. The power rule in reverse is the workhorse: <MathInline expression={"\\int x^n\\, dx = \\frac{x^{n+1}}{n+1} + C"} /> for $n \neq -1$, and the special case <MathInline expression={"\\int \\frac{1}{x}\\, dx = \\ln|x| + C"} /> covers the forbidden exponent.
+
+<FormulaReadout formulas={[
+  { label: "不定积分（一般形式）", expression: "\\int f(x)\\, dx = F(x) + C" },
+  { label: "幂函数（逆向幂法则）", expression: "\\int x^{n}\\, dx = \\frac{x^{n+1}}{n+1} + C \\quad (n \\neq -1)" },
+  { label: "1/x 与指数", expression: "\\int \\frac{1}{x}\\, dx = \\ln|x| + C, \\quad \\int e^{x}\\, dx = e^{x} + C" },
+  { label: "三角函数", expression: "\\int \\sin x\\, dx = -\\cos x + C, \\quad \\int \\cos x\\, dx = \\sin x + C" },
+]} />
 
 ## Visualizing the reverse
 
@@ -61,42 +88,99 @@ In the interactive below, the mode is reversed: the dashed curve shows $f'(x)$ (
   <DerivativeSlope client:visible mode="reverse" />
 </InteractiveCanvas>
 
-## Why the constant matters
+Notice that vertically shifting the blue curve doesn't change its slope at any point — every vertical shift is an equally valid antiderivative of the dashed curve. That is the visual embodiment of "$+C$": the derivative pins down the *shape* but not the *height*.
 
-The constant $C$ isn't just a formality. Consider:
+## Why "+C" matters
 
-<MathBlock expression={"\\int 2x\\, dx = x^2 + C"} />
+The constant $C$ isn't just a formality — it carries real information that differentiation erased. Consider:
 
-If an object's velocity is $v(t) = 2t$, its position is $s(t) = t^2 + C$. The constant $C$ is the starting position. Without it, you know the object accelerates uniformly but you don't know where it started.
+<MathBlock expression={"\\int 2x\\, dx = x^{2} + C"} />
 
-In the FTC context, the constant cancels:
+If an object's velocity is $v(t) = 2t$, its position is <MathInline expression={"s(t) = t^{2} + C"} />. The constant $C$ is the **starting position**. Without it, you know the object accelerates uniformly but you don't know *where it started*. To pin down a unique solution, you need an **initial condition** — a single value like $s(0) = 5$ that determines $C = 5$. This is the seed of differential equations: an antiderivative gives a family of solutions, and an initial condition selects one.
 
-<MathBlock expression={"\\int_a^b f(x)\\, dx = [F(x) + C]_a^b = (F(b) + C) - (F(a) + C) = F(b) - F(a)"} />
+In the FTC context, the constant conveniently cancels:
 
-The constant doesn't affect definite integrals — only the shape of the antiderivative family.
+<MathBlock expression={"\\int_a^b f(x)\\, dx = \\bigl[F(x) + C\\bigr]_a^b = (F(b) + C) - (F(a) + C) = F(b) - F(a)"} />
+
+The constant doesn't affect definite integrals — only the shape of the antiderivative family. This is why, for computing areas via Part 1 of the FTC, you may pick *any* antiderivative (the $C$ washes out). But for solving differential equations or finding a specific position function, $C$ is essential.
+
+## The connection to the area function
+
+Here is the deep link to the Fundamental Theorem. FTC Part 2 says the area function $A(x) = \int_a^x f(t)\, dt$ is itself an antiderivative of $f$, since $A'(x) = f(x)$. So the area function is *one specific member* of the antiderivative family — the one with $A(a) = 0$. By the "differ by a constant" theorem, every antiderivative $F$ satisfies $F(x) = A(x) + C$ for some $C$, which rearranges to:
+
+<MathBlock expression={"A(x) = \\int_{a}^{x} f(t)\\, dt = F(x) - F(a)"} />
+
+Setting $x = b$ recovers FTC Part 1: $\int_a^b f(t)\, dt = F(b) - F(a)$. So the two halves of the FTC are really the statement "antiderivatives and area functions are the same thing up to a constant." The whole theory of integration is, in a sense, the theory of antiderivatives.
+
+## The many faces of antidifferentiation
+
+- **Physics:** recovering position from velocity, velocity from acceleration, work from force, energy from power — every "undo the rate" problem is an antiderivative. Newton's second law $F = ma$ becomes a differential equation whose solution is an antiderivative family.
+- **Probability:** the cumulative distribution function is an antiderivative of the density. The "+C" is fixed by the requirement $F(-\infty) = 0$.
+- **Machine learning:** integrating a gradient field recovers a potential; Bayesian inference integrates likelihoods over parameters. And the reason automatic differentiation works at all is that differentiation rules (which antiderivatives reverse) compose cleanly through computation graphs.
+- **Differential equations:** most physical laws are stated as equations involving derivatives; solving them means finding antiderivatives (often with initial conditions to fix $C$).
+
+## Modern applications
+
+In **physics**, every conservation law hides an antiderivative: energy is the antiderivative of force with respect to position, momentum the antiderivative of force with respect to time. Recovering a trajectory from acceleration is two antidifferentiations — and the constants are the initial position and velocity.
+
+In **machine learning**, the gradient of a loss function is a derivative; optimization algorithms implicitly seek points where an "antiderivative" (the loss itself) is minimized. More concretely, **automatic differentiation** in frameworks like PyTorch and JAX implements the derivative rules whose reverses populate the antiderivative table — and reverse-mode autodiff is what makes training deep networks tractable.
+
+In **differential equations**, the simplest equation $y' = f(x)$ is solved by $y = \int f\, dx + C$, and an initial condition pins down $C$. Antiderivatives are the building blocks for solving harder equations (separable, linear, exact) via the techniques that follow this lesson.
 
 <KeyInsight>
-The antiderivative runs the derivative in reverse. Every function has infinitely many antiderivatives, all differing by a constant C. The indefinite integral ∫ f dx = F + C captures the whole family.
+The antiderivative runs the derivative in reverse. Every function has infinitely many antiderivatives — all differing by a constant C — because differentiation erases vertical position. The standard table (power rule in reverse, 1/x → ln|x|, trig, exponential) is just the derivative rules read backwards. The "+C" is essential for initial-value problems but conveniently cancels in definite integrals via the FTC. And the deep connection: the area function A(x) = ∫ₐˣ f is itself an antiderivative, which is exactly why FTC Part 1 turns integration into subtraction.
 </KeyInsight>
+
+## Connections
+
+This lesson builds the technical skill that [the Fundamental Theorem](/courses/calculus/12-the-fundamental-theorem) demands: finding antiderivatives. FTC Part 1 reduces every definite integral to "find any antiderivative, then subtract" — so fluency with the antiderivative table is the rate-limiting step for actually computing integrals. The next lessons — [u-substitution](/courses/calculus/14-u-substitution) (the reverse of the chain rule) and [integration by parts](/courses/calculus/15-integration-by-parts) (the reverse of the product rule) — extend this table by recognizing more complex integrands as derivatives of composite or products. Each is a strategy to massage an integral into a form the basic table can handle.
+
+Across disciplines, antidifferentiation is the universal "undo the rate" operation: recovering position from velocity in physics, recovering a CDF from a density in probability, recovering a potential from a gradient field, and recovering a trajectory from a differential equation. The "+C" reflects genuine lost information — an initial condition — which is why it matters in dynamics and vanishes in pure area computations.
 
 ## Practice
 
 <ExerciseBlock number={1}
   prompt="Find the general antiderivative of f(x) = 6x² − 4x + 3."
-  hint="Apply the power rule in reverse to each term."
-  answer="F(x) = 6·x³/3 − 4·x²/2 + 3x + C = 2x³ − 2x² + 3x + C."
+  hint="Apply the power rule in reverse to each term, term by term (linearity of antidifferentiation)."
+  answer="F(x) = 6·(x³/3) − 4·(x²/2) + 3x + C = 2x³ − 2x² + 3x + C. Each term is integrated independently: the power rule gives ∫xⁿ dx = xⁿ⁺¹/(n+1). Don't forget the +C at the end."
 />
 
 <ExerciseBlock number={2}
-  prompt="Find F(x) given F'(x) = cos(x) and F(0) = 5."
-  hint="The general antiderivative of cos(x) is sin(x) + C. Use the initial condition to find C."
-  answer="F(x) = sin(x) + C. F(0) = sin(0) + C = C = 5. So F(x) = sin(x) + 5."
+  prompt="Find F(x) given F'(x) = cos(x) and the initial condition F(0) = 5. Why does the initial condition pin down a unique answer where the general antiderivative does not?"
+  hint="The general antiderivative of cos(x) is sin(x) + C. Use the initial condition to solve for C."
+  answer="The general antiderivative is F(x) = sin(x) + C. Apply the initial condition: F(0) = sin(0) + C = C = 5. So F(x) = sin(x) + 5. The general antiderivative represents a whole family of vertical shifts; the initial condition F(0) = 5 picks out the single member of that family passing through (0, 5). This is exactly how initial conditions resolve the ambiguity of +C in differential equations."
 />
 
 <ExerciseBlock number={3}
-  prompt="Why can't you find ∫ sin(x²) dx using elementary functions?"
-  hint="Not every antiderivative can be expressed with basic functions (polynomials, exponentials, trig, logs)."
-  answer="The function sin(x²) has no antiderivative expressible in terms of elementary functions. This isn't a failure of technique — it's a mathematical fact. The integral exists (it's a perfectly good area), but it can't be written as a finite combination of elementary functions. We express it as a special function or compute it numerically."
+  prompt="Find the general antiderivative of f(x) = 1/x. Why is the answer ln|x| + C rather than ln(x) + C, and what are the two separate families of antiderivatives?"
+  hint="The domain of 1/x is split into two intervals. The antiderivative must be defined wherever 1/x is. What is ln of a negative number?"
+  answer="∫(1/x) dx = ln|x| + C. The absolute value is essential because 1/x is defined for both positive and negative x (excluding 0), but ln(x) is defined only for x > 0. For x < 0, the antiderivative is ln(−x) + C (since d/dx ln(−x) = (−1)/(−x) = 1/x). Strictly speaking there are two separate families: ln(x) + C₁ on (0, ∞) and ln(−x) + C₂ on (−∞, 0), with independent constants on each interval — because the domain is disconnected, the 'differ by a constant' theorem applies on each interval separately. This is the n = −1 exception to the power rule."
 />
 
-[Next Lesson →](/courses/calculus/14-u-substitution)
+<ExerciseBlock number={4}
+  prompt="Find the general antiderivative of f(x) = e^(2x). Verify your answer by differentiating."
+  hint="This is not in the basic table directly — it's a composite. Guess and check: try a·e^(2x) and solve for the constant a by differentiating."
+  answer="Guess F(x) = a·e^(2x). Then F'(x) = 2a·e^(2x). We want this to equal e^(2x), so 2a = 1, giving a = 1/2. Therefore ∫e^(2x) dx = (1/2)e^(2x) + C. Verify: d/dx[(1/2)e^(2x) + C] = (1/2)·2·e^(2x) + 0 = e^(2x). This is a preview of u-substitution (letting u = 2x), which systematizes this guess-and-check for composites."
+/>
+
+<ExerciseBlock number={5}
+  prompt="A particle has acceleration a(t) = 6t (constant jerk). Given v(0) = 2 and s(0) = 10, find the position function s(t). Explain where each constant comes from."
+  hint="Antidifferentiate twice. v(t) = ∫a(t)dt + C₁; use v(0) = 2 to find C₁. Then s(t) = ∫v(t)dt + C₂; use s(0) = 10 to find C₂."
+  answer="First, v(t) = ∫6t dt = 3t² + C₁. Using v(0) = 2: 3·0 + C₁ = 2, so C₁ = 2. Thus v(t) = 3t² + 2. Second, s(t) = ∫(3t² + 2) dt = t³ + 2t + C₂. Using s(0) = 10: 0 + 0 + C₂ = 10, so C₂ = 10. Therefore s(t) = t³ + 2t + 10. Each antidifferentiation introduces a constant (C₁ is initial velocity, C₂ is initial position), and each initial condition pins one down. Two derivatives erased → two constants → two initial conditions to recover them."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Using the FTC, compute ∫₁³ (4x³ − 2x + 1) dx by finding an antiderivative and evaluating at the bounds. Confirm that the +C you would include in the indefinite integral cancels."
+  hint="Find F(x) with F'(x) = 4x³ − 2x + 1. Then apply FTC Part 1: F(3) − F(1)."
+  answer="An antiderivative is F(x) = x⁴ − x² + x (derivative: 4x³ − 2x + 1). By FTC Part 1: ∫₁³ (4x³ − 2x + 1) dx = F(3) − F(1) = (81 − 9 + 3) − (1 − 1 + 1) = 75 − 1 = 74. The +C would appear as (F(3) + C) − (F(1) + C) = F(3) − F(1) — the constant cancels, confirming that for definite integrals any antiderivative works. This is the payoff of the whole antiderivative machinery: an infinite-sum problem reduced to polynomial arithmetic and a subtraction."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Explain why antiderivatives differ by a constant (state the theorem and prove it in one line using the Mean Value Theorem). Then explain how this fact, combined with FTC Part 2, yields FTC Part 1."
+  hint="If F and G are both antiderivatives of f, what is (F − G)'? What does the MVT say about functions with zero derivative? How does this relate F to the area function A?"
+  answer="Theorem: if F and G are antiderivatives of f on an interval, then F − G = C for some constant C. Proof: (F − G)' = F' − G' = f − f = 0 on the interval. By the Mean Value Theorem, any function with zero derivative everywhere on an interval is constant (otherwise some secant would have nonzero slope, contradicting the MVT). So F − G = C. Now combine with FTC Part 2: the area function A(x) = ∫ₐˣ f satisfies A'(x) = f(x), so A is an antiderivative of f. By the theorem, any other antiderivative F differs from A by a constant: F(x) = A(x) + C. Rearranging, A(x) = F(x) − C, and setting x = a gives 0 = A(a) = F(a) − C, so C = F(a). Therefore A(b) = ∫ₐᵇ f = F(b) − F(a) — which is FTC Part 1. The 'differ by a constant' theorem is the glue joining the two halves of the FTC."
+/>
+
+---
+
+**Up next:** [U-Substitution](/courses/calculus/14-u-substitution)

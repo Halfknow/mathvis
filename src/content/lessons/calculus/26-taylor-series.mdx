@@ -18,26 +18,36 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { TaylorExplorer } from '../../../components/interactive/calculus/TaylorExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
+import { MathBlock, MathInline } from '../../../components/math/Math';
 
-Take the Taylor polynomial and never stop. When the Taylor polynomial has infinitely many terms and converges, you get the Taylor series -- the function written as an infinite polynomial. Not all functions have this property. Those that do are called "analytic," meaning the function is completely determined by its local behavior at a single point. For analytic functions, knowing all derivatives at one point is enough to reconstruct the function everywhere within the radius of convergence.
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
-<MathBlock expression={"f(x) = \\sum_{n=0}^{\\infty} \\frac{f^{(n)}(a)}{n!}(x-a)^n"} />
+Take the [Taylor polynomial](/courses/calculus/25-taylor-polynomials) and never stop adding terms. When the degree $n$ runs off to infinity, you get the **Taylor series** — a function written as an infinite polynomial. The deep question is: *does this infinite polynomial actually equal the original function?* The answer is yes precisely when the **Lagrange remainder** $R_n(x)$ tends to $0$ as $n \to \infty$. For functions like $e^x$, $\sin x$, and $\cos x$, the remainder vanishes everywhere and the series reconstructs the function exactly, for every $x$. Such functions are called **analytic** — they are completely determined by their local behavior (their derivatives) at a single point. This is one of the most remarkable ideas in mathematics: local information, propagated infinitely, recovers the whole function.
 
-This is a power series. Inside its radius of convergence, it converges to $f(x)$. The function and its infinite polynomial representation are identical.
+<MathBlock expression={"f(x) = \\sum_{n=0}^{\\infty} \\frac{f^{(n)}(a)}{n!}(x - a)^n"} />
 
-## When does the Taylor series equal the function?
+This is a [power series](/courses/calculus/24-power-series). Inside its radius of convergence, *if* the remainder vanishes, it converges to $f(x)$ — the function and its infinite polynomial representation are one and the same object.
 
-The Taylor series equals $f(x)$ when the remainder goes to zero:
+## The convergence condition: when does the series equal the function?
 
-<MathBlock expression={"\\lim_{n \\to \\infty} R_n(x) = \\lim_{n \\to \\infty} \\frac{f^{(n+1)}(c)}{(n+1)!}(x-a)^{n+1} = 0"} />
+The Taylor series is a power series, so it has a radius of convergence $R$ (found by the [ratio test](/courses/calculus/23-convergence-tests)). But converging is not enough — the series might converge to something *other* than $f(x)$. The exact condition:
 
-For $e^x$, $\sin x$, $\cos x$: all derivatives are bounded by exponentials, and $(n+1)!$ grows faster than anything. The remainder vanishes for all $x$ — the series converges everywhere.
+## Theorem: When a Taylor series converges to its function
 
-For $\ln(1+x)$: the remainder vanishes only for $|x| < 1$. Beyond that, the series diverges.
+The Taylor series of $f$ centered at $a$ converges to $f(x)$ at a point $x$ within its radius of convergence if and only if the remainder vanishes:
+
+<MathBlock expression={"\\lim_{n \\to \\infty} R_n(x) = 0"} />
+
+Recall the [Lagrange form](/courses/calculus/25-taylor-polynomials) of the remainder: <MathInline expression={"R_n(x) = \\frac{f^{(n+1)}(c)}{(n+1)!}(x-a)^{n+1}"} /> for some $c$ between $a$ and $x$. If the derivatives <MathInline expression={"f^{(n+1)}"} /> do not grow faster than $(n+1)!$ kills them off, the remainder vanishes and the series converges to $f$.
+
+**For $e^x$, $\sin x$, $\cos x$:** all derivatives stay bounded (by exponentials for $e^x$, by $1$ for $\sin$ and $\cos$), and $(n+1)!$ grows faster than anything. The remainder vanishes for *all* $x$ — the Taylor series converge everywhere, and equal the function everywhere.
+
+**For $\ln(1+x)$:** the remainder vanishes only for $|x| < 1$. Beyond $x = 1$, the series diverges (it cannot represent a function that is undefined at $x = -1$ and has a singularity there). The radius of convergence is set by the nearest singularity in the complex plane.
 
 <InteractiveCanvas
   title="Taylor Series Convergence"
@@ -47,56 +57,151 @@ For $\ln(1+x)$: the remainder vanishes only for $|x| < 1$. Beyond that, the seri
   <TaylorExplorer client:visible />
 </InteractiveCanvas>
 
+## The common Taylor series — a reference table
+
+These series are worth memorizing. All are centered at $a = 0$ (Maclaurin series), and the first three converge for all $x$:
+
+| Function | Taylor series | Convergence |
+|----------|---------------|-------------|
+| $e^x$ | <MathInline expression={"\\displaystyle\\sum_{n=0}^{\\infty} \\frac{x^n}{n!} = 1 + x + \\frac{x^2}{2!} + \\frac{x^3}{3!} + \\cdots"} /> | all $x$ ($R = \infty$) |
+| $\sin x$ | <MathInline expression={"\\displaystyle\\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n+1}}{(2n+1)!} = x - \\frac{x^3}{3!} + \\frac{x^5}{5!} - \\cdots"} /> | all $x$ ($R = \infty$) |
+| $\cos x$ | <MathInline expression={"\\displaystyle\\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n}}{(2n)!} = 1 - \\frac{x^2}{2!} + \\frac{x^4}{4!} - \\cdots"} /> | all $x$ ($R = \infty$) |
+| $\ln(1+x)$ | <MathInline expression={"\\displaystyle\\sum_{n=1}^{\\infty} \\frac{(-1)^{n+1} x^n}{n} = x - \\frac{x^2}{2} + \\frac{x^3}{3} - \\cdots"} /> | $-1 < x \le 1$ |
+| <MathInline expression={"\\frac{1}{1-x}"} /> | <MathInline expression={"\\displaystyle\\sum_{n=0}^{\\infty} x^n = 1 + x + x^2 + x^3 + \\cdots"} /> | $|x| < 1$ ($R = 1$) |
+| $\arctan x$ | <MathInline expression={"\\displaystyle\\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n+1}}{2n+1} = x - \\frac{x^3}{3} + \\frac{x^5}{5} - \\cdots"} /> | $|x| \le 1$ |
+
+Notice the three "converges everywhere" series ($e^x$, $\sin$, $\cos$) all have **factorials in the denominator**, which is what makes the remainder vanish for all $x$. The two series with $R = 1$ have only $n$ (not $n!$) in the denominator — slower decay, smaller radius.
+
 ## The binomial series
 
-<MathBlock expression={"(1+x)^\\alpha = \\sum_{n=0}^{\\infty} \\binom{\\alpha}{n} x^n \\quad \\text{for } |x| < 1"} />
+Newton's generalization of the binomial theorem to arbitrary real exponents:
 
-where $\binom{\alpha}{n} = \frac{\alpha(\alpha-1)\cdots(\alpha-n+1)}{n!}$. This generalizes the binomial theorem to any real exponent $\alpha$. When $\alpha$ is a positive integer, the series terminates (it's a polynomial).
+## Theorem: The Binomial Series
 
-## Euler's identity from Taylor series
+For any real number $\alpha$ and $|x| < 1$:
+
+<MathBlock expression={"(1 + x)^{\\alpha} = \\sum_{n=0}^{\\infty} \\binom{\\alpha}{n} x^n = 1 + \\alpha x + \\frac{\\alpha(\\alpha-1)}{2!} x^2 + \\frac{\\alpha(\\alpha-1)(\\alpha-2)}{3!} x^3 + \\cdots"} />
+
+where <MathInline expression={"\\binom{\\alpha}{n} = \\frac{\\alpha(\\alpha-1)\\cdots(\\alpha-n+1)}{n!}"} />. The radius of convergence is $R = 1$ (usually). When $\alpha$ is a positive integer, the coefficients <MathInline expression={"\\binom{\\alpha}{n}"} /> become zero for $n > \alpha$ and the series **terminates** — recovering the ordinary binomial theorem, giving a polynomial rather than an infinite series. For non-integer $\alpha$ (like $\alpha = 1/2$ for square roots), the series is genuinely infinite and converges for $|x| < 1$.
+
+## Manipulating Taylor series — finding new series from old
+
+You rarely compute a Taylor series from scratch by taking $n$ derivatives. Instead, you start from the known series above and **manipulate** them using the term-by-term operations validated in [Lesson 24](/courses/calculus/24-power-series):
+
+**Substitution.** Replace $x$ with a function of $x$. From $e^x = \sum x^n/n!$, substitute $x \to -x^2$:
+
+<MathBlock expression={"e^{-x^2} = \\sum_{n=0}^{\\infty} \\frac{(-x^2)^n}{n!} = \\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n}}{n!} = 1 - x^2 + \\frac{x^4}{2} - \\cdots"} />
+
+This is the Gaussian function central to probability and the normal distribution — and its series came for free, no derivatives needed.
+
+**Differentiation.** Differentiate <MathInline expression={"\\sin x = \\sum (-1)^n x^{2n+1}/(2n+1)!"} /> term by term to get <MathInline expression={"\\cos x = \\sum (-1)^n x^{2n}/(2n)!"} /> — confirming the cosine series from the sine series.
+
+**Integration.** Integrate $1/(1+x) = \sum (-1)^n x^n$ term by term to get <MathInline expression={"\\ln(1+x) = \\sum (-1)^n x^{n+1}/(n+1)"} /> — deriving the log series from the geometric series.
+
+**Multiplication.** Multiply series like polynomials (Cauchy product). For example, <MathInline expression={"e^x \\cdot e^x = e^{2x}"} /> gives a nontrivial identity by multiplying $\sum x^n/n!$ with itself.
+
+All of these operations are valid *inside the radius of convergence* of the resulting series, and they are the everyday algebra of analytic functions.
+
+## Euler's identity from Taylor series — the payoff
 
 The Taylor series for $e^x$, $\sin x$, and $\cos x$ are:
 
-<MathBlock expression={"e^x = \\sum \\frac{x^n}{n!}, \\quad \\sin x = \\sum \\frac{(-1)^n x^{2n+1}}{(2n+1)!}, \\quad \\cos x = \\sum \\frac{(-1)^n x^{2n}}{(2n)!}"} />
+<MathBlock expression={"e^x = \\sum_{n=0}^{\\infty} \\frac{x^n}{n!}, \\quad \\sin x = \\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n+1}}{(2n+1)!}, \\quad \\cos x = \\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n}}{(2n)!}"} />
 
-Substitute $x = i\theta$ into $e^{i\theta}$:
+Now substitute $x = i\theta$ (where $i^2 = -1$) into the exponential series and separate even and odd powers:
 
-<MathBlock expression={"e^{i\\theta} = \\cos\\theta + i\\sin\\theta"} />
+<MathBlock expression={"e^{i\\theta} = \\sum_{n=0}^{\\infty} \\frac{(i\\theta)^n}{n!} = \\underbrace{\\sum_{k=0}^{\\infty} \\frac{(-1)^k \\theta^{2k}}{(2k)!}}_{\\cos\\theta} + i\\underbrace{\\sum_{k=0}^{\\infty} \\frac{(-1)^k \\theta^{2k+1}}{(2k+1)!}}_{\\sin\\theta} = \\cos\\theta + i\\sin\\theta"} />
 
-Setting $\theta = \pi$: $e^{i\pi} = -1$. Five fundamental constants connected by one formula, all derived from Taylor series.
+This is **Euler's formula** <MathInline expression={"e^{i\\theta} = \\cos\\theta + i\\sin\\theta"} />. Setting $\theta = \pi$: <MathInline expression={"e^{i\\pi} = -1"} />. Five fundamental constants ($e, i, \pi, 1, 0$ via the $+0$) connected by one equation — all derived from the Taylor series of three elementary functions. This single identity underlies signal processing (Fourier analysis), quantum mechanics (wavefunctions), and electrical engineering (phasors).
 
-## Analytic functions
+## Analytic functions — and a warning
 
-A function is **analytic** at $a$ if its Taylor series at $a$ converges to the function in some neighborhood of $a$. Polynomials, exponentials, trig functions, and logarithms are all analytic on their domains.
+A function is **analytic** at $a$ if its Taylor series at $a$ converges to the function in some neighborhood of $a$. Polynomials, exponentials, trig functions, and logarithms are all analytic on their domains — and so is any function built from them by addition, multiplication, composition, differentiation, integration, and (where defined) inversion.
 
-Not all smooth functions are analytic. The classic counterexample:
+**Not all smooth functions are analytic.** The classic counterexample:
 
 <MathBlock expression={"f(x) = \\begin{cases} e^{-1/x^2} & x \\neq 0 \\\\ 0 & x = 0 \\end{cases}"} />
 
-This function is infinitely differentiable, but all derivatives at 0 are zero. Its Taylor series is identically 0 — which doesn't match the function for any $x \neq 0$.
+This function is infinitely differentiable — *smooth* — and all its derivatives at $0$ are zero. Its Taylor series is therefore identically $0$, which matches $f$ at $x = 0$ but *not* at any $x \neq 0$ (where <MathInline expression={"f(x) = e^{-1/x^2} > 0"} />). The Taylor series converges, but to the wrong function. The remainder does not vanish. This example shows that "infinitely differentiable" is strictly weaker than "analytic" — the Taylor series machinery requires the function to be determined by its local derivatives, which not every smooth function is.
+
+<FormulaReadout formulas={[
+  { label: "泰勒级数", expression: "f(x) = \\sum_{n=0}^{\\infty} \\frac{f^{(n)}(a)}{n!}(x-a)^n" },
+  { label: "收敛条件（余项→0）", expression: "\\lim_{n\\to\\infty} R_n(x) = 0 \\Rightarrow T_n(x) \\to f(x)" },
+  { label: "eˣ 的泰勒级数", expression: "e^x = \\sum_{n=0}^{\\infty} \\frac{x^n}{n!} \\quad (\\text{所有 } x)" },
+  { label: "欧拉公式", expression: "e^{i\\theta} = \\cos\\theta + i\\sin\\theta" },
+]} />
+
+## The many faces of Taylor series
+
+- **Computation:** every math library evaluates transcendental functions by summing Taylor series (with argument reduction and Chebyshev tuning for speed). The factorial denominators make $e^x$, $\sin$, $\cos$ converge spectacularly fast.
+- **Signal processing:** Fourier analysis decomposes signals into trigonometric series — and Euler's formula <MathInline expression={"e^{i\\theta} = \\cos\\theta + i\\sin\\theta"} /> turns Fourier series into power series in <MathInline expression={"e^{i\\theta}"} />, the foundation of the FFT.
+- **Quantum mechanics:** wavefunctions are exponentials <MathInline expression={"e^{iHt/\\hbar}"} /> of the Hamiltonian; perturbation theory expands them in Taylor series in a small coupling constant.
+- **Differential equations:** the Frobenius method assumes the solution is a Taylor series and solves for the coefficients — this is how most special functions (Bessel, Legendre, hypergeometric) are defined.
+
+## Modern applications
+
+In **machine learning and optimization**, Taylor series underpin **second-order optimization**. The full Taylor expansion of a loss $L(w)$ around the current weights is <MathInline expression={"L(w + \\Delta w) = L(w) + \\nabla L \\cdot \\Delta w + \\tfrac{1}{2} \\Delta w^\\top H \\Delta w + \\cdots"} />. Newton's method truncates at the quadratic term and minimizes it exactly: <MathInline expression={"\\Delta w = -H^{-1} \\nabla L"} />. The Hessian $H$ is the second-order Taylor coefficient. Quasi-Newton methods (BFGS, L-BFGS) build low-rank approximations to $H$ from gradient differences — implicitly reconstructing the Taylor series from observable quantities. **Second-order optimization** is literally "use the Taylor series through degree 2."
+
+In **physics**, **small-angle approximations** are first-order Taylor truncations: $\sin\theta \approx \theta$ linearizes the pendulum, $\cos\theta \approx 1 - \theta^2/2$ gives the relativistic correction. Higher-order Taylor terms produce the nonlinear corrections that distinguish real pendulums from textbook ones. In **general relativity**, the Schwarzschild metric's corrections to Newtonian gravity are the higher-order Taylor terms of the full metric; the perihelion precession of Mercury is a third-order Taylor effect.
+
+In **numerical analysis**, finite-difference schemes for derivatives are derived by Taylor expansion, and their accuracy order is literally "the degree of the first nonzero omitted Taylor term." A "second-order accurate" method is one whose leading error is the third-order Taylor remainder.
+
+In **neural network initialization**, the variance propagation analysis that motivates Xavier/Glorot and He initialization is a first-order Taylor expansion of the activation function around zero, tracking how signal variance passes through each layer. The Taylor series is the analytical backbone of deep learning stability theory.
 
 <KeyInsight>
-The Taylor series is the infinite-degree Taylor polynomial. When it converges, it reconstructs the original function exactly. For eˣ, sin(x), and cos(x), it converges everywhere. For functions like ln(1+x), convergence is limited by the radius of convergence.
+The Taylor series is the infinite-degree Taylor polynomial: f(x) = Σ f⁽ⁿ⁾(a)/n! · (x−a)ⁿ. It is a power series, and it converges to f(x) precisely when the Lagrange remainder R_n(x) → 0 — which happens when the derivatives f^(n) do not outgrow the factorial (n+1)!. The series for eˣ, sin x, cos x converge everywhere (derivatives bounded, factorials win); ln(1+x) converges only for |x| < 1 (singularity at x = −1 limits the radius). The standard table — eˣ, sin, cos, ln(1+x), 1/(1−x), (1+x)^α (binomial) — is the alphabet of analytic functions, and you find new series by substituting, differentiating, integrating, and multiplying the old ones (all valid inside the radius). Euler's formula e^(iθ) = cos θ + i sin θ falls out of the Taylor series, and with it most of Fourier analysis, quantum mechanics, and signal processing. Analytic functions — those whose Taylor series converge to them — are the workhorses of science; the smooth-but-not-analytic counterexample e^(−1/x²) shows that 'infinitely differentiable' is strictly weaker than 'representable by a Taylor series.'
 </KeyInsight>
+
+## Connections
+
+This lesson is the capstone of the series module: it takes the [Taylor polynomials](/courses/calculus/25-taylor-polynomials) of the previous lesson to their infinite limit, and it rests on the [power series](/courses/calculus/24-power-series) machinery (radius of convergence, term-by-term operations) and the [convergence tests](/courses/calculus/23-convergence-tests) that compute that radius. The Lagrange remainder, introduced for the finite Taylor polynomial, becomes the exact criterion for whether the infinite series equals the function. The next lesson, [differential equations](/courses/calculus/27-differential-equations), will use Taylor series (via the Frobenius method) to solve ODEs that have no closed-form solution — power series *are* the solutions for many important equations. The binomial series generalizes the binomial theorem you learned in algebra, and Euler's formula is the gateway to complex analysis.
+
+Across disciplines, Taylor series are the universal language of approximation and linearization: Newton's method and second-order optimization in ML, small-angle and perturbation expansions in physics, finite-difference schemes and special-function evaluation in numerical analysis, and Fourier analysis (via Euler's formula) in every quantitative field. To master Taylor series is to master the most powerful approximation tool ever invented — the engine that turns local information (derivatives) into global knowledge (the whole function).
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Find the Taylor series for f(x) = 1/(1−x) centered at a = 0 and its radius of convergence."
-  hint="This is the geometric series in disguise."
-  answer="All derivatives at 0 are f^(k)(0) = k!. So the Taylor series is ∑ xⁿ, which is the geometric series. It converges for |x| < 1, so R = 1."
+  prompt="Find the Taylor series for f(x) = 1/(1−x) centered at a = 0 and its radius of convergence. Verify the result by recognizing the series."
+  hint="Compute the derivatives f^(n)(x) and evaluate at 0. Or recognize this as the geometric series."
+  answer="The derivatives cycle: f(x) = (1−x)^{-1}, f′(x) = (1−x)^{-2}, f″(x) = 2(1−x)^{-3}, and in general f^(n)(x) = n! (1−x)^{-(n+1)}. Evaluating at 0: f^(n)(0) = n!. So the Taylor series is ∑ f^(n)(0)/n! · x^n = ∑ n!/n! · x^n = ∑ x^n = 1 + x + x² + x³ + ···. This is exactly the geometric series from [Lesson 22](/courses/calculus/22-infinite-series), which converges for |x| < 1 — so R = 1. The series matches the function inside its radius. This is the prototype: the geometric series formula 1/(1−x) is the Taylor series of the simplest rational function."
 />
 
 <ExerciseBlock number={2}
-  prompt="By substituting x² into the Taylor series for 1/(1−x), find the Taylor series for 1/(1−x²)."
+  prompt="By substituting into the Taylor series for 1/(1−x), find the Taylor series for 1/(1−x²). What is its radius of convergence?"
   hint="1/(1−x²) = 1/(1−(x²)). Replace x with x² in the geometric series."
-  answer="1/(1−x²) = ∑ (x²)ⁿ = ∑ x^{2n} = 1 + x² + x⁴ + x⁶ + ···, valid for |x²| < 1, i.e., |x| < 1."
+  answer="Substitute x → x² in 1/(1−x) = ∑ x^n: 1/(1−x²) = ∑_{n=0}^∞ (x²)^n = ∑_{n=0}^∞ x^{2n} = 1 + x² + x⁴ + x⁶ + ···. The series converges when |x²| < 1, i.e. |x| < 1, so R = 1. Only even powers appear, consistent with 1/(1−x²) being an even function. Substitution is the easiest way to find this series — no derivatives required."
 />
 
 <ExerciseBlock number={3}
-  prompt="Use the Taylor series for eˣ to approximate e^{0.1} to 4 decimal places. How many terms do you need?"
-  hint="e^{0.1} = 1 + 0.1 + 0.01/2 + 0.001/6 + ···"
-  answer="n=0: 1. n=1: 1.1. n=2: 1.105. n=3: 1.105167. n=4: 1.105171. After 4 terms, we have e^{0.1} ≈ 1.1052 to 4 decimal places. The factorial in the denominator makes the series converge very fast for small x."
+  prompt="Use the Taylor series for eˣ to approximate e^{0.1} to 4 decimal places. How many terms do you need? Verify the Lagrange error bound is satisfied."
+  hint="e^{0.1} = 1 + 0.1 + 0.01/2 + 0.001/6 + ···. For the error bound, on [0, 0.1] we have e^t ≤ e^{0.1} < 1.11, so take M = 1.11. Then M·(0.1)^{n+1}/(n+1)! < 0.00005 for 4 decimal places."
+  answer="Compute partial sums: n=0: 1. n=1: 1.1. n=2: 1 + 0.1 + 0.005 = 1.105. n=3: 1.105 + 0.001/6 = 1.105167. n=4: 1.105167 + 0.0001/24 = 1.105171. So T₄(0.1) ≈ 1.1052 to 4 decimal places. Verify the bound: M = e^{0.1} < 1.11 on [0, 0.1]. Remainder ≤ 1.11 · (0.1)^5 / 5! = 1.11 · 10⁻⁵ / 120 ≈ 9.25 × 10⁻⁸, far below 0.00005. So n = 4 (5 terms) gives 4 decimal places with a huge safety margin — the factorial denominator makes the series converge extremely fast for small x. The true e^{0.1} ≈ 1.1051709."
 />
 
-[Next Lesson →](/courses/calculus/27-differential-equations)
+<ExerciseBlock number={4}
+  prompt="Find the Taylor series for e^{−x²} by substituting into the series for eˣ. Then use term-by-term integration to compute the Gaussian integral ∫₀¹ e^{−x²} dx as an infinite series, and estimate it with the first 4 nonzero terms."
+  hint="Substitute x → −x² in eˣ = ∑ xⁿ/n!. Then integrate each term from 0 to 1: ∫₀¹ x^{2n} dx = 1/(2n+1)."
+  answer="Substitute −x² for x in eˣ = ∑ xⁿ/n!: e^{−x²} = ∑_{n=0}^∞ (−x²)ⁿ/n! = ∑_{n=0}^∞ (−1)ⁿ x^{2n}/n! = 1 − x² + x⁴/2 − x⁶/6 + x⁸/24 − ···. Integrate term by term from 0 to 1: ∫₀¹ e^{−x²} dx = ∑_{n=0}^∞ (−1)ⁿ/(n!(2n+1)) = 1 − 1/3 + 1/10 − 1/42 + 1/216 − ···. First 4 nonzero terms: 1 − 1/3 + 1/10 − 1/42 = 1 − 0.3333 + 0.1 − 0.0238 = 0.7429. Adding the 5th term (+1/216 ≈ 0.0046) gives 0.7475, very close to the true value ≈ 0.7468. This series gives the value of an integral that *cannot be expressed in elementary functions* — Taylor series let you integrate the unintegrable. This is exactly how computers evaluate the error function erf(x), the CDF of the normal distribution."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Derive Euler's formula $e^{i\theta} = \cos\theta + i\sin\theta$ from the Taylor series of $e^x$, $\sin x$, and $\cos x$. Then use it to compute $e^{i\pi}$ and explain the significance."
+  hint="Substitute $x = i\theta$ into $e^x = \sum x^n/n!$. Use $i^2 = -1$, $i^3 = -i$, $i^4 = 1$ (powers of $i$ cycle with period 4). Separate even and odd powers of $\theta$ and recognize $\cos$ and $\sin$."
+  answer="Start with e^x = ∑_{n=0}^∞ xⁿ/n!. Substitute x = iθ: e^(iθ) = ∑_{n=0}^∞ (iθ)ⁿ/n!. The powers of i cycle: i⁰=1, i¹=i, i²=−1, i³=−i, i⁴=1, and repeat. Separate the sum into even n = 2k (giving i^{2k} = (i²)^k = (−1)^k) and odd n = 2k+1 (giving i^{2k+1} = i·(−1)^k): e^(iθ) = ∑_k (−1)^k θ^{2k}/(2k)! + i ∑_k (−1)^k θ^{2k+1}/(2k+1)! = cos θ + i sin θ. Setting θ = π: e^{iπ} = cos π + i sin π = −1 + i·0 = −1, i.e. e^{iπ} + 1 = 0 — Euler's identity, connecting e, i, π, 1, 0. Significance: it reveals that exponentials and trigonometric functions are the *same* function viewed in different coordinates, which is why Fourier analysis (decomposing signals into sines and cosines) is equivalent to working with complex exponentials — the foundation of signal processing, quantum mechanics, and the FFT."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Use the binomial series to expand (1 + x)^{1/2} (the square root function) up to the x² term, and state its radius of convergence. Then use the first two terms to approximate √1.1."
+  hint="Apply the binomial series with α = 1/2: (1+x)^α = 1 + αx + α(α−1)/2! x² + ···. Compute the coefficients. R = 1 for non-integer α."
+  answer="With α = 1/2: (1+x)^{1/2} = 1 + (1/2)x + [(1/2)(1/2 − 1)/2!]x² + [(1/2)(−1/2)(−3/2)/3!]x³ + ··· = 1 + x/2 − x²/8 + x³/16 − ···. The radius of convergence is R = 1 (binomial series for non-integer α always has R = 1). Approximate √1.1 = (1 + 0.1)^{1/2} ≈ 1 + 0.1/2 − (0.1)²/8 = 1 + 0.05 − 0.00125 = 1.04875. The true √1.1 ≈ 1.04881 — the approximation is accurate to 4 decimal places with just 3 terms. This is how calculators compute square roots (and any fractional power) — via the binomial Taylor series. Newton himself discovered this series and used it for numerical root extraction."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Explain why the function f(x) = e^(−1/x²) (with f(0) = 0) is smooth but NOT analytic at x = 0. What goes wrong with its Taylor series? Contrast with eˣ, which is analytic everywhere."
+  hint="Show f^(n)(0) = 0 for every n (the function is flatter than any polynomial at 0). Then the Taylor series at 0 is identically 0, which does not equal f(x) for any x ≠ 0. The remainder does NOT tend to 0."
+  answer="The function f(x) = e^(−1/x²) (with f(0) = 0) decays to 0 faster than any polynomial as x → 0: for every n, lim_{x→0} e^(−1/x²)/xⁿ = 0. This makes f 'flatter than any polynomial' at the origin, and one can show (by induction) that f^(n)(0) = 0 for every n ≥ 0. Therefore the Taylor series at 0 is T(x) = ∑ 0 · xⁿ/n! = 0 — the zero function. But f(x) = e^(−1/x²) > 0 for every x ≠ 0, so the Taylor series does NOT equal f except at x = 0. The remainder R_n(x) = f(x) − 0 = f(x) does not tend to 0 as n → ∞ — it is constant in n. So the convergence condition fails and the function is not analytic at 0, despite being infinitely differentiable (smooth). Contrast with eˣ: its derivatives at 0 are all 1 (not 0), so its Taylor series is ∑ xⁿ/n! which converges to eˣ everywhere (remainder → 0 because factorials dominate). The lesson: 'infinitely differentiable' (smooth) is strictly weaker than 'representable by its Taylor series' (analytic). Taylor series capture only analytic functions; smooth non-analytic functions like e^(−1/x²) have rich behavior invisible to their Taylor expansion. Most functions in physics and ML are analytic, which is why Taylor series are so powerful — but the counterexample shows the theory has a real boundary."
+/>
+
+---
+
+**Up next:** [Differential Equations](/courses/calculus/27-differential-equations)

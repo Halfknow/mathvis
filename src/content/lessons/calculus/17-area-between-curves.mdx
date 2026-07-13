@@ -18,20 +18,24 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { AreaBetweenCurvesVis } from '../../../components/interactive/calculus/AreaBetweenCurvesVis';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
+import { MathBlock, MathInline } from '../../../components/math/Math';
 
-The definite integral gives the area under a single curve. What about the area **between** two curves? Simple: subtract. The area between curves is just "top minus bottom" integrated across the interval. At each x-position, measure the vertical gap between the two functions, then let the integral accumulate all those gaps. But be careful when curves cross -- the top and bottom swap roles, and you must split the integral at each crossing.
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
-## The formula
+The [definite integral](/courses/calculus/11-the-definite-integral) gives the area under a single curve. What about the area **between** two curves? The answer is beautifully simple: subtract. At each $x$-position, measure the vertical gap between the two functions, then let the integral accumulate all those gaps. The area between curves is the integral of "top minus bottom." But two subtleties demand care. First, you must know *which* curve is on top — and if the curves cross, the roles swap, and you must split the integral at each crossing. Second, sometimes the curves are easier to describe with $x$ as a function of $y$ (think of sideways-oriented regions), in which case you integrate with respect to $y$ instead. The art is in choosing the right variable and the right intervals.
+
+## The formula: top minus bottom
 
 If $f(x) \geq g(x)$ on $[a, b]$, then the area between them is:
 
-<MathBlock expression={"\\text{Area} = \\int_a^b [f(x) - g(x)]\\, dx"} />
+<MathBlock expression={"\\text{Area} = \\int_a^b \\bigl[f(x) - g(x)\\bigr]\\, dx"} />
 
-The integrand $f(x) - g(x)$ is the vertical gap between the curves at each point. Integrate the gap and you get the total area between them.
+The integrand $f(x) - g(x)$ is the **vertical gap** between the curves at each $x$. Where the gap is large, area accumulates quickly; where the curves pinch together, little area is added. The integral turns this collection of gaps into one number.
 
 <InteractiveCanvas
   title="Area Between Curves"
@@ -41,44 +45,122 @@ The integrand $f(x) - g(x)$ is the vertical gap between the curves at each point
   <AreaBetweenCurvesVis client:visible />
 </InteractiveCanvas>
 
-Switch to "sin vs cos" and notice how the curves cross. Between intersections, sin is above cos; outside those crossings, the relationship flips. The formula only works when you know which function is on top.
+Switch to "sin vs cos" and notice how the curves cross. Between intersections, one function sits above the other; outside those crossings, the relationship flips. The formula only works when you know which function is on top — and that top/bottom assignment can change as you move along the interval.
 
-## When curves cross
+<FormulaReadout formulas={[
+  { label: "上减下（关于 x 积分）", expression: "\\text{Area} = \\int_a^b \\bigl[f_{\\text{top}}(x) - f_{\\text{bottom}}(x)\\bigr]\\, dx" },
+  { label: "右减左（关于 y 积分）", expression: "\\text{Area} = \\int_c^d \\bigl[g_{\\text{right}}(y) - g_{\\text{left}}(y)\\bigr]\\, dy" },
+  { label: "曲线相交时需分段", expression: "\\text{Area} = \\int_a^c (f-g)\\, dx + \\int_c^b (g-f)\\, dx" },
+  { label: "交点给出积分上下限", expression: "f(x) = g(x) \\;\\Longrightarrow\\; x = a, \\, b" },
+]} />
 
-If the curves cross within $[a, b]$, you must split the integral at each crossing point:
+## When curves cross: split the integral
 
-<MathBlock expression={"\\text{Area} = \\int_a^c [f(x) - g(x)]\\, dx + \\int_c^b [g(x) - f(x)]\\, dx"} />
+If $f$ and $g$ cross within $[a, b]$ — say at $x = c$ — the sign of $f(x) - g(x)$ flips there. Integrating $f - g$ across the crossing would let positive and negative contributions cancel, *undercounting* the true area (you'd get the signed area, not the geometric area). The fix is to split the integral at each crossing point:
 
-The absolute value is implicit: always subtract the lower from the upper.
+<MathBlock expression={"\\text{Area} = \\int_a^c \\bigl[f(x) - g(x)\\bigr]\\, dx + \\int_c^b \\bigl[g(x) - f(x)\\bigr]\\, dx"} />
 
-## Finding the bounds
+In each sub-interval, the "top" function is whichever is larger there. The absolute value is implicit: always subtract the lower function from the upper. The intersection points are found by solving $f(x) = g(x)$.
 
-The bounds $a$ and $b$ are often the intersection points of the two curves. To find them, solve $f(x) = g(x)$.
+### Example: $\sin x$ and $\cos x$
 
-For $y = \sin(x)$ and $y = \cos(x)$: $\sin(x) = \cos(x)$ when $x = \pi/4 + n\pi$.
+The curves $\sin x$ and $\cos x$ intersect where $\sin x = \cos x$, i.e. at $x = \pi/4 + n\pi$. On $[0, \pi]$, they cross once at $\pi/4$ and again at $5\pi/4$ (outside this interval) — so within $[0, \pi]$ there is one crossing at $\pi/4$. From $0$ to $\pi/4$, $\cos > \sin$ (top is $\cos$); from $\pi/4$ to $\pi$, $\sin > \cos$ (top is $\sin$). You must split:
+
+<MathBlock expression={"\\text{Area} = \\int_0^{\\pi/4} (\\cos x - \\sin x)\\, dx + \\int_{\\pi/4}^{\\pi} (\\sin x - \\cos x)\\, dx"} />
+
+## Choosing the variable: $dx$ vs $dy$
+
+Sometimes integrating with respect to $y$ is dramatically simpler. The rule: integrate with respect to whichever variable gives **fewer pieces** (fewer crossings, fewer sub-intervals) and **simpler antiderivatives**.
+
+Consider the region between $y = x^2$ and $y = x + 2$. They intersect at $x = -1$ and $x = 2$. Integrating with respect to $x$ is straightforward: top is $x + 2$, bottom is $x^2$, single interval $[-1, 2]$.
+
+But now consider the region between <MathInline expression={"y = \\sqrt{x}"} /> and $y = x - 2$ (or equivalently $x = y^2$ and $x = y + 2$). If you integrate with respect to $x$, the bottom boundary *changes*: it is <MathInline expression={"y = -\\sqrt{x}"} /> for $x < 4$ and $y = x - 2$ for $x > 4$ — you'd need to split. But if you flip the perspective and integrate with respect to $y$, the right boundary is always $x = y + 2$ and the left is always $x = y^2$ — a single integral. The choice of variable determines the difficulty.
+
+**Mnemonic:** if the curves are naturally written as $y = f(x)$ with no piecewise switching, integrate with $dx$ ("top minus bottom"). If the curves are easier as $x = g(y)$, integrate with $dy$ ("right minus left"). Sketching the region is almost always worth the ten seconds.
+
+## The bounds are often the intersections
+
+The integration bounds $a$ and $b$ are usually the $x$-coordinates (or $y$-coordinates) where the curves meet — because that is where the region "starts" and "ends." To find them, set $f(x) = g(x)$ and solve. Sometimes one bound is given by a constraint (e.g. "the region in the first quadrant"), and the other by an intersection. Always sketch before you integrate.
+
+## Three perspectives on "area between curves"
+
+- **Accumulation (calculus):** area = integral of the gap $\int (f - g)\, dx$. The gap is a function of position; integrate it.
+- **Geometry (measurement):** area = sum of infinitely many thin vertical rectangles of height $(f - g)$ and width $dx$. The integral is the limit of these rectangles.
+- **Signed area (algebra):** $\int f\, dx - \int g\, dx$ = (area under top) − (area under bottom). The area between is the difference of two single-curve areas — which is why the formula is just subtraction.
+
+These three views are equivalent. The first is the one most often used in computation, the second for intuition (think rectangles), and the third as a quick sanity check.
+
+## The many faces of "between"
+
+- **Probability:** the area between two PDFs is the total variation distance between distributions — a measure of how distinguishable they are.
+- **Economics:** the area between demand and supply curves is the **consumer plus producer surplus** — the total welfare created by a market.
+- **Physics:** work done by a variable force between two configurations is the area between the force curve and the displacement axis.
+- **Engineering:** the area between a signal and a threshold determines bit error rates in digital communications.
+
+## Modern applications
+
+In **machine learning**, comparing distributions is a core operation: the area between two ROC curves measures the difference in classifier quality, and the Wasserstein distance between distributions (used in WGANs) is a generalization of "area between CDFs."
+
+In **economics and operations research**, the area between marginal cost and marginal revenue curves gives the deadweight loss of a tax; the area between demand and price gives consumer surplus. Welfare economics is, in a sense, applied "area between curves."
+
+In **signal processing and control**, the area between a signal and its setpoint (the **integrated error**) is a standard metric of controller performance — the integral of the gap tells you how much the system deviated over time.
+
+In **epidemiology**, the area between two epidemic curves (e.g. with and without intervention) quantifies the cases saved by the intervention.
 
 <KeyInsight>
-The area between two curves is the integral of the gap between them. Always subtract the lower function from the upper. If they cross, split the integral at each crossing point.
+The area between two curves is the integral of the vertical (or horizontal) gap between them. Always subtract the lower from the upper: ∫ [f_top − f_bottom] dx, or ∫ [g_right − g_left] dy. When curves cross, split the integral at each crossing — otherwise positive and negative gaps cancel and you get the signed area, not the true area. Choose the integration variable (x or y) that minimizes the number of pieces and keeps antiderivatives simple. The bounds are typically the intersection points found by solving f(x) = g(x). Three equivalent views: integral of the gap, sum of thin rectangles, or difference of two single-curve areas.
 </KeyInsight>
+
+## Connections
+
+This lesson is the first **application** of the definite integral beyond computing areas under a single curve — it generalizes [the definite integral](/courses/calculus/11-the-definite-integral) to the space *between* two functions, building on [accumulation](/courses/calculus/09-accumulation-and-area). The same "integrate the gap" idea recurs throughout the applications module: [volumes by slicing](/courses/calculus/18-volumes-by-slicing) integrate a cross-sectional area function, and [volumes of revolution](/courses/calculus/19-volumes-of-revolution) compute areas between a curve and the axis of rotation. The technique of splitting an integral at crossing points generalizes to splitting at any discontinuity or change of formula.
+
+Across disciplines, "integrate the difference between two curves" is a universal measurement: welfare loss in economics, distribution distance in statistics and ML, controller error in engineering, and welfare impact in epidemiology. Wherever you compare two quantities across a range and ask "how much total difference is there?", the area between curves is the answer.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Find the area between y = x and y = x² on [0, 1]."
-  hint="x ≥ x² on [0,1]. Integrate x − x²."
-  answer="∫₀¹ (x − x²) dx = [x²/2 − x³/3]₀¹ = 1/2 − 1/3 = 1/6."
+  prompt="Find the area between y = x and y = x² on [0, 1]. Which curve is on top?"
+  hint="At x = 1/2: x = 1/2 and x² = 1/4, so x > x² on (0, 1). Integrate (x − x²)."
+  answer="On [0, 1], x ≥ x² (they are equal at the endpoints 0 and 1). So x is on top, x² is on bottom. Area = ∫₀¹ (x − x²) dx = [x²/2 − x³/3]₀¹ = (1/2 − 1/3) − 0 = 1/6. The curves cross only at the endpoints, so no splitting is needed. Verify by sketching: the parabola y = x² bulges below the line y = x throughout (0, 1)."
 />
 
 <ExerciseBlock number={2}
   prompt="Find the area enclosed by y = sin(x) and y = cos(x) between their first two positive intersection points."
-  hint="They intersect at x = π/4 and x = 5π/4. Determine which is on top in each region."
-  answer="From π/4 to 5π/4, cos(x) < sin(x) at the center (x = π/2), so sin is above cos. Area = ∫_{π/4}^{5π/4} (sin x − cos x) dx = [−cos x − sin x]_{π/4}^{5π/4} = (1/√2 + 1/√2) − (−1/√2 − 1/√2) = 2√2."
+  hint="They intersect at x = π/4 and x = 5π/4. Determine which is on top in the middle (try x = π/2)."
+  answer="Intersections: sin(x) = cos(x) at x = π/4 + nπ, so the first two positive intersections are π/4 and 5π/4. At the midpoint x = π/2: sin(π/2) = 1 > cos(π/2) = 0, so sin is on top throughout (π/4, 5π/4). (They cross only at the endpoints of this interval.) Area = ∫_{π/4}^{5π/4} (sin x − cos x) dx = [−cos x − sin x]_{π/4}^{5π/4} = (cos(5π/4)... let's compute: at 5π/4: −cos(5π/4) − sin(5π/4) = −(−√2/2) − (−√2/2) = √2. At π/4: −cos(π/4) − sin(π/4) = −√2/2 − √2/2 = −√2. Difference: √2 − (−√2) = 2√2. The area is 2√2."
 />
 
 <ExerciseBlock number={3}
-  prompt="Two curves y = x³ and y = x enclose two regions. How would you find the total area of both?"
-  hint="They intersect at x = −1, 0, and 1. The curves cross, so you need to split the integral."
-  answer="Split at x = 0. From −1 to 0: x³ > x, integrate x³ − x. From 0 to 1: x > x³, integrate x − x³. Total = ∫_{−1}^0 (x³ − x) dx + ∫_0^1 (x − x³) dx = (1/2) + (1/2) = 1."
+  prompt="Two curves y = x³ and y = x enclose two regions (in the second and fourth quadrants). Find the total area of both regions."
+  hint="They intersect at x = −1, 0, and 1. The curves cross at each intersection, so split the integral at x = 0."
+  answer="Intersections: x³ = x → x(x² − 1) = 0 → x = 0, ±1. On (−1, 0): test x = −1/2: x³ = −1/8 > −1/2 = x, so x³ > x (x³ is on top). On (0, 1): test x = 1/2: x³ = 1/8 < 1/2 = x, so x > x³ (x is on top). Split: Area = ∫_{−1}^0 (x³ − x) dx + ∫_0^1 (x − x³) dx = [x⁴/4 − x²/2]_{−1}^0 + [x²/2 − x⁴/4]_0^1 = (0 − (1/4 − 1/2)) + ((1/2 − 1/4) − 0) = (0 − (−1/4)) + (1/4) = 1/4 + 1/4 = 1/2. Wait — let me recompute: at −1: x⁴/4 − x²/2 = 1/4 − 1/2 = −1/4. At 0: 0. First piece: 0 − (−1/4) = 1/4. Second piece: (1/4) − 0 = 1/4. Total = 1/2. The two regions are symmetric and have equal area. Note the absolute value: without splitting, ∫_{−1}^1 (x − x³) dx = 0 by odd-function symmetry — that's the signed area, not the true area."
 />
 
-[Next Lesson →](/courses/calculus/18-volumes-by-slicing)
+<ExerciseBlock number={4}
+  prompt="Find the area of the region bounded by x = y² and x = y + 2. Explain why integrating with respect to y is simpler than with respect to x."
+  hint="The curves are naturally x-as-a-function-of-y. They intersect where y² = y + 2. Solve for y, then use right-minus-left with dy."
+  answer="Intersections: y² = y + 2 → y² − y − 2 = 0 → (y − 2)(y + 1) = 0 → y = −1, 2. For y in (−1, 2): test y = 0: y + 2 = 2 > 0 = y², so the line x = y + 2 is on the right, the parabola x = y² on the left. Area = ∫_{−1}^2 [(y + 2) − y²] dy = [y²/2 + 2y − y³/3]_{−1}^2 = (2 + 4 − 8/3) − (1/2 − 2 + 1/3) = (10/3) − (−7/6) = 10/3 + 7/6 = 27/6 = 9/2. Why dy is simpler: solving x = y² for y gives y = ±√x (two branches), so integrating with respect to x would require splitting the region at x = 1 (where the lower boundary changes from y = −√x to y = x − 2). With dy, there is no splitting — the right boundary is always y + 2 and the left always y². Choosing the right variable saves work."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Find the area between y = eˣ, y = e^{2x}, and x = 0, from x = 0 to x = 1."
+  hint="On [0, 1], which is larger: eˣ or e^{2x}? (Check at x = 0 and x = 1.) Then integrate the difference."
+  answer="At x = 0: e⁰ = 1 and e⁰ = 1 — they are equal. At x = 1: e¹ ≈ 2.718 < e² ≈ 7.389, so e^{2x} > eˣ on (0, 1]. So e^{2x} is on top. Area = ∫₀¹ (e^{2x} − eˣ) dx = [e^{2x}/2 − eˣ]₀¹ = (e²/2 − e) − (1/2 − 1) = e²/2 − e + 1/2 = (e² − 2e + 1)/2 = (e − 1)²/2. The clean factored form (e − 1)²/2 is a satisfying check — both curves start at (0, 1) and diverge, and the area measures their separation."
+/>
+
+<ExerciseBlock number={6}
+  prompt="A demand curve is p = 100 − q and the supply curve is p = 20 + 2q. Compute the consumer surplus (area between the demand curve and the equilibrium price, from q = 0 to the equilibrium quantity)."
+  hint="First find equilibrium where demand = supply: 100 − q = 20 + 2q. Then consumer surplus = ∫₀^{q*} [demand(q) − p*] dq."
+  answer="Equilibrium: 100 − q = 20 + 2q → 80 = 3q → q* = 80/3, and p* = 100 − 80/3 = 220/3. Consumer surplus = ∫₀^{80/3} [(100 − q) − 220/3] dq = ∫₀^{80/3} [80/3 − q] dq = [80q/3 − q²/2]₀^{80/3} = (80·80/(3·3) − (80/3)²/2) − 0 = 6400/9 − 6400/18 = 6400/9 − 3200/9 = 3200/9 ≈ 355.6. The consumer surplus is 3200/9 (in price × quantity units). This is the classic 'area between curves' application in economics: the gap between what consumers would pay (demand) and what they do pay (equilibrium price), integrated over the quantity sold."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Let R be the region between y = x and y = x² on [0, 1]. Compute its area two ways: (a) by integrating with respect to x, and (b) by integrating with respect to y. Confirm both give the same answer, and explain why the bounds differ."
+  hint="For (a): top is x, bottom is x², bounds x ∈ [0, 1]. For (b): solve both for x in terms of y — x = y and x = √y — and identify which is right vs left over y ∈ [0, 1]."
+  answer="(a) With respect to x: on [0, 1], x ≥ x². Area = ∫₀¹ (x − x²) dx = [x²/2 − x³/3]₀¹ = 1/2 − 1/3 = 1/6. (b) With respect to y: rewrite as x = y (from y = x) and x = √y (from y = x²). On y ∈ [0, 1]: test y = 1/4: √y = 1/2 > 1/4 = y, so x = √y is on the right, x = y is on the left. Area = ∫₀¹ (√y − y) dy = [(2/3)y^{3/2} − y²/2]₀¹ = 2/3 − 1/2 = 4/6 − 3/6 = 1/6. Both give 1/6 — confirming the area is independent of integration variable. The bounds differ because each variable ranges over a different axis: in (a) the variable is x ∈ [0, 1] (horizontal span), in (b) the variable is y ∈ [0, 1] (vertical span). The 'top minus bottom' became 'right minus left' when we flipped perspective, but the geometric region is the same. This exercise demonstrates the freedom to choose your integration variable — pick whichever gives the simpler setup."
+/>
+
+---
+
+**Up next:** [Volumes by Slicing](/courses/calculus/18-volumes-by-slicing)

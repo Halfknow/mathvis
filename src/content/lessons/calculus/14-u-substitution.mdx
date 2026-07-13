@@ -18,79 +18,159 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { SubstitutionExplorer } from '../../../components/interactive/calculus/SubstitutionExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
+import { MathBlock, MathInline } from '../../../components/math/Math';
 
-The chain rule says: the derivative of $f(g(x))$ is $f'(g(x)) \cdot g'(x)$. u-Substitution says: if you see something that looks like $f'(g(x)) \cdot g'(x)$ inside an integral, you can undo the chain rule. Think of it as a change of coordinates: you translate the integral into a simpler language (the u-world), solve it there, then translate back to x. The key insight is that $du$ carries the derivative information -- it encodes how the old variable stretches and compresses into the new one.
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
-<InteractiveCanvas
-  title="Substitution Explorer"
-  caption="See the three steps of u-substitution: the original integrand (blue), the substituted form (green), and the final result (yellow). Toggle the mapping arrows to see how x maps to u."
-  aspectRatio="16/9"
->
-  <SubstitutionExplorer client:visible />
-</InteractiveCanvas>
+The chain rule tells us the derivative of $f(g(x))$ is $f'(g(x)) \cdot g'(x)$. u-Substitution tells us how to *undo* this: if an integrand contains a composite $f(g(x))$ multiplied by something that looks like $g'(x)$, you can reverse the chain rule. Think of it as a **change of coordinates**. You translate the integral into a simpler language — the "$u$-world" — solve it there, then translate the answer back to $x$. The single key insight is that $du$ carries the derivative information: it encodes how the old variable stretches and compresses into the new one. Without $du$, the substitution gives you nothing.
 
-## The method
+## Theorem: u-Substitution (the chain rule in reverse)
 
-1. **Choose** $u = g(x)$ — pick the "inner function."
-2. **Compute** $du = g'(x)\, dx$.
-3. **Rewrite** the integral in terms of $u$.
-4. **Integrate** the simpler $u$-integral.
-5. **Substitute back** $u = g(x)$.
+If $u = g(x)$ is a differentiable function whose derivative $g'(x)$ is continuous, and $f$ is a function with antiderivative $F$, then:
 
-## Example 1: $\int 2x \cos(x^2)\, dx$
+<MathBlock expression={"\\int f(g(x))\\, g'(x)\\, dx = \\int f(u)\\, du = F(u) + C = F(g(x)) + C"} />
 
-Spot the pattern: $2x$ is the derivative of $x^2$.
+**Hypotheses:** $g$ differentiable, $g'$ continuous, $F$ an antiderivative of $f$. **Conclusion:** the composite integrand $f(g(x))\,g'(x)$ integrates to $F(g(x))$.
 
-Let $u = x^2$, then $du = 2x\, dx$.
+**Proof sketch:** by the chain rule, <MathInline expression={"\\frac{d}{dx}\\!\\left[F(g(x))\\right] = F'(g(x))\\cdot g'(x) = f(g(x))\\cdot g'(x)"} />. So $F(g(x))$ is an antiderivative of the composite, and the substitution formula is just the chain rule read backwards. The "$du = g'(x)\,dx$" step is bookkeeping that records the $g'(x)$ factor so it is not lost.
+
+## When to reach for substitution
+
+u-Substitution is the right tool whenever the integrand is **composite** — an "outer" function applied to an "inner" function, where the inner function's derivative also appears (possibly up to a constant). Classic fingerprints:
+
+- A function **of** a polynomial or a trig argument, with the derivative of that argument nearby: $\int 2x\cos(x^2)\,dx$, <MathInline expression={"\\int \\sin x\\,e^{\\cos x}\\,dx"} />.
+- A radical or rational expression whose inside is a simpler function: <MathInline expression={"\\int x/\\sqrt{1+x^2}\\,dx"} />.
+- Anything of the form $f'(x)\cdot h(f(x))$.
+
+When you cannot pair an inner function with its derivative anywhere in the integrand, substitution is probably the wrong tool — reach for [integration by parts](/courses/calculus/15-integration-by-parts) or [partial fractions](/courses/calculus/16-partial-fractions) instead.
+
+## The formal procedure
+
+1. **Choose** $u = g(x)$ — pick the "inner function," the part whose derivative might appear elsewhere.
+2. **Differentiate** to find $du = g'(x)\, dx$.
+3. **Rewrite** the entire integral — both the integrand *and* the $dx$ — in terms of $u$. Every $x$ must vanish; if one stubbornly remains, try a different $u$.
+4. **Integrate** the simpler $u$-integral using the [antiderivative table](/courses/calculus/13-antiderivatives).
+5. **Substitute back** $u = g(x)$ to return to the original variable.
+
+The third step is where substitutions live or die: if you cannot fully convert to $u$, you have chosen the wrong substitution.
+
+<FormulaReadout formulas={[
+  { label: "换元公式（链式法则的逆运算）", expression: "\\int f(g(x))\\, g'(x)\\, dx = \\int f(u)\\, du, \\quad u = g(x)" },
+  { label: "微分替换（$du$ 是桥梁）", expression: "u = g(x) \\;\\Longrightarrow\\; du = g'(x)\\, dx" },
+  { label: "定积分：同步更换上下限", expression: "\\int_{x=a}^{x=b} f(g(x))\\, g'(x)\\, dx = \\int_{u=g(a)}^{u=g(b)} f(u)\\, du" },
+  { label: "回代得到最终答案", expression: "\\int f(u)\\, du = F(u) + C = F(g(x)) + C" },
+]} />
+
+## Three worked examples
+
+### Example 1: $\int 2x \cos(x^2)\, dx$
+
+Spot the pattern: $2x$ is the derivative of $x^2$. Let $u = x^2$, then $du = 2x\, dx$ — the derivative factor is *exactly* the leftover part.
 
 <MathBlock expression={"\\int 2x \\cos(x^2)\\, dx = \\int \\cos(u)\\, du = \\sin(u) + C = \\sin(x^2) + C"} />
 
-The $2x\, dx$ neatly becomes $du$, and the integral simplifies from a complicated expression in $x$ to a basic integral in $u$.
+The $2x\, dx$ neatly becomes $du$, and the integral collapses from a complicated expression in $x$ to a basic integral in $u$.
 
-## Example 2: $\int x e^{x^2}\, dx$
+### Example 2: <MathInline expression={"\\int x e^{x^2}\\, dx"} /> (constant multiple)
 
-Let $u = x^2$, then $du = 2x\, dx$, so $x\, dx = du/2$.
+Let $u = x^2$, then $du = 2x\, dx$, so $x\, dx = du/2$. The derivative does not appear *exactly*, only up to a constant factor — so we absorb the $1/2$ and carry on.
 
 <MathBlock expression={"\\int x e^{x^2}\\, dx = \\frac{1}{2}\\int e^u\\, du = \\frac{1}{2}e^u + C = \\frac{1}{2}e^{x^2} + C"} />
 
-## Example 3: Definite integral $\int_0^1 \frac{x}{1+x^2}\, dx$
+### Example 3: Definite integral <MathInline expression={"\\int_0^1 \\frac{x}{1+x^2}\\, dx"} />
 
-Let $u = 1 + x^2$, then $du = 2x\, dx$, so $x\, dx = du/2$. When $x = 0$: $u = 1$. When $x = 1$: $u = 2$.
+Let $u = 1 + x^2$, then $du = 2x\, dx$, so $x\, dx = du/2$. **Crucially, when $x = 0$: $u = 1$; when $x = 1$: $u = 2$.** The bounds travel into the $u$-world too.
 
-<MathBlock expression={"\\int_0^1 \\frac{x}{1+x^2}\\, dx = \\frac{1}{2}\\int_1^2 \\frac{du}{u} = \\frac{1}{2}[\\ln u]_1^2 = \\frac{\\ln 2}{2}"} />
+<MathBlock expression={"\\int_0^1 \\frac{x}{1+x^2}\\, dx = \\frac{1}{2}\\int_1^2 \\frac{du}{u} = \\frac{1}{2}\\bigl[\\ln u\\bigr]_1^2 = \\frac{\\ln 2}{2}"} />
 
-Notice: for definite integrals, you change the bounds too. No need to substitute back.
+Notice: for definite integrals, **changing the bounds saves you the back-substitution step** entirely — the answer is a number, not a function of $x$. You may instead back-substitute and use the original $x$-bounds; both give the same answer. Pick whichever is less error-prone.
 
-## When u-substitution fails
+## Trigonometric substitutions
 
-Not every integral yields to substitution. If you pick $u$ but $du$ doesn't appear in the integrand (or can't be isolated), try a different $u$ or a different technique entirely.
+A powerful sub-family of substitutions uses a trig function for $u$ to simplify radicals. The trick is that trig identities like $\sin^2 \theta + \cos^2 \theta = 1$ can *eliminate* a square root:
+
+<MathBlock expression={"\\sqrt{a^2 - x^2}\\,\\xrightarrow{\\,x = a\\sin\\theta\\,}\\, a\\cos\\theta, \\qquad \\sqrt{x^2+a^2}\\,\\xrightarrow{\\,x=a\\tan\\theta\\,}\\, a\\sec\\theta"} />
+
+The three canonical forms — $x = a\sin\theta$ for <MathInline expression={"\\sqrt{a^2 - x^2}"} />, $x = a\tan\theta$ for <MathInline expression={"\\sqrt{a^2 + x^2}"} />, and $x = a\sec\theta$ for <MathInline expression={"\\sqrt{x^2 - a^2}"} /> — turn an impossible radical integral into a routine trig integral. For instance, <MathInline expression={"\\int \\sqrt{1-x^2}\\, dx"} /> with $x = \sin\theta$ becomes $\int \cos^2\theta\, d\theta$, which a half-angle formula resolves. These substitutions are how you derive the antiderivative <MathInline expression={"\\frac{x}{2}\\sqrt{a^2-x^2} + \\frac{a^2}{2}\\arcsin(x/a) + C"} /> from scratch.
+
+## When substitution fails (or is not enough)
+
+Not every integral yields to substitution. If you pick $u$ but $du$ does not appear in the integrand — and no constant multiple can produce it — try a different $u$ or abandon substitution. For instance, $\int x\cos(x)\, dx$: choosing $u = \cos(x)$ gives $du = -\sin(x)\, dx$, which does not appear; choosing $u = x$ gives $du = dx$, which leaves $\cos(u)$ with no antiderivative you can write down. The $x$ and $\cos(x)$ are not connected by a derivative relationship. That is the signature that you need [integration by parts](/courses/calculus/15-integration-by-parts) instead.
+
+## The many faces of substitution
+
+- **Geometry:** substitution is literally a **change of coordinates** — reparametrizing the integration variable so a complicated function becomes simple. It is the one-dimensional version of the coordinate transforms used everywhere from multivariable calculus (the Jacobian) to general relativity.
+- **Physics:** converting between coordinate systems (Cartesian to polar, lab frame to center-of-mass) is a substitution; the $du$ generalizes to the Jacobian determinant in higher dimensions.
+- **Probability:** computing expectations $\int x f(x)\, dx$ under a change of variable (e.g. standardizing a normal random variable) is substitution, with the density transformed accordingly.
+- **Machine learning:** reparametrizing a loss surface (e.g. natural gradient, whitening) is a multivariate substitution that improves the conditioning of optimization.
+
+## Modern applications
+
+In **physics**, every change of variables in a line, surface, or volume integral is a substitution generalizing to higher dimensions — the "$du$" becomes the Jacobian $|\det J|\,du\,dv$. Computing the gravitational potential of a non-uniform body, or the moment of inertia of an off-center object, almost always involves a well-chosen coordinate substitution.
+
+In **probability and statistics**, the standardization $z = (x-\mu)/\sigma$ that converts any normal distribution to the standard normal is a u-substitution; the density acquires a $1/\sigma$ factor that is precisely the $du$ bookkeeping. Monte Carlo methods in **machine learning** (e.g. change of variables in normalizing flows) learn substitutions as invertible neural networks, with the Jacobian determinant playing the role of $du/dx$.
+
+In **engineering**, integration by substitution is the workhorse of computing work, energy, and flux whenever a problem is more naturally described in cylindrical or spherical coordinates.
 
 <KeyInsight>
-u-Substitution is the chain rule in reverse. Spot the inner function, let u equal it, and hope its derivative appears somewhere in the integrand. If it does, the integral simplifies.
+u-Substitution is the chain rule read backwards: $\int f(g(x))\,g'(x)\,dx = \int f(u)\,du$ where $u = g(x)$ and $du = g'(x)\,dx$. Spot the inner function (the composite), let u equal it, and hope its derivative appears in the integrand — possibly up to a constant factor you can absorb. Every x must vanish before you integrate. For definite integrals, change the bounds into the u-world and skip back-substitution. When no derivative pairing exists, substitution fails and you need parts or partial fractions. Trig substitutions exploit $\sin^2+\cos^2=1$ to eliminate radicals.
 </KeyInsight>
+
+## Connections
+
+This lesson extends the [antiderivative table](/courses/calculus/13-antiderivatives) to composite functions, by reversing the [chain rule](/courses/calculus/04-visualizing-the-chain-rule) you first met when learning [differentiation rules](/courses/calculus/03-differentiation-rules). With [the Fundamental Theorem](/courses/calculus/12-the-fundamental-theorem) guaranteeing that every continuous integrand has an antiderivative, substitution is the first tool you reach for to *find* that antiderivative. When substitution fails — because the integrand is a product of unrelated functions rather than a composite — the next lesson, [integration by parts](/courses/calculus/15-integration-by-parts), reverses the product rule instead; [partial fractions](/courses/calculus/16-partial-fractions) then handles rational integrands.
+
+Across disciplines, substitution is the universal **change of variables** operation: the $du$ that bookkeeps the derivative becomes the Jacobian determinant in multivariable calculus, the standardizing transform in probability, and the coordinate change at the heart of nearly every physics computation. Whenever a problem looks hard in one coordinate system, substitution is the art of finding a coordinate system where it looks easy.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Evaluate ∫ 3x²(x³ + 1)⁴ dx."
-  hint="Let u = x³ + 1. What is du?"
-  answer="u = x³ + 1, du = 3x² dx. The integral becomes ∫ u⁴ du = u⁵/5 + C = (x³ + 1)⁵/5 + C."
+  prompt="Evaluate ∫ 3x²(x³ + 1)⁴ dx using substitution. Identify the inner function and verify its derivative is present."
+  hint="Let u = x³ + 1. What is du? The 3x² should appear (or be absorbable)."
+  answer="The inner function is u = x³ + 1, and its derivative 3x² appears exactly in the integrand. Then du = 3x² dx. The integral becomes ∫ u⁴ du = u⁵/5 + C = (x³ + 1)⁵/5 + C. Verify: d/dx[(x³+1)⁵/5] = (1/5)·5(x³+1)⁴·3x² = 3x²(x³+1)⁴. The chain rule confirms the substitution was correct."
 />
 
 <ExerciseBlock number={2}
-  prompt="Evaluate ∫₀^{π/2} sin(x) cos(x) dx."
-  hint="Let u = sin(x). Then du = cos(x) dx. Don't forget to change the bounds."
-  answer="u = sin(x), du = cos(x) dx. Bounds: x=0 → u=0, x=π/2 → u=1. ∫₀¹ u du = [u²/2]₀¹ = 1/2."
+  prompt="Evaluate ∫₀^{π/2} sin(x) cos(x) dx. Change the bounds into the u-world rather than back-substituting."
+  hint="Let u = sin(x). Then du = cos(x) dx. When x = 0 and x = π/2, what is u?"
+  answer="u = sin(x), du = cos(x) dx. Bounds: x = 0 → u = sin(0) = 0; x = π/2 → u = sin(π/2) = 1. The integral becomes ∫₀¹ u du = [u²/2]₀¹ = 1/2. Changing bounds saved the back-substitution step. (Alternative check via double-angle: sin(x)cos(x) = (1/2)sin(2x), so ∫₀^{π/2} (1/2)sin(2x) dx = [-cos(2x)/4]₀^{π/2} = (1/4 + 1/4) = 1/2. Same answer.)"
 />
 
 <ExerciseBlock number={3}
-  prompt="Why doesn't u-substitution work easily on ∫ x cos(x) dx?"
-  hint="Try u = cos(x). Then du = −sin(x) dx. Does −sin(x) appear in the integrand? Try u = x instead."
-  answer="Neither u = cos(x) nor u = x makes du appear in the integrand. The x and cos(x) aren't connected by a derivative relationship. This integral requires a different technique: integration by parts."
+  prompt="Evaluate ∫ x/√(1+x²) dx. Here the derivative of the inner function appears only up to a constant multiple."
+  hint="Let u = 1 + x². Then du = 2x dx, so x dx = du/2."
+  answer="Let u = 1 + x², du = 2x dx, so x dx = du/2. The integral becomes (1/2)∫ u^{-1/2} du = (1/2)·2u^{1/2} + C = √u + C = √(1 + x²) + C. Verify by differentiating: d/dx[√(1+x²)] = x/√(1+x²). The constant 2 was absorbed into the substitution."
 />
 
-[Next Lesson →](/courses/calculus/15-integration-by-parts)
+<ExerciseBlock number={4}
+  prompt="Evaluate ∫ e^{cos x}·sin x dx. Explain why u = e^{cos x} would be a poor choice of substitution."
+  hint="The outer function is exp; its inner is cos(x). Pick u to be the inner, not the whole exponential."
+  answer="Let u = cos(x), then du = -sin(x) dx, so sin(x) dx = -du. The integral becomes ∫ e^u·(-du) = -e^u + C = -e^{cos x} + C. Choosing u = e^{cos x} would have been poor because du = e^{cos x}·(-sin x) dx, and that e^{cos x} factor would have to be canceled by dividing — producing a circular mess. Rule of thumb: pick u to be the innermost function whose derivative appears, not the whole composite."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Why does u-substitution not work easily on ∫ x cos(x) dx? Try u = cos(x) and u = x and explain what goes wrong in each case."
+  hint="For u = cos(x): du = -sin(x) dx. Does -sin(x) appear? For u = x: what is left in the integrand?"
+  answer="Try u = cos(x): then du = -sin(x) dx. But the integrand contains x·cos(x)·dx — there is no sin(x) factor to pair with du, and the leftover x cannot be expressed in terms of u without an inverse cosine (cos⁻¹(u)), which makes the integral worse. Try u = x: then du = dx, and the integral becomes ∫ u·cos(u) du — a product of unrelated functions in u, no simpler than the original. Neither choice connects the factors by a derivative relationship, which is the signature that substitution is the wrong tool. This integral requires integration by parts."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Compute ∫ √(4 - x²) dx using the trigonometric substitution x = 2 sin θ. Show how the radical simplifies via a trig identity, and give the final answer in terms of x."
+  hint="x = 2 sin θ gives dx = 2 cos θ dθ, and √(4 - x²) = √(4 - 4sin²θ) = 2 cos θ (for cos θ ≥ 0). You will need the half-angle identity cos²θ = (1 + cos 2θ)/2."
+  answer="With x = 2 sin θ: dx = 2 cos θ dθ, and √(4 - x²) = 2√(1 - sin²θ) = 2 cos θ (taking cos θ ≥ 0). The integral becomes ∫ 2cos θ · 2cos θ dθ = 4 ∫ cos²θ dθ = 4 ∫ (1 + cos 2θ)/2 dθ = 2 ∫ (1 + cos 2θ) dθ = 2(θ + sin(2θ)/2) + C = 2θ + sin(2θ) + C. Back-substitute: θ = arcsin(x/2), and sin(2θ) = 2sin θ cos θ = 2·(x/2)·(√(4-x²)/2) = x√(4-x²)/2. So ∫ √(4-x²) dx = 2 arcsin(x/2) + (x/2)√(4-x²) + C. The trig substitution turned a radical integral into a routine trig integral by exploiting sin² + cos² = 1."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Prove that substitution works by deriving the formula ∫ f(g(x))·g'(x) dx = F(g(x)) + C from the chain rule. State the hypotheses precisely, and explain the role of the continuity of g'."
+  hint="Apply the chain rule to F(g(x)). What is d/dx[F(g(x))]? The continuity hypothesis guarantees that F(g(x)) is differentiable — and therefore that the antiderivative exists."
+  answer="Theorem: if g is differentiable with g' continuous, and F is an antiderivative of f (so F' = f), then d/dx[F(g(x))] = F'(g(x))·g'(x) = f(g(x))·g'(x) by the chain rule. Hence F(g(x)) is an antiderivative of f(g(x))·g'(x), giving ∫ f(g(x))·g'(x) dx = F(g(x)) + C. The continuity of g' guarantees the chain rule applies cleanly (the composite F(g(x)) is differentiable with a continuous derivative), so the antiderivative is well-behaved. The bookkeeping substitution u = g(x), du = g'(x) dx is just a notation that records the chain-rule factor g'(x) so it is not dropped — converting the composite integrand into the elementary form f(u) du. Substitution is not a new theorem; it is the chain rule dressed in integral clothing."
+/>
+
+---
+
+**Up next:** [Integration by Parts](/courses/calculus/15-integration-by-parts)

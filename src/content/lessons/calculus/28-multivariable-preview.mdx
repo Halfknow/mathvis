@@ -18,81 +18,176 @@ publishedAt: 2026-05-26
 ---
 
 import { SurfaceExplorer3D } from '../../../components/interactive/calculus/SurfaceExplorer3D';
+
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-Everything you've learned -- derivatives, integrals, optimization, series -- extends to functions of several variables. The ideas are the same; there are just more directions to look. In 3D, the derivative becomes a gradient arrow on the landscape. The arrow points uphill; its length tells you how steep the slope is. To descend fastest -- the core idea behind gradient descent in machine learning -- walk in the opposite direction of the gradient arrow.
+import { MathBlock, MathInline } from '../../../components/math/Math';
 
-Drag the (x₀, y₀) sliders to move a point on the surface. Toggle the gradient arrow and slicing planes to see partial derivatives as slopes on the surface.
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+Every idea you have learned so far — derivatives, integrals, optimization, the chain rule — extends from functions of one variable to functions of *several*. The concepts are identical; there are just more directions to look. In 3D, the single derivative becomes a **gradient** arrow on the landscape: a vector that points uphill and whose length measures the steepest slope. To descend fastest — the core idea behind gradient descent in machine learning — you walk in the *opposite* direction of that arrow. This single image, generalized to thousands of dimensions, is how every neural network on Earth is trained.
+
+Drag the $(x_0, y_0)$ sliders to move a point on the surface. Toggle the gradient arrow and slicing planes to see partial derivatives as slopes on the surface.
 
 <SurfaceExplorer3D client:visible />
 
 ## Functions of two variables
 
-A function $z = f(x, y)$ takes a point $(x, y)$ in the plane and outputs a height $z$. The graph is a **surface** in 3D space — a landscape with hills, valleys, and saddle points.
+A function $z = f(x, y)$ takes a point $(x, y)$ in the plane and outputs a height $z$. Its graph is a **surface** in 3D space — a landscape with hills, valleys, ridges, and saddle points. Where the single-variable graph is a curve you can trace with a pen, the two-variable graph is a terrain you could walk on. The new feature is *direction*: standing on the surface, the slope depends on which way you face.
 
-## Partial derivatives
+## Partial derivatives — the slopes in each direction
 
-Instead of one derivative, you get two:
+The single-variable derivative measured the slope of a curve. With two inputs, you can ask for the slope in the $x$-direction *or* the $y$-direction — hold the other variable fixed and differentiate.
 
-<MathBlock expression={"\\frac{\\partial f}{\\partial x} = \\text{slope in the } x \\text{-direction (hold } y \\text{ fixed)}"} />
-<MathBlock expression={"\\frac{\\partial f}{\\partial y} = \\text{slope in the } y \\text{-direction (hold } x \\text{ fixed)}"} />
+## Definition: Partial Derivatives
 
-For $f(x,y) = x^2 + y^2$ (a paraboloid): $\partial f/\partial x = 2x$, $\partial f/\partial y = 2y$.
+The partial derivative of $f(x, y)$ with respect to $x$ is the rate of change of $f$ as $x$ varies, with $y$ held constant:
 
-The partial derivatives measure how steep the surface is in the $x$ and $y$ directions independently. It's like standing on a hillside: the slope depends on which direction you face.
+<MathBlock expression={"\\frac{\\partial f}{\\partial x} = \\lim_{h \\to 0} \\frac{f(x + h,\\, y) - f(x, y)}{h}"} />
 
-## The gradient
+Symmetrically for $y$:
 
-The gradient packs the partial derivatives into a vector:
+<MathBlock expression={"\\frac{\\partial f}{\\partial y} = \\lim_{h \\to 0} \\frac{f(x,\\, y + h) - f(x, y)}{h}"} />
 
-<MathBlock expression={"\\nabla f = \\left(\\frac{\\partial f}{\\partial x}, \\frac{\\partial f}{\\partial y}\\right)"} />
+Geometrically, $\\partial f / \\partial x$ is the slope of the surface along the slice $y = \\text{const}$ (a vertical plane parallel to the $xz$-axis), and $\\partial f / \\partial y$ is the slope along $x = \\text{const}$. Computing them is just single-variable differentiation with one variable treated as a constant.
 
-The gradient arrow points in the direction of **steepest ascent** on the surface. Its length is the slope in that direction. To descend fastest (like gradient descent in machine learning), follow $-\nabla f$.
+**Example.** For $f(x, y) = x^2 y + \\sin(xy)$: <MathInline expression={"\\partial f/\\partial x = 2xy + y\\cos(xy)"} /> (differentiate in $x$, treat $y$ as constant), <MathInline expression={"\\partial f/\\partial y = x^2 + x\\cos(xy)"} />. For $f(x, y) = x^2 + y^2$ (a paraboloid bowl): $\\partial f/\\partial x = 2x$ and $\\partial f/\\partial y = 2y$ — both zero only at the origin, the bottom of the bowl.
+
+## The gradient — the vector of partials
+
+The partial derivatives live separately until you pack them into a single object — the **gradient**.
+
+## Definition: The Gradient
+
+For $f(x, y)$, the gradient is the vector of partial derivatives:
+
+<MathBlock expression={"\\nabla f = \\left( \\frac{\\partial f}{\\partial x},\\; \\frac{\\partial f}{\\partial y} \\right)"} />
+
+The gradient is a *vector field*: at every point $(x, y)$ it points in some direction with some length. It lives in the input plane (the $xy$-plane), not on the surface itself.
+
+## Theorem: The Gradient Points in the Direction of Steepest Ascent
+
+At any point $(x, y)$, the gradient $\\nabla f(x, y)$ points in the direction in the $xy$-plane along which $f$ increases most rapidly, and its magnitude <MathInline expression={"\\|\\nabla f\\|"} /> equals that maximum rate of increase.
+
+This is the central fact of multivariable calculus. There are infinitely many directions you could walk from $(x, y)$, each giving a different slope — and the gradient picks out the steepest one. Walk along $\\nabla f$ to climb fastest; walk along $-\\nabla f$ to descend fastest. This theorem is the reason gradient descent works.
+
+## Directional derivatives — slope in any direction
+
+The partial derivatives give slopes only along the coordinate axes. The **directional derivative** generalizes to any unit vector $\\mathbf{u}$:
+
+## Definition: Directional Derivative
+
+For a unit vector $\\mathbf{u} = (u_1, u_2)$, the directional derivative of $f$ at $(x, y)$ in the direction $\\mathbf{u}$ is
+
+<MathBlock expression={"D_{\\mathbf{u}} f(x, y) = \\nabla f(x, y) \\cdot \\mathbf{u} = \\frac{\\partial f}{\\partial x} u_1 + \\frac{\\partial f}{\\partial y} u_2"} />
+
+This is the dot product of the gradient with the direction vector — and the dot-product interpretation *proves* the steepest-ascent theorem. Write <MathInline expression={"D_{\\mathbf{u}} f = \\|\\nabla f\\| \\cos\\theta"} /> where $\\theta$ is the angle between $\\nabla f$ and $\\mathbf{u}$. This is maximized when $\\theta = 0$, i.e. when $\\mathbf{u}$ points along $\\nabla f$ — giving the maximum value $\\|\\nabla f\\|$. So the gradient direction is the direction of maximum slope, and the magnitude is that slope. A theorem falls out of the dot product for free.
 
 ## The multivariable chain rule
 
-If $z = f(x, y)$ and $x = x(t)$, $y = y(t)$, then:
+The single-variable [chain rule](/courses/calculus/04-chain-rule) says $df/dt = f'(x(t)) \\cdot x'(t)$. When $f$ depends on several variables that all depend on $t$, every input contributes a term:
 
-<MathBlock expression={"\\frac{dz}{dt} = \\frac{\\partial f}{\\partial x}\\frac{dx}{dt} + \\frac{\\partial f}{\\partial y}\\frac{dy}{dt}"} />
+## Theorem: Multivariable Chain Rule
 
-The single-variable chain rule gets a term for each input variable.
+If $z = f(x, y)$ with $x = x(t)$ and $y = y(t)$, then
 
-## Double integrals
+<MathBlock expression={"\\frac{dz}{dt} = \\frac{\\partial f}{\\partial x} \\frac{dx}{dt} + \\frac{\\partial f}{\\partial y} \\frac{dy}{dt}"} />
 
-The integral extends too. Instead of area under a curve, you get **volume under a surface**:
+Each input variable contributes its partial derivative times its rate of change, and the contributions add. This is the engine of **backpropagation** in deep learning: when a loss depends on weights through a long chain of composed operations, the multivariable chain rule (applied recursively through the computation graph) computes every gradient in a single backward pass.
+
+## Double integrals — volume under a surface
+
+The [definite integral](/courses/calculus/11-the-definite-integral) measured area under a curve. Lifting one dimension higher, the double integral measures **volume under a surface**:
 
 <MathBlock expression={"V = \\iint_R f(x, y)\\, dA = \\int_a^b \\int_c^d f(x, y)\\, dy\\, dx"} />
 
-You integrate in one variable, then the other. Fubini's theorem says the order doesn't matter (for nice functions).
+You integrate in one variable, then the other. Fubini's theorem guarantees the order does not matter (for well-behaved functions) — you can integrate $dy\\,dx$ or $dx\\,dy$ and get the same volume.
 
-For $f(x,y) = x^2 + y^2$ over $[0,1] \times [0,1]$:
+**Example.** For $f(x, y) = x^2 + y^2$ over $[0,1] \\times [0,1]$:
 
-<MathBlock expression={"\\int_0^1 \\int_0^1 (x^2 + y^2)\\, dy\\, dx = \\int_0^1 [x^2 y + y^3/3]_0^1\\, dx = \\int_0^1 (x^2 + 1/3)\\, dx = 1/3 + 1/3 = 2/3"} />
+<MathBlock expression={"\\int_0^1 \\int_0^1 (x^2 + y^2)\\, dy\\, dx = \\int_0^1 \\left[x^2 y + \\tfrac{1}{3} y^3\\right]_0^1 dx = \\int_0^1 \\left(x^2 + \\tfrac{1}{3}\\right) dx = \\tfrac{1}{3} + \\tfrac{1}{3} = \\tfrac{2}{3}"} />
+
+The volume under the paraboloid bowl over the unit square is $2/3$.
+
+<FormulaReadout formulas={[
+  { label: "偏导数", expression: "\\frac{\\partial f}{\\partial x} = \\lim_{h \\to 0} \\frac{f(x+h, y) - f(x, y)}{h}" },
+  { label: "梯度", expression: "\\nabla f = \\left( \\frac{\\partial f}{\\partial x},\\; \\frac{\\partial f}{\\partial y} \\right)" },
+  { label: "方向导数 = 梯度 · 单位向量", expression: "D_{\\mathbf{u}} f = \\nabla f \\cdot \\mathbf{u} = \\|\\nabla f\\| \\cos\\theta" },
+  { label: "多元链式法则", expression: "\\frac{dz}{dt} = \\frac{\\partial f}{\\partial x}\\frac{dx}{dt} + \\frac{\\partial f}{\\partial y}\\frac{dy}{dt}" },
+]} />
+
+## The many faces of multivariable calculus
+
+- **Optimization on a landscape:** the critical points of $f(x, y)$ — where $\\nabla f = \\mathbf{0}$ — are the candidates for maxima, minima, and saddles. The second-derivative test (using the Hessian matrix of second partials) classifies them, just as $f''$ classifies single-variable critical points.
+- **Physics and fields:** the gradient generalizes to divergence $\\nabla \\cdot \\mathbf{F}$ and curl $\\nabla \\times \\mathbf{F}$ — the operations that make Maxwell's equations and fluid dynamics compact.
+- **Probability:** joint densities $f(x, y)$ are integrated over regions to get probabilities; marginals are single-variable integrals of the joint density.
+
+## Modern applications
+
+In **machine learning**, this lesson is the literal mathematical foundation of training. A neural network with a million weights defines a loss function <MathInline expression={"L(\\mathbf{w})"} /> on a million-dimensional input space — a surface far beyond visualization, but governed by exactly the gradient rules above. **Gradient descent** updates the weights by <MathInline expression={"\\mathbf{w}_{n+1} = \\mathbf{w}_n - \\alpha \\nabla L(\\mathbf{w}_n)"} />: step opposite to the gradient, scaled by the learning rate $\\alpha$. The gradient $\\nabla L$ is the million-dimensional vector of partial derivatives $\\partial L / \\partial w_i$, and **backpropagation** computes all of them in one backward pass via the multivariable chain rule applied through the network's computation graph. Every transformer, every diffusion model, every reinforcement-learning agent is trained by this single idea.
+
+In **physics**, the potential energy $V(x, y, z)$ of a system is a scalar field, and the force is $\\mathbf{F} = -\\nabla V$ — objects roll downhill in potential energy, exactly the gradient-descent image. Electric and gravitational fields are gradients of their potentials; heat flows opposite the temperature gradient. The whole of classical mechanics is "follow $-\\nabla V$."
+
+In **economics**, a firm's profit function $\\pi(x, y)$ depends on multiple inputs (labor, capital). The gradient gives the marginal profit of each input; optimal production sits at $\\nabla \\pi = 0$. Constrained optimization (Lagrange multipliers) extends this to problems with budgets or resource limits — the foundation of microeconomic theory.
+
+In **computer graphics and robotics**, surface normals are gradients of implicit surface equations, and path planning on a terrain uses gradient descent (with obstacles) to find energy-minimal routes. SLAM (simultaneous localization and mapping) optimizes pose estimates by gradient methods over a high-dimensional likelihood surface.
 
 <KeyInsight>
-Multivariable calculus lifts every single-variable idea one dimension higher. The derivative becomes a gradient (a vector of partial derivatives), the integral becomes a volume, and optimization searches a landscape with more directions. The core ideas — rates, accumulation, optimization — are unchanged.
+Multivariable calculus lifts every single-variable idea one dimension higher. The derivative becomes the gradient (a vector of partial derivatives), which points in the direction of steepest ascent with magnitude equal to that steepest slope — a fact that follows from the directional derivative formula D_u f = (nabla f) dot u = (magnitude of nabla f) times cos(theta), maximized when u aligns with the gradient. The multivariable chain rule dz/dt = (partial f / partial x)(dx/dt) + (partial f / partial y)(dy/dt) is the engine of backpropagation: it computes every partial derivative in a composed function in one backward pass. The integral becomes a volume (double integral), and optimization searches a landscape with more directions. Gradient descent (step opposite to the gradient) is how every neural network is trained — multivariable calculus is not a prerequisite for ML, it IS ML.
 </KeyInsight>
+
+## Connections
+
+This lesson generalizes the [chain rule](/courses/calculus/04-chain-rule) and [optimization](/courses/calculus/06-optimization) of the differentiation module to several variables. The partial derivative is the single-variable derivative applied one input at a time, and the gradient collects them into the vector that powers every optimization method. The [Fundamental Theorem of Calculus](/courses/calculus/12-fundamental-theorem) generalizes to Fubini's theorem (iterated integration) and eventually to Green's, Stokes', and the Divergence theorems — the highest synthesis of multivariable calculus. The double integral extends the [definite integral](/courses/calculus/11-the-definite-integral) from area to volume.
+
+The previous lesson on [differential equations](/courses/calculus/27-differential-equations) introduced ODEs; here, the partial derivatives of $u(x, t)$ in both variables give rise to *partial* differential equations — the heat equation $\\partial u/\\partial t = k \\nabla^2 u$, the wave equation — which the finale, [where calculus lives](/courses/calculus/29-where-calculus-lives), reveals as the equations governing heat, sound, light, and quantum mechanics. The gradient descent rule $\\mathbf{w}_{n+1} = \\mathbf{w}_n - \\alpha \\nabla L$ is the most consequential single formula in modern machine learning, and it is pure multivariable calculus.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Find both partial derivatives of f(x,y) = x³y + sin(xy)."
-  hint="Treat one variable as constant while differentiating with respect to the other."
-  answer="∂f/∂x = 3x²y + y·cos(xy). ∂f/∂y = x³ + x·cos(xy)."
+  prompt="Find both partial derivatives of f(x, y) = x³y + sin(xy). Then evaluate the gradient at (1, 0)."
+  hint="Treat one variable as constant while differentiating with respect to the other. Use the chain rule on sin(xy): d/dx[sin(xy)] = y cos(xy)."
+  answer="∂f/∂x = 3x²y + y cos(xy) (differentiate x³y as 3x²y; sin(xy) as y cos(xy)). ∂f/∂y = x³ + x cos(xy) (differentiate x³y as x³; sin(xy) as x cos(xy)). At (1, 0): ∂f/∂x = 0 + 0·cos(0) = 0; ∂f/∂y = 1 + 1·cos(0) = 1 + 1 = 2. So ∇f(1, 0) = (0, 2). The gradient points purely in the y-direction — at this point, the surface is flat in x and rises steeply in y, so walking in +y climbs fastest."
 />
 
 <ExerciseBlock number={2}
-  prompt="Find the gradient of f(x,y) = eˣ cos(y) at the point (0, 0)."
-  hint="Compute ∂f/∂x and ∂f/∂y, then evaluate at (0,0)."
-  answer="∂f/∂x = eˣ cos(y) → at (0,0): 1. ∂f/∂y = −eˣ sin(y) → at (0,0): 0. ∇f(0,0) = (1, 0). The gradient points purely in the x-direction — the surface rises fastest along the x-axis at the origin."
+  prompt="Find the gradient of f(x, y) = eˣ cos(y) at the point (0, 0). In which direction does f increase fastest, and what is that maximum rate? In which direction does it decrease fastest?"
+  hint="Compute ∂f/∂x = eˣ cos(y) and ∂f/∂y = −eˣ sin(y). Evaluate at (0, 0). The steepest-ascent direction is the gradient; steepest-descent is its negation. The max rate is the gradient's magnitude."
+  answer="∂f/∂x = eˣ cos(y), ∂f/∂y = −eˣ sin(y). At (0, 0): ∂f/∂x = 1·1 = 1, ∂f/∂y = −1·0 = 0. So ∇f(0,0) = (1, 0), pointing purely in the +x direction. The maximum rate of increase is ‖∇f‖ = 1, achieved by walking in the +x direction. The function decreases fastest in the opposite direction −∇f = (−1, 0), i.e. the −x direction. The surface rises fastest along the x-axis at the origin — gradient descent would step in −x to reduce f."
 />
 
 <ExerciseBlock number={3}
-  prompt="Compute ∫₀¹ ∫₀² xy dy dx."
-  hint="Integrate with respect to y first (treating x as constant), then x."
-  answer="∫₀² xy dy = x[y²/2]₀² = 2x. Then ∫₀¹ 2x dx = [x²]₀¹ = 1."
+  prompt="For f(x, y) = x² + y² and the unit vector u = (3/5, 4/5), compute the directional derivative D_u f at the point (1, 2). Verify it is no larger than ‖∇f‖."
+  hint="D_u f = ∇f · u. First compute ∇f(1, 2), then dot with u = (3/5, 4/5)."
+  answer="∇f = (2x, 2y), so ∇f(1, 2) = (2, 4). The directional derivative is D_u f = (2, 4) · (3/5, 4/5) = 6/5 + 16/5 = 22/5 = 4.4. The maximum possible directional derivative is ‖∇f(1, 2)‖ = √(4 + 16) = √20 ≈ 4.47. Indeed 4.4 < 4.47 ✓, consistent with D_u f = ‖∇f‖ cos θ ≤ ‖∇f‖. The angle: cos θ = 4.4/4.47 ≈ 0.984, so θ ≈ 10° — the direction u is nearly aligned with the gradient, hence the directional derivative is close to (but below) the maximum."
 />
 
-[Next Lesson →](/courses/calculus/29-where-calculus-lives)
+<ExerciseBlock number={4}
+  prompt="Use the multivariable chain rule to find dz/dt when z = x²y, x = cos(t), and y = sin(t). Evaluate at t = π/4."
+  hint="dz/dt = (∂z/∂x)(dx/dt) + (∂z/∂y)(dy/dt). Compute ∂z/∂x = 2xy, ∂z/∂y = x². Then dx/dt = −sin(t), dy/dt = cos(t)."
+  answer="∂z/∂x = 2xy, ∂z/∂y = x². dx/dt = −sin(t), dy/dt = cos(t). By the chain rule: dz/dt = 2xy·(−sin t) + x²·cos t = 2 cos t sin t · (−sin t) + cos²t · cos t = −2 cos t sin²t + cos³t. At t = π/4: cos(π/4) = sin(π/4) = √2/2, so dz/dt = −2(√2/2)(1/2) + (√2/2)³ = −√2/2 + √2/4 = −√2/4 ≈ −0.354. The chain rule let us compute the rate of change of z along the parametric curve (cos t, sin t) without ever eliminating the parameter — exactly the machinery backpropagation uses to differentiate composed functions."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Compute ∫₀¹ ∫₀² xy dy dx. Then verify Fubini's theorem by computing ∫₀² ∫₀¹ xy dx dy and checking the answers match."
+  hint="Integrate with respect to the inner variable first (treating the outer as constant), then the outer variable. The two orders should give the same result."
+  answer="Order dy dx: ∫₀² xy dy = x[y²/2]₀² = 2x. Then ∫₀¹ 2x dx = [x²]₀¹ = 1. Order dx dy: ∫₀¹ xy dx = y[x²/2]₀¹ = y/2. Then ∫₀² y/2 dy = [y²/4]₀² = 1. Both orders give 1 ✓ — Fubini's theorem holds. The double integral represents the volume under the surface z = xy over the rectangle [0,1] × [0,2]. For continuous functions on rectangles, Fubini guarantees the order never matters."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Explain why the gradient ∇f points in the direction of steepest ascent, using the directional derivative formula. What is the maximum value of the directional derivative, and in what direction is it achieved? What does this imply for gradient descent?"
+  hint="The directional derivative is D_u f = ∇f · u = ‖∇f‖ cos θ. Think about which value of θ (the angle between ∇f and u) maximizes this, and what the maximum value is."
+  answer="For a unit vector u, D_u f = ∇f · u = ‖∇f‖ ‖u‖ cos θ = ‖∇f‖ cos θ, where θ is the angle between ∇f and u. This is maximized when cos θ = 1, i.e. θ = 0 — when u points in the SAME direction as ∇f. The maximum value is ‖∇f‖, the magnitude of the gradient. So the gradient direction is the direction of steepest ascent, and its magnitude is that steepest slope. For gradient descent, we want to DECREASE f fastest, so we walk in the direction u = −∇f/‖∇f‖ (the negative gradient, normalized), giving D_u f = −‖∇f‖ — the most negative directional derivative, i.e. the steepest descent. This is why the update rule w ← w − α∇L steps opposite to the gradient: among all possible directions, −∇L reduces the loss the fastest (to first order). The proof is a one-line consequence of the dot product."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Find all critical points of f(x, y) = x² + y² − xy (a surface with a single stationary point). Is it a minimum, maximum, or saddle?"
+  hint="Critical points satisfy ∇f = 0. Compute ∂f/∂x = 2x − y and ∂f/∂y = 2y − x, set both to zero, and solve. Then determine the nature by examining the Hessian or by inspecting the function."
+  answer="Set ∇f = 0: ∂f/∂x = 2x − y = 0 and ∂f/∂y = 2y − x = 0. From the first, y = 2x. Substituting into the second: 2(2x) − x = 3x = 0, so x = 0 and y = 0. The only critical point is (0, 0). To classify: the Hessian is H = [[∂²f/∂x², ∂²f/∂x∂y], [∂²f/∂y∂x, ∂²f/∂y²]] = [[2, −1], [−1, 2]]. Its determinant is 2·2 − (−1)(−1) = 4 − 1 = 3 > 0, and the trace (4) is positive, so H is positive definite — the critical point is a strict local minimum. (Equivalently, complete the square: f = x² + y² − xy = (x − y/2)² + 3y²/4 ≥ 0, with equality only at the origin.) The surface is an elliptic paraboloid — a bowl tilted relative to the axes. Gradient descent on this surface converges to (0, 0) from any starting point."
+/>
+
+---
+
+**Up next:** [Where Calculus Lives](/courses/calculus/29-where-calculus-lives)

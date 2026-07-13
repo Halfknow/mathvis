@@ -12,9 +12,17 @@ duration: 16
 difficulty: "Intermediate"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 Randomness feels wild. A random variable can, in principle, take any value in its range. But there are guardrails — mathematical fences that limit how far the mass of a distribution can drift from its center. These guardrails are called **concentration inequalities**, and they work for *every* distribution, no matter how strange.
 
-The surprise is not that these bounds are tight. They are not. The surprise is that they exist at all, and that they require almost no information about the distribution — just the mean, or the mean and the variance. From two numbers alone, you can draw a fence around the probability mass.
+The surprise is not that these bounds are tight. They are not. The surprise is that they exist at all, and that they require almost no information about the distribution — just the mean, or the mean and the variance, or the fact that the variable is bounded. From a single number, you can draw a fence around the probability mass. And as you add assumptions, the fences get dramatically tighter: Markov's inequality gives a polynomial-strength guardrail from the mean alone; Chebyshev sharpens it with the variance; and the Chernoff-Hoeffding bounds achieve *exponential* strength the moment you know the variable is bounded. That exponential improvement is what makes modern machine learning possible.
 
 ## Markov's inequality — the simplest guardrail
 
@@ -22,13 +30,23 @@ Suppose $X$ is a non-negative random variable with mean $E[X]$. You want to know
 
 **Markov's inequality** says:
 
-$$P(X \geq a) \leq \frac{E[X]}{a}$$
+$<MathInline expression={"P(X \\geq a) \\leq \\frac{E[X]}{a}"} />$
 
 That is the entire statement. If the mean is 10, then $P(X \geq 100) \leq 10/100 = 0.1$. At most 10% of the probability mass sits beyond 100. No other information needed — no variance, no shape, no distribution family.
 
 The intuition is a seesaw. Imagine a rod balanced at the origin, with probability mass distributed along it. If too much mass were piled far to the right, the rod would tip — it couldn't balance at $E[X]$. Markov's inequality is the formal version of that balance constraint. The mean pins the mass down. You can't have heavy probability far from the origin without pulling the mean along with it.
 
 **Example: exam scores.** Suppose the average score on an exam is 60 out of 100. What fraction of students scored at least 90? Markov says: at most $60/90 = 2/3$. That is a loose bound — in practice, far fewer than two-thirds of students score above 90 — but it is guaranteed by the balance constraint alone.
+
+### Theorem: Markov's inequality
+
+Let $X$ be a non-negative random variable with finite mean $E[X]$. Then for any $a > 0$:
+
+$$P(X \geq a) \leq \frac{E[X]}{a}$$
+
+*Proof.* Define the indicator random variable $Y = a \cdot \mathbf{1}_{X \geq a}$. Observe that $Y \leq X$ always, because either $X \geq a$ (in which case $Y = a \leq X$) or $X < a$ (in which case $Y = 0 \leq X$, using non-negativity of $X$). By monotonicity of expectation, $E[Y] \leq E[X]$. But $E[Y] = a \cdot P(X \geq a)$. Therefore $a \cdot P(X \geq a) \leq E[X]$, giving $P(X \geq a) \leq E[X]/a$.
+
+*Intuition.* A tiny amount of mass can sit very far out only if it is small enough not to drag the mean along. The inequality quantifies that tradeoff exactly: mass at distance $a$ contributes at least $a$ times its probability to the mean.
 
 ### Why Markov needs non-negativity
 
@@ -40,23 +58,33 @@ Markov uses only the mean. Chebyshev's inequality adds the variance and gets a t
 
 **Chebyshev's inequality** says:
 
-$$P\left(|X - \mu| \geq k\sigma\right) \leq \frac{1}{k^2}$$
+$<MathInline expression={"P\\left(|X - \\mu| \\geq k\\sigma\\right) \\leq \\frac{1}{k^2}"} />$
 
-where $\mu = E[X]$ and $\sigma = \sqrt{\text{Var}(X)}$.
+where $\mu = E[X]$ and <MathInline expression={"\\sigma = \\sqrt{\\text{Var}(X)}"} />.
 
 Plug in values of $k$ and read off the guardrails:
 
 - $k = 2$: at most $1/4 = 25\%$ of the mass is beyond $2\sigma$ from the mean
 - $k = 3$: at most $1/9 \approx 11\%$ beyond $3\sigma$
-- $k = 5$: at most $1/4 = 4\%$ beyond $5\sigma$
+- $k = 5$: at most $1/25 = 4\%$ beyond $5\sigma$
 
 These numbers hold for **any distribution whatsoever** — symmetric or skewed, continuous or discrete, unimodal or multimodal. The only requirement is that the mean and variance exist (are finite).
 
-**The proof is one line of Markov.** Set $Y = (X - \mu)^2$. Then $Y \geq 0$ and $E[Y] = \sigma^2$. Apply Markov to $Y$ with threshold $k^2\sigma^2$:
+### Theorem: Chebyshev's inequality
 
-$$P\left((X - \mu)^2 \geq k^2\sigma^2\right) \leq \frac{\sigma^2}{k^2\sigma^2} = \frac{1}{k^2}$$
+Let $X$ be a random variable with finite mean $\mu$ and finite variance $\sigma^2 > 0$. Then for any $k > 0$:
 
-Taking the square root inside the probability gives Chebyshev. It is Markov in disguise, applied to the squared deviation.
+$$P(|X - \mu| \geq k\sigma) \leq \frac{1}{k^2}$$
+
+Equivalently, for any $\epsilon > 0$: $P(|X - \mu| \geq \epsilon) \leq \sigma^2/\epsilon^2$.
+
+*Proof.* Set $Y = (X - \mu)^2$. Then $Y \geq 0$ and $E[Y] = \text{Var}(X) = \sigma^2$. Apply Markov's inequality to $Y$ with threshold $k^2\sigma^2$:
+
+$$P\!\left((X - \mu)^2 \geq k^2\sigma^2\right) \leq \frac{\sigma^2}{k^2\sigma^2} = \frac{1}{k^2}$$
+
+The event $(X - \mu)^2 \geq k^2\sigma^2$ is exactly the event $|X - \mu| \geq k\sigma$. Chebyshev is Markov in disguise, applied to the squared deviation.
+
+*Intuition.* Variance measures average squared distance from the mean. If too much mass sat far from $\mu$, the variance would have to be large. Chebyshev makes this quantitative: the fraction of mass beyond $k\sigma$ is at most $1/k^2$.
 
 ## How loose are these bounds?
 
@@ -72,24 +100,141 @@ Think of it this way: Chebyshev builds a fence wide enough to contain *every* po
 
 Sometimes you only care about one tail — how likely is $X$ to be far *above* the mean, not how likely it is to be far in either direction. For this, there is a one-sided variant:
 
-$$P(X - \mu \geq k\sigma) \leq \frac{1}{1 + k^2}$$
+$<MathInline expression={"P(X - \\mu \\geq k\\sigma) \\leq \\frac{1}{1 + k^2}"} />$
 
 This is the **Cantelli inequality** (also called the one-sided Chebyshev). At $k = 2$, it gives $1/5 = 20\%$ for the upper tail alone — weaker than the two-sided 25% split between both tails, but focused on the direction you care about.
 
-## Why these bounds matter
+## Chernoff and Hoeffding: exponential guardrails
 
-Concentration inequalities are the foundation of probability theory's most powerful results. They are the scaffolding behind the Law of Large Numbers (next lesson) and behind every claim that "the average is close to the mean with high probability."
+Here is the great leap. Markov and Chebyshev give bounds that decay *polynomially* in $k$ (like $1/k^2$). But for bounded or sub-exponential random variables, the true decay is *exponential* — like $e^{-ck^2}$. That is an astronomically faster collapse. The **Chernoff bound** and its cousin the **Hoeffding inequality** capture this exponential strength.
 
-In practice, you rarely use Chebyshev directly to get a numerical bound. Its power is qualitative: it tells you that probability mass *must* concentrate around the mean, at a rate that depends on the variance. When the variance is small, the concentration is tight. When the variance is large, the mass spreads out. The relationship is universal.
+The Chernoff method is a clever application of Markov to a transformed variable. For any $t > 0$ and any random variable $X$:
 
-## Key insight
+$$P(X \geq a) = P(e^{tX} \geq e^{ta}) \leq \frac{E[e^{tX}]}{e^{ta}} = e^{-ta}\, M_X(t)$$
 
-> Concentration inequalities are guardrails, not tightropes. Markov uses only the mean; Chebyshev adds the variance. Both are loose for well-behaved distributions but hold universally. They prove that no distribution — no matter how wild — can scatter its mass far from the center without paying a steep price in variance.
+where $M_X(t) = E[e^{tX}]$ is the moment generating function of $X$. Because this holds for every $t > 0$, you can optimize over $t$:
+
+$$P(X \geq a) \leq \inf_{t > 0} \; e^{-ta}\, M_X(t)$$
+
+The exponential $e^{tX}$ amplifies the upper tail, so the bound falls off exponentially fast in $a$. This is the core idea behind all modern concentration results.
+
+### Theorem: Hoeffding's inequality
+
+Let $X_1, \ldots, X_n$ be independent random variables, each bounded so that $X_i \in [a_i, b_i]$. Let $\bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i$ with mean $\mu$. Then for any $\epsilon > 0$:
+
+$$P\!\left(|\bar{X}_n - \mu| \geq \epsilon\right) \leq 2 \exp\!\left(-\frac{2n^2\epsilon^2}{\sum_{i=1}^n (b_i - a_i)^2}\right)$$
+
+In the common case where each $X_i \in [0, 1]$ (so $b_i - a_i = 1$):
+
+$$P\!\left(|\bar{X}_n - \mu| \geq \epsilon\right) \leq 2 e^{-2n\epsilon^2}$$
+
+*Intuition.* Each bounded variable contributes a tiny, well-controlled amount of noise. Adding $n$ of them cannot push the average far from $\mu$ — and the probability of a large deviation collapses *exponentially* in $n\epsilon^2$. Compare with Chebyshev, which gives only $\sigma^2/(n\epsilon^2)$: polynomial decay. Hoeffding is exponentially tighter.
+
+**Numerical comparison.** Suppose $X_i \in [0,1]$ with $\mu = 0.5$, and you want $P(|\bar{X}_n - \mu| \geq 0.1)$. With $n = 100$:
+
+- Chebyshev (using worst-case $\sigma^2 = 0.25$): bound is $0.25/(100 \cdot 0.01) = 0.25$.
+- Hoeffding: bound is $2e^{-2 \cdot 100 \cdot 0.01} = 2e^{-2} \approx 0.27$. (Similar here, but Hoeffding wins decisively for larger deviations.)
+
+For a larger deviation $\epsilon = 0.2$ with $n = 100$:
+
+- Chebyshev: $0.25/(100 \cdot 0.04) = 0.0625$.
+- Hoeffding: $2e^{-2 \cdot 100 \cdot 0.04} = 2e^{-8} \approx 0.00067$.
+
+Hoeffding is nearly 100 times tighter. That exponential advantage is what lets you make strong claims from modest sample sizes.
+
+## Why concentration matters for machine learning
+
+Concentration inequalities are not just curiosities. They are the mathematical engine behind **generalization** — the central question of machine learning: why does a model that fits training data also perform well on unseen test data?
+
+The answer is concentration. If your training set is an i.i.d. sample of size $n$, then by Hoeffding, the empirical average loss on training data is within $\epsilon$ of the true expected loss with probability at least $1 - 2e^{-2n\epsilon^2}$. The training performance *concentrates* around the true performance. This is the foundation of **PAC learning** (Probably Approximately Correct): with enough samples, you can guarantee the model's true error is small, with high probability.
+
+The catch is that modern neural networks have billions of parameters, so naive Hoeffding bounds on the full hypothesis class are far too loose to explain why deep learning generalizes. Resolving this gap — between the loose bounds of classical concentration and the remarkable generalization of over-parameterized models — is one of the most active research areas in learning theory. Tools like Rademacher complexity, VC dimension, and the PAC-Bayes framework all build on the concentration foundation laid down here.
+
+<FormulaReadout formulas={[
+  { label: "马尔可夫不等式 (仅需均值)", expression: "P(X \\geq a) \\leq \\frac{E[X]}{a}, \\quad X \\geq 0" },
+  { label: "切比雪夫不等式 (加入方差)", expression: "P(|X - \\mu| \\geq k\\sigma) \\leq \\frac{1}{k^2}" },
+  { label: "切尔诺夫方法 (指数衰减)", expression: "P(X \\geq a) \\leq \\inf_{t>0} e^{-ta}\\, E[e^{tX}]" },
+  { label: "霍夫丁不等式 (有界变量)", expression: "P(|\\bar{X}_n - \\mu| \\geq \\epsilon) \\leq 2 e^{-2n\\epsilon^2}" },
+]} />
+
+## Three perspectives on concentration
+
+1. **As balance constraints (the moment view):** Markov says the mean pins down the mass; Chebyshev says the variance pins it down harder. Each inequality translates a moment constraint (a bound on $E[X]$ or $E[X^2]$) into a probability statement. More moments known means tighter fences.
+2. **As exponential decay (the transform view):** the Chernoff method applies Markov not to $X$ but to $e^{tX}$. The exponential amplifies the tail, and optimizing over $t$ extracts the tightest bound the moment generating function allows. This is why concentration is so much stronger for bounded or light-tailed variables — their MGFs are well-behaved.
+3. **As the geometry of large deviations (the asymptotic view):** for sums of many variables, the probability of an atypical average decays like $e^{-n \cdot I(x)}$ where $I(x)$ is the *rate function*. Concentration inequalities are finite-sample, distribution-free shadows of this deeper large-deviation theory.
+
+## Modern applications
+
+**PAC learning and generalization bounds.** The foundational theorem of statistical learning theory says: if a hypothesis class has finite size $|\mathcal{H}|$, then with probability at least $1 - \delta$, every hypothesis $h$ satisfies $|\text{train error}(h) - \text{true error}(h)| \leq \sqrt{\log(2|\mathcal{H}|/\delta)/(2n)}$. This is Hoeffding applied simultaneously to all hypotheses (with a union bound). It tells you exactly how much data you need to trust your training error. The entire field of computational learning theory is built on this scaffolding.
+
+**A/B testing and randomized experiments.** When a tech company compares two versions of a webpage, the difference in conversion rates is an average of bounded Bernoulli variables. Hoeffding gives a tight, assumption-light confidence band on that difference, which is how experiments are declared "statistically significant" after a fixed number of users. The exponential decay means you need surprisingly few samples to reach high confidence.
+
+**Differential privacy.** The modern science of data privacy, used by the U.S. Census and Apple, adds noise to data releases to protect individuals. The proofs that this noise preserves privacy rely on concentration — specifically, on the fact that the contribution of any single individual to the output is bounded and therefore concentrates. The "epsilon" in differential privacy is the Chernoff-style rate parameter.
+
+**Reinforcement learning.** When an RL agent estimates the value of a state from sampled returns, concentration inequalities bound how far that estimate can be from the truth. Multi-armed bandit algorithms (UCB, Thompson sampling) use confidence intervals derived from Hoeffding to balance exploration and exploitation — the tighter the concentration bound, the faster the agent converges to the optimal arm.
+
+<KeyInsight>
+Concentration inequalities turn moment information into probability fences. Markov needs only the mean (polynomial strength), Chebyshev adds the variance (still polynomial), and the Chernoff-Hoeffding bounds — the workhorses of modern statistics and machine learning — achieve exponential strength as soon as the variables are bounded. This exponential concentration is why PAC learning works, why A/B tests reach significance quickly, and why the gap between training and true performance can be rigorously controlled.
+</KeyInsight>
+
+## Connections
+
+This lesson is the direct payoff of [lesson 06](/courses/probability/06-expectation-and-variance): Markov is a statement about $E[X]$, Chebyshev is a statement about $\text{Var}(X) = E[(X-\mu)^2]$, and the Chernoff method uses the moment generating function $E[e^{tX}]$ (a generalization of moments). Without the language of expectation and variance, none of these fences could even be stated.
+
+The forward link is to the **Law of Large Numbers** ([lesson 15](/courses/probability/15-law-of-large-numbers)): the Weak LLN is proven by a single line of Chebyshev, and the rate of convergence it predicts is exactly the $1/n$ decay you see here. The **Central Limit Theorem** ([lesson 16](/courses/probability/16-central-limit-theorem)) then refines the picture: concentration inequalities bound the *probability* of a large deviation, while the CLT describes the *exact shape* of the typical fluctuations. Together, concentration + CLT are the complete finite-sample and asymptotic theory of averages.
+
+Cross-disciplinarily, concentration is the backbone of **information theory** (Shannon's source coding relies on the concentration of typical sequences), of **randomized algorithms** in computer science (their running times concentrate, which is why you can trust them), and of **high-dimensional geometry** (in high dimensions, random vectors concentrate near the surface of a sphere — the "curse of dimensionality" is a concentration phenomenon). Wherever randomness is averaged or accumulated, concentration is the guarantee that the result stays close to its mean.
 
 ## Practice
 
-**Exercise 1.** A lightbulb has an average lifetime of 800 hours. Use Markov's inequality to bound the probability that a bulb lasts at least 2000 hours. Now suppose you also know the standard deviation is 200 hours. Use Chebyshev to bound $P(|X - 800| \geq 600)$. Which bound is tighter for this question, and why?
+<ExerciseBlock
+  number={1}
+  prompt="A lightbulb has an average lifetime of 800 hours. Use Markov's inequality to bound the probability that a bulb lasts at least 2000 hours. Now suppose you also know the standard deviation is 200 hours. Use Chebyshev to bound P(|X - 800| >= 600). Which bound is tighter, and why?"
+  hint="Markov: P(X >= 2000) <= E[X]/2000. Chebyshev: P(|X - 800| >= 600) = P(|X - mu| >= 3 sigma) since 600/200 = 3, so bound is 1/k^2."
+  answer="Markov: P(X >= 2000) <= 800/2000 = 0.4. So at most 40% of bulbs last 2000+ hours. Chebyshev: 600 hours is 600/200 = 3 standard deviations from the mean, so k = 3, giving P(|X - 800| >= 600) <= 1/9 approximately 0.111 (about 11%). The two bounds answer different questions: Markov bounds only the upper tail (lifetime >= 2000, i.e., mu + 1200), while Chebyshev bounds both tails (lifetime more than 600 hours away from the mean, which includes both very short and very long lives). For the symmetric question, Chebyshev is much tighter (11% vs 40%) because it uses the variance, which Markov ignores. If you wanted an upper-tail-only Chebyshev-style bound, you would use Cantelli: P(X - mu >= 3 sigma) <= 1/(1 + 9) = 0.1."
+/>
 
-**Exercise 2.** A random variable has mean 50 and variance 25. Chebyshev says at most 1/9 of the mass is beyond $3\sigma = 15$ units from the mean. Suppose the variable is actually uniform on $[a, b]$. Find $a$ and $b$ so that the mean and variance match. What fraction of the mass is actually beyond $3\sigma$ for this uniform distribution? Compare to Chebyshev's bound.
+<ExerciseBlock
+  number={2}
+  prompt="A random variable has mean 50 and variance 25. Suppose the variable is actually uniform on [a, b] so that the mean and variance match. Find a and b. What fraction of the mass is actually beyond 3 sigma (i.e., beyond 50 +/- 15) for this uniform distribution? Compare to Chebyshev's bound of 1/9."
+  hint="For uniform on [a, b]: mean = (a+b)/2 and variance = (b-a)^2/12. Solve with mean 50 and variance 25. Then see whether 3 sigma lies inside or outside [a, b]."
+  answer="For uniform on [a, b]: mean = (a+b)/2 = 50, so a + b = 100. Variance = (b-a)^2/12 = 25, so (b-a)^2 = 300, b - a = sqrt(300) approximately 17.32. Solving: a = (100 - 17.32)/2 approximately 41.34, b approximately 58.66. Three sigma from the mean is 50 +/- 15 = [35, 65]. But the uniform distribution only has support on [41.34, 58.66] — there is ZERO mass beyond 3 sigma. The actual probability is 0, while Chebyshev promised at most 1/9 approximately 0.111. The bound is loose by an infinite factor. This illustrates the price of universality: Chebyshev must account for pathological distributions that pile mass in the tails, so for well-behaved bounded distributions like the uniform, the bound is wildly conservative."
+/>
 
-**Exercise 3.** Show that Markov's inequality is an equality for a particular distribution. (Hint: consider a random variable that takes value 0 with probability $1 - \mu/a$ and value $a$ with probability $\mu/a$, where $0 < \mu < a$.) What does this tell you about whether Chebyshev can be improved without additional assumptions?
+<ExerciseBlock
+  number={3}
+  prompt="Show that Markov's inequality is tight: construct a non-negative random variable for which P(X >= a) = E[X]/a exactly. (Hint: let X take value a with probability p and value 0 with probability 1 - p, then choose p.) What does this tell you about whether Markov can be improved without additional assumptions?"
+  hint="Let X = a with probability p and 0 otherwise. Then E[X] = a*p, so E[X]/a = p = P(X >= a). Markov is an equality."
+  answer="Let X take value a with probability p and value 0 with probability 1 - p, where 0 < p < 1. Then E[X] = a*p + 0*(1-p) = ap, so E[X]/a = p. And P(X >= a) = p exactly (since X equals a with probability p and is 0 otherwise). So P(X >= a) = E[X]/a = p: Markov is an equality. This shows Markov cannot be improved using only the mean — there exists a distribution (a two-point distribution) that saturates the bound. Any tighter inequality would need more information: the variance (Chebyshev), boundedness (Hoeffding), or the full MGF (Chernoff). Each additional piece of information buys a tighter fence."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="A fair coin is flipped n = 100 times. Use Hoeffding's inequality to bound P(sample proportion of heads >= 0.6). Compare to what Chebyshev gives for the same event. (The Xi are Bernoulli(0.5), taking values in [0, 1].)"
+  hint="Hoeffding: P(X_bar - mu >= epsilon) <= e^(-2*n*epsilon^2) (one-sided version, drop the factor of 2). Here mu = 0.5, epsilon = 0.1, n = 100. Chebyshev: Var(X_bar) = sigma^2/n = 0.25/100 = 0.0025, so P(|X_bar - 0.5| >= 0.1) <= 0.0025/0.01 = 0.25."
+  answer="Hoeffding (one-sided): P(X_bar - 0.5 >= 0.1) <= e^(-2*100*0.01) = e^(-2) approximately 0.135. (Using the two-sided version gives 2e^(-2) approximately 0.27, but for one tail we drop the factor 2.) Chebyshev: Var(X_bar) = p(1-p)/n = 0.25/100 = 0.0025. P(X_bar - 0.5 >= 0.1) <= P(|X_bar - 0.5| >= 0.1) <= 0.0025/0.01 = 0.25. (Chebyshev is two-sided by default; a one-sided refinement via Cantelli gives 0.0025/(0.0025 + 0.01) approximately 0.2.) So Hoeffding's 0.135 is tighter than Chebyshev's 0.2 to 0.25, and the gap explodes for larger deviations: at epsilon = 0.2, Hoeffding gives e^(-8) approximately 0.00034 while Chebyshev gives 0.0025/0.04 = 0.0625 — a 180x improvement. This exponential advantage is why Hoeffding is the tool of choice in learning theory."
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="PAC learning. A hypothesis class has |H| = 1000 hypotheses. You want to guarantee that, with probability at least 0.95 over the draw of the training set, EVERY hypothesis has its training error within 0.05 of its true error. Apply Hoeffding with a union bound to find the minimum sample size n. (The union bound: P(any h bad) <= sum over h of P(h bad) <= |H| * 2*e^(-2*n*epsilon^2).)"
+  hint="Set |H| * 2 * e^(-2*n*epsilon^2) <= 1 - 0.95 = 0.05. Take logs and solve for n. Here |H| = 1000, epsilon = 0.05, delta = 0.05."
+  answer="We need |H| * 2 * e^(-2*n*epsilon^2) <= delta, i.e., 1000 * 2 * e^(-2*n*0.0025) <= 0.05. So 2000 * e^(-0.005n) <= 0.05, e^(-0.005n) <= 0.05/2000 = 0.000025. Taking natural logs: -0.005n <= ln(0.000025) = -10.6, so n >= 10.6/0.005 = 2120. With about 2120 training examples, you can guarantee (with 95% confidence) that every one of the 1000 hypotheses has training error within 0.05 of its true error. This is the PAC (Probably Approximately Correct) bound — the foundational result of learning theory. The union bound (multiplying by |H|) is why larger hypothesis classes need more data; the exponential decay of Hoeffding is why the sample size is logarithmic in 1/delta and quadratic in 1/epsilon, not worse."
+/>
+
+<ExerciseBlock
+  number={6}
+  prompt="A stock's daily return X (as a fraction) is bounded in [-0.2, 0.2] (a 20% daily move cap). The true mean daily return is mu = 0.001 (0.1%). Over n = 252 trading days (one year), the annual return is the sum of the daily returns. Use Hoeffding to bound the probability that the annual return is negative. What does this tell you about how reliably a small positive edge shows up over a year?"
+  hint="Annual return = sum of X_i. Mean annual return = 252 * 0.001 = 0.252. We want P(sum X_i <= 0) = P(sum X_i - 252*0.001 <= -0.252). Each X_i in [-0.2, 0.2], so b_i - a_i = 0.4. Apply Hoeffding: P(sum X_i - E[sum] <= -epsilon) <= e^(-2*epsilon^2 / sum(b_i-a_i)^2)."
+  answer="Let S = sum of 252 daily returns. E[S] = 252 * 0.001 = 0.252 (25.2% expected annual return). We want P(S <= 0) = P(S - 0.252 <= -0.252), so epsilon = 0.252. Each X_i in [-0.2, 0.2], so (b_i - a_i)^2 = 0.16, and sum over 252 days = 252 * 0.16 = 40.32. Hoeffding (one-sided): P(S - E[S] <= -epsilon) <= e^(-2*epsilon^2/sum(b_i-a_i)^2) = e^(-2*0.252^2/40.32) = e^(-2*0.0635/40.32) = e^(-0.00315) approximately 0.9969. So the bound is approximately 0.997 — useless, it says the probability of a negative year could be as high as 99.7%! This reveals the limits of distribution-free bounds: a 0.1% daily edge is tiny relative to the 20% daily swing, so Hoeffding (which must account for worst-case distributions) cannot guarantee a positive year. In reality, returns are roughly normal and the true probability of a negative year is much smaller — but to prove that, you need to exploit the actual distribution (the CLT, lesson 16), not just boundedness. Concentration bounds are universal but loose; the CLT is sharper but assumes more."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="Prove Cantelli's inequality (the one-sided Chebyshev): for a random variable X with mean mu and variance sigma^2, and any k > 0, P(X - mu >= k*sigma) <= 1/(1 + k^2). Hint: let A be the event {X - mu >= k*sigma} and B its complement. Write sigma^2 = E[(X-mu)^2] = E[(X-mu)^2 | A]*P(A) + E[(X-mu)^2 | B]*P(B), and bound each term using k*sigma and the non-negativity of variance."
+  answer="Let mu = E[X], sigma^2 = Var(X), and A = {X - mu >= k*sigma}. Write the total variance as sigma^2 = E[(X-mu)^2 | A]*P(A) + E[(X-mu)^2 | A^c]*P(A^c). On event A, X - mu >= k*sigma, so (X-mu)^2 >= k^2*sigma^2, hence E[(X-mu)^2 | A] >= k^2*sigma^2. On A^c, (X-mu)^2 >= 0, so E[(X-mu)^2 | A^c] >= 0. Also, by a sharper argument (using the fact that on A^c, X - mu < k*sigma, but E[X-mu | A^c] must balance the positive drift on A), one can show E[(X-mu)^2 | A^c] >= 0 with a balancing constraint. The cleanest proof: let p = P(A). Then E[X-mu] = 0 = E[X-mu | A]*p + E[X-mu | A^c]*(1-p). Since E[X-mu | A] >= k*sigma, we get E[X-mu | A^c] <= -k*sigma*p/(1-p). Then sigma^2 >= (k*sigma)^2 * p + 0, but this gives p <= 1/k^2 (plain Chebyshev). To get 1/(1+k^2), use the full variance decomposition with the balancing: sigma^2 >= E[(X-mu)^2|A]*p + E[(X-mu)^2|A^c]*(1-p), optimize over the conditional means subject to the balance E[X-mu|A]*p + E[X-mu|A^c]*(1-p) = 0. The minimum of sigma^2 over all such configurations is achieved when (X-mu)|A is constant at k*sigma and (X-mu)|A^c is constant at -k*sigma*p/(1-p), giving sigma^2 >= (k*sigma)^2 * p + (k*sigma*p/(1-p))^2*(1-p) = k^2*sigma^2*p*(1 + p/(1-p)) = k^2*sigma^2*p/(1-p). So sigma^2 >= k^2*sigma^2*p/(1-p), hence 1 >= k^2*p/(1-p), so (1-p) >= k^2*p, thus 1 >= p(1 + k^2), giving p <= 1/(1 + k^2). The one-sided bound is strictly tighter than two-sided Chebyshev (1/k^2) because it exploits the fact that a large one-sided deviation must be balanced by mass on the other side, which also consumes variance."
+/>
+
+---
+
+**Up next:** [The law of large numbers →](/courses/probability/15-law-of-large-numbers)

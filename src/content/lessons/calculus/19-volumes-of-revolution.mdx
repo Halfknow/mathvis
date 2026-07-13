@@ -18,12 +18,40 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { ShellMethod3D } from '../../../components/interactive/calculus/ShellMethod3D';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-Take a 2D curve and spin it around an axis. The curve sweeps out a surface, and the enclosed region becomes a 3D solid -- a **solid of revolution**. Two methods let you compute its volume: the disk/washer method and the shell method. Think of these as two camera angles on the same solid. Disk slices perpendicular to the axis, producing circular cross-sections; shell wraps vertical strips around the axis, producing cylindrical layers. Same volume, different integrals. Choose whichever angle gives the simpler calculation.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+Take a 2D curve and spin it around an axis. The curve sweeps out a surface, and the enclosed region becomes a 3D solid — a **solid of revolution**. Two methods let you compute its volume: the **disk/washer method** (slicing perpendicular to the axis) and the **shell method** (wrapping strips parallel to the axis). Think of these as two camera angles on the same solid. The disk method slices the solid into circular cross-sections; the shell method peels it into concentric cylindrical layers. **Same volume, different integrals** — and the art is choosing whichever produces the simpler calculation. Often one method gives a clean one-liner while the other requires solving for an inverse function and splitting the integral.
+
+## Theorem: Disk / Washer method
+
+Rotate the region under $y = f(x) \ge 0$ from $x = a$ to $x = b$ around the $x$-axis. Each cross-section perpendicular to the axis is a circular disk of radius $f(x)$:
+
+<MathBlock expression={"V = \\pi \\int_a^b [f(x)]^2\\, dx"} />
+
+If the region is between an outer curve $R(x)$ and an inner curve $r(x)$, the cross-section is a washer:
+
+<MathBlock expression={"V = \\pi \\int_a^b \\bigl[R(x)^2 - r(x)^2\\bigr]\\, dx"} />
+
+This is just [volume by slicing](/courses/calculus/18-volumes-by-slicing) with $A(x) = \pi[R(x)^2 - r(x)^2]$.
+
+## Theorem: Shell method
+
+Instead of slicing perpendicular to the axis, wrap **vertical strips** around it. A thin vertical strip at position $x$ with height $f(x)$ and width $dx$, when rotated around the $y$-axis, sweeps out a cylindrical shell of radius $x$, height $f(x)$, and thickness $dx$:
+
+<MathBlock expression={"dV = 2\\pi \\cdot \\underbrace{x}_{\\text{radius}} \\cdot \\underbrace{f(x)}_{\\text{height}} \\cdot \\underbrace{dx}_{\\text{thickness}}"} />
+
+Total volume:
+
+<MathBlock expression={"V = 2\\pi \\int_a^b x \\cdot f(x)\\, dx"} />
+
+The factor $2\pi x$ is the circumference of the shell at radius $x$; multiplying by height $f(x)$ gives lateral surface area; multiplying by $dx$ gives the thin-shell volume. Summing all shells gives the integral.
 
 <InteractiveCanvas
   title="Shell Method 3D"
@@ -33,67 +61,122 @@ Take a 2D curve and spin it around an axis. The curve sweeps out a surface, and 
   <ShellMethod3D client:visible />
 </InteractiveCanvas>
 
-## The disk method (review)
-
-Rotate $y = f(x)$ around the x-axis. Each cross-section perpendicular to the x-axis is a circular disk:
-
-<MathBlock expression={"V = \\pi \\int_a^b [f(x)]^2\\, dx"} />
-
-This works well when you can easily express the radius as a function of $x$.
-
-## The shell method
-
-Sometimes it's easier to think of the solid as a stack of **cylindrical shells** rather than disks. A vertical strip at position $x$ with height $f(x)$ and width $dx$, when rotated around the y-axis, becomes a thin cylindrical shell:
-
-<MathBlock expression={"dV = 2\\pi \\cdot \\underbrace{x}_{\\text{radius}} \\cdot \\underbrace{f(x)}_{\\text{height}} \\cdot \\underbrace{dx}_{\\text{thickness}}"} />
-
-Total volume:
-
-<MathBlock expression={"V = 2\\pi \\int_a^b x \\cdot f(x)\\, dx"} />
+<FormulaReadout formulas={[
+  { label: "圆盘法（绕 x 轴）", expression: "V = \\pi \\int_a^b [f(x)]^{2}\\, dx" },
+  { label: "垫圈法（带孔）", expression: "V = \\pi \\int_a^b \\bigl[R(x)^{2} - r(x)^{2}\\bigr]\\, dx" },
+  { label: "柱壳法（绕 y 轴）", expression: "V = 2\\pi \\int_a^b x\\, f(x)\\, dx = \\int 2\\pi r \\cdot h \\cdot dr" },
+  { label: "帕普斯定理（质心求体积）", expression: "V = 2\\pi\\, \\bar{r}\\, \\cdot A_{\\text{region}}" },
+]} />
 
 ## When to use which method?
 
-- **Disk/washer**: when slices perpendicular to the axis of rotation give clean circular cross-sections.
-- **Shell**: when vertical (or horizontal) strips give simpler integrands when wrapped around the axis.
+Both methods always give the same answer — they are just two ways of slicing the same solid. The choice is purely about **convenience**:
 
-The two methods give the same answer — they're just different ways of slicing the same solid.
+- **Disk/washer** is natural when slices *perpendicular to the axis* give clean circular cross-sections, and you can easily express the radius as a function of the integration variable.
+- **Shell** is natural when strips *parallel to the axis* give simpler integrands — especially when rotating around a vertical axis and the function is naturally $y = f(x)$ (avoiding the need to solve for $x$ in terms of $y$).
 
-## Example: rotate $y = x^2$ from $x = 0$ to $x = 2$ around the y-axis
+A useful diagnostic: if rotating $y = f(x)$ around the **$y$-axis**, the shell method keeps the variable $x$ (no inversion); the disk method would require solving <MathInline expression={"x = f^{-1}(y)"} /> and integrating with respect to $y$. If <MathInline expression={"f^{-1}"} /> is ugly, use shells. Symmetrically, rotating around the **$x$-axis** usually favors disks. When the axis of rotation is *not* a coordinate axis (e.g. around $x = c$), the radius becomes $(x - c)$ or $(c - x)$ — adjust accordingly.
 
-**Shell method** (natural choice):
+## Example: rotate $y = x^2$ from $x = 0$ to $x = 2$ around the $y$-axis
+
+**Shell method** (the natural choice — no inversion needed):
 
 <MathBlock expression={"V = 2\\pi \\int_0^2 x \\cdot x^2\\, dx = 2\\pi \\int_0^2 x^3\\, dx = 2\\pi \\cdot \\frac{x^4}{4}\\Big|_0^2 = 2\\pi \\cdot 4 = 8\\pi"} />
 
-**Disk method** (requires solving for x):
+**Disk method** (requires solving for $x$): $y = x^2$ gives <MathInline expression={"x = \\sqrt{y}"} />. The solid extends from $y = 0$ to $y = 4$:
 
-$y = x^2$ gives $x = \sqrt{y}$. The solid extends from $y = 0$ to $y = 4$.
+<MathBlock expression={"V = \\pi \\int_0^4 [\\sqrt{y}]^2\\, dy = \\pi \\int_0^4 y\\, dy = \\pi \\cdot \\frac{y^2}{2}\\Big|_0^4 = 8\\pi"} />
 
-<MathBlock expression={"V = \\pi \\int_0^4 [\\sqrt{y}]^2 - [0]^2\\, dy = \\pi \\int_0^4 y\\, dy = \\pi \\cdot \\frac{y^2}{2}\\Big|_0^4 = 8\\pi"} />
+Same answer. The shell method was simpler because it did not require solving for $x$ — a one-step integral versus a two-step "invert then integrate."
 
-Same answer. The shell method was simpler because it didn't require solving for $x$.
+## Example: rotating around a non-coordinate axis
+
+Rotate the region bounded by $y = x$, $y = 0$, and $x = 4$ around the line $x = 4$. The axis is not $x = 0$, so the radius of each shell is $(4 - x)$, not $x$:
+
+<MathBlock expression={"V = 2\\pi \\int_0^4 (4 - x) \\cdot x\\, dx = 2\\pi \\int_0^4 (4x - x^2)\\, dx = 2\\pi \\bigl[2x^2 - x^3/3\\bigr]_0^4 = 2\\pi (32 - 64/3) = 2\\pi \\cdot 32/3 = 64\\pi/3"} />
+
+The shell's radius is the distance from the strip to the axis of rotation. Whenever the axis is $x = c$, substitute "radius = $(x - c)$" (or its absolute value) into the formula.
+
+## Pappus's centroid theorem
+
+A beautiful shortcut exists for rotating a *region* (not just a curve) around an external axis. **Pappus's theorem** says the volume equals the area of the region times the distance traveled by its centroid:
+
+<MathBlock expression={"V = 2\\pi\\, \\bar{r}\\, \\cdot A"} />
+
+where <MathInline expression={"\\bar{r}"} /> is the distance from the centroid of the region to the axis of rotation, and <MathInline expression={"A_{\\text{region}}"} /> is the region's area. The intuition: every point in the region travels in a circle of radius equal to its distance to the axis; the *average* radius is <MathInline expression={"\\bar{r}"} />, so the swept volume is (average circumference) × (area) = <MathInline expression={"2\\pi \\bar{r} \\cdot A"} />.
+
+**Example:** rotate a disk of radius $R$ whose center is at distance $d > R$ from the axis. The centroid of a disk is its center, so <MathInline expression={"\\bar{r} = d"} />, and the area is $\pi R^2$. Pappus gives $V = 2\pi d \cdot \pi R^2 = 2\pi^2 R^2 d$ — the volume of a torus, in one line. Computing the same by washers would require integrating <MathInline expression={"\\pi[(R + d)^2 - \\text{...}]"} /> — messier.
+
+## Three perspectives on solids of revolution
+
+- **Slicing (disk/washer):** cut the solid perpendicular to the axis into circular cross-sections. Volume = integral of cross-sectional area. This is [volume by slicing](/courses/calculus/18-volumes-by-slicing) specialized to circular cross-sections.
+- **Wrapping (shell):** build the solid by stacking concentric cylindrical shells, each unwrapped from a vertical strip. Volume = integral of (circumference × height × thickness).
+- **Sweeping (Pappus):** the region's centroid travels in a circle; the swept volume equals the region's area times the path length of its centroid. This works only for rotation, but when it applies it is breathtakingly fast.
+
+## Modern applications
+
+In **mechanical engineering and manufacturing**, solids of revolution describe turned parts on a lathe, bottles, pipes, and axles. Computing material volume, weight, and cost for rotationally symmetric parts is a routine application of the disk and shell formulas. CAD software computes these volumes by numerically integrating the same formulas.
+
+In **medical imaging**, analyzing blood vessels, aneurysms, and organs with approximate rotational symmetry (like the heart's left ventricle) uses solids-of-revolution models to estimate volume from 2D ultrasound or MRI cross-sections.
+
+In **physics**, the moment of inertia of a rotating body (e.g. a flywheel, a spinning satellite) depends on how its mass is distributed around the axis — and computing that distribution is a shell-method calculation. Pappus's theorem extends to give the surface area of revolution as <MathInline expression={"2\\pi \\bar{r} \\cdot L"} /> where $L$ is the curve length.
+
+In **computer graphics**, surfaces of revolution are a standard modeling primitive (goblets, chess pieces, columns), and rendering them requires computing their volumes and surface areas for shading, collision, and physics simulation.
 
 <KeyInsight>
-Disk method slices perpendicular to the axis; shell method wraps strips around the axis. They give the same volume but one is usually easier than the other. Choose based on which gives the simpler integral.
+Solids of revolution have volume computable two ways: the disk/washer method slices perpendicular to the axis into circular cross-sections (V = π ∫ f² dx, or π ∫(R² − r²) dx for washers), while the shell method wraps parallel strips into cylindrical layers (V = 2π ∫ x · f(x) dx). Both give the same answer — the choice is convenience: pick whichever avoids solving for an inverse function and gives the simpler integrand. When the axis is at x = c, the radius becomes (x − c). Pappus's centroid theorem offers a third route for region-rotations: V = 2πr̄·A, multiplying the region's area by the path length of its centroid. Solids of revolution are the geometric backbone of lathe-made parts, blood-vessel models, flywheel inertia, and surface-of-revolution modeling in graphics.
 </KeyInsight>
+
+## Connections
+
+This lesson specializes [volumes by slicing](/courses/calculus/18-volumes-by-slicing) to the case where cross-sections are circles or rings — produced by rotating a curve or region around an axis. It builds on [area between curves](/courses/calculus/17-area-between-curves) (the region being rotated is often bounded by two curves) and previews [arc length and surface area](/courses/calculus/20-arc-length), where rotating a *curve* (rather than a region) sweeps out a surface whose area is computed by an analogous integral. Pappus's theorem connects to the centroid and moment calculations of physics.
+
+Across disciplines, solids of revolution describe any rotationally symmetric object: turned machine parts, pipes and vessels, anatomical structures, and the curved surfaces of computer graphics. The disk/shell duality — two integrals that must agree — is a microcosm of the more general principle that geometric quantities are independent of how you decompose them.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Find the volume of the solid formed by rotating y = √x from x = 0 to x = 4 around the x-axis."
-  hint="Disk method: V = π∫₀⁴ (√x)² dx = π∫₀⁴ x dx."
-  answer="V = π[x²/2]₀⁴ = π · 8 = 8π."
+  prompt="Find the volume of the solid formed by rotating y = √x from x = 0 to x = 4 around the x-axis. Which method is natural here?"
+  hint="Rotating around the x-axis with y given as a function of x — the disk method is natural: A(x) = π(√x)²."
+  answer="Disk method is natural because we rotate around the x-axis and the function is already y = f(x). V = π ∫₀⁴ (√x)² dx = π ∫₀⁴ x dx = π [x²/2]₀⁴ = π · 8 = 8π. Using the shell method would require solving x = y² and integrating with respect to y from 0 to 2 — doable but more work. The general rule: rotate around the x-axis with y = f(x) → use disks; rotate around the y-axis with y = f(x) → use shells."
 />
 
 <ExerciseBlock number={2}
-  prompt="Find the volume when y = 1/x from x = 1 to x = 3 is rotated around the y-axis. Use the shell method."
-  hint="V = 2π∫₁³ x · (1/x) dx = 2π∫₁³ dx."
-  answer="V = 2π∫₁³ 1 dx = 2π[x]₁³ = 2π(3 − 1) = 4π. The x and 1/x cancel beautifully, making the shell method trivial."
+  prompt="Find the volume when y = 1/x from x = 1 to x = 3 is rotated around the y-axis. Use the shell method and observe the simplification."
+  hint="V = 2π ∫₁³ x · (1/x) dx. What simplifies?"
+  answer="Shell method: V = 2π ∫₁³ x · (1/x) dx = 2π ∫₁³ 1 dx = 2π [x]₁³ = 2π (3 − 1) = 4π. The x and 1/x cancel beautifully, turning a complicated integrand into a constant. This is the payoff of choosing shells: the radius × height combination simplified dramatically. Using disks would require inverting y = 1/x → x = 1/y, integrating from y = 1/3 to y = 1, and carefully handling the two pieces of the region — much more error-prone. The shell method was the right call."
 />
 
 <ExerciseBlock number={3}
-  prompt="A region is bounded by y = x, y = 0, and x = 4. Find its volume when rotated around the line x = 4."
-  hint="The axis of rotation is not x = 0. For the shell method, the radius of each shell is (4 − x), not x."
-  answer="V = 2π∫₀⁴ (4 − x) · x dx = 2π∫₀⁴ (4x − x²) dx = 2π[2x² − x³/3]₀⁴ = 2π[32 − 64/3] = 2π · 32/3 = 64π/3."
+  prompt="A region is bounded by y = x², y = 0, and x = 2. Find its volume when rotated around the line x = 2 (a non-coordinate axis)."
+  hint="The axis is x = 2, so the radius of each shell is (2 − x), not x. Height is x², thickness dx, x ranges from 0 to 2."
+  answer="Shell method with shifted radius: each shell has radius (2 − x), height x², thickness dx. V = 2π ∫₀² (2 − x) · x² dx = 2π ∫₀² (2x² − x³) dx = 2π [2x³/3 − x⁴/4]₀² = 2π (16/3 − 4) = 2π (16/3 − 12/3) = 2π · 4/3 = 8π/3. The key was recognizing that the axis is at x = 2, not x = 0, so the radius is the distance from each strip to x = 2 — namely (2 − x). Forgetting to shift the radius is the most common error in non-axis-centered rotations."
 />
 
-[Next Lesson →](/courses/calculus/20-arc-length)
+<ExerciseBlock number={4}
+  prompt="Rotate the region between y = x and y = x² (on [0, 1]) around the x-axis. Use the washer method."
+  hint="Outer radius R(x) = x (top), inner radius r(x) = x² (bottom). Washers: A(x) = π(x² − x⁴)."
+  answer="On [0, 1], x ≥ x², so the outer radius is R(x) = x and the inner radius is r(x) = x². Washer method: V = π ∫₀¹ [x² − (x²)²] dx = π ∫₀¹ (x² − x⁴) dx = π [x³/3 − x⁵/5]₀¹ = π (1/3 − 1/5) = π · 2/15 = 2π/15. The solid is a 'horn' shape — at each x, the cross-section is a ring with outer radius x and inner radius x². As x → 0 the ring shrinks to a point; at x = 1 the ring has outer radius 1 and inner radius 1 (a circle of zero thickness, since the curves meet there)."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Use Pappus's centroid theorem to find the volume of a torus formed by rotating a disk of radius R around an axis a distance d > R from its center. Verify against the direct washer calculation."
+  hint="The centroid of a disk is its center, so r̄ = d. The area of the disk is πR². Apply Pappus: V = 2π · d · πR²."
+  answer="By Pappus: the region is a disk of radius R, its centroid is at its center (distance d from the axis), and its area is πR². So V = 2π · d · πR² = 2π² R² d. Direct verification by washers: place the axis at the origin and the disk's center at (d, 0). The disk satisfies (x − d)² + y² ≤ R². For a given y, x ranges from d − √(R² − y²) to d + √(R² − y²). Rotating around the y-axis, the outer radius is d + √(R² − y²) and inner radius is d − √(R² − y²) (when this is positive). Washer: V = π ∫_{−R}^R [(d + √(R² − y²))² − (d − √(R² − y²))²] dy = π ∫_{−R}^R 4d√(R² − y²) dy = 4πd · (πR²/2) = 2π²R²d. (The integral ∫_{−R}^R √(R² − y²) dy = πR²/2 is the area of a semicircle.) Both methods give 2π²R²d. Pappus did it in one line."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Rotate y = sin(x) from x = 0 to x = π around the x-axis. Find the volume. Then set up (do not evaluate) the integral for rotating the same region around the y-axis using shells."
+  hint="For the x-axis rotation, use disks: A(x) = π sin²(x). For the y-axis rotation, shells give V = 2π ∫₀^π x · sin(x) dx."
+  answer="Around the x-axis (disks): V = π ∫₀^π sin²(x) dx. Use the half-angle identity sin²(x) = (1 − cos(2x))/2: V = π ∫₀^π (1 − cos(2x))/2 dx = (π/2) [x − sin(2x)/2]₀^π = (π/2)(π − 0) = π²/2. Around the y-axis (shells), the setup is V = 2π ∫₀^π x · sin(x) dx. Integrating by parts (u = x, dv = sin x dx → du = dx, v = −cos x): V = 2π [−x cos x + sin x]₀^π = 2π [−π·(−1) + 0 − (0 + 0)] = 2π². Same region, different axis, different integral, different answer (π²/2 vs 2π²) — because rotating around different axes produces different solids."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Prove that the disk method and shell method give the same volume for a solid of revolution. Specifically, for the region under y = f(x) on [a, b] rotated around the y-axis, show that 2π ∫_a^b x f(x) dx equals the disk-method computation (which requires inverting f)."
+  hint="This is hard to prove in general by direct manipulation. Instead, argue that both are valid applications of volume-by-slicing (V = ∫ A dx), just with different choices of cross-section orientation. Why must they agree?"
+  answer="Both the disk method and the shell method are special cases of volume by slicing (V = ∫ A(x) dx from lesson 18), applied with different choices of how to decompose the solid. The disk method slices perpendicular to the axis of rotation; the shell method decomposes into coaxial cylindrical shells (which can be viewed as slicing in a transformed coordinate system). Since both compute the same geometric quantity — the volume of the same solid — they must give the same answer. This is an instance of the general principle that integrals are independent of the partition or coordinate system used to compute them (the integral is well-defined as a limit of Riemann sums, regardless of how you slice). Concretely: the shell method's dV = 2π x · f(x) dx and the disk method's dV = π R(y)² dy represent the same infinitesimal volume expressed in different coordinates. Changing variables (x ↔ y via inversion) converts one integral into the other — they are linked by an (implicit) substitution. The freedom to choose between disks and shells is thus the same freedom as choosing an integration variable: pick the one that gives the cleaner setup, and the Fundamental Theorem guarantees the answer matches."
+/>
+
+---
+
+**Up next:** [Arc Length and Surface Area](/courses/calculus/20-arc-length)

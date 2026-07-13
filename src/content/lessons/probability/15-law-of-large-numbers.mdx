@@ -12,96 +12,194 @@ duration: 18
 difficulty: "Intermediate"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 import { LLNAnimation } from '../../../components/interactive/probability/LLNAnimation';
 
 Roll a die. The result is random — 1, 4, 6, 2, who knows. Roll it again. And again. After a thousand rolls, compute the average. That average is remarkably close to 3.5. Not because any single roll is predictable, but because the randomness cancels out when you pile enough of it together.
 
 This is the **Law of Large Numbers** (LLN), and it is the reason statistics works. It says: the average of many independent draws converges to the expected value. The individual observations are wild and unpredictable, but their average is calm and precise. The river of randomness eventually settles into a smooth, predictable course.
 
+The LLN comes in two strengths. The **Weak Law** guarantees convergence *in probability* — the chance of a large deviation shrinks to zero, proved in a single line from Chebyshev's inequality. The **Strong Law** guarantees the stronger *almost sure* convergence — with probability 1, the running average settles on the mean and stays there. The distinction between these two notions of convergence is one of the deepest subtleties in probability theory, and it is the gateway to understanding why casinos, insurance companies, and pollsters can all rely on the long-run average.
+
 ## The running average
 
 Let $X_1, X_2, \ldots, X_n$ be independent and identically distributed (i.i.d.) random variables, each with mean $\mu$ and variance $\sigma^2$. Define the **sample mean**:
 
-$$\bar{X}_n = \frac{1}{n}\left(X_1 + X_2 + \cdots + X_n\right)$$
+$<MathInline expression={"\\bar{X}_n = \\frac{1}{n}\\left(X_1 + X_2 + \\cdots + X_n\\right)"} />$
 
 The mean of the sample mean is still $\mu$:
 
-$$E[\bar{X}_n] = \mu$$
+$<MathInline expression={"E[\\bar{X}_n] = \\mu"} />$
 
 But the variance shrinks:
 
-$$\text{Var}(\bar{X}_n) = \frac{\sigma^2}{n}$$
+$<MathInline expression={"\\text{Var}(\\bar{X}_n) = \\frac{\\sigma^2}{n}"} />$
 
-Each new observation adds information and the uncertainty drops. After $n$ draws, the variance of the average is $1/n$ of the original. The "cloud of uncertainty" around the mean shrinks like $1/\sqrt{n}$.
+Each new observation adds information and the uncertainty drops. After $n$ draws, the variance of the average is $1/n$ of the original. The "cloud of uncertainty" around the mean shrinks like <MathInline expression={"1/\\sqrt{n}"} />.
 
 Picture it as a river. Upstream, the water churns and splashes — that is the individual observations. Downstream, the current is smooth and steady — that is the running average. The turbulence is still there in each molecule, but the river as a whole has settled.
 
 ## The Weak Law of Large Numbers
 
-The **Weak Law** says that $\bar{X}_n$ converges to $\mu$ **in probability**:
+The **Weak Law** says that <MathInline expression={"\\bar{X}_n"} /> converges to $\mu$ **in probability**:
 
-$$\text{For any } \epsilon > 0: \quad \lim_{n \to \infty} P\left(|\bar{X}_n - \mu| > \epsilon\right) = 0$$
+$<MathInline expression={"\\text{For any } \\epsilon > 0: \\quad \\lim_{n \\to \\infty} P\\left(|\\bar{X}_n - \\mu| > \\epsilon\\right) = 0"} />$
 
 In plain language: as $n$ grows, the probability that the sample mean is more than $\epsilon$ away from the true mean goes to zero. The sample mean can still be far off, but the chance of that happening becomes vanishingly small.
 
-The proof is a direct application of Chebyshev's inequality from the previous lesson. Apply Chebyshev to $\bar{X}_n$:
+### Theorem: The Weak Law of Large Numbers
 
-$$P\left(|\bar{X}_n - \mu| \geq \epsilon\right) \leq \frac{\text{Var}(\bar{X}_n)}{\epsilon^2} = \frac{\sigma^2}{n\epsilon^2}$$
+Let $X_1, X_2, \ldots$ be i.i.d. random variables with finite mean $\mu$ and finite variance $\sigma^2$. Then for every $\epsilon > 0$:
 
-As $n \to \infty$, the right side goes to 0. That is the entire proof. The Law of Large Numbers is Chebyshev's inequality pointed at the sample mean, whose variance is shrinking as $\sigma^2/n$.
+$$\lim_{n \to \infty} P\!\left(|\bar{X}_n - \mu| > \epsilon\right) = 0$$
 
-## The Strong Law of Large Numbers
+That is, $\bar{X}_n \xrightarrow{P} \mu$ — the sample mean converges *in probability* to the true mean.
 
-The Weak Law says the probability of being far off goes to zero. The **Strong Law** says something stronger: the sample mean actually *settles* on $\mu$, not just with high probability but with certainty:
+*Proof (via Chebyshev).* Apply Chebyshev's inequality ([lesson 14](/courses/probability/14-concentration-inequalities)) to <MathInline expression={"\\bar{X}_n"} />, whose variance is $\sigma^2/n$:
 
-$$P\left(\lim_{n \to \infty} \bar{X}_n = \mu\right) = 1$$
+$$P\!\left(|\bar{X}_n - \mu| \geq \epsilon\right) \leq \frac{\text{Var}(\bar{X}_n)}{\epsilon^2} = \frac{\sigma^2}{n\epsilon^2}$$
 
-This is called **almost sure convergence**. With probability 1, the sequence $\bar{X}_1, \bar{X}_2, \bar{X}_3, \ldots$ converges to $\mu$ as a sequence of numbers. For a given realization (a specific sequence of die rolls, for instance), the running average will eventually get and stay close to $\mu$.
+As $n \to \infty$, the right side goes to 0. That is the entire proof. The Weak Law is Chebyshev's inequality pointed at the sample mean, whose variance is shrinking as $\sigma^2/n$. (The Strong Law relaxes the finite-variance assumption — it holds with only $E|X| < \infty$ — but the proof is far harder.)
 
-The distinction between the Weak and Strong Laws is subtle. The Weak Law says "the probability of a large deviation is small for large $n$." The Strong Law says "with probability 1, the deviations eventually vanish for good." In practice, the Strong Law tells you that the running average chart will settle down and stay down — it will not occasionally jump far away again after having been close.
+*Intuition.* Each observation contributes a noisy $\mu + \text{(zero-mean noise)}$. Averaging $n$ of them keeps the signal $\mu$ but divides the noise by $\sqrt{n}$ (because variances of independent variables add). The signal-to-noise ratio grows without bound.
+
+## Convergence in probability vs almost sure convergence
+
+The Weak Law uses a specific notion of convergence. It is worth slowing down to compare it with the stronger notion used by the Strong Law, because the difference is the source of endless subtlety.
+
+**Convergence in probability** (used by the Weak Law): <MathInline expression={"\\bar{X}_n \\xrightarrow{P} \\mu"} /> means that for any tolerance $\epsilon$, the probability of being further than $\epsilon$ from $\mu$ vanishes. The catch: for any *fixed* large $n$, there is still some small probability of a deviation. Nothing prevents the running average from occasionally jumping far away — it just happens rarely.
+
+**Almost sure convergence** (used by the Strong Law): <MathInline expression={"\\bar{X}_n \\xrightarrow{a.s.} \\mu"} /> means that with probability 1, the entire sequence $\bar{X}_1, \bar{X}_2, \ldots$ converges to $\mu$ as a sequence of real numbers. For a given realization (a specific infinite sequence of die rolls), the running average eventually gets and *stays* close to $\mu$ — it will not jump far away again after having been close.
+
+The relationship is one-way: almost sure convergence implies convergence in probability, but not vice versa. Almost sure is strictly stronger.
+
+### Theorem: The Strong Law of Large Numbers
+
+Let $X_1, X_2, \ldots$ be i.i.d. random variables with $E|X_i| < \infty$ (i.e., the mean $\mu = E[X_i]$ exists). Then:
+
+$$P\!\left(\lim_{n \to \infty} \bar{X}_n = \mu\right) = 1$$
+
+That is, $\bar{X}_n \to \mu$ **almost surely**.
+
+*Intuition.* With probability 1, the realized sequence of running averages converges to $\mu$ and stays there. Not only does the probability of a deviation vanish (Weak Law), but deviations eventually *cease* (Strong Law). The Strong Law does not require finite variance — only that $E|X|$ exists.
+
+*On the proof.* The Strong Law is much harder to prove than the Weak Law. The classical proof (Etemadi, 1981) uses a clever truncation argument: truncate each $X_i$ at $\pm i$, show the truncated sum converges almost surely via a fourth-moment bound (the Borel-Cantelli lemma), and show the truncation error is negligible. The key tool is **Borel-Cantelli**: if the probabilities of a sequence of "bad" events sum to a finite number, then only finitely many of them occur — so eventually the sequence stops misbehaving.
 
 ## Rolling a die — watching the river settle
 
-Consider rolling a fair six-sided die. Each roll is uniformly distributed on $\1, 2, 3, 4, 5, 6\$, with mean $\mu = 3.5$ and variance $\sigma^2 = 35/12 \approx 2.917$.
+Consider rolling a fair six-sided die. Each roll is uniformly distributed on $\{1, 2, 3, 4, 5, 6\}$, with mean $\mu = 3.5$ and variance $\sigma^2 = 35/12 \approx 2.917$.
 
 The first roll gives an average of wherever that single roll landed — 1, or 6, or anything in between. After 10 rolls, the average is typically somewhere between 2.5 and 4.5. After 100 rolls, it is usually between 3.2 and 3.8. After 1000 rolls, it hugs 3.5 like a river hugging its bed.
 
 The individual rolls are still wild. Roll 1000 is just as random as roll 1. But the average is calm, because the upward and downward deviations cancel. Every roll above 3.5 tends to be balanced by a roll below 3.5, and the imbalance shrinks as $n$ grows.
 
-The standard deviation of the running average after $n$ rolls is $\sigma/\sqrt{n} \approx 1.71/\sqrt{n}$. After 100 rolls, that is about 0.17. After 10,000 rolls, it is 0.017. The river narrows at rate $1/\sqrt{n}$.
+The standard deviation of the running average after $n$ rolls is <MathInline expression={"\\sigma/\\sqrt{n} \\approx 1.71/\\sqrt{n}"} />. After 100 rolls, that is about 0.17. After 10,000 rolls, it is 0.017. The river narrows at rate <MathInline expression={"1/\\sqrt{n}"} />.
 
 Hit "Flip 100" a few times and watch the running average settle toward the true mean. The blue band (±σ/√n) narrows as n grows — that is convergence becoming *tighter*, not just closer. Try all three distributions.
 
 <LLNAnimation client:visible />
 
-## Why the LLN is not trivial
+## The gambler's fallacy
 
-The LLN says the average converges to the expected value. It does **not** say that "things even out" in the sense of compensating for early deviations. If your first 10 die rolls are all 6s, the running average starts at 6.0 and slowly drifts down toward 3.5 — but those early 6s are never "canceled" by a string of 1s. They are just diluted by the growing denominator.
+The LLN is the most misunderstood theorem in probability. The classic error is the **gambler's fallacy**: "the average must converge to 3.5, so after a run of sixes, a string of ones is *due* to compensate." This is false. The die has no memory. The next roll is always uniform on $\{1, \ldots, 6\}$, no matter what came before.
 
-This is the difference between "cancellation" and "dilution." The LLN works by dilution. Each new observation adds its own random contribution, but divided by an ever-growing $n$. The early observations keep their influence forever — it just fades as $n$ increases.
+The LLN works by **dilution**, not cancellation. If your first 10 die rolls are all 6s, the running average starts at 6.0 and slowly drifts down toward 3.5 — but those early 6s are never "canceled" by a string of 1s. They are just overwhelmed by the growing denominator. After 10,000 more rolls averaging 3.49, the total average is roughly $(60 + 3.49 \cdot 9990)/10000 \approx 3.49$. The early run of sixes is still there, contributing a full 60 to the numerator — it has just been diluted by thousands of typical rolls.
 
-## The speed of convergence
+This is why casinos always win in the long run: not because the roulette wheel "compensates" for lucky streaks, but because the house edge — say, 2.7% on European roulette — accumulates across millions of spins. A single player can win big on a lucky night, but the casino, averaging over millions of bets per year, sees its average profit converge almost surely to the edge. The Strong Law guarantees it.
 
-How many observations do you need? That depends on the variance and on how precise you want to be. Chebyshev gives a conservative answer:
+<FormulaReadout formulas={[
+  { label: "样本均值 (均值不变，方差缩减)", expression: "\\bar{X}_n = \\tfrac{1}{n}\\sum_{i=1}^n X_i, \\quad E[\\bar{X}_n] = \\mu, \\quad \\text{Var}(\\bar{X}_n) = \\tfrac{\\sigma^2}{n}" },
+  { label: "弱大数定律 (依概率收敛)", expression: "\\forall \\epsilon > 0: \\quad \\lim_{n\\to\\infty} P(|\\bar{X}_n - \\mu| > \\epsilon) = 0" },
+  { label: "Chebyshev 证明", expression: "P(|\\bar{X}_n - \\mu| \\geq \\epsilon) \\leq \\frac{\\sigma^2}{n\\epsilon^2} \\to 0" },
+  { label: "强大数定律 (几乎必然收敛)", expression: "P\\!\\left(\\lim_{n\\to\\infty} \\bar{X}_n = \\mu\\right) = 1" },
+]} />
 
-$$n \geq \frac{\sigma^2}{\epsilon^2 \delta}$$
+## Three perspectives on the Law of Large Numbers
 
-to guarantee $P(|\bar{X}_n - \mu| > \epsilon) < \delta$.
+1. **As the proof that statistics works:** the LLN is the bridge from probability (the model) to statistics (the data). It guarantees that the sample mean — the most basic statistic — faithfully reflects the population mean given enough data. Without it, every estimator, confidence interval, and hypothesis test would be groundless.
+2. **As the cancellation of noise:** each observation is signal ($\mu$) plus zero-mean noise. Averaging preserves the signal (the means add up to $n\mu$, then divide by $n$) while the independent noises partially cancel (their variances add, then divide by $n^2$, giving $\sigma^2/n$). The signal-to-noise ratio grows like $\sqrt{n}$.
+3. **As a special case of concentration:** the Weak Law is Chebyshev applied to $\bar{X}_n$. The Chernoff-Hoeffding bounds of lesson 14 give the Strong Law's rate of convergence as exponential: $P(|\bar{X}_n - \mu| \geq \epsilon) \leq 2e^{-2n\epsilon^2}$ for bounded variables. The LLN is the qualitative statement ("goes to zero"); concentration inequalities give the quantitative rate.
 
-For the die roll with $\sigma^2 \approx 2.917$, to get within $\epsilon = 0.1$ of the true mean with probability at least $1 - \delta = 0.95$:
+## Modern applications
 
-$$n \geq \frac{2.917}{0.01 \times 0.05} = 5834$$
+**Monte Carlo methods.** The LLN powers an enormous family of computational algorithms. To estimate an intractable integral, sample random points and average the integrand — by the LLN, the average converges to the true value. This is how physicists compute properties of quantum systems (Monte Carlo simulation), how financial engineers price complex derivatives, and how AI researchers estimate gradients in reinforcement learning (stochastic gradient descent is a Monte Carlo method). The convergence rate $\sigma/\sqrt{n}$ from the CLT (next lesson) tells you how many samples you need.
 
-About 6000 rolls. In practice, the convergence is much faster because the normal approximation (which we will see in the next lesson) is tighter than Chebyshev. But the Chebyshev guarantee is ironclad — it works for any distribution.
+**Polling and survey sampling.** A political poll asks $n$ randomly selected voters their preference. The sample proportion of supporters converges to the true population proportion by the LLN. The reason a poll of 1000 people can predict an election of 150 million is precisely that the average of 1000 Bernoulli variables concentrates tightly around the true $p$. The margin of error (lesson 19) quantifies the residual uncertainty.
 
-## Key insight
+**Stochastic gradient descent (SGD).** Modern deep learning trains on mini-batches of data rather than the full dataset. Each mini-batch gives a noisy estimate of the true gradient. By the LLN, averaging the gradients over many mini-batches converges to the true gradient, and SGD converges to a minimum. The variance of the gradient estimate scales as $1/\text{batch size}$ — exactly the $\sigma^2/n$ law. This is why machine learning at scale is possible at all.
 
-> The Law of Large Numbers is the bridge between probability and statistics. Probability gives you the model (the distribution, the mean, the variance). The LLN guarantees that the data — averaged over enough observations — will reflect that model faithfully. The individual draws are wild; the average is calm. The proof is one line of Chebyshev.
+**Insurance and casinos.** The entire business model of insurance and gambling rests on the Strong Law. A casino offers games with a slight house edge; each bet is a random variable with positive expected profit for the house. By the Strong Law, the casino's total profit per bet converges almost surely to the edge as the number of bets grows. Individual gamblers face wild swings, but the casino — averaging millions of bets — is essentially deterministic. This is why "the house always wins" is a mathematical theorem, not just a saying.
+
+<KeyInsight>
+The Law of Large Numbers is the bridge between probability and statistics. The Weak Law (convergence in probability) is proven in one line of Chebyshev; the Strong Law (almost sure convergence) guarantees the running average settles on the mean and stays there. Crucially, the LLN works by dilution, not compensation — the gambler's fallacy (the next roll is "due" to compensate) is false because the die has no memory. The early observations are never canceled; they are just overwhelmed by the growing denominator.
+</KeyInsight>
+
+## Connections
+
+This lesson is the direct payoff of [lesson 14](/courses/probability/14-concentration-inequalities): the Weak Law is a single line of Chebyshev, and the Strong Law's proof uses Borel-Cantelli (which rests on the same Markov-inequality foundation). The sample mean's properties — $E[\bar{X}_n] = \mu$ and $\text{Var}(\bar{X}_n) = \sigma^2/n$ — come straight from the linearity of expectation and the variance-of-a-sum rules of [lesson 06](/courses/probability/06-expectation-and-variance), combined with the independence of [lesson 13](/courses/probability/13-independence).
+
+The forward link is to the **Central Limit Theorem** ([lesson 16](/courses/probability/16-central-limit-theorem)). The LLN tells you *that* $\bar{X}_n \to \mu$; the CLT tells you *how* the residual fluctuation $\bar{X}_n - \mu$ is distributed (approximately normal, with width $\sigma/\sqrt{n}$). The LLN is the qualitative statement ("gets close"); the CLT is the quantitative refinement ("here is the exact distribution of the distance"). Together they anchor all of **sampling theory** ([lesson 17](/courses/probability/17-sampling-and-point-estimation)) — the sample mean's consistency (LLN) and its sampling distribution (CLT) are the twin pillars on which point estimation, confidence intervals, and hypothesis testing stand.
+
+Cross-disciplinarily, the LLN is the mathematical justification for **empiricism** itself: the idea that observation converges to truth underpins the scientific method (repeated experiments converge to the true physical constant), Monte Carlo computation (random sampling converges to the true integral), and statistical learning (training error converges to true error). Wherever we trust that "more data means more accuracy," the LLN is the guarantee.
 
 ## Practice
 
-**Exercise 1.** A coin is biased with $P(\text{heads}) = 0.7$. You flip it $n$ times and record the fraction of heads. Use Chebyshev's inequality to find $n$ large enough that the fraction of heads is within 0.05 of 0.7 with probability at least 0.9. (Hint: for a Bernoulli variable, $\sigma^2 = p(1-p)$.)
+<ExerciseBlock
+  number={1}
+  prompt="A coin is biased with P(heads) = 0.7. You flip it n times and record the fraction of heads. Use Chebyshev's inequality to find n large enough that the fraction of heads is within 0.05 of 0.7 with probability at least 0.9. (Hint: for a Bernoulli variable, sigma^2 = p(1-p).)"
+  hint="Chebyshev: P(|X_bar - p| >= 0.05) <= sigma^2/(n * 0.05^2). Set this <= 0.1 (since 1 - 0.9 = 0.1) and solve for n. Use sigma^2 = 0.7*0.3 = 0.21."
+  answer="For Bernoulli(p), Var(X_i) = p(1-p) = 0.7*0.3 = 0.21. So Var(X_bar) = 0.21/n. Chebyshev: P(|X_bar - 0.7| >= 0.05) <= (0.21/n)/(0.05^2) = 0.21/(n*0.0025) = 84/n. We want 84/n <= 0.1, so n >= 840. With 840 flips, Chebyshev guarantees the fraction of heads is within 0.05 of 0.7 with probability at least 0.9. In practice, the true n needed is much smaller — the CLT (next lesson) would give roughly n = (1.645/0.05)^2 * 0.21 approximately 226. Chebyshev is conservative by a factor of about 3.7 because it must hold for all distributions, while the CLT exploits the near-normality of the sample proportion."
+/>
 
-**Exercise 2.** You measure the length of a table 100 times. Each measurement has mean $\mu$ (the true length) and standard deviation 2 cm. Use the Law of Large Numbers to approximate the probability that the average of the 100 measurements is within 0.5 cm of $\mu$. How many measurements would you need to be within 0.1 cm?
+<ExerciseBlock
+  number={2}
+  prompt="You measure the length of a table 100 times. Each measurement has mean mu (the true length) and standard deviation 2 cm. Use Chebyshev to bound the probability that the average of the 100 measurements is more than 0.5 cm from mu. Then use the fact that measurement errors are approximately normal (so the CLT applies well even at n=100) to estimate the actual probability. How large is the gap between the guaranteed bound and the realistic probability?"
+  hint="Chebyshev: Var(X_bar) = sigma^2/n = 4/100 = 0.04. So P(|X_bar - mu| >= 0.5) <= 0.04/0.25 = 0.16. For the CLT: X_bar is approximately N(mu, 0.04), so sigma_X_bar = 0.2. Standardize: z = 0.5/0.2 = 2.5."
+  answer="Chebyshev bound: Var(X_bar) = 4/100 = 0.04. P(|X_bar - mu| >= 0.5) <= 0.04/(0.5^2) = 0.04/0.25 = 0.16. So Chebyshev guarantees the average is within 0.5 cm with probability at least 84%. CLT estimate: X_bar is approximately N(mu, 0.04), standard deviation 0.2 cm. z = 0.5/0.2 = 2.5. P(|Z| >= 2.5) = 2*P(Z >= 2.5) = 2*0.0062 = 0.0124. So the actual probability of being more than 0.5 cm off is about 1.2%, versus Chebyshev's bound of 16%. The gap is a factor of 13. For a normal distribution, Chebyshev is extremely conservative because it must accommodate worst-case heavy-tailed distributions. How many measurements to be within 0.1 cm? Chebyshev: 0.04/n... wait, with n measurements Var(X_bar) = 4/n. P(|X_bar - mu| >= 0.1) <= (4/n)/0.01 = 400/n. Set <= 0.05: n >= 8000. The CLT would give roughly n = (1.96/0.1)^2 * 4 approximately 1537 — a 5x improvement."
+/>
 
-**Exercise 3.** The running average of die rolls after $n$ throws has standard deviation $\sigma/\sqrt{n}$. After how many rolls is the running average guaranteed (by Chebyshev) to be within 0.5 of the true mean 3.5 with probability at least 0.99? What does the Central Limit Theorem (next lesson) suggest the actual probability is at that same $n$ — much higher or much lower?
+<ExerciseBlock
+  number={3}
+  prompt="Explain the difference between convergence in probability (Weak Law) and almost sure convergence (Strong Law) using a concrete picture. Then explain why almost sure convergence implies convergence in probability, but not vice versa. Give an intuitive example of a sequence that converges in probability but NOT almost surely."
+  hint="Convergence in probability: for each epsilon, P(|X_n - mu| > epsilon) -> 0. Almost sure: P(the whole sequence converges to mu) = 1. The difference is the order of quantifiers: probability outside vs inside the limit."
+  answer="Convergence in probability says: for any tolerance epsilon, the probability of a deviation larger than epsilon goes to zero as n grows. But it does not rule out infinitely many deviations — it only says they become rare. Almost sure convergence says: with probability 1, the sequence X_1, X_2, ... converges to mu as a whole sequence of numbers — eventually the deviations stop. The order of quantifiers differs: in probability, P(deviation at step n) -> 0 (probability is outside the limit); almost surely, P(lim of the sequence = mu) = 1 (probability is inside the limit). Almost sure implies in probability because if the sequence converges (a.s.), then for any epsilon the probability of a deviation at step n must go to zero. The converse fails: consider X_n that equals n with probability 1/n and 0 otherwise. Then P(|X_n| > epsilon) = 1/n -> 0, so X_n -> 0 in probability. But sum of P(X_n = n) = sum of 1/n = infinity, so by Borel-Cantelli (second lemma), X_n = n happens infinitely often with probability 1. The sequence keeps jumping to n, so it does NOT converge almost surely. Intuitively: convergence in probability allows infinitely many 'bad' events as long as each individual one is unlikely; almost sure convergence forbids infinitely many bad events. The Strong Law is stronger because it controls the joint behavior of the entire sequence."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="A gambler's fallacy test. A fair coin is flipped 100 times and the first 10 flips are all heads. A gambler says: 'The average must converge to 0.5, so the next 90 flips must contain more tails than heads to compensate — the coin is now due for tails.' Compute the expected number of heads in the remaining 90 flips. Then compute the overall fraction of heads after all 100 flips, and explain why the gambler is wrong."
+  hint="The remaining 90 flips are independent of the first 10. Each has P(heads) = 0.5. The expected number of heads in 90 flips is 45. The first 10 heads are fixed; they do not affect the coin."
+  answer="The remaining 90 flips are independent of the first 10 — the coin has no memory. The expected number of heads in 90 flips is 90 * 0.5 = 45. So after 100 flips, the expected total number of heads is 10 (already happened) + 45 = 55, giving an expected fraction of 55/100 = 0.55. The average does NOT snap back to 0.5; it stays biased toward heads because of the early run. The gambler's error is confusing dilution with compensation. The LLN works by dilution: as n grows, the early 10 heads are divided by a growing denominator. After 10,000 more flips averaging 0.5, the fraction is approximately (10 + 5000)/10010 approximately 0.501 — close to 0.5, but still slightly above due to the early run. The early heads are never 'canceled'; they are just overwhelmed. This is why casinos do not need to 'compensate' lucky gamblers — the house edge accumulates across millions of independent bets, and the Strong Law guarantees the casino's average profit converges to the edge regardless of individual streaks."
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="Stochastic gradient descent. A machine learning model is trained using mini-batches of size 32. Each mini-batch gives a noisy estimate g of the true gradient, where E[g] = the true gradient and Var(g) = sigma^2. The model updates using the average gradient over m mini-batches. How much does averaging m mini-batches reduce the variance of the gradient estimate? If sigma^2 = 1.0, how many mini-batches are needed to reduce the standard deviation of the gradient estimate below 0.05?"
+  hint="Averaging m independent mini-batch gradients: Var(average) = sigma^2/m by the same logic as Var(X_bar) = sigma^2/n. Set sqrt(sigma^2/m) <= 0.05 and solve for m."
+  answer="By the LLN logic (independent, identically distributed mini-batch gradients), the variance of the average of m mini-batch gradients is Var(g_bar) = sigma^2/m. Each doubling of m reduces the variance by half and the standard deviation by a factor of sqrt(2). With sigma^2 = 1.0: we need sqrt(1/m) <= 0.05, so 1/sqrt(m) <= 0.05, sqrt(m) >= 20, m >= 400. So 400 mini-batches (of size 32 each, so 12,800 total examples) are needed to reduce the gradient noise standard deviation below 0.05. This 1/m decay is exactly the LLN at work: more samples, less noise. In practice, SGD does not average many mini-batches before updating — it updates after each mini-batch, accepting high variance per step but compensating with many steps. The tradeoff between batch size, learning rate, and convergence speed is the central tuning problem of deep learning, and it all traces back to the sigma^2/n law."
+/>
+
+<ExerciseBlock
+  number={6}
+  prompt="Monte Carlo integration. You want to estimate the integral I = integral of f(x) from 0 to 1, where f is some complicated function. The Monte Carlo method samples X_1, ..., X_n uniformly on [0, 1] and estimates I_hat = (1/n) sum of f(X_i). Explain why I_hat converges to I by the LLN. If Var(f(X)) = 2, how many samples do you need so that I_hat is within 0.01 of I with probability at least 0.95? (Use the normal approximation from the CLT, not just Chebyshev.)"
+  hint="I = E[f(X)] where X is uniform on [0,1]. So I_hat is a sample mean of i.i.d. random variables f(X_i) with mean I and variance 2. By the LLN, I_hat -> I. For the sample size: by the CLT, (I_hat - I)/sqrt(2/n) is approximately N(0,1). Want P(|I_hat - I| <= 0.01) >= 0.95, so sqrt(2/n)*1.96 <= 0.01."
+  answer="The integral I = integral_0^1 f(x) dx equals E[f(X)] where X is uniform on [0,1] (this is the definition of expectation for a uniform variable). So I_hat = (1/n) sum f(X_i) is the sample mean of i.i.d. random variables f(X_i), each with mean I and variance Var(f(X)) = 2. By the LLN, I_hat converges to I almost surely. For the sample size: by the CLT, (I_hat - I)/sqrt(2/n) is approximately standard normal. We want P(|I_hat - I| <= 0.01) >= 0.95, i.e., P(|Z| <= 0.01*sqrt(n/2)) >= 0.95, so 0.01*sqrt(n/2) >= 1.96, sqrt(n/2) >= 196, n/2 >= 38416, n >= 76832. About 77,000 samples. Notice the scaling: to halve the error (from 0.02 to 0.01), you need 4x as many samples (variance scales as 1/n, so standard deviation as 1/sqrt(n)). This 1/sqrt(n) convergence is the fundamental limit of Monte Carlo — and remarkably, it is dimension-independent. A 100-dimensional integral converges at the same 1/sqrt(n) rate as a 1-dimensional one, which is why Monte Carlo dominates numerical integration in high dimensions."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="Prove the Weak Law of Large Numbers in the case where the Xi have finite fourth moment (a stronger assumption than needed, but it gives an elementary proof). Use Markov's inequality on (X_bar - mu)^4 and the fact that E[(X_bar - mu)^4] = O(1/n^2) for centered i.i.d. variables with finite fourth moment. Show this gives a bound that goes to zero, and explain why the fourth-moment bound gives 1/n^2 decay (faster than the 1/n from Chebyshev)."
+  hint="Expand (sum of (X_i - mu))^4. Cross-terms with odd powers vanish by symmetry (mean zero). The surviving terms involve E[(X_i - mu)^4] (n terms) and E[(X_i - mu)^2]^2 (about n^2 terms from choosing pairs). The n^2 term dominates, giving E[(X_bar - mu)^4] approximately (3*sigma^4)/n after careful counting."
+  answer="Let Y_i = X_i - mu, so E[Y_i] = 0, E[Y_i^2] = sigma^2, E[Y_i^4] = mu_4 (finite fourth moment). Then X_bar - mu = (1/n) sum Y_i. Expand (sum Y_i)^4 = sum over i,j,k,l of Y_i Y_j Y_k Y_l. Take expectation. Since the Y_i are independent and mean zero, E[Y_i Y_j Y_k Y_l] is nonzero only when each index appears at least twice (otherwise the odd power gives E[Y_i] = 0). The surviving terms: (a) all four indices equal: n terms of E[Y_i^4] = mu_4. (b) Two pairs of equal indices (i=j, k=l with i != k, and permutations): about 3n^2 terms of E[Y_i^2]E[Y_k^2] = sigma^4 (the factor 3 comes from the three ways to pair four items). So E[(sum Y_i)^4] = n*mu_4 + 3n(n-1)*sigma^4 = O(n^2) since the second term dominates. Then E[(X_bar - mu)^4] = E[(sum Y_i)^4]/n^4 = O(n^2)/n^4 = O(1/n^2). Specifically, E[(X_bar - mu)^4] approximately 3*sigma^4/n for large n. By Markov's inequality on (X_bar - mu)^4: P(|X_bar - mu| >= epsilon) = P((X_bar - mu)^4 >= epsilon^4) <= E[(X_bar - mu)^4]/epsilon^4 = O(1/(n^2*epsilon^4)). This goes to zero faster (as 1/n^2) than the 1/n rate from Chebyshev (which uses only the second moment). The reason: using the fourth moment gives more information about the tails, so Markov's inequality on the fourth power is much tighter. The Borel-Cantelli lemma then converts this into almost sure convergence: since sum of P(|X_bar - mu| >= epsilon) < infinity (because the terms decay like 1/n^2), only finitely many large deviations occur, so X_bar -> mu almost surely. This is essentially the proof strategy for the Strong Law under the finite-fourth-moment assumption."
+/>
+
+---
+
+**Up next:** [The central limit theorem →](/courses/probability/16-central-limit-theorem)

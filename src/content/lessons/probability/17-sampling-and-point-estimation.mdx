@@ -12,9 +12,19 @@ duration: 18
 difficulty: "Intermediate"
 ---
 
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+import { KeyInsight } from '../../../components/learning/KeyInsight';
+
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
 Imagine a vast lake — that is your **population**. You cannot drain the lake to count every fish. Instead, you dip in a bucket and pull out a handful — that is your **sample**. From the properties of that handful, you try to infer the properties of the entire lake.
 
-This is the fundamental act of statistics: reasoning from the part to the whole. Probability theory gives you the rules for how samples behave. Statistics turns those rules around and asks: given what I see in the sample, what can I say about the population? This lesson is about the simplest kind of answer — a single number, a **point estimate**.
+This is the fundamental act of statistics: reasoning from the part to the whole. Probability theory gives you the rules for how samples behave. Statistics turns those rules around and asks: given what I see in the sample, what can I say about the population? This lesson is about the simplest kind of answer — a single number, a **point estimate** — and the two questions you must always ask of any estimator: is it *unbiased* (does it point at the right place on average), and is it *consistent* (does it stop wandering as you collect more data)?
+
+We will also meet two systematic methods for *constructing* estimators: the **method of moments** (match the sample moments to the theoretical moments) and the framework that sets up maximum likelihood estimation in the next lesson. Along the way, we develop the **bias-variance tradeoff** — the central tension that governs every estimation problem in statistics and machine learning.
 
 ## Population, sample, statistic
 
@@ -24,65 +34,187 @@ A **sample** is a subset of the population: $X_1, X_2, \ldots, X_n$. Each $X_i$ 
 
 A **statistic** is any function of the sample. It is a number you compute from your data. The most important examples:
 
-- **Sample mean**: $\bar{X} = \frac{1}{n}\sum_{i=1}^{n} X_i$
-- **Sample variance**: $S^2 = \frac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X})^2$
+- **Sample mean**: <MathInline expression={"\\bar{X} = \\frac{1}{n}\\sum_{i=1}^{n} X_i"} />
+- **Sample variance**: <MathInline expression={"S^2 = \\frac{1}{n-1}\\sum_{i=1}^{n}(X_i - \\bar{X})^2"} />
 
-A statistic is itself a random variable, because it depends on the random sample. If you drew a different sample, you would get a different value. The distribution of a statistic across all possible samples is called its **sampling distribution**.
+A statistic is itself a random variable, because it depends on the random sample. If you drew a different sample, you would get a different value. The distribution of a statistic across all possible samples is called its **sampling distribution** — and by the Central Limit Theorem ([lesson 16](/courses/probability/16-central-limit-theorem)), the sampling distribution of $\bar{X}$ is approximately normal for large $n$.
 
 ## Estimators and parameters
 
-An **estimator** is a statistic used to guess a population parameter. We use the notation $\hat{\theta}$ (read "theta hat") for an estimator of the parameter $\theta$.
+An **estimator** is a statistic used to guess a population parameter. We use the notation <MathInline expression={"\\hat{\\theta}"} /> (read "theta hat") for an estimator of the parameter $\theta$.
 
 Think of the parameter as a fixed point on a map — it is there, unchanging, whether you look or not. The estimator is your finger, pointing at the map. Each time you draw a new sample, your finger lands in a slightly different spot. The question is: does your finger, on average, point at the right place? And how far does it typically wander?
 
-## Bias
+## Unbiasedness
 
 The **bias** of an estimator measures whether it systematically misses the target:
 
-$$\text{Bias}(\hat{\theta}) = E[\hat{\theta}] - \theta$$
+$<MathInline expression={"\\text{Bias}(\\hat{\\theta}) = E[\\hat{\\theta}] - \\theta"} />$
 
-An estimator is **unbiased** if $E[\hat{\theta}] = \theta$. Geometrically: if you took infinitely many samples and averaged all the estimates, you would land exactly on the true parameter. Your finger points at the right spot on average.
+An estimator is **unbiased** if <MathInline expression={"E[\\hat{\\theta}] = \\theta"} />. Geometrically: if you took infinitely many samples and averaged all the estimates, you would land exactly on the true parameter. Your finger points at the right spot on average.
 
 A biased estimator systematically overshoots or undershoots. It is like a scale that always reads half a kilogram too heavy — precise, perhaps, but not accurate.
 
-**The sample mean is unbiased for $\mu$.** By linearity of expectation:
+### Theorem: The sample mean is unbiased for mu
+
+For i.i.d. $X_1, \ldots, X_n$ with $E[X_i] = \mu$, the sample mean $\bar{X} = \frac{1}{n}\sum X_i$ satisfies $E[\bar{X}] = \mu$.
+
+*Proof.* By linearity of expectation ([lesson 06](/courses/probability/06-expectation-and-variance)):
 
 $$E[\bar{X}] = E\!\left[\frac{1}{n}\sum_{i=1}^{n} X_i\right] = \frac{1}{n}\sum_{i=1}^{n} E[X_i] = \frac{1}{n} \cdot n\mu = \mu$$
 
-No matter the sample size, no matter the shape of the population distribution, the sample mean points at the true mean on average.
+No matter the sample size, no matter the shape of the population distribution, the sample mean points at the true mean on average. Linearity of expectation is the hero — it does not even require independence.
 
 ## The n-1 denominator
 
 The sample variance uses $n - 1$ in the denominator, not $n$. This is not a typo. It is a correction that makes $S^2$ unbiased for $\sigma^2$.
 
-Here is the geometric intuition. Each term $(X_i - \bar{X})^2$ measures the squared distance from $X_i$ to the sample mean $\bar{X}$, not to the population mean $\mu$. But $\bar{X}$ is itself computed from the sample — it tends to sit closer to the data points than $\mu$ does. The deviations from $\bar{X}$ are systematically smaller than the deviations from $\mu$.
+Here is the geometric intuition. Each term <MathInline expression={"(X_i - \\bar{X})^2"} /> measures the squared distance from $X_i$ to the sample mean <MathInline expression={"\\bar{X}"} />, not to the population mean $\mu$. But <MathInline expression={"\\bar{X}"} /> is itself computed from the sample — it tends to sit closer to the data points than $\mu$ does. The deviations from <MathInline expression={"\\bar{X}"} /> are systematically smaller than the deviations from $\mu$.
 
-Imagine three data points on a line. Their sample mean sits at the center of those three points. The true population mean might be somewhere else entirely. The three distances to $\bar{X}$ are always a bit shorter than the three distances to $\mu$, because $\bar{X}$ chases the data.
+Imagine three data points on a line. Their sample mean sits at the center of those three points. The true population mean might be somewhere else entirely. The three distances to <MathInline expression={"\\bar{X}"} /> are always a bit shorter than the three distances to $\mu$, because <MathInline expression={"\\bar{X}"} /> chases the data.
 
 The total amount by which those squared deviations shrink is exactly one degree of freedom. Dividing by $n - 1$ instead of $n$ inflates the average just enough to compensate for that shrinkage. The result:
 
-$$E[S^2] = \sigma^2$$
+### Theorem: The sample variance is unbiased for sigma^2
 
-The sample variance, with the $n - 1$ correction, points at the true variance on average.
+For i.i.d. $X_1, \ldots, X_n$ with $E[X_i] = \mu$ and $\text{Var}(X_i) = \sigma^2$, the sample variance <MathInline expression={"S^2 = \\frac{1}{n-1}\\sum_{i=1}^n (X_i - \\bar{X})^2"} /> satisfies $E[S^2] = \sigma^2$.
+
+*Proof (sketch).* Expand <MathInline expression={"\\sum(X_i - \\bar{X})^2 = \\sum X_i^2 - n\\bar{X}^2"} />. Take expectations: $E[\sum X_i^2] = n(\sigma^2 + \mu^2)$ and $E[\bar{X}^2] = \text{Var}(\bar{X}) + (E[\bar{X}])^2 = \sigma^2/n + \mu^2$. So $E[\sum(X_i-\bar{X})^2] = n(\sigma^2+\mu^2) - n(\sigma^2/n + \mu^2) = n\sigma^2 - \sigma^2 = (n-1)\sigma^2$. Dividing by $n-1$ gives $E[S^2] = \sigma^2$.
 
 ## Consistency
 
 An estimator is **consistent** if it converges to the true parameter as the sample size grows:
 
-$$\hat{\theta}_n \to \theta \quad \text{as } n \to \infty$$
+$<MathInline expression={"\\hat{\\theta}_n \\xrightarrow{P} \\theta \\quad \\text{as } n \\to \\infty"} />$
 
 Picture the sampling distribution as a bell curve centered on the estimator's expected value. As $n$ grows, two things happen: the center slides toward $\theta$ (bias shrinks) and the bell narrows (variance shrinks). A consistent estimator is one whose bell collapses onto the true value — your finger stops wandering and settles on the target.
 
-The sample mean $\bar{X}$ is consistent for $\mu$ by the Law of Large Numbers. As you pour more data into the average, it locks onto the true mean.
+The sample mean <MathInline expression={"\\bar{X}"} /> is consistent for $\mu$ by the **Law of Large Numbers** ([lesson 15](/courses/probability/15-law-of-large-numbers)). As you pour more data into the average, it locks onto the true mean. The sample variance $S^2$ is consistent for $\sigma^2$ by the same logic.
 
-## Key insight
+Note the difference between unbiasedness and consistency. An estimator can be unbiased but not consistent (if its variance does not shrink with $n$), or biased but consistent (if the bias shrinks to zero as $n$ grows). Consistency is usually the more important property — you want the estimator to eventually be right, even if it is slightly off for small samples.
 
-> An estimator is a finger pointing at a hidden target. Bias tells you whether the finger, on average, points at the right place. Consistency tells you whether the finger stops wandering as you collect more data. The sample mean is the cleanest example: unbiased for $\mu$, consistent, and its variance shrinks as $1/n$ — each doubling of sample size tightens the bell by a factor of $\sqrt{2}$.
+## Method of moments
+
+How do you *construct* an estimator in the first place? One of the oldest and most intuitive methods is the **method of moments**. The idea is beautifully simple: equate the sample moments to the theoretical moments, and solve for the parameters.
+
+The $k$-th **sample moment** is <MathInline expression={"\\hat{\\mu}_k = \\frac{1}{n}\\sum_{i=1}^n X_i^k"} />, which by the LLN converges to the $k$-th **theoretical moment** <MathInline expression={"\\mu_k = E[X^k]"} />. If your distribution has $m$ unknown parameters $\theta_1, \ldots, \theta_m$, write down the first $m$ theoretical moments as functions of the parameters, set them equal to the corresponding sample moments, and solve the resulting system.
+
+### Theorem: Method of moments estimator is consistent
+
+Under mild regularity conditions, the method of moments estimator <MathInline expression={"\\hat{\\theta}^{\\text{MM}}_n"} /> converges in probability to the true parameter $\theta$ as $n \to \infty$.
+
+*Intuition.* The sample moments converge to the theoretical moments by the LLN. If the map from parameters to moments is continuous and invertible (a "regularity condition"), then the inverse map sends the convergent sample moments to a convergent estimator of the parameters.
+
+### Example: method of moments for the uniform distribution
+
+Suppose $X_1, \ldots, X_n$ are i.i.d. uniform on $[a, b]$, with $a$ and $b$ unknown. The first theoretical moment is $E[X] = (a+b)/2$ and the second is $E[X^2] = (b-a)^2/12 + ((a+b)/2)^2 = (a^2 + ab + b^2)/3$. Set these equal to the sample moments:
+
+$$\frac{\hat{\mu}_1}{\hat{\mu}_2} = \frac{a+b}{2}, \quad \hat{\mu}_2 = \frac{a^2 + ab + b^2}{3}$$
+
+Solving (using $\text{Var}(X) = (b-a)^2/12 = \hat{\mu}_2 - \hat{\mu}_1^2$):
+
+$$\hat{a} = \hat{\mu}_1 - \sqrt{3(\hat{\mu}_2 - \hat{\mu}_1^2)}, \quad \hat{b} = \hat{\mu}_1 + \sqrt{3(\hat{\mu}_2 - \hat{\mu}_1^2)}$$
+
+Equivalently, <MathInline expression={"\\hat{a} = \\bar{X} - \\sqrt{3}\\,S_n"} /> and <MathInline expression={"\\hat{b} = \\bar{X} + \\sqrt{3}\\,S_n"} /> where <MathInline expression={"S_n^2 = \\frac{1}{n}\\sum(X_i - \\bar{X})^2"} /> is the (biased) sample variance. The method of moments gives a clean, closed-form estimator from two sample quantities you already know how to compute.
+
+## The bias-variance tradeoff
+
+Every estimator faces a fundamental tension. You want it to be close to the true parameter. The distance between <MathInline expression={"\\hat{\\theta}"} /> and $\theta$ decomposes into two pieces — **bias** (how far the *center* of the sampling distribution is from $\theta$) and **variance** (how much the estimator spreads around its own center). This is the **bias-variance decomposition**:
+
+$<MathInline expression={"E\\!\\left[(\\hat{\\theta} - \\theta)^2\\right] = \\underbrace{\\text{Bias}(\\hat{\\theta})^2}_{\\text{systematic error}} + \\underbrace{\\text{Var}(\\hat{\\theta})}_{\\text{random error}}"} />$
+
+The left side is the **mean squared error** (MSE) — the average squared distance from the estimator to the truth. The decomposition says: total error = squared bias + variance.
+
+*Proof.* Write <MathInline expression={"\\hat{\\theta} - \\theta = (\\hat{\\theta} - E[\\hat{\\theta}]) + (E[\\hat{\\theta}] - \\theta)"} />. The first term has mean zero and variance $\text{Var}(\hat{\theta})$; the second term is the bias (a constant). When you expand the square, the cross-term vanishes (because the first term has mean zero), leaving $E[(\hat{\theta}-\theta)^2] = \text{Var}(\hat{\theta}) + \text{Bias}(\hat{\theta})^2$.
+
+The tradeoff: sometimes you can *reduce* variance by *introducing* a little bias. Shrinkage estimators (like the James-Stein estimator) deliberately bias the estimate toward zero to dramatically reduce variance, achieving lower total MSE than the unbiased sample mean. This is the same phenomenon that powers **regularization** in machine learning — ridge regression and LASSO add bias (penalizing large coefficients) to reduce variance (preventing overfitting). The result is a model that is slightly wrong on average but much more stable across datasets.
+
+<FormulaReadout formulas={[
+  { label: "样本均值与样本方差", expression: "\\bar{X} = \\tfrac{1}{n}\\sum X_i, \\quad S^2 = \\tfrac{1}{n-1}\\sum(X_i - \\bar{X})^2" },
+  { label: "无偏性", expression: "E[\\hat{\\theta}] = \\theta \\;\\Longleftrightarrow\\; \\text{Bias}(\\hat{\\theta}) = 0" },
+  { label: "一致性 (依概率收敛)", expression: "\\hat{\\theta}_n \\xrightarrow{P} \\theta \\text{ as } n \\to \\infty" },
+  { label: "偏差-方差分解 (均方误差)", expression: "E[(\\hat{\\theta}-\\theta)^2] = \\text{Bias}(\\hat{\\theta})^2 + \\text{Var}(\\hat{\\theta})" },
+]} />
+
+## Three perspectives on point estimation
+
+1. **As a finger pointing at a target:** the parameter is fixed; the estimator is random. Bias tells you whether the finger points at the right place on average. Variance tells you how much the finger shakes. Consistency tells you whether the shaking calms down as you collect more data. This geometric picture unifies all the evaluation criteria.
+2. **As a recipe (construction methods):** the method of moments matches sample moments to theoretical moments — simple, consistent, but sometimes inefficient. Maximum likelihood (next lesson) picks the parameter that makes the data most probable — efficient but requires specifying the full distribution. Both are principled ways to turn "I want to estimate theta" into a concrete formula.
+3. **As a tradeoff (bias vs variance):** the MSE decomposition reveals that total error is a sum of two competing quantities. Reducing bias often increases variance and vice versa. The art of estimation — and of machine learning — is navigating this tradeoff: how much bias are you willing to accept in exchange for lower variance?
+
+## Modern applications
+
+**Opinion polling.** A poll estimates the fraction of voters supporting a candidate using the sample proportion $\hat{p} = (\text{number supporting})/n$. This is an unbiased and consistent estimator of the true $p$ (by the LLN). The "margin of error" reported in polls is derived from the variance $\sqrt{p(1-p)/n}$ via the CLT. Every political poll, market survey, and A/B test is a point estimation problem in disguise.
+
+**Regularization in machine learning.** Ridge regression adds an $L^2$ penalty $\lambda\|\beta\|^2$ to the least-squares objective. This shrinks the coefficients toward zero, introducing bias but dramatically reducing variance — especially when features are correlated (multicollinearity). The bias-variance tradeoff is the mathematical heart of all regularization: you accept a small systematic error to gain much larger reductions in random error, lowering the total MSE. LASSO, elastic net, and dropout in neural networks all play the same game.
+
+**James-Stein estimator.** In a surprising result, when estimating three or more means simultaneously, the sample mean is *inadmissible* — there exists an estimator with strictly lower MSE. The James-Stein estimator shrinks each estimate toward a common point (the grand mean), trading bias for variance. This shattered the intuition that unbiasedness is always desirable and launched the modern theory of shrinkage estimation and empirical Bayes methods.
+
+**Sample size determination.** The variance $\sigma^2/n$ tells you exactly how much data you need for a desired precision. To halve the standard error, quadruple the sample size. This is the calculation behind every clinical trial (how many patients to enroll), every engineering tolerance study (how many parts to measure), and every power analysis (how many subjects for a detectable effect). Point estimation is not just about the formula — it is about knowing how much data that formula needs.
+
+<KeyInsight>
+An estimator is a finger pointing at a hidden target. Unbiasedness means the finger points at the right place on average (E[theta-hat] = theta); consistency means the finger stops wandering as data accumulates (theta-hat -> theta). The mean squared error decomposes as bias-squared plus variance — the bias-variance tradeoff — which is why regularization in machine learning deliberately introduces bias to reduce variance. The method of moments and maximum likelihood (next lesson) are two principled recipes for constructing estimators with these properties.
+</KeyInsight>
+
+## Connections
+
+This lesson is built directly on [lesson 06](/courses/probability/06-expectation-and-variance): the sample mean's unbiasedness is linearity of expectation, and the $n-1$ correction comes from the variance-of-a-sum algebra. The **Law of Large Numbers** ([lesson 15](/courses/probability/15-law-of-large-numbers)) provides consistency — it is the theorem that says $\bar{X} \to \mu$. The **Central Limit Theorem** ([lesson 16](/courses/probability/16-central-limit-theorem)) provides the sampling distribution — the bell curve that the estimator's values form across repeated samples, with width $\sigma/\sqrt{n}$.
+
+The forward link is to **maximum likelihood estimation** ([lesson 18](/courses/probability/18-maximum-likelihood-estimation)), the second great construction method for estimators. Where the method of moments matches moments, MLE matches the likelihood function — and it achieves the Cramér-Rao lower bound asymptotically, making it the most *efficient* estimator under regularity conditions. The bias-variance tradeoff introduced here then reappears everywhere: in **confidence intervals** ([lesson 19](/courses/probability/19-confidence-intervals)) (which quantify the variance), in **hypothesis testing** ([lesson 20](/courses/probability/20-hypothesis-testing)) (which balances the two types of error), and in the design of every machine learning model.
+
+Cross-disciplinarily, point estimation is the bridge from probability (the forward model: given parameters, what is the distribution of the data?) to statistics (the inverse problem: given data, what are the parameters?). This inversion — inferring hidden causes from observed effects — is the structure of every empirical science, every sensor system, and every signal processing pipeline. The Kalman filter, particle filters, and Bayesian inference all generalize the point estimation framework to dynamic and uncertain settings.
 
 ## Practice
 
-1. You measure the heights of 5 students and get: 170, 175, 168, 182, 173 cm. Compute the sample mean $\bar{x}$ and the sample variance $s^2$ (using the $n - 1$ denominator). Now compute the "variance" using $n$ in the denominator instead. Which is larger? Why does the $n - 1$ correction push the estimate upward?
+<ExerciseBlock
+  number={1}
+  prompt="You measure the heights of 5 students and get: 170, 175, 168, 182, 173 cm. Compute the sample mean x_bar and the sample variance s^2 (using the n-1 denominator). Now compute the 'variance' using n in the denominator instead. Which is larger? Why does the n-1 correction push the estimate upward?"
+  hint="x_bar = (170+175+168+182+173)/5 = 868/5 = 173.6. For each value, compute (x_i - 173.6)^2, sum them, then divide by n-1 = 4 and by n = 5."
+  answer="x_bar = 868/5 = 173.6 cm. Deviations from the mean: 170-173.6 = -3.6, 175-173.6 = 1.4, 168-173.6 = -5.6, 182-173.6 = 8.4, 173-173.6 = -0.6. Squared deviations: 12.96, 1.96, 31.36, 70.56, 0.36. Sum = 117.2. Sample variance (n-1): s^2 = 117.2/4 = 29.3. 'Variance' with n: 117.2/5 = 23.44. The n-1 version (29.3) is larger than the n version (23.44) by a factor of 5/4 = 1.25. The n-1 correction pushes the estimate upward because the sum of squared deviations from the sample mean is always an underestimate of the sum of squared deviations from the true population mean — the sample mean 'chases' the data, sitting closer to the observations than the true mean does. Dividing by the smaller number n-1 compensates for this underestimation. Mathematically: E[sum(X_i - X_bar)^2] = (n-1)*sigma^2, not n*sigma^2, so dividing by n-1 makes the estimator unbiased."
+/>
 
-2. An estimator $\hat{\theta}$ has $E[\hat{\theta}] = \theta + 3$ and $\text{Var}(\hat{\theta}) = 10/n$. What is the bias? Is the estimator consistent? (Hint: does the estimator converge to $\theta$ or to $\theta + 3$ as $n \to \infty$?) What would you do to fix this estimator?
+<ExerciseBlock
+  number={2}
+  prompt="An estimator theta-hat has E[theta-hat] = theta + 3 and Var(theta-hat) = 10/n. What is the bias? Is the estimator consistent? (Hint: does the estimator converge to theta or to theta + 3 as n -> infinity?) What would you do to fix this estimator?"
+  hint="Bias = E[theta-hat] - theta = 3. The variance goes to zero as n grows, but the mean stays at theta + 3. So the estimator converges to theta + 3, not theta."
+  answer="Bias = E[theta-hat] - theta = (theta + 3) - theta = 3. The estimator is NOT consistent: as n -> infinity, Var(theta-hat) -> 0, so theta-hat converges to its mean theta + 3, which is NOT theta. The estimator locks onto the wrong value. This is the classic case of an estimator with low variance but high bias — it is 'precisely wrong.' To fix it: subtract the bias. The corrected estimator theta-hat_corrected = theta-hat - 3 has E[theta-hat_corrected] = (theta + 3) - 3 = theta (now unbiased), and Var(theta-hat_corrected) = Var(theta-hat) = 10/n -> 0 (consistent). So theta-hat_corrected is both unbiased and consistent. The bias-variance decomposition of the original estimator: MSE = Bias^2 + Var = 9 + 10/n. As n -> infinity, MSE -> 9 (the irreducible bias-squared). The corrected estimator has MSE = 0 + 10/n -> 0. This shows why consistency is usually more important than unbiasedness for small samples — but if you can remove a fixed bias easily (as here, by subtracting 3), you always should."
+/>
 
-3. You flip a fair coin 100 times and observe 55 heads. The sample proportion $\hat{p} = 0.55$ is an estimator of the true probability $p = 0.5$. Is $\hat{p}$ unbiased? Is it consistent? Describe what happens to the sampling distribution of $\hat{p}$ as $n$ increases from 100 to 1000 to 10000.
+<ExerciseBlock
+  number={3}
+  prompt="You flip a fair coin 100 times and observe 55 heads. The sample proportion p-hat = 0.55 is an estimator of the true probability p = 0.5. Is p-hat unbiased? Is it consistent? Describe what happens to the sampling distribution of p-hat as n increases from 100 to 1000 to 10000."
+  hint="For Bernoulli(p), the sample proportion p-hat = (number of heads)/n. E[p-hat] = p, Var(p-hat) = p(1-p)/n. By the LLN, p-hat -> p."
+  answer="Unbiased: E[p-hat] = E[(1/n)*sum X_i] = (1/n)*n*p = p. So E[p-hat] = 0.5 = p. Yes, unbiased. Consistent: Var(p-hat) = p(1-p)/n = 0.25/n -> 0 as n -> infinity, and the estimator is unbiased, so by Chebyshev p-hat -> p in probability. Yes, consistent. The sampling distribution (by the CLT, approximately normal for large n): at n = 100, p-hat is approximately N(0.5, 0.25/100) = N(0.5, 0.0025), standard deviation sqrt(0.0025) = 0.05. So p-hat typically falls in [0.4, 0.6]. At n = 1000, standard deviation sqrt(0.25/1000) = 0.0158, so p-hat typically falls in [0.468, 0.532]. At n = 10000, standard deviation sqrt(0.25/10000) = 0.005, so p-hat typically falls in [0.49, 0.51]. The bell narrows by a factor of sqrt(10) each time n increases tenfold. The center stays at 0.5 (unbiased), and the width shrinks as 1/sqrt(n) (consistent). This is the LLN and CLT working together: the estimator converges to the truth, and the residual uncertainty follows a predictable, shrinking bell curve."
+/>
+
+<ExerciseBlock
+  number={4}
+  prompt="Method of moments for the exponential distribution. Suppose X_1, ..., X_n are i.i.d. exponential with rate lambda (density f(x) = lambda*e^(-lambda*x) for x > 0). The theoretical mean is E[X] = 1/lambda. Use the method of moments to estimate lambda. Then verify: is the estimator unbiased? Is it consistent?"
+  hint="Set the first sample moment (x_bar) equal to the first theoretical moment (1/lambda). Solve for lambda. To check unbiasedness, you need E[1/x_bar] — note that 1/x_bar is generally NOT equal to 1/E[x_bar] (Jensen's inequality)."
+  answer="Method of moments: set the first sample moment equal to the first theoretical moment. x_bar = 1/lambda, so lambda-hat_MM = 1/x_bar = n/sum(X_i). This is the reciprocal of the sample mean. Consistency: by the LLN, x_bar -> E[X] = 1/lambda, so lambda-hat_MM = 1/x_bar -> 1/(1/lambda) = lambda (using continuity of the function 1/x). So the estimator is consistent. Unbiasedness: this is subtle. The function g(x) = 1/x is convex (second derivative 2/x^3 > 0), so by Jensen's inequality, E[1/x_bar] > 1/E[x_bar] = lambda. The estimator is BIASED UPWARD. In fact, for the exponential, 1/x_bar follows an inverse-gamma distribution, and E[1/x_bar] = lambda*n/(n-1) for n > 1. So the bias is lambda/(n-1), which shrinks to 0 as n grows — the estimator is asymptotically unbiased but not exactly unbiased for finite n. This illustrates a general phenomenon: nonlinear transformations of unbiased estimators (like taking a reciprocal) introduce bias. The method of moments gives consistent estimators but does not guarantee unbiasedness. (The MLE for lambda is also 1/x_bar — see the next lesson — so this bias applies to the MLE as well.)"
+/>
+
+<ExerciseBlock
+  number={5}
+  prompt="The bias-variance tradeoff in ridge regression. A standard linear regression has coefficients beta estimated by least squares (unbiased). Ridge regression adds a penalty lambda*||beta||^2, shrinking the coefficients toward zero. Explain why this introduces bias but reduces variance. If the least-squares estimator has bias 0 and variance V, and ridge with penalty lambda gives bias B(lambda) and variance V(lambda) < V, under what condition does ridge have LOWER total mean squared error?"
+  hint="Use the MSE decomposition: MSE = bias^2 + variance. Least squares: MSE_LS = 0 + V. Ridge: MSE_ridge = B(lambda)^2 + V(lambda). Ridge wins when B(lambda)^2 + V(lambda) < V, i.e., when the reduction in variance exceeds the squared bias introduced."
+  answer="Least squares: MSE_LS = Bias^2 + Var = 0 + V = V. Ridge: MSE_ridge = B(lambda)^2 + V(lambda). Ridge has lower MSE when B(lambda)^2 + V(lambda) < V, i.e., when V - V(lambda) > B(lambda)^2 — when the variance reduction exceeds the squared bias. Why ridge reduces variance: the penalty term lambda*||beta||^2 constrains the coefficients to a smaller region, making the estimator less sensitive to the specific sample drawn. A small change in the data produces a smaller change in the ridge estimate than in the least-squares estimate. This is especially valuable when features are highly correlated (multicollinearity), where the least-squares solution is unstable — small data changes cause large coefficient swings. The penalty stabilizes the solution. Why ridge introduces bias: the penalty pulls the coefficients toward zero, away from the least-squares solution (which is unbiased). The stronger the penalty (larger lambda), the more bias and the less variance. The optimal lambda balances the two to minimize total MSE. This is the bias-variance tradeoff in action: by accepting a controlled amount of bias, ridge achieves much lower variance, and the total error drops. This is the same principle behind LASSO, elastic net, neural network weight decay, and virtually all of modern regularized machine learning."
+/>
+
+<ExerciseBlock
+  number={6}
+  prompt="Method of moments for the Poisson distribution. Suppose X_1, ..., X_n are i.i.d. Poisson(lambda), where lambda is both the mean and the variance. Use the method of moments with (a) just the first moment and (b) both the first and second moments, to estimate lambda. Do you get the same answer? Which estimator has lower variance?"
+  hint="(a) Set x_bar = lambda (the first theoretical moment). (b) Set x_bar = lambda AND the sample second moment = lambda + lambda^2 (the second theoretical moment of Poisson). For (b), you have two equations and one unknown — use the first."
+  answer="(a) First moment only: the first theoretical moment of Poisson(lambda) is E[X] = lambda. Set the sample first moment (x_bar) equal to lambda: lambda-hat_1 = x_bar. (b) Both moments: the second theoretical moment is E[X^2] = Var(X) + (E[X])^2 = lambda + lambda^2. Setting the sample second moment m2 = (1/n)*sum(X_i^2) equal to lambda + lambda^2, and using x_bar = lambda from the first equation, we get m2 = x_bar + x_bar^2... but this is a consistency check, not a new equation (since the sample moments approximately satisfy m2 = x_bar + x_bar^2 by construction). So the second moment gives no additional information for a one-parameter distribution — you get the same estimator lambda-hat = x_bar either way. This is a general principle: for a distribution with k parameters, you need k moments, and using more than k gives over-determined (generally inconsistent) equations. The first-moment estimator lambda-hat = x_bar is unbiased (E[x_bar] = lambda) and consistent (Var(x_bar) = lambda/n -> 0). If you were forced to use only the second moment, you'd solve m2 = lambda + lambda^2 for lambda, giving lambda-hat_2 = (-1 + sqrt(1 + 4*m2))/2 — a valid but more complex and slightly biased estimator (by Jensen's inequality, since it's a nonlinear function of m2). The first-moment estimator is simpler and has lower variance, illustrating why method of moments prefers the lowest-order moments that suffice."
+/>
+
+<ExerciseBlock
+  number={7}
+  prompt="Prove the bias-variance decomposition: for any estimator theta-hat of a fixed parameter theta, E[(theta-hat - theta)^2] = Var(theta-hat) + Bias(theta-hat)^2. Then explain why this means you cannot minimize MSE by simply minimizing bias or minimizing variance alone — you must balance the two."
+  hint="Write theta-hat - theta = (theta-hat - E[theta-hat]) + (E[theta-hat] - theta). The first term is the 'centered' estimator (mean zero, variance Var(theta-hat)). The second term is the bias (a constant). Expand the square and take expectations."
+  answer="Let mu_hat = E[theta-hat] and b = Bias(theta-hat) = mu_hat - theta. Write theta-hat - theta = (theta-hat - mu_hat) + (mu_hat - theta) = (theta-hat - mu_hat) + b. Expand the square: (theta-hat - theta)^2 = (theta-hat - mu_hat)^2 + 2*(theta-hat - mu_hat)*b + b^2. Take expectations: E[(theta-hat - theta)^2] = E[(theta-hat - mu_hat)^2] + 2*b*E[theta-hat - mu_hat] + b^2. Now E[theta-hat - mu_hat] = mu_hat - mu_hat = 0 (the centered estimator has mean zero). So the cross-term vanishes: E[(theta-hat - theta)^2] = E[(theta-hat - mu_hat)^2] + 0 + b^2 = Var(theta-hat) + Bias(theta-hat)^2. QED. Why you cannot minimize MSE by minimizing only bias or only variance: Consider the family of constant estimators theta-hat_c = c (a fixed number regardless of data). Bias(theta-hat_c) = c - theta, which is zero only at c = theta — but theta is unknown! Var(theta-hat_c) = 0 (it's a constant). So MSE(theta-hat_c) = (c - theta)^2, minimized at c = theta, which is unachievable. Conversely, you can drive variance to zero by using a constant, but that maximizes bias unless you already know theta. The only estimator with both zero bias and zero variance would be theta-hat = theta always — i.e., perfect knowledge of the parameter, which defeats the purpose of estimation. In practice, reducing variance (e.g., by averaging more data or adding regularization) often increases bias, and vice versa. The optimal estimator navigates this tradeoff: it accepts as much bias as needed to reduce variance enough that the total MSE is minimized. This is why shrinkage estimators (James-Stein), regularized regression (ridge, LASSO), and Bayesian priors can all beat the unbiased estimator in practice — they trade a small bias for a large variance reduction."
+/>
+
+---
+
+**Up next:** [Maximum likelihood estimation →](/courses/probability/18-maximum-likelihood-estimation)

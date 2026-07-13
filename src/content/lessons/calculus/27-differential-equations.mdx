@@ -18,16 +18,28 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { SlopeFieldVis } from '../../../components/interactive/calculus/SlopeFieldVis';
+
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-A differential equation says: "at every point $(x, y)$, here's the slope of the solution curve." Your job is to find the function whose derivative matches that rule. Picture a landscape of arrows: at each point $(x, y)$, the equation tells you which direction to walk. Solution curves are the paths that follow the arrows -- they flow through the field like leaves in a river, each one tracing out a valid solution.
+import { MathBlock, MathInline } from '../../../components/math/Math';
 
-## The slope field
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
-For a first-order ODE $dy/dx = f(x, y)$, the **slope field** (or direction field) draws a small tick mark at every grid point showing the required slope. The solution curves must follow these tick marks — they flow along the field like leaves in a river.
+Every physical law that describes how a system evolves is written as a **differential equation** (ODE): an equation that ties a function to its own derivatives. Newton did not write $F = ma$ as a static identity — he wrote it as $m\\,d^2x/dt^2 = F(x)$, a *rule for change* that, once solved, predicts the trajectory of a planet or a pendulum. The derivative tells you *how fast* something is changing *right now*; the equation says that this rate is determined by the current state. Solving the equation means reconstructing the entire future (and past) from that local rule. This is why ODEs are the native language of physics, biology, chemistry, and engineering: they turn a law of nature into a predicted trajectory.
+
+A first-order ODE has the general form:
+
+<MathBlock expression={"\\frac{dy}{dx} = f(x, y)"} />
+
+Read this as: "at every point $(x, y)$ in the plane, the slope of the solution curve is $f(x, y)$." The whole subject is the art of recovering the function $y(x)$ from this instruction.
+
+## The slope field — the geometric picture
+
+Before solving anything analytically, draw the **slope field** (direction field): at each grid point $(x, y)$, plot a small tick whose slope is $f(x, y)$. The solution curves must be tangent to these ticks everywhere — they *flow* through the field like leaves carried by a river. The slope field is the geometric portrait of an ODE; it shows the global structure (where solutions grow, shrink, oscillate) even when no closed-form solution exists.
 
 <InteractiveCanvas
   title="Slope Field Explorer"
@@ -37,63 +49,149 @@ For a first-order ODE $dy/dx = f(x, y)$, the **slope field** (or direction field
   <SlopeFieldVis client:visible />
 </InteractiveCanvas>
 
-Try each equation:
-- $dy/dx = y$: solution curves grow exponentially. The ticks all point upward on the right (positive $y$ grows) and downward on the left (negative $y$ decays).
-- $dy/dx = -x/y$: solution curves are circles centered at the origin. The field rotates around the center.
-- $dy/dx = x + y$: curves that start negative get pulled positive by the $+y$ term, then accelerate upward.
+Try each equation in the explorer:
 
-## Separable equations
+- $dy/dx = y$: solution curves grow or decay exponentially. Ticks point steeply upward for $y > 0$ and downward for $y < 0$; $y = 0$ is an equilibrium (a horizontal solution every curve either flees from or approaches).
+- $dy/dx = -x/y$: solution curves are circles centered at the origin. The field rotates around the center — a hallmark of conservative systems.
+- $dy/dx = x + y$: curves that start negative get pulled positive by the $+y$ term, then accelerate upward — a feedback loop.
 
-The simplest type: $dy/dx = g(x) \cdot h(y)$. Separate variables and integrate:
+## Separable equations — the first technique
+
+An ODE is **separable** when $f(x,y)$ factors as $g(x)\\,h(y)$, so you can put all the $y$'s on one side and all the $x$'s on the other:
+
+## Theorem: Method of Separation of Variables
+
+If $dy/dx = g(x)\\,h(y)$ with $h(y) \\ne 0$, then the general solution is given implicitly by
 
 <MathBlock expression={"\\int \\frac{dy}{h(y)} = \\int g(x)\\, dx + C"} />
 
-### Example: $dy/dx = xy$
+Evaluating the two integrals yields an implicit relation between $y$ and $x$; solving for $y$ explicitly (when possible) gives the solution family. The constant $C$ is fixed by an **initial condition** $y(x_0) = y_0$.
 
-Separate: $\frac{dy}{y} = x\, dx$. Integrate: $\ln|y| = x^2/2 + C$. Solve: $y = Ae^{x^2/2}$.
+**Example: $dy/dx = xy$.** Separate: $dy/y = x\\,dx$. Integrate: $\\ln|y| = x^2/2 + C$. Exponentiate: <MathInline expression={"y = A e^{x^2/2}"} /> (absorbing $\\pm e^C$ into $A$). Each choice of $A$ is a different solution curve in the slope field.
 
-## First-order linear ODEs
+**Example: exponential growth/decay, $dP/dt = kP$.** Separate: $dP/P = k\\,dt$. Integrate: $\\ln|P| = kt + C$, so $P(t) = P_0 e^{kt}$. This single equation models population growth, radioactive decay, compound interest, and the charging of an RC circuit — whenever a quantity's rate of change is proportional to its current value.
 
-The form $y' + P(x)y = Q(x)$ can always be solved using an **integrating factor**:
+## First-order linear ODEs — the integrating factor
 
-<MathBlock expression={"\\mu(x) = e^{\\int P(x)\\, dx}"} />
+Not every ODE is separable. The next class is **first-order linear**: $y' + P(x)y = Q(x)$. These are *always* solvable via the **integrating factor** trick.
 
-Multiply through by $\mu(x)$ and the left side becomes a perfect derivative:
+## Theorem: Integrating Factor for Linear First-Order ODEs
 
-<MathBlock expression={"\\frac{d}{dx}[\\mu(x) \\cdot y] = \\mu(x) \\cdot Q(x)"} />
+For $y' + P(x)y = Q(x)$, define the integrating factor <MathInline expression={"\\mu(x) = e^{\\int P(x)\\,dx}"} />. Then
 
-Integrate both sides to get the solution.
+<MathBlock expression={"\\frac{d}{dx}\\bigl[\\mu(x)\\, y\\bigr] = \\mu(x)\\, Q(x)"} />
 
-## Why differential equations matter
+so the left side is a perfect derivative. Integrating both sides and dividing by $\\mu(x)$ gives the general solution:
 
-DEs are the language of nature:
-- **Newton's law**: $F = ma$ is a second-order ODE for position.
-- **Population growth**: $dP/dt = kP$ gives exponential growth.
-- **Cooling**: $dT/dt = -k(T - T_{env})$ gives Newton's law of cooling.
-- **Circuits**: $L \cdot dI/dt + RI = V$ governs R-L circuits.
+<MathBlock expression={"y(x) = \\frac{1}{\\mu(x)} \\left( \\int \\mu(x)\\, Q(x)\\, dx + C \\right)"} />
+
+**Why it works.** Multiplying by $\\mu(x) = e^{\\int P}$ is engineered so that the product rule collapses the left side: $\\mu y' + \\mu P y = (\\mu y)'$. The factor $\\mu$ is precisely what makes $y' + Py$ into the derivative of a single quantity. This is the same "recognize a perfect derivative" move that appears in [integration by parts](/courses/calculus/14-integration-techniques) — the antidifferentiation is forced by the structure of the equation.
+
+## The Existence and Uniqueness Theorem (Picard-Lindelöf)
+
+So far we have *methods* for special cases. The deep theorem of the subject guarantees that, under mild conditions, a solution exists *and is unique* — so every initial condition pins down exactly one trajectory.
+
+## Theorem: Picard-Lindelöf (Existence and Uniqueness)
+
+Consider the initial value problem $dy/dx = f(x,y)$, $y(x_0) = y_0$. If $f$ is continuous in a rectangle <MathInline expression={"R = \\{(x,y) : |x - x_0| \\le a,\\; |y - y_0| \\le b\\}"} /> and **Lipschitz continuous** in $y$ on $R$ — meaning there is a constant $L$ such that
+
+<MathBlock expression={"|f(x, y_1) - f(x, y_2)| \\le L|y_1 - y_2| \\quad \\text{for all } (x, y_1), (x, y_2) \\text{ in } R"} />
+
+then there exists a unique solution $y(x)$ on some interval <MathInline expression={"[x_0 - h,\\; x_0 + h]"} />.
+
+A convenient sufficient condition: if $\\partial f / \\partial y$ exists and is continuous on $R$, then $f$ is Lipschitz in $y$ and the conclusion holds.
+
+**What this buys you.** Existence means the ODE is not contradictory — a trajectory through $(x_0, y_0)$ really does exist. Uniqueness is the deeper gift: it means **solution curves never cross**. Two trajectories through different initial conditions can never meet; if they did, the shared meeting point would be an initial condition with two solutions, violating uniqueness. This is why the slope field picture is coherent — the curves tile the plane without intersecting.
+
+**Where uniqueness fails.** The equation $dy/dx = \\sqrt{y}$ (with $y \\ge 0$) has $f$ continuous but not Lipschitz at $y = 0$ (the derivative $1/(2\\sqrt{y})$ blows up). From the initial condition $y(0) = 0$, there are *infinitely many* solutions: $y(x) = 0$ always, or $y(x) = \\tfrac{1}{4}(x - c)^2$ for any $c \\ge 0$ (the curve stays flat at zero until $x = c$, then lifts off as a parabola). The Picard-Lindelöf hypotheses rule out exactly this pathology.
+
+## Equilibrium points and stability
+
+For an **autonomous** ODE $dy/dt = f(y)$ (no explicit $t$ dependence), a value $y^*$ with $f(y^*) = 0$ is an **equilibrium**: the constant function $y(t) = y^*$ is a solution. The central question is **stability** — do nearby solutions return to the equilibrium or flee it?
+
+- **Stable:** solutions starting near $y^*$ move *toward* it. Equivalent to $f$ changing sign from $+$ to $-$ as $y$ increases through $y^*$ ($f'(y^*) < 0$).
+- **Unstable:** solutions starting near $y^*$ move *away* from it. Sign change from $-$ to $+$ ($f'(y^*) > 0$).
+- **Semi-stable:** solutions approach from one side and flee from the other ($f'(y^*) = 0$ and same sign on both sides).
+
+**Logistic growth, $dP/dt = kP(1 - P/K)$.** Equilibria at $P^* = 0$ (unstable — $f'(0) = k > 0$) and $P^* = K$ (stable — $f'(K) = -k < 0$). Any positive population tends to the carrying capacity $K$. This is the simplest model that captures the *saturation* every real population exhibits — exponential growth corrected by a crowding term.
+
+<FormulaReadout formulas={[
+  { label: "可分离变量方程", expression: "\\frac{dy}{dx} = g(x)h(y) \\;\\Longrightarrow\\; \\int \\frac{dy}{h(y)} = \\int g(x)\\,dx" },
+  { label: "积分因子（一阶线性）", expression: "\\mu(x) = e^{\\int P(x)\\,dx}, \\quad y = \\frac{1}{\\mu}\\int \\mu Q\\,dx" },
+  { label: "Picard-Lindelöf 唯一性", expression: "|f(x,y_1) - f(x,y_2)| \\le L|y_1 - y_2| \\;\\Rightarrow\\; \\text{解唯一}" },
+  { label: "平衡点稳定性判据", expression: "f(y^*) = 0,\\; f'(y^*) < 0 \\text{ 稳定},\\; f'(y^*) > 0 \\text{ 不稳定}" },
+]} />
+
+## The many faces of differential equations
+
+- **Newtonian mechanics:** $F = ma$ is a second-order ODE; gravity gives planetary orbits, Hooke's law $F = -kx$ gives simple harmonic motion, and the pendulum $\\theta'' = -(g/L)\\sin\\theta$ reduces to $\\theta'' = -(g/L)\\theta$ via the [small-angle Taylor approximation](/courses/calculus/26-taylor-series).
+- **Circuits:** an RL circuit obeys $L\\,dI/dt + RI = V(t)$, a first-order linear ODE solved by the integrating factor. The transient response $I(t) = (V/R)(1 - e^{-Rt/L})$ is the complementary solution plus particular solution.
+- **Population dynamics:** exponential growth $dP/dt = kP$ generalizes to the logistic equation (carrying capacity), the Lotka-Volterra predator-prey system, and the SIR epidemic model — each an ODE system whose equilibria encode ecological balance.
+
+## Modern applications
+
+In **biology and pharmacokinetics**, drug concentration in the bloodstream follows $dC/dt = -kC$ (exponential clearance) or, with repeated dosing, a forced linear ODE whose steady-state sets the dosing interval. Tumor growth models, enzyme kinetics (Michaelis-Menten), and neural firing (Hodgkin-Huxley) are all ODE systems whose equilibria and stability determine the physiology.
+
+In **finance**, the Black-Scholes option pricing equation is a *partial* differential equation (the multivariable generalization of an ODE); its simpler ODE cousins model bond pricing and the term structure of interest rates. The vocabulary of equilibria and stability maps directly to "market clearing" and "arbitrage-free."
+
+In **machine learning and control**, the training dynamics of gradient descent are themselves an ODE in the continuous-time limit: $dw/dt = -\\nabla L(w)$. Convergence to a minimum is a stability analysis of this ODE — the loss landscape's equilibria are the critical points $\\nabla L = 0$, and their stability (governed by the Hessian's eigenvalues) decides whether you converge to a true minimum, a saddle, or diverge.
+
+In **climate and epidemiology**, the SIR model $dS/dt = -\\beta SI$, $dI/dt = \\beta SI - \\gamma I$, $dR/dt = \\gamma I$ predicts epidemic peaks and herd immunity thresholds from three ODEs. The basic reproduction number $R_0 = \\beta / \\gamma$ is read off from the stability of the disease-free equilibrium — pure ODE analysis, with life-or-death consequences.
 
 <KeyInsight>
-A differential equation specifies the slope at every point. The slope field visualizes this landscape. Solution curves follow the field — click anywhere to see where that initial condition leads. Separable and linear ODEs can be solved by integration.
+A differential equation specifies the slope at every point; the slope field visualizes this landscape, and solution curves flow along it without crossing — guaranteed by the Picard-Lindelöf uniqueness theorem (f Lipschitz in y means one initial condition gives one trajectory). Separable equations dy/dx = g(x)h(y) yield to separation of variables; first-order linear equations y' + P(x)y = Q(x) yield to the integrating factor mu = e to the integral of P. Autonomous equations dy/dt = f(y) have equilibria at the zeros of f, and an equilibrium y-star is stable when f-prime of y-star is negative (nearby solutions return) and unstable when it is positive (they flee). Logistic growth, Newton's laws, RC circuits, the SIR epidemic model, and continuous-time gradient descent are all ODEs whose behavior is governed by these same few ideas.
 </KeyInsight>
+
+## Connections
+
+This lesson closes the series module by showing where all the previous machinery is *used*. The [Taylor series](/courses/calculus/26-taylor-series) of the previous lesson becomes a solution method: the Frobenius method assumes $y = \\sum a_n x^n$ and solves for the coefficients, producing series solutions for ODEs with no closed form — this is how Bessel and Legendre functions are defined. The [chain rule](/courses/calculus/04-chain-rule) underlies separation of variables (the $dy$ and $dx$ are not magic — the substitution is the chain rule run in reverse). The [integrating factor](/courses/calculus/14-integration-techniques) trick is an application of recognizing perfect derivatives, and the [Fundamental Theorem of Calculus](/courses/calculus/12-fundamental-theorem) is what turns the separated integrals into an explicit solution.
+
+The next lesson, [multivariable preview](/courses/calculus/28-multivariable-preview), generalizes derivatives to *partial* derivatives and gradients — the engine of ODEs in high dimensions. And the finale, [where calculus lives](/courses/calculus/29-where-calculus-lives), shows how ODEs appear in essentially every quantitative discipline: they are how a law of nature becomes a predicted future.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Solve dy/dx = 2y with y(0) = 3."
-  hint="Separate: dy/y = 2 dx. Integrate: ln|y| = 2x + C."
-  answer="y = Ae^{2x}. y(0) = A = 3. So y = 3e^{2x}."
+  prompt="Solve dy/dx = 2y with y(0) = 3 by separation of variables. Verify your answer satisfies both the ODE and the initial condition."
+  hint="Separate: dy/y = 2 dx. Integrate: ln|y| = 2x + C. Exponentiate and apply y(0) = 3."
+  answer="Separate: dy/y = 2 dx. Integrate: ln|y| = 2x + C, so y = A e^{2x}. Apply y(0) = A = 3. Solution: y(x) = 3 e^{2x}. Verify: y' = 6 e^{2x} = 2 · 3 e^{2x} = 2y ✓. And y(0) = 3 ✓. This is exponential growth with rate constant k = 2 — the population triples its starting value when 2x = ln 2, i.e. x = (ln 2)/2 ≈ 0.35."
 />
 
 <ExerciseBlock number={2}
-  prompt="In the interactive, select dy/dx = −x/y and click several points at different distances from the origin. What shape do the solution curves form?"
-  hint="Look at the curves. Are they circles, lines, or something else?"
-  answer="The solution curves are circles centered at the origin. This is because separating gives y dy = −x dx, integrating to y²/2 + x²/2 = C, i.e., x² + y² = constant — the equation of a circle."
+  prompt="In the slope field explorer, select dy/dx = −x/y and click several points at different distances from the origin. What shape do the solution curves form? Derive the shape analytically."
+  hint="Separate variables: y dy = −x dx. Integrate both sides and identify the resulting curve."
+  answer="The solution curves are circles centered at the origin. Separating: y dy = −x dx. Integrating: y²/2 = −x²/2 + C, i.e. x² + y² = 2C — the equation of a circle of radius √(2C). Each initial condition picks a different C (a different radius). The slope field's rotating structure reflects this: the slope −x/y is always tangent to the circle through (x, y). Note y = 0 is excluded from the equation (division by y), which is why the curves are full circles only when pieced together — the uniqueness theorem would fail at y = 0 because f(x, y) = −x/y is not defined there."
 />
 
 <ExerciseBlock number={3}
-  prompt="A population grows at rate dP/dt = 0.05P. If P(0) = 1000, find P(10)."
-  hint="This is the exponential growth equation. Solve and plug in."
-  answer="P(t) = 1000e^{0.05t}. P(10) = 1000e^{0.5} ≈ 1000 × 1.649 ≈ 1649. The population grows by about 65% in 10 time units."
+  prompt="Solve the first-order linear ODE y' + 2y = e^{−x} using an integrating factor. Find the general solution."
+  hint="Here P(x) = 2 and Q(x) = e^{−x}. Compute μ(x) = e^{∫ 2 dx} = e^{2x}. Multiply through and recognize the left side as a perfect derivative."
+  answer="P(x) = 2, Q(x) = e^{−x}. Integrating factor μ = e^{∫ 2 dx} = e^{2x}. Multiply: e^{2x} y' + 2 e^{2x} y = e^{2x} · e^{−x} = e^x. The left side is d/dx[e^{2x} y] (verify by the product rule). So d/dx[e^{2x} y] = e^x. Integrate: e^{2x} y = e^x + C. Divide: y = e^{−x} + C e^{−2x}. The solution has two parts: e^{−x} (the particular solution, matching the forcing Q) plus C e^{−2x} (the complementary solution to the homogeneous equation y' + 2y = 0). This structure — particular plus homogeneous — is universal for linear ODEs."
 />
 
-[Next Lesson →](/courses/calculus/28-multivariable-preview)
+<ExerciseBlock number={4}
+  prompt="Find and classify the equilibria of the logistic equation dP/dt = 0.05 P (1 − P/1000). Sketch the phase line and predict the long-term population for P(0) = 100 and for P(0) = 2000."
+  hint="Equilibria are the zeros of f(P) = 0.05 P (1 − P/1000). For each, compute f'(P*) and use the sign: f' < 0 means stable, f' > 0 means unstable."
+  answer="Equilibria: f(P) = 0.05 P (1 − P/1000) = 0 when P = 0 or P = 1000. Stability: f'(P) = 0.05 (1 − 2P/1000). At P* = 0: f'(0) = 0.05 > 0, so P = 0 is UNSTABLE (small positive populations grow away from zero). At P* = 1000: f'(1000) = 0.05 (1 − 2) = −0.05 < 0, so P = 1000 is STABLE (populations near 1000 return to it). Phase line: arrows point rightward (P increasing) for 0 < P < 1000, leftward for P > 1000. So P(0) = 100 grows monotonically toward the carrying capacity 1000, and P(0) = 2000 decays back down to 1000. The carrying capacity K = 1000 is an attractor; extinction (P = 0) is a repeller — a robust feature of logistic models."
+/>
+
+<ExerciseBlock number={5}
+  prompt="A population grows at rate dP/dt = 0.05 P. If P(0) = 1000, find P(10). How long does it take for the population to double?"
+  hint="This is exponential growth with k = 0.05. Solve P(t) = P(0) e^{0.05 t}. For doubling, solve P(t)/P(0) = 2."
+  answer="P(t) = 1000 e^{0.05 t}. P(10) = 1000 e^{0.5} ≈ 1000 × 1.6487 ≈ 1649. The population grows by about 65% in 10 time units. Doubling time: solve e^{0.05 t} = 2, so 0.05 t = ln 2, giving t = (ln 2)/0.05 ≈ 0.693/0.05 ≈ 13.86 time units. The doubling time depends only on the rate k (via ln 2/k), not on the starting population — a signature of exponential growth. This is the same doubling-time formula behind compound interest, radioactive half-life, and the 70-rule of thumb (doubling time ≈ 70 / percentage rate)."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Consider dy/dx = √y with y(0) = 0. Show that BOTH y(x) = 0 and y(x) = x²/4 (for x ≥ 0) are solutions. Explain why this does not contradict the Picard-Lindelöf theorem."
+  hint="Verify each function satisfies the ODE and the initial condition. Then check the Lipschitz condition: compute ∂f/∂y for f(x, y) = √y and examine its behavior near y = 0."
+  answer="Check y(x) = 0: y' = 0 and √0 = 0, so y' = √y ✓, and y(0) = 0 ✓. Check y(x) = x²/4: y' = x/2 and √y = √(x²/4) = x/2 (for x ≥ 0), so y' = √y ✓, and y(0) = 0²/4 = 0 ✓. Both are valid solutions through the same initial condition — uniqueness fails. Why no contradiction with Picard-Lindelöf? The function f(x, y) = √y is continuous, but ∂f/∂y = 1/(2√y) blows up as y → 0⁺, so f is NOT Lipschitz in y at y = 0. The Lipschitz hypothesis of the theorem is violated, so uniqueness is not guaranteed — and indeed it fails (there are infinitely many solutions: y stays 0 until some point c, then lifts off as (x−c)²/4). The example pinpoints exactly why the Lipschitz condition matters: it is what rules out solutions branching off from an equilibrium."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Newton's law of cooling says dT/dt = −k (T − T_env), where T_env is the ambient temperature. A corpse cools from 37°C to 30°C in 2 hours in a room at 20°C. Find k, then predict the temperature after 5 hours. (This is the basis of forensic time-of-death estimation.)"
+  hint="Let u = T − T_env. Then du/dt = −k u, so u(t) = u(0) e^{−k t}. Use the 2-hour data point to solve for k, then extrapolate to t = 5."
+  answer="Substitute u = T − T_env: du/dt = −k u, so u(t) = u(0) e^{−k t}. Here u(0) = 37 − 20 = 17 and u(2) = 30 − 20 = 10. So 10 = 17 e^{−2k}, giving e^{−2k} = 10/17, so k = −(1/2) ln(10/17) = (1/2) ln(1.7) ≈ 0.266 per hour. Predict at t = 5: u(5) = 17 e^{−5k} = 17 e^{−1.33} ≈ 17 × 0.265 ≈ 4.5. So T(5) ≈ 20 + 4.5 = 24.5°C. The body asymptotically approaches room temperature (20°C), never quite reaching it — the equilibrium T* = T_env = 20 is stable. This is the mathematics forensic scientists actually use to estimate time of death, fitting k from two temperature readings and inverting the model."
+/>
+
+---
+
+**Up next:** [Multivariable Preview](/courses/calculus/28-multivariable-preview)

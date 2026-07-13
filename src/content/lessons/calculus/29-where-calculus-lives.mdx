@@ -14,9 +14,22 @@ publishedAt: 2026-05-26
 ---
 
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { MathBlock } from '../../../components/math/Math';
 
-You've traveled from slopes to areas, from derivatives to integrals, from sequences to series. Every idea connected back to the same core: **calculus is the mathematics of continuous change**. Before we see where it lives in the wild, step back and see the whole map at once. The derivative measures instantaneous change. The integral measures total accumulation. The Fundamental Theorem of Calculus connects them -- differentiation and integration are two sides of the same coin. Series approximate functions as infinite polynomials. Differential equations describe how systems evolve over time. Together, these ideas describe the entire physical world. Now let's see where calculus lives in the wild.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+You have traveled from slopes to areas, from derivatives to integrals, from sequences to series, from single variables to gradients. Every idea connected back to the same core: **calculus is the mathematics of continuous change**. The derivative measures instantaneous change; the integral measures total accumulation; the Fundamental Theorem binds them as two sides of one coin; series approximate functions as infinite polynomials; differential equations describe how systems evolve; and gradients extend the whole story to many dimensions. Now step back and see the entire map at once — and then watch where these tools live in the wild. The remarkable truth is that essentially *every quantitative discipline* runs on a handful of equations, all of them calculus. Physics, machine learning, signal processing, finance, and biology are not five separate subjects; they are five dialects of the same language.
+
+## The map: the five pillars of calculus
+
+Before the applications, here is the whole of this course in five ideas:
+
+$$\frac{df}{dx} \quad \int_a^b f(x)\,dx \quad \sum_{n=0}^{\infty} a_n \quad \frac{dy}{dx} = f(x,y) \quad \nabla f$$
+
+Read left to right: the **derivative** (instantaneous rate), the **integral** (total accumulation), the **series** (infinite approximation), the **differential equation** (evolution in time), and the **gradient** (multivariable rate). Every application below is one of these five ideas, dressed in the notation of a particular field. Recognize the pillar and the application becomes transparent.
 
 ## Physics: the original application
 
@@ -24,43 +37,135 @@ Newton invented calculus to describe motion. His second law is a differential eq
 
 <MathBlock expression={"F = ma = m\\frac{d^2 x}{dt^2}"} />
 
-From this one equation, plus gravity ($F = -mg$), you can derive projectile motion, planetary orbits, and harmonic oscillation. The derivative captures instantaneous velocity and acceleration; the integral recovers position from velocity.
+From this one equation — plus a force law — you derive projectile motion ($F = -mg$ gives parabolic trajectories), planetary orbits (gravity $F = -GMm/r^2$ gives ellipses via Kepler), and harmonic oscillation ($F = -kx$ gives $x(t) = A\\cos(\\omega t + \\phi)$). The derivative captures instantaneous velocity and acceleration; the integral recovers position from velocity; energy is the integral of force over distance.
 
-## Machine learning: gradient descent
+The story extends to fields. Temperature, electric potential, and fluid pressure are all governed by **partial differential equations**:
 
-Every neural network is trained by gradient descent:
+<MathBlock expression={"\\text{Heat: } \\frac{\\partial u}{\\partial t} = k \\nabla^2 u \\qquad \\text{Wave: } \\frac{\\partial^2 u}{\\partial t^2} = c^2 \\nabla^2 u"} />
 
-<MathBlock expression={"\\theta_{n+1} = \\theta_n - \\alpha \\nabla L(\\theta_n)"} />
+The heat equation says temperature smooths out over time (the Laplacian $\\nabla^2$ is the sum of second partials — a multivariable second derivative). The wave equation describes sound, light, and water waves. The Navier-Stokes equation (fluid flow) and the Schrödinger equation (quantum mechanics) round out the set — every one is calculus, every one is a PDE.
 
-The loss function $L$ is a surface in high-dimensional space. The gradient $\nabla L$ points uphill; you step downhill by $-\nabla L$. The learning rate $\alpha$ is the step size. This is literally multivariable calculus in action — partial derivatives, gradients, and optimization, all working together.
+## Machine learning: gradient descent and backpropagation
 
-## Signal processing: Fourier series
+Every neural network on Earth is trained by gradient descent:
+
+<MathBlock expression={"\\theta_{n+1} = \\theta_n - \\alpha \\, \\nabla L(\\theta_n)"} />
+
+The loss function $L$ is a surface in high-dimensional weight space; the gradient $\\nabla L$ (a vector of [partial derivatives](/courses/calculus/28-multivariable-preview)) points uphill; you step downhill by $-\\nabla L$; the learning rate $\\alpha$ is the step size. This is literally multivariable calculus in action.
+
+**Backpropagation is the chain rule.** A neural network is a composition of functions — each layer feeds the next — so the loss is $L = \\ell(f_n(\\cdots f_2(f_1(x))\\cdots))$. The [chain rule](/courses/calculus/04-chain-rule) computes the derivative of a composition; in the multivariable form it is $\\partial L / \\partial w = \\sum (\\partial L / \\partial z)(\\partial z / \\partial w)$, summed over every path from the weight to the loss. Backpropagation simply runs this recursion backward through the network, computing every gradient in one pass. The most consequential algorithm of the 21st century is the multivariable chain rule, applied to a graph.
+
+**Taylor series** enters too: second-order optimizers (Newton's method) use the [Hessian](/courses/calculus/28-multivariable-preview) — the matrix of second partials — which is the quadratic term of the multivariable Taylor expansion of $L$. The update <MathInline expression={"\\Delta\\theta = -H^{-1}\\nabla L"} /> minimizes the local quadratic model exactly.
+
+## Signal processing: Fourier analysis as orthogonal projection
 
 Any periodic signal can be decomposed into sines and cosines:
 
-<MathBlock expression={"f(t) = \\sum_{n=0}^{\\infty} a_n \\cos(n\\omega t) + b_n \\sin(n\\omega t)"} />
+<MathBlock expression={"f(t) = \\frac{a_0}{2} + \\sum_{n=1}^{\\infty} \\bigl(a_n \\cos(n\\omega t) + b_n \\sin(n\\omega t)\\bigr)"} />
 
-This is a Taylor-like idea but with trigonometric building blocks instead of polynomials. Audio compression, image processing, and wireless communication all rely on Fourier analysis — which is built on the convergence theory of infinite series.
+This is a [Taylor-like series](/courses/calculus/26-taylor-series), but with trigonometric building blocks instead of polynomials. The coefficients come from integrals:
 
-## Engineering: differential equations everywhere
+<MathBlock expression={"a_n = \\frac{2}{T}\\int_0^T f(t)\\cos(n\\omega t)\\,dt"} />
 
-- **Heat equation**: $\partial u/\partial t = k \nabla^2 u$ — how temperature spreads through a material.
-- **Wave equation**: $\partial^2 u/\partial t^2 = c^2 \nabla^2 u$ — how sound and light propagate.
-- **Navier-Stokes**: $\rho(\partial \mathbf{v}/\partial t + \mathbf{v} \cdot \nabla \mathbf{v}) = -\nabla p + \mu \nabla^2 \mathbf{v}$ — how fluids flow (still unsolved in general).
+Geometrically, this is an **orthogonal projection**: you project the signal $f$ onto each sine and cosine (which are orthogonal "basis vectors" in function space), and the projection is computed by an integral — exactly the [inner product](/courses/calculus/11-the-definite-integral) of two functions. Audio compression (MP3), image compression (JPEG), and the Fast Fourier Transform (FFT) that underlies wireless communication all rest on this single idea: an integral projects a signal onto a trigonometric basis. Euler's formula <MathInline expression={"e^{i\\theta} = \\cos\\theta + i\\sin\\theta"} /> turns the Fourier series into a power series in <MathInline expression={"e^{i\\theta}"} />, unifying Fourier analysis with complex analysis and number theory.
 
-## Economics: marginal analysis
+## Finance: the Black-Scholes equation
 
-The "marginal cost" is the derivative of the cost function. The "marginal revenue" is the derivative of the revenue function. Profit is maximized when marginal cost equals marginal revenue — $MC = MR$ is just $C'(x) = R'(x)$, a calculus optimization problem.
+The price of a European option obeys a partial differential equation:
+
+<MathBlock expression={"\\frac{\\partial V}{\\partial t} + \\tfrac{1}{2}\\sigma^2 S^2 \\frac{\\partial^2 V}{\\partial S^2} + rS \\frac{\\partial V}{\\partial S} - rV = 0"} />
+
+Here $V(S, t)$ is the option value as a function of stock price $S$ and time $t$, $\\sigma$ is volatility, and $r$ is the risk-free rate. Black-Scholes is a PDE mixing a first time derivative, first and second stock-price derivatives, and the value itself — every tool of multivariable calculus in one equation. Its solution (the Black-Scholes formula) is the foundation of the multi-trillion-dollar derivatives industry. The equation derives from a "no-arbitrage" argument that assumes the stock price follows a stochastic [differential equation](/courses/calculus/27-differential-equations) (geometric Brownian motion), bringing probability into the mix.
+
+## Biology: population dynamics and pharmacokinetics
+
+Living systems evolve according to ODEs. The logistic equation generalizes exponential growth with a carrying capacity:
+
+<MathBlock expression={"\\frac{dP}{dt} = kP\\left(1 - \\frac{P}{K}\\right)"} />
+
+Predator-prey dynamics follow the Lotka-Volterra system; epidemics follow the SIR model (<MathInline expression={"dS/dt = -\\beta SI"} />, <MathInline expression={"dI/dt = \\beta SI - \\gamma I"} />, <MathInline expression={"dR/dt = \\gamma I"} />); the basic reproduction number $R_0 = \\beta/\\gamma$ — read off from a [stability analysis](/courses/calculus/27-differential-equations) of the disease-free equilibrium — decides whether an outbreak fades or spreads.
+
+In pharmacokinetics, drug concentration in the bloodstream follows $dC/dt = -kC$ (exponential clearance), or with repeated dosing, a forced linear ODE whose steady state sets the dosing interval. The Hodgkin-Huxley equations (a four-variable ODE system) won a Nobel Prize for explaining how neurons fire. Tumor growth, enzyme kinetics, and ecological balance are all ODE models whose equilibria encode the biology.
+
+<FormulaReadout formulas={[
+  { label: "牛顿第二定律（ODE）", expression: "F = m\\frac{d^2 x}{dt^2}" },
+  { label: "梯度下降（机器学习）", expression: "\\theta_{n+1} = \\theta_n - \\alpha\\,\\nabla L(\\theta_n)" },
+  { label: "傅里叶级数（信号处理）", expression: "f(t) = \\frac{a_0}{2} + \\sum_{n=1}^{\\infty}\\bigl(a_n\\cos(n\\omega t) + b_n\\sin(n\\omega t)\\bigr)" },
+  { label: "Black-Scholes（金融）", expression: "\\frac{\\partial V}{\\partial t} + \\tfrac{1}{2}\\sigma^2 S^2 \\frac{\\partial^2 V}{\\partial S^2} + rS\\frac{\\partial V}{\\partial S} - rV = 0" },
+]} />
+
+## The many faces of calculus — one last synthesis
+
+- **Derivatives** measure instantaneous rate — velocity, marginal cost, cooling rate, the slope of a loss surface. Every "how fast is it changing?" question is a derivative.
+- **Integrals** measure accumulated effect — distance traveled, total cost, area under a probability density, the projection onto a Fourier basis. Every "how much in total?" question is an integral.
+- **Series** approximate the intractable — transcendental functions, perturbation expansions, signal decompositions, numerical schemes. Every "compute it to high accuracy" question is a series.
+- **Differential equations** describe evolution — orbits, populations, epidemics, drug concentrations, neural firing, option prices, fluid flow. Every "how does this system change over time?" question is an ODE or PDE.
+- **Gradients** extend everything to high dimensions — steepest descent, fields, multivariable optimization, backpropagation. Every "optimize over many variables" question is a gradient.
 
 ## What comes next
 
-If this course sparked your curiosity, here are natural next steps:
+If this course sparked your curiosity, here are the natural next steps, each a direct continuation of an idea you have already met:
 
-- **Multivariable calculus**: gradients, double/triple integrals, Stokes' theorem
-- **Differential equations**: systems of ODEs, Laplace transforms, phase portraits
-- **Real analysis**: rigorous proofs of everything we saw — limits, continuity, convergence
-- **Numerical methods**: how computers actually compute integrals and solve ODEs
+- **Multivariable calculus:** [gradients](/courses/calculus/28-multivariable-preview), double and triple integrals, and the crowning theorems of Green, Stokes, and Gauss — the multivariable Fundamental Theorem of Calculus.
+- **Differential equations:** systems of ODEs, the Laplace transform, phase portraits, and nonlinear dynamics — where [Picard-Lindelöf](/courses/calculus/27-differential-equations) and stability analysis become chaos theory and bifurcations.
+- **Linear algebra:** vectors, matrices, eigenvalues — the companion to calculus in every application above (the Hessian is a matrix; backpropagation is matrix multiplication; Fourier transforms are linear operators).
+- **Real analysis:** rigorous proofs of limits, continuity, and convergence — the foundations you would need to rebuild calculus from set theory.
+- **Numerical methods:** how computers actually evaluate integrals, solve ODEs, and minimize losses — finite differences from [Taylor series](/courses/calculus/26-taylor-series), Runge-Kutta from matching Taylor coefficients, and conjugate gradient from linear algebra.
 
 <KeyInsight>
-Calculus is the language of change. Every discipline that deals with continuous quantities — motion, probability, optimization, waves — speaks this language. The derivative captures instantaneous change; the integral captures accumulated effect. Together they describe the entire physical world.
+Calculus is the language of continuous change, and essentially every quantitative discipline speaks it. The five pillars — derivative (rate), integral (accumulation), series (approximation), differential equation (evolution), and gradient (multivariable optimization) — appear across physics (Newton's F = ma and the heat, wave, and Schrodinger equations), machine learning (gradient descent is multivariable calculus, backpropagation is the chain rule), signal processing (Fourier analysis is orthogonal projection via integrals), finance (the Black-Scholes PDE), and biology (logistic growth, SIR epidemics, pharmacokinetics). These fields are not separate subjects; they are dialects of one language. To have learned calculus is to have learned the vocabulary in which the physical and computational world is written — and the tools to keep learning whatever mathematics comes next.
 </KeyInsight>
+
+## Connections
+
+This is the capstone of the entire course, and it ties every module together. The derivative ([Lesson 02](/courses/calculus/02-the-derivative), [03](/courses/calculus/03-rules-of-derivatives), [04](/courses/calculus/04-chain-rule)) becomes Newton's $F = ma$, marginal analysis in economics, and the gradient in ML. The integral ([Lesson 09](/courses/calculus/09-the-integral), [11](/courses/calculus/11-the-definite-integral), [12](/courses/calculus/12-fundamental-theorem)) becomes distance, probability, and the Fourier projection. The [Fundamental Theorem](/courses/calculus/12-fundamental-theorem) is the symmetry between force and energy, rate and total. Optimization ([Lesson 06](/courses/calculus/06-optimization)) becomes profit maximization, neural-network training, and physical equilibrium. Series ([Lesson 22](/courses/calculus/22-infinite-series) through [26](/courses/calculus/26-taylor-series)) become Fourier decomposition, perturbation theory, and every numerical algorithm's error analysis. [Differential equations](/courses/calculus/27-differential-equations) become the laws of physics, biology, and finance. And the [gradient](/courses/calculus/28-multivariable-preview) becomes backpropagation — the algorithm defining this era of computation.
+
+You have now seen the whole structure. The remaining depth — rigorous analysis, partial differential equations, differential geometry, functional analysis — is built on exactly these foundations. Calculus is not a subject you finish; it is a language you keep using. Go build something with it.
+
+## Practice
+
+<ExerciseBlock number={1}
+  prompt="A ball is thrown upward with initial velocity 20 m/s from a height of 5 m. Taking g = 10 m/s² and F = ma with F = −mg, find the height function h(t), the maximum height, and the time it hits the ground."
+  hint="F = ma gives m h'' = −mg, so h'' = −10. Integrate twice: h'(t) = −10t + C₁ (use h'(0) = 20), then h(t) = −5t² + 20t + C₂ (use h(0) = 5)."
+  answer="From F = ma: h'' = −g = −10. Integrate: h'(t) = −10t + C₁. Apply h'(0) = 20: C₁ = 20, so v(t) = −10t + 20. Integrate again: h(t) = −5t² + 20t + C₂. Apply h(0) = 5: C₂ = 5, so h(t) = −5t² + 20t + 5. Maximum height when v = 0: −10t + 20 = 0, t = 2 s, h(2) = −20 + 40 + 5 = 25 m. Hits ground when h = 0: −5t² + 20t + 5 = 0, i.e. t² − 4t − 1 = 0, t = (4 + √(16+4))/2 = 2 + √5 ≈ 4.24 s. Every step is calculus: Newton's law (an ODE) integrated twice, with the constants fixed by initial conditions. This is the prototype problem Newton invented calculus to solve."
+/>
+
+<ExerciseBlock number={2}
+  prompt="A neural network's loss satisfies L(w) = (w − 3)². Starting from w₀ = 0 with learning rate α = 0.4, write the gradient descent update, compute w₁ and w₂, and describe the long-term behavior."
+  hint="Gradient descent: w_{n+1} = w_n − α L'(w_n). Compute L'(w) = 2(w − 3). Substitute."
+  answer="L'(w) = 2(w − 3). Update: w_{n+1} = w_n − 0.4·2(w_n − 3) = w_n − 0.8(w_n − 3) = 0.2 w_n + 2.4. w₁ = 0.2·0 + 2.4 = 2.4. w₂ = 0.2·2.4 + 2.4 = 0.48 + 2.4 = 2.88. The fixed point satisfies w* = 0.2 w* + 2.4, giving 0.8 w* = 2.4, w* = 3 (the minimum of L). The iteration converges to w = 3 geometrically with ratio 0.2 — each step closes 80% of the remaining gap. The loss L(w_n) = (w_n − 3)² shrinks quadratically toward zero. This tiny example is the essence of how every real network trains: follow −∇L, converge to a minimum."
+/>
+
+<ExerciseBlock number={3}
+  prompt="The Fourier coefficient a₁ for f(t) = cos(ωt) on [0, T] (with T = 2π/ω) is a₁ = (2/T)∫₀ᵀ cos(ωt) cos(ωt) dt. Compute it and explain what the result means geometrically."
+  hint="cos²(ωt) = (1 + cos(2ωt))/2. Integrate over a full period. Compare to the other coefficients a_n for n ≠ 1."
+  answer="Use cos²(ωt) = (1 + cos(2ωt))/2. Then ∫₀ᵀ cos²(ωt) dt = (1/2)∫₀ᵀ (1 + cos(2ωt)) dt = (1/2)[T + 0] = T/2 (the cos(2ωt) integrates to zero over a full period). So a₁ = (2/T)(T/2) = 1. Meanwhile for n ≠ 1: a_n = (2/T)∫₀ᵀ cos(ωt) cos(nωt) dt = 0 by orthogonality (the cosines are perpendicular in function space). So the Fourier series of cos(ωt) is just '1·cos(ωt)' — it IS its own first Fourier component, with all other coefficients zero. Geometrically, cos(ωt) is a unit vector along the cos(ωt) 'axis' in function space; projecting it onto that axis gives 1 (full length), and projecting onto orthogonal axes gives 0. This is the function-space analog of projecting a vector onto itself. The Fourier series decomposes any signal into such orthogonal components."
+/>
+
+<ExerciseBlock number={4}
+  prompt="A population of bacteria follows the logistic equation dP/dt = 0.4 P (1 − P/500), with P(0) = 50. Find the carrying capacity, classify the equilibria, and predict P(t) as t → ∞. (Optional: solve for P(t) explicitly.)"
+  hint="Compare with the standard form dP/dt = kP(1 − P/K). Read off k and K. Equilibria at P = 0 and P = K; check f'(P*) to classify. The explicit solution is P(t) = K/(1 + A e^{−kt}) with A = (K − P₀)/P₀."
+  answer="Standard form dP/dt = kP(1 − P/K): here k = 0.4 and the carrying capacity is K = 500. Equilibria: P* = 0 and P* = 500. f'(P) = k(1 − 2P/K) = 0.4(1 − 2P/500). At P* = 0: f'(0) = 0.4 > 0, UNSTABLE. At P* = 500: f'(500) = 0.4(1 − 2) = −0.4 < 0, STABLE. So as t → ∞, P(t) → 500 — the population saturates at the carrying capacity regardless of the (positive) starting value. Explicit solution: P(t) = K/(1 + A e^{−kt}) with A = (K − P₀)/P₀ = (500 − 50)/50 = 9. So P(t) = 500/(1 + 9 e^{−0.4t}). Check: P(0) = 500/(1+9) = 50 ✓; P(∞) = 500/1 = 500 ✓. The S-shaped logistic curve starts slow, accelerates, then decelerates as crowding limits growth — the simplest realistic model of bounded population growth, applicable to bacteria, tumors, technology adoption, and epidemics."
+/>
+
+<ExerciseBlock number={5}
+  prompt="A drug clears from the bloodstream at rate dC/dt = −0.2 C (per hour). If the initial concentration is 10 mg/L, find C(t) and the time until the concentration drops below 2 mg/L. Then explain why repeated dosing must be timed carefully."
+  hint="Solve dC/dt = −kC with k = 0.2: C(t) = C(0) e^{−0.2t}. Solve C(t) = 2 for t."
+  answer="Separate variables: dC/C = −0.2 dt, integrate: ln C = −0.2t + const, so C(t) = C(0) e^{−0.2t} = 10 e^{−0.2t}. Set C(t) = 2: 10 e^{−0.2t} = 2, e^{−0.2t} = 0.2, −0.2t = ln(0.2) ≈ −1.609, t ≈ 8.05 hours. The half-life is (ln 2)/0.2 ≈ 3.47 hours. Why careful dosing? With repeated doses, the drug accumulates: each dose adds to the residual from prior doses. If doses are too frequent, C climbs toward toxicity; too infrequent, and C drops below the therapeutic threshold. The steady-state under repeated dosing is governed by the same ODE with a forcing term, and pharmacists choose the dosing interval (often matched to the half-life) to keep C in the therapeutic window. This is calculus saving lives — the same exponential-decay ODE from physics, applied to medicine."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Match each real-world problem to the calculus tool used to solve it, and justify the match: (a) finding the area under a probability density, (b) predicting a planet's orbit, (c) compressing an audio file, (d) training a neural network, (e) approximating sin(x) for small x."
+  hint="Consider which pillar (derivative, integral, series, ODE, gradient) each problem maps to. (a) probability is an accumulation; (b) orbits are motion = evolution; (c) audio compression decomposes a signal; (d) training optimizes a loss; (e) approximation is what series do."
+  answer="(a) Area under a probability density → INTEGRAL. The probability that X lies in [a, b] is ∫_a^b f(x) dx — accumulation of density. (b) Planet's orbit → DIFFERENTIAL EQUATION. Newton's law m d²r/dt² = −GMm/r² is a second-order ODE; solving it gives the Keplerian ellipse. (c) Audio compression → SERIES (Fourier). The signal is decomposed into a trigonometric series; discarding low-amplitude high-frequency components compresses it — MP3 and JPEG both work this way. (d) Training a neural network → GRADIENT. The update w ← w − α∇L follows the negative gradient of the loss — multivariable optimization via partial derivatives. (e) Approximating sin(x) for small x → SERIES (Taylor). sin(x) = x − x³/6 + ···, so for small x, sin(x) ≈ x — a first-order Taylor truncation, the foundation of small-angle physics. The exercise shows that five pillars of calculus cover five radically different applications — the vocabulary is small, but it describes a vast world."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Synthesis: in one or two sentences each, explain how a single calculus concept appears in (a) physics, (b) machine learning, (c) finance, and (d) biology. Aim to identify the SHARED mathematical structure, not just surface analogies."
+  hint="Pick one concept (e.g. the derivative, the integral, the ODE, the gradient) and trace it across all four fields. The point is that the same equation, with different variable names, governs all four."
+  answer="Take the DIFFERENTIAL EQUATION as the shared concept. (a) PHYSICS: Newton's m d²x/dt² = F says acceleration (second derivative of position) is set by force — the ODE's solution is the trajectory of a planet or pendulum. (b) MACHINE LEARNING: in the continuous-time limit, gradient descent becomes dw/dt = −∇L(w) — an ODE whose stable equilibria are the loss minima; convergence analysis is stability analysis of this ODE. (c) FINANCE: the Black-Scholes PDE (a multivariable ODE-like equation) prices options by enforcing no-arbitrage; its solution is the option value function. (d) BIOLOGY: dP/dt = kP(1 − P/K) models population growth; the equilibria and their stability encode carrying capacity and ecological balance. The shared structure: in every field, an ODE specifies how a state evolves based on its current value, and the calculus of ODEs (separation, integrating factors, Picard-Lindelöf, stability) solves or analyzes it. Same equation, different variable names (x/w/V/P), different science. This is the deepest unification this course offers: calculus is not one tool among many for these fields — it is the shared grammar that makes them all quantitative."
+/>
+
+---
+
+**This is the end of the calculus course.** You have built the entire edifice: from the slope of a tangent line to the gradient of a loss surface, from the area under a curve to the Fourier decomposition of a signal, from the limit of a sequence to the convergence of a Taylor series, from $dy/dx = ky$ to the Black-Scholes equation. Every equation that describes the physical, biological, computational, and financial world is now within your reach. The mathematics continues — linear algebra, real analysis, partial differential equations, differential geometry — but the foundation is laid. Calculus is the language; go speak it.

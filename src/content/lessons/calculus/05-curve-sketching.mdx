@@ -18,12 +18,16 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { DerivativeSlope } from '../../../components/interactive/calculus/DerivativeSlope';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-If someone tells you a function's derivative, you can sketch the original function. You don't need the formula — just the sign of $f'$ tells you everything about the shape.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+If someone tells you a function's derivative, you can sketch the original function. You don't need the formula — just the **sign** of $f'$ tells you almost everything about the shape. Add the sign of $f''$ and you know the curvature too. This is the diagnostic heart of calculus: the derivatives are an X-ray of the function's behavior.
 
 ## The derivative reads the landscape
 
@@ -43,9 +47,11 @@ Think of $f(x)$ as a hilly landscape and $f'(x)$ as a topographic map:
 
 Trace $f(x) = x^3 - 3x$ from left to right: the curve rises (green positive), peaks at $x = -1$ (green crosses zero), falls through the origin (green negative), bottoms out at $x = 1$ (green crosses zero again), then rises forever.
 
+Points where $f'(x) = 0$ (or where $f'$ fails to exist) are called **critical points**. They are the *only* candidates for local maxima and minima — but a critical point is not automatically an extremum. The classification requires looking at how $f'$ changes sign around the point.
+
 ## The second derivative and concavity
 
-$f''(x)$ tells you about the **curvature**:
+While $f'$ tells you direction, $f''(x)$ tells you about **curvature** — how the slope itself is changing:
 
 - $f''(x) > 0$: the curve is **concave up** — it holds water, like a bowl. The slope is increasing.
 - $f''(x) < 0$: the curve is **concave down** — it spills water, like a dome. The slope is decreasing.
@@ -53,44 +59,119 @@ $f''(x)$ tells you about the **curvature**:
 
 For $f(x) = x^3 - 3x$, we have $f''(x) = 6x$. The inflection point is at $x = 0$ — the exact moment the curve switches from concave down (dome) to concave up (bowl).
 
-## The curve sketching recipe
+<MathBlock expression={"\\text{concave up} \\iff f''(x) > 0, \\qquad \\text{concave down} \\iff f''(x) < 0"} />
 
-Think of curve sketching as a **diagnostic flowchart** — a systematic procedure that extracts the complete shape from just a few pieces of information:
+## Theorem: First Derivative Test
 
-**Domain** → **First derivative** (where does the curve rise or fall?) → **Second derivative** (where does it bend like a bowl or a dome?) → **Sketch**
+Suppose $c$ is a critical point of $f$ (so $f'(c) = 0$ or $f'(c)$ does not exist) and $f$ is continuous at $c$.
 
-Given information about $f'$ and $f''$, here's how to sketch:
+<MathBlock expression={"\\text{If } f' \\text{ changes sign from } + \\text{ to } - \\text{ at } c, \\text{ then } f(c) \\text{ is a local maximum.}"} />
+<MathBlock expression={"\\text{If } f' \\text{ changes sign from } - \\text{ to } + \\text{ at } c, \\text{ then } f(c) \\text{ is a local minimum.}"} />
+<MathBlock expression={"\\text{If } f' \\text{ does not change sign at } c, \\text{ then } f(c) \\text{ is neither.}"} />
 
-1. Find where $f'(x) = 0$ → these are the critical points.
-2. Test the sign of $f'$ between critical points → determine increasing/decreasing.
-3. Find where $f''(x) = 0$ → these are the inflection points.
-4. Test the sign of $f''$ → determine concavity.
-5. Combine: a peak is where $f'$ changes from positive to negative (or equivalently, $f'' < 0$ at a critical point).
+The intuition is purely geometric: if the function was climbing (positive slope) and starts falling (negative slope), the critical point is a peak. If it was falling and starts climbing, the critical point is a valley. The First Derivative Test is robust — it works even when the second derivative is zero or undefined, which is why it never fails to classify a sign-change.
+
+## Theorem: Second Derivative Test
+
+Suppose $f'(c) = 0$ and $f''$ is continuous near $c$.
+
+<MathBlock expression={"f''(c) > 0 \\implies f(c) \\text{ is a local minimum (concave up = bowl)"} />
+<MathBlock expression={"f''(c) < 0 \\implies f(c) \\text{ is a local maximum (concave down = dome)"} />
+<MathBlock expression={"f''(c) = 0 \\implies \\text{the test is inconclusive."} />
+
+When $f''(c) = 0$, *anything* can happen. Consider $f(x) = x^4$, which has $f'(0) = 0$ and $f''(0) = 0$ yet a clear minimum at the origin. Or $f(x) = -x^4$, same derivatives but a maximum. Or $f(x) = x^3$, where the origin is neither. When the second derivative test fails, fall back to the **First Derivative Test** by checking the sign of $f'$ on either side of $c$.
+
+<FormulaReadout formulas={[
+  { label: "临界点", expression: "f'(c) = 0 \\text{ 或 } f'(c) \\text{ 不存在}" },
+  { label: "一阶导数判别法", expression: "f': \\; + \\to 0 \\to - \\implies f(c) \\text{ 为极大值}" },
+  { label: "二阶导数判别法", expression: "f'(c)=0,\\; f''(c)<0 \\implies f(c) \\text{ 为极大值}" },
+  { label: "拐点", expression: "f''(c) = 0 \\text{ 且凹凸性改变}" },
+]} />
+
+## The curve sketching checklist
+
+Think of curve sketching as a **diagnostic flowchart** — a systematic procedure that extracts the complete shape from just a few pieces of information. Professional mathematicians run through this checklist mentally before plotting anything:
+
+1. **Domain** — Where is $f$ defined? Note excluded points, asymptotes, and endpoints.
+2. **Intercepts** — Where does $f$ cross the axes? ($x$-intercepts: solve $f(x)=0$; $y$-intercept: evaluate $f(0)$.)
+3. **Symmetry** — Is $f$ even ($f(-x) = f(x)$, $y$-axis symmetry), odd ($f(-x) = -f(x)$, origin symmetry), or periodic?
+4. **Asymptotes** — Vertical (where $f \to \pm\infty$), horizontal (<MathInline expression={"\\lim_{x \\to \\pm\\infty} f(x)"} />), or oblique (slanted).
+5. **Intervals of increase/decrease** — Solve $f'(x) > 0$ and $f'(x) < 0$. Identify critical points where $f'(x) = 0$.
+6. **Local extrema** — Apply the First or Second Derivative Test at each critical point.
+7. **Concavity and inflection points** — Solve $f''(x) = 0$; test the sign of $f''$ on either side.
 
 A computer can plot any function instantly — but understanding these diagnostic steps is what makes you a mathematician, not a button-pusher. The point of curve sketching isn't to produce the picture; it's to train yourself to read a function's shape directly from its derivatives, the way a doctor reads an X-ray.
 
+## Three ways to read the second derivative
+
+$f''$ carries three layers of meaning, each useful in a different context:
+
+1. **Geometric (curvature):** the sign of $f''$ tells you bowl vs. dome — whether the curve bends toward or away from you.
+2. **Physical (acceleration):** if $f$ is position, $f'$ is velocity and $f''$ is acceleration. A positive $f''$ means you're speeding up in the positive direction.
+3. **Optimization (classification):** at a critical point, $f''$ immediately classifies it as a max or min — no sign chart needed.
+
+## Modern applications
+
+Curve-sketching logic is the foundation of several modern techniques:
+
+- **Optimism in machine learning:** training a neural network means navigating a loss landscape. Inflection points and saddle points (where the gradient is zero but it's neither a min nor a max) are the *central obstacle* to efficient training — most "critical points" in high-dimensional loss surfaces are saddles, not minima.
+- **Physics — phase transitions:** the second derivative of the free energy with respect to temperature is the heat capacity. An inflection point (a discontinuity or zero in $f''$) signals a phase transition — the moment a material changes state.
+- **Economics — diminishing returns:** marginal cost is the first derivative of total cost; its sign and curvature tell you whether producing more is getting cheaper or more expensive per unit.
+
 <KeyInsight>
-The first derivative tells you direction (up/down/flat). The second derivative tells you curvature (bowl/dome/switching). Together they give you the complete shape of the function.
+The first derivative tells you direction (up/down/flat). The second derivative tells you curvature (bowl/dome/switching). Together they give you the complete shape of the function — and at a critical point, the sign change of $f'$ classifies the extremum, while $f''$ offers a faster test that occasionally fails.
 </KeyInsight>
+
+## Connections
+
+This lesson connects [differentiation rules](/courses/calculus/03-differentiation-rules) to the **shape** of functions. The Mean Value Theorem is the hidden engine: it guarantees that if $f'(x) > 0$ on an interval, then $f$ is strictly increasing there — the sign of the derivative *rigorously* determines direction, not just as intuition. In the [next lesson on optimization](/courses/calculus/06-optimization), we'll use these same critical points and classification tests to find the *best* value of a function, not just classify its shape.
+
+The concavity analysis generalizes in two directions. In multivariable calculus, the **Hessian matrix** of second partial derivatives plays the role of $f''$ — its eigenvalues classify critical points of surfaces as minima, maxima, or saddle points. And in numerical methods, Newton's method for finding roots uses the second derivative (curvature) to decide how big a step to take, exactly the way $f''$ refines our picture of a curve.
 
 ## Practice
 
 <ExerciseBlock number={1}
   prompt="A function has f'(x) > 0 for x < 2 and f'(x) < 0 for x > 2. What can you say about f(2)?"
   hint="The function increases until x = 2, then decreases. What does that make x = 2?"
-  answer="f(2) is a local maximum. The function climbs up to x = 2 then falls away from it."
+  answer="f(2) is a local maximum. The function climbs up to x = 2 then falls away from it. This is the First Derivative Test in its purest form: f' changes from + to −, so the critical point is a peak."
 />
 
 <ExerciseBlock number={2}
-  prompt="The function f(x) = x⁴ has f'(0) = 0 and f''(0) = 0. Is x = 0 a maximum, minimum, or neither?"
-  hint="Check the sign of f'(x) on either side of 0. Does f change from increasing to decreasing, or vice versa?"
-  answer="f'(x) = 4x³, which is negative for x < 0 and positive for x > 0. The function decreases then increases — so x = 0 is a minimum. The second derivative test fails here (f''(0) = 0), but the first derivative test works."
+  prompt="The function f(x) = x⁴ has f'(0) = 0 and f''(0) = 0. Is x = 0 a maximum, minimum, or neither? Which test do you use?"
+  hint="The second derivative test fails (f''(0) = 0). Fall back to the First Derivative Test: check the sign of f'(x) on either side of 0."
+  answer="f'(x) = 4x³, which is negative for x < 0 and positive for x > 0. The function decreases then increases — so x = 0 is a minimum. The second derivative test fails here (f''(0) = 0), but the First Derivative Test succeeds because f' changes sign from − to +."
 />
 
 <ExerciseBlock number={3}
-  prompt="Sketch a function where f'(x) = 0 at x = 1 and x = 3, f'(x) > 0 for x < 1, f'(x) < 0 for 1 < x < 3, and f'(x) > 0 for x > 3."
-  hint="This function rises, peaks at x = 1, falls to x = 3, then rises again. What shape is it?"
-  answer="The function has a local maximum at x = 1 and a local minimum at x = 3. It looks like a mountain followed by a valley, then climbing again — like a 'W' with the left peak higher than the center."
+  prompt="Find all critical points of f(x) = x³ − 3x and classify each as a local max, local min, or neither. Then find the inflection point."
+  hint="Compute f'(x) and f''(x). Set f'(x) = 0 for critical points, then use f'' to classify. Set f''(x) = 0 for the inflection point."
+  answer="f'(x) = 3x² − 3 = 3(x−1)(x+1), so critical points at x = ±1. f''(x) = 6x. At x = −1: f''(−1) = −6 < 0, so local max (value 2). At x = 1: f''(1) = 6 > 0, so local min (value −2). Inflection point where f''(x) = 0, i.e. x = 0 (concavity switches from down to up)."
 />
 
-[Next Lesson →](/courses/calculus/06-optimization)
+<ExerciseBlock number={4}
+  prompt="Sketch a function where f'(x) = 0 at x = 1 and x = 3, f'(x) > 0 for x < 1, f'(x) < 0 for 1 < x < 3, and f'(x) > 0 for x > 3. Mark the local extrema."
+  hint="This function rises, peaks at x = 1, falls to x = 3, then rises again. What shape is it?"
+  answer="The function has a local maximum at x = 1 (f' changes + to −) and a local minimum at x = 3 (f' changes − to +). It looks like a mountain followed by a valley, then climbing again — like an 'N' or a tilted 'W' with the left peak higher than the center valley."
+/>
+
+<ExerciseBlock number={5}
+  prompt="For f(x) = x/(x² + 1), find the domain, the horizontal asymptote, and the intervals where f is increasing/decreasing."
+  hint="Domain: where is the denominator zero? Asymptote: compute lim(x→±∞) f(x). Increase/decrease: compute f'(x) and find its sign."
+  answer="Domain: all real x (x² + 1 ≥ 1 > 0, never zero). Horizontal asymptote: lim(x→±∞) x/(x²+1) = 0, so y = 0. Derivative: f'(x) = [(x²+1)(1) − x(2x)]/(x²+1)² = (1 − x²)/(x²+1)². The denominator is always positive, so the sign comes from 1 − x². f'(x) > 0 for |x| < 1 (increasing on (−1,1)); f'(x) < 0 for |x| > 1 (decreasing on (−∞,−1) and (1,∞)). Local max at x = 1, local min at x = −1."
+/>
+
+<ExerciseBlock number={6}
+  prompt="True or false, with justification: if f''(c) = 0, then (c, f(c)) is an inflection point of f."
+  hint="Think of a counterexample. What if f''(x) = 0 on a whole interval, or f''(c) = 0 but does not change sign?"
+  answer="False. f''(c) = 0 is necessary for an inflection point only in the smooth case, but it is not sufficient. The definition requires that concavity *changes* at c. Counterexample: f(x) = x⁴ has f''(x) = 12x², so f''(0) = 0, but f''(x) ≥ 0 on both sides of 0 — the function is concave up everywhere, so (0,0) is not an inflection point (it's a minimum). An inflection point requires f'' to actually switch sign."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Explain why the First Derivative Test never fails to classify a critical point, but the Second Derivative Test sometimes does. Give one example of each situation."
+  hint="The First Derivative Test looks at sign change of f'. The Second Derivative Test only looks at the value of f'' at a single point. What information does each capture?"
+  answer="The First Derivative Test examines whether f' actually changes sign across the critical point — which directly encodes whether the function transitions from increasing to decreasing (or vice versa). This sign change is the *definition* of a local extremum, so the test is definitive whenever there is a genuine extremum. The Second Derivative Test, by contrast, only samples f'' at one point: if f''(c) = 0, it tells you nothing about the sign change of f'. Example where both work: f(x) = x², f'(0) = 0, f''(0) = 2 > 0 → minimum (Second Derivative Test succeeds). Example where only the First works: f(x) = x⁴, f'(0) = 0, f''(0) = 0 (Second Derivative Test inconclusive), but f' changes from − to + → minimum (First Derivative Test succeeds)."
+/>
+
+---
+
+**Up next:** [Optimization](/courses/calculus/06-optimization)

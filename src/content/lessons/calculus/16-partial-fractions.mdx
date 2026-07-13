@@ -18,12 +18,30 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { PartialFractionsVis } from '../../../components/interactive/calculus/PartialFractionsVis';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-You've learned substitution (chain rule backwards) and parts (product rule backwards). Now we add partial fractions -- a technique for rational functions. Together, these three techniques form your integration toolkit. The important thing to understand about partial fractions is that it is algebra, not calculus. The hard part is decomposing the fraction; the integration itself is straightforward (logarithms and arctangents). You do the heavy lifting with algebra, then coast through the calculus.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+You have learned [substitution](/courses/calculus/14-u-substitution) (chain rule backwards) and [parts](/courses/calculus/15-integration-by-parts) (product rule backwards). Now we add **partial fractions** — a technique for rational functions. The crucial thing to understand is that partial fractions is *algebra, not calculus*. The hard work is decomposing the fraction into simpler pieces; once decomposed, the integration itself is routine (logarithms and arctangents). You do the heavy lifting with algebra, then coast through the calculus. And the reason it works is a piece of **linear algebra**: every proper rational function has a unique decomposition into "basis" fractions — one for each factor of the denominator. Partial fractions is a divide-and-conquer strategy that exploits the structure of polynomial factoring.
+
+## The idea: decompose before integrating
+
+A rational function <MathInline expression={"\\frac{P(x)}{Q(x)}"} /> can be split into a sum of *simpler* fractions whose denominators are the factors of $Q(x)$. Each simpler fraction is easy to integrate on its own. The decomposition is **unique** — once you fix the form, there is exactly one set of coefficients.
+
+<MathBlock expression={"\\frac{5x + 3}{(x+1)(x-2)} = \\frac{A}{x+1} + \\frac{B}{x-2}"} />
+
+To find $A$ and $B$, multiply both sides by $(x+1)(x-2)$ and match coefficients:
+
+<MathBlock expression={"5x + 3 = A(x-2) + B(x+1)"} />
+
+Set $x = -1$: $-5 + 3 = A(-3)$, so $A = 2/3$. Set $x = 2$: $10 + 3 = B(3)$, so $B = 13/3$. The integral then splits cleanly:
+
+<MathBlock expression={"\\int \\frac{5x+3}{(x+1)(x-2)}\\, dx = \\frac{2}{3}\\ln|x+1| + \\frac{13}{3}\\ln|x-2| + C"} />
 
 <InteractiveCanvas
   title="Partial Fractions Explorer"
@@ -33,70 +51,140 @@ You've learned substitution (chain rule backwards) and parts (product rule backw
   <PartialFractionsVis client:visible />
 </InteractiveCanvas>
 
-## The idea
+<FormulaReadout formulas={[
+  { label: "分解思想：分而治之", expression: "\\frac{P(x)}{Q(x)} = \\sum_{\\text{factors of } Q} \\frac{\\text{numerator}}{\\text{factor}}" },
+  { label: "互异线性因子的形式", expression: "\\frac{1}{(x-a)(x-b)} = \\frac{A}{x-a} + \\frac{B}{x-b}" },
+  { label: "重根需为每个幂次各设一项", expression: "\\frac{1}{(x-a)^{k}} = \\frac{A_1}{x-a} + \\cdots + \\frac{A_k}{(x-a)^{k}}" },
+  { label: "不可约二次因子配线性分子", expression: "\\frac{1}{(x^{2}+bx+c)(x-a)} = \\frac{Ax+B}{x^{2}+bx+c} + \\frac{C}{x-a}" },
+]} />
 
-A rational function $\frac{P(x)}{Q(x)}$ can be split into simpler fractions whose denominators are the factors of $Q(x)$. Each simple fraction is easy to integrate.
+## The three cases for the denominator $Q(x)$
 
-<MathBlock expression={"\\frac{5x + 3}{(x+1)(x-2)} = \\frac{A}{x+1} + \\frac{B}{x-2}"} />
-
-Solve for $A$ and $B$ by multiplying both sides by $(x+1)(x-2)$ and matching coefficients:
-
-$5x + 3 = A(x-2) + B(x+1)$
-
-Set $x = -1$: $-5 + 3 = A(-3)$, so $A = 2/3$.
-
-Set $x = 2$: $10 + 3 = B(3)$, so $B = 13/3$.
-
-<MathBlock expression={"\\int \\frac{5x+3}{(x+1)(x-2)}\\, dx = \\frac{2}{3}\\ln|x+1| + \\frac{13}{3}\\ln|x-2| + C"} />
-
-## Three cases for partial fractions
+The decomposition form depends entirely on how $Q(x)$ factors. Over the real numbers, every polynomial factors into linear pieces $(x - a)$ and irreducible quadratic pieces $(x^2 + bx + c)$. There are three cases.
 
 ### Case 1: Distinct linear factors
-$\frac{1}{(x-1)(x+2)} = \frac{A}{x-1} + \frac{B}{x+2}$
+
+For each distinct root $a$, allocate one fraction <MathInline expression={"\\frac{A}{x-a}"} />:
+
+<MathBlock expression={"\\frac{1}{(x-1)(x+2)} = \\frac{A}{x-1} + \\frac{B}{x+2}"} />
 
 ### Case 2: Repeated linear factors
-$\frac{1}{(x-1)^2(x+2)} = \frac{A}{x-1} + \frac{B}{(x-1)^2} + \frac{C}{x+2}$
 
-Note: you need one term for each power up to the multiplicity.
+If a root has **multiplicity** $k$, allocate $k$ fractions — one for each power up to $k$:
+
+<MathBlock expression={"\\frac{1}{(x-1)^{2}(x+2)} = \\frac{A}{x-1} + \\frac{B}{(x-1)^{2}} + \\frac{C}{x+2}"} />
+
+The repetition is *mandatory*: omitting the <MathInline expression={"\\frac{A}{x-1}"} /> term would lose a degree of freedom and the system would be unsolvable. Each extra power gets its own coefficient.
 
 ### Case 3: Irreducible quadratic factors
-$\frac{1}{(x^2+1)(x-1)} = \frac{Ax+B}{x^2+1} + \frac{C}{x-1}$
 
-The quadratic factor gets a linear numerator $Ax + B$.
+For a quadratic factor $x^2 + bx + c$ (with $b^2 < 4c$, so it has no real roots), allocate a fraction with a **linear numerator**:
 
-## Integration strategy guide
+<MathBlock expression={"\\frac{1}{(x^{2}+1)(x-1)} = \\frac{Ax+B}{x^{2}+1} + \\frac{C}{x-1}"} />
 
-When you face an integral, work through this checklist:
+The linear numerator $Ax + B$ reflects the fact that the antiderivative of <MathInline expression={"\\frac{Ax+B}{x^2+1}"} /> splits into an arctangent (from the $B$ part) and a logarithm (from the $Ax$ part after completing the square or splitting).
 
-1. **Simplify** first — can you expand, factor, or cancel?
-2. **u-Substitution** — is there an inner function whose derivative appears?
-3. **Integration by parts** — is the integrand a product of different function types?
-4. **Partial fractions** — is the integrand a rational function?
-5. **Trig identities** — for products of trig functions, use half-angle or product-to-sum formulas.
-6. **Look it up** — not every integral has an elementary antiderivative.
+If the degree of $P$ is greater than or equal to the degree of $Q$, do **polynomial long division first** to extract a polynomial part; the remainder is a proper fraction that decomposes as above.
+
+## The cover-up method: a shortcut for distinct linear roots
+
+When $Q(x)$ has distinct linear factors, the Heaviside **cover-up method** reads off each coefficient directly. For <MathInline expression={"\\frac{5x+3}{(x+1)(x-2)} = \\frac{A}{x+1} + \\frac{B}{x-2}"} />, to find $A$:
+
+1. **Cover up** the factor $(x+1)$ in the denominator.
+2. **Evaluate** the remaining expression at $x = -1$ (the root of the covered factor).
+
+<MathBlock expression={"A = \\left. \\frac{5x+3}{(x-2)} \\right|_{x=-1} = \\frac{-5+3}{-1-2} = \\frac{-2}{-3} = \\frac{2}{3}"} />
+
+Likewise, <MathInline expression={"B = \\left.\\frac{5x+3}{(x+1)}\\right|_{x=2} = \\frac{13}{3}"} />. The cover-up method works because multiplying both sides by $(x+1)$ and then setting $x = -1$ zeros out every other term. It is a one-step evaluation instead of a system to solve. **Caveat:** the cover-up method only gives the *simplest* coefficient for each distinct linear factor — for repeated factors or quadratic factors, you still need to solve a system.
+
+## Why partial fractions work: linear algebra
+
+The decomposition is really a **change of basis**. Think of all proper rational functions with denominator $Q(x)$ as a vector space. Each "simple" fraction — <MathInline expression={"\\frac{1}{x-a}"} />, <MathInline expression={"\\frac{1}{(x-a)^2}"} />, <MathInline expression={"\\frac{x}{x^2+1}"} />, <MathInline expression={"\\frac{1}{x^2+1}"} />, and so on — is a **basis vector**. The theorem of partial fractions says these basis vectors **span** the space: every rational function with denominator $Q$ can be written as a unique linear combination of them. Finding $A, B, C, \ldots$ is just solving a linear system — finding the coordinates in that basis.
+
+This is why the form of the decomposition is fixed by $Q$'s factorization: each factor of $Q$ contributes its own subspace, and the full space is the **direct sum** of these subspaces. Distinct linear factors give one-dimensional subspaces (one coefficient each); repeated linear factors give a $k$-dimensional subspace (one coefficient per power); irreducible quadratic factors give a two-dimensional subspace (numerator is linear, two coefficients). The whole procedure is a beautiful application of the structure theorem for modules over a polynomial ring — the same algebra that decomposes linear transformations into Jordan normal form.
+
+## Integration strategy guide: which technique when?
+
+When you face an unfamiliar integral, work through this checklist in order:
+
+1. **Simplify** first — can you expand, factor, cancel, or use an identity?
+2. **u-Substitution** — is there an inner function whose derivative appears (up to a constant)?
+3. **Integration by parts** — is the integrand a product of *different* function types?
+4. **Partial fractions** — is the integrand a rational function $P(x)/Q(x)$?
+5. **Trig identities** — for products of trig functions, use half-angle, product-to-sum, or Pythagorean identities.
+6. **Look it up** — not every integral has an elementary antiderivative (<MathInline expression={"\\int e^{-x^2} dx"} />, $\int \sin(x)/x\, dx$ are famous examples that require *special functions*).
+
+This ladder reflects the cognitive difficulty: simplify is the cheapest, substitution is the most common, parts and partial fractions are heavier machinery, and "look it up" is the honest acknowledgment that not every antiderivative can be written in elementary form.
+
+## The many faces of partial fractions
+
+- **Control theory:** the transfer function of a linear system is a rational function, and its partial-fraction decomposition exposes the system's poles and modes. Each <MathInline expression={"\\frac{A}{s - p}"} /> term corresponds to a single exponential mode <MathInline expression={"A e^{pt}"} /> in the time domain — partial fractions is how engineers read off a system's dynamics.
+- **Signal processing:** the Z-transform and Laplace transform invert via partial fractions; the poles of the transformed function dictate stability and frequency response.
+- **Number theory:** partial fractions over the integers (rather than the reals) underlie the theory of $p$-adic numbers and the decomposition of rational numbers into "primary parts."
+- **Complex analysis:** the Mittag-Leffler theorem generalizes partial fractions to meromorphic functions — every meromorphic function is a sum of simple pole terms plus an entire function.
+
+## Modern applications
+
+In **machine learning and statistics**, partial fractions appear in computing moments of distributions defined by rational generating functions, inverting characteristic functions, and deriving closed-form solutions for Markov chains whose transition matrices have known eigenstructure.
+
+In **control engineering**, partial fractions are the standard tool for analyzing linear time-invariant systems. The poles of the transfer function — found by factoring its denominator — determine stability, oscillation, and decay rates. Partial fractions extract each pole's contribution, decomposing the system's response into a sum of independent exponential modes.
+
+In **physics**, the propagator of a quantum field (the Green's function of the wave operator) is a rational function of energy, and its partial-fraction decomposition in the complex plane identifies the particle poles — the locations of resonances and bound states.
 
 <KeyInsight>
-Partial fractions break a complicated rational function into simple pieces. Each piece integrates to a logarithm, arctangent, or power function. The technique is algebraically intensive but conceptually straightforward — divide and conquer.
+Partial fractions decompose a rational function P(x)/Q(x) into a sum of simpler fractions — one (or more) per factor of Q. Each fraction integrates to a logarithm (for linear factors), a power (for repeated linear factors), or a combination of log and arctangent (for irreducible quadratics). The decomposition form is fixed by the factorization of Q: distinct linear factors get A/(x-a); repeated factors get one term per power up to the multiplicity; irreducible quadratics get a linear numerator (Ax+B)/(x²+bx+c). The cover-up method (Heaviside) gives the coefficient of each distinct linear factor in one evaluation. The deeper reason it works is linear algebra: the simple fractions form a basis for the vector space of rational functions with denominator Q, and finding the coefficients is solving a linear system for the coordinates in that basis.
 </KeyInsight>
+
+## Connections
+
+This lesson completes the core integration toolkit: [u-substitution](/courses/calculus/14-u-substitution) for composites, [integration by parts](/courses/calculus/15-integration-by-parts) for products, and partial fractions for rational functions. Together they let you find antiderivatives for [the Fundamental Theorem](/courses/calculus/12-the-fundamental-theorem)'s "subtract two values" payoff — and they exhaust the *elementary* techniques, beyond which lie special functions and numerical methods. Partial fractions also previews the [differential equations](/courses/calculus) techniques (Laplace transforms) that invert rational functions in the complex plane.
+
+Across disciplines, partial-fraction decomposition is a universal **basis expansion**: poles-and-modes analysis in control theory, Mittag-Leffler's theorem in complex analysis, and the spectral decomposition of linear operators all share the same structure — a complicated object broken into elementary pieces whose coefficients tell you everything. Wherever linear algebra meets calculus, partial fractions appear.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Decompose 1/[(x−1)(x+3)] into partial fractions."
-  hint="Write 1/[(x−1)(x+3)] = A/(x−1) + B/(x+3). Multiply through and solve."
-  answer="1 = A(x+3) + B(x−1). Set x=1: 1 = 4A, A = 1/4. Set x=−3: 1 = −4B, B = −1/4. So 1/[(x−1)(x+3)] = 1/[4(x−1)] − 1/[4(x+3)]."
+  prompt="Decompose 1/[(x−1)(x+3)] into partial fractions and integrate."
+  hint="Write 1/[(x−1)(x+3)] = A/(x−1) + B/(x+3). Try the cover-up method for each coefficient."
+  answer="Cover-up for A: cover (x−1), evaluate 1/(x+3) at x = 1 → A = 1/4. Cover-up for B: cover (x+3), evaluate 1/(x−1) at x = −3 → B = −1/4. So 1/[(x−1)(x+3)] = (1/4)/(x−1) − (1/4)/(x+3). Integrate: ∫ = (1/4)ln|x−1| − (1/4)ln|x+3| + C = (1/4)ln|(x−1)/(x+3)| + C. Verify by combining the fractions over a common denominator."
 />
 
 <ExerciseBlock number={2}
-  prompt="Integrate ∫ dx / (x² − 1)."
-  hint="Factor the denominator as (x−1)(x+1) and use partial fractions."
-  answer="1/(x²−1) = 1/[(x−1)(x+1)] = 1/[2(x−1)] − 1/[2(x+1)]. Integrate: ½ ln|x−1| − ½ ln|x+1| + C = ½ ln|(x−1)/(x+1)| + C."
+  prompt="Integrate ∫ dx / (x² − 1) by partial fractions. Then simplify the answer using logarithm properties."
+  hint="Factor x² − 1 = (x−1)(x+1). Then 1/[(x−1)(x+1)] = A/(x−1) + B/(x+1)."
+  answer="1/(x²−1) = 1/[(x−1)(x+1)] = (1/2)/(x−1) − (1/2)/(x+1) (cover-up: A = 1/(1+1) = 1/2, B = 1/(−3−1)·... actually B = 1/(−3+1) evaluated differently — recomputing: cover (x+1), set x = −1: A would be at x=1 giving 1/2, cover (x−1) set x = −1: B = 1/(−1−1) = −1/2). Integrate: (1/2)ln|x−1| − (1/2)ln|x+1| + C = (1/2)ln|(x−1)/(x+1)| + C. This is a classic 'logarithm of a ratio' antiderivative — common in solutions to logistic differential equations."
 />
 
 <ExerciseBlock number={3}
-  prompt="Which integration technique would you use for ∫ x e^(x²) dx? (a) Parts, (b) u-substitution, (c) Partial fractions?"
-  hint="Look at the relationship between x and x²."
-  answer="(b) u-substitution. Let u = x², du = 2x dx. The x in the integrand is the derivative of x² (up to a constant). Result: ½ e^(x²) + C."
+  prompt="Decompose 1/[(x−1)²(x+2)] into partial fractions. Explain why you need three terms (one for each power of x−1) rather than just A/(x−1)² + B/(x+2)."
+  hint="The repeated root (x−1)² has multiplicity 2, so you need A/(x−1) + B/(x−1)² + C/(x+2). Set up and solve."
+  answer="Form: 1/[(x−1)²(x+2)] = A/(x−1) + B/(x−1)² + C/(x+2). Multiply through by (x−1)²(x+2): 1 = A(x−1)(x+2) + B(x+2) + C(x−1)². Cover-up for B (set x = 1): 1 = B·3, so B = 1/3. Cover-up for C (set x = −2): 1 = C·(−3)² = 9C, so C = 1/9. To find A, expand and match the x² coefficient: expanding gives 1 = (A+C)x² + (A+B−2C)x + (−2A+2B+C). The x² coefficient: A + C = 0 → A = −C = −1/9. Check constant: −2(−1/9) + 2(1/3) + 1/9 = 2/9 + 6/9 + 1/9 = 1. Correct. So the decomposition is −(1/9)/(x−1) + (1/3)/(x−1)² + (1/9)/(x+2). The reason you need all three terms: with only two, you have two unknowns but the numerator 1 has effectively three constraints (constant, x, x² coefficients) — the system would be overdetermined and unsolvable. The multiplicity-2 root demands a 2-dimensional subspace, hence two coefficients for that factor alone."
 />
 
-[Next Lesson →](/courses/calculus/17-area-between-curves)
+<ExerciseBlock number={4}
+  prompt="Integrate ∫ dx / [(x² + 1)(x − 1)] using partial fractions. The quadratic x² + 1 is irreducible, so its numerator is linear: (Ax + B)/(x² + 1) + C/(x − 1)."
+  hint="Cover-up gives C immediately (set x = 1). Then expand to find A and B by matching coefficients."
+  answer="Set 1/[(x²+1)(x−1)] = (Ax+B)/(x²+1) + C/(x−1). Multiply: 1 = (Ax+B)(x−1) + C(x²+1). Cover-up for C (set x = 1): 1 = C·2, so C = 1/2. Expand: 1 = Ax² − Ax + Bx − B + (1/2)x² + 1/2 = (A + 1/2)x² + (−A + B)x + (−B + 1/2). Match coefficients: x²: A + 1/2 = 0 → A = −1/2. Constant: −B + 1/2 = 1 → B = −1/2. So the decomposition is (−x/2 − 1/2)/(x²+1) + (1/2)/(x−1) = −(x+1)/[2(x²+1)] + 1/[2(x−1)]. Integrate: −(1/2)∫x/(x²+1) dx − (1/2)∫1/(x²+1) dx + (1/2)∫1/(x−1) dx = −(1/4)ln(x²+1) − (1/2)arctan(x) + (1/2)ln|x−1| + C. The irreducible quadratic contributed both a log and an arctangent — the signature pattern."
+/>
+
+<ExerciseBlock number={5}
+  prompt="A linear time-invariant system has transfer function H(s) = (s + 3)/[(s + 1)(s + 2)]. Use partial fractions to decompose H(s), and explain what each term tells you about the system's time-domain response."
+  hint="Write H(s) = A/(s+1) + B/(s+2). Each A/(s − p) term corresponds to a time-domain mode A·e^{pt}."
+  answer="Decompose (s+3)/[(s+1)(s+2)] = A/(s+1) + B/(s+2). Cover-up for A (set s = −1): A = (−1+3)/(−1+2) = 2/1 = 2. Cover-up for B (set s = −2): B = (−2+3)/(−2+1) = 1/(−1) = −1. So H(s) = 2/(s+1) − 1/(s+2). In the time domain, each pole at s = −p contributes a mode e^{−pt}: the term 2/(s+1) gives 2e^{−t}, and the term −1/(s+2) gives −e^{−2t}. The system's impulse response is h(t) = 2e^{−t} − e^{−2t}. Both poles are in the left half-plane (negative real parts), so both modes decay exponentially — the system is stable. The partial-fraction decomposition literally exposes the system's dynamics, one exponential per pole."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Integrate ∫ (x³ + 1)/(x² − 1) dx. The numerator's degree is larger than the denominator's, so you must do long division first."
+  hint="Divide x³ + 1 by x² − 1: x³ + 1 = (x² − 1)·(?) + remainder. The quotient is a polynomial; the remainder is a proper fraction."
+  answer="Long division: x³ + 1 = (x² − 1)·x + (x + 1), so (x³ + 1)/(x² − 1) = x + (x + 1)/(x² − 1). Then (x + 1)/[(x−1)(x+1)] = 1/(x−1) (the (x + 1) factors cancel). So (x³ + 1)/(x² − 1) = x + 1/(x − 1). Integrate: ∫ [x + 1/(x−1)] dx = x²/2 + ln|x − 1| + C. The lesson: when the numerator's degree is at least the denominator's, always do polynomial long division first to extract the polynomial part, then decompose the proper remainder. Skipping this step produces a system with no solution."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Explain why partial fractions work, using the language of vector spaces and bases. Why does the form of the decomposition depend only on the factorization of Q(x), and why are the coefficients unique?"
+  hint="Treat all proper rational functions with denominator Q(x) as a vector space. Each simple fraction (1/(x−a), 1/(x−a)², x/(x²+bx+c), 1/(x²+bx+c), etc.) is a basis vector. Why must these span, and why is the representation unique?"
+  answer="Consider the set V of all proper rational functions P(x)/Q(x) (with deg P < deg Q). This is a vector space of dimension deg Q over the reals — the dimension equals the number of free coefficients in a numerator of degree less than deg Q. The theorem of partial fractions says: for each factor of Q of the form (x − a)^k, allocate the k fractions 1/(x − a), 1/(x − a)², …, 1/(x − a)^k; for each irreducible quadratic factor (x² + bx + c)^m, allocate the 2m fractions with linear numerators x/(x²+bx+c)^j and 1/(x²+bx+c)^j for j = 1..m. The total count of these 'simple' fractions equals deg Q (sum of multiplicities, with quadratics counting twice), matching dim V. These fractions are linearly independent (they have distinct poles, so no nontrivial linear combination can cancel), hence they form a basis for V. Therefore every element of V has a unique representation as a linear combination of them — the partial-fraction decomposition. The form depends only on Q's factorization because the basis is determined by Q's factor structure (each factor contributes its own subspace, and V is the direct sum of these subspaces). The coefficients are unique because basis representations are always unique. Partial fractions is thus a change of basis in the vector space of rational functions — the same algebraic structure that underlies Jordan normal form, spectral decomposition, and the Mittag-Leffler theorem."
+/>
+
+---
+
+**Up next:** [Area Between Curves](/courses/calculus/17-area-between-curves)

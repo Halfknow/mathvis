@@ -1,0 +1,768 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "MathViz" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img [ref=e6]
+        - generic [ref=e8]: MathViz
+      - navigation [ref=e9]:
+        - link "Linear Algebra" [ref=e10] [cursor=pointer]:
+          - /url: /courses/linear-algebra
+        - link "Calculus" [ref=e11] [cursor=pointer]:
+          - /url: /courses/calculus
+        - link "Probability" [ref=e12] [cursor=pointer]:
+          - /url: /courses/probability
+      - generic [ref=e13]:
+        - link "Search" [ref=e14] [cursor=pointer]:
+          - /url: /search
+          - img [ref=e15]
+        - link "中文" [ref=e18] [cursor=pointer]:
+          - /url: /zh/courses/probability/01-what-is-probability
+          - img [ref=e19]
+          - generic [ref=e22]: 中文
+        - button "Toggle theme" [ref=e23]:
+          - img [ref=e24]
+  - generic [ref=e26]:
+    - complementary [ref=e27]:
+      - generic [ref=e28]:
+        - paragraph [ref=e29]: Course
+        - link "Probability" [ref=e30] [cursor=pointer]:
+          - /url: /courses/probability
+      - navigation [ref=e31]:
+        - generic [ref=e32]:
+          - paragraph [ref=e33]: 1. Notation
+          - list [ref=e34]:
+            - listitem [ref=e35]:
+              - link "Probability Notation Reference 20m" [ref=e36] [cursor=pointer]:
+                - /url: /courses/probability/00-notation
+                - generic [ref=e37]: Probability Notation Reference
+                - generic [ref=e38]: 20m
+        - generic [ref=e39]:
+          - paragraph [ref=e40]: 2. The Language of Chance
+          - list [ref=e41]:
+            - listitem [ref=e42]:
+              - link "What is Probability? 14m" [ref=e43] [cursor=pointer]:
+                - /url: /courses/probability/01-what-is-probability
+                - generic [ref=e44]: What is Probability?
+                - generic [ref=e45]: 14m
+            - listitem [ref=e46]:
+              - 'link "Counting: The Art of Enumeration 16m" [ref=e47] [cursor=pointer]':
+                - /url: /courses/probability/02-counting-enumeration
+                - generic [ref=e48]: "Counting: The Art of Enumeration"
+                - generic [ref=e49]: 16m
+            - listitem [ref=e50]:
+              - link "Conditional Probability 18m" [ref=e51] [cursor=pointer]:
+                - /url: /courses/probability/03-conditional-probability
+                - generic [ref=e52]: Conditional Probability
+                - generic [ref=e53]: 18m
+            - listitem [ref=e54]:
+              - link "Bayes' Theorem 18m" [ref=e55] [cursor=pointer]:
+                - /url: /courses/probability/04-bayes-theorem
+                - generic [ref=e56]: Bayes' Theorem
+                - generic [ref=e57]: 18m
+        - generic [ref=e58]:
+          - paragraph [ref=e59]: 3. Random Variables and Their Shapes
+          - list [ref=e60]:
+            - listitem [ref=e61]:
+              - link "Random Variables 16m" [ref=e62] [cursor=pointer]:
+                - /url: /courses/probability/05-random-variables
+                - generic [ref=e63]: Random Variables
+                - generic [ref=e64]: 16m
+            - listitem [ref=e65]:
+              - link "Expectation and Variance 18m" [ref=e66] [cursor=pointer]:
+                - /url: /courses/probability/06-expectation-and-variance
+                - generic [ref=e67]: Expectation and Variance
+                - generic [ref=e68]: 18m
+            - listitem [ref=e69]:
+              - link "Discrete Distributions 20m" [ref=e70] [cursor=pointer]:
+                - /url: /courses/probability/07-discrete-distributions
+                - generic [ref=e71]: Discrete Distributions
+                - generic [ref=e72]: 20m
+            - listitem [ref=e73]:
+              - link "Continuous Distributions 20m" [ref=e74] [cursor=pointer]:
+                - /url: /courses/probability/08-continuous-distributions
+                - generic [ref=e75]: Continuous Distributions
+                - generic [ref=e76]: 20m
+            - listitem [ref=e77]:
+              - link "The Normal Distribution 20m" [ref=e78] [cursor=pointer]:
+                - /url: /courses/probability/09-the-normal-distribution
+                - generic [ref=e79]: The Normal Distribution
+                - generic [ref=e80]: 20m
+        - generic [ref=e81]:
+          - paragraph [ref=e82]: 4. When Variables Meet
+          - list [ref=e83]:
+            - listitem [ref=e84]:
+              - link "Joint Distributions 18m" [ref=e85] [cursor=pointer]:
+                - /url: /courses/probability/10-joint-distributions
+                - generic [ref=e86]: Joint Distributions
+                - generic [ref=e87]: 18m
+            - listitem [ref=e88]:
+              - link "Marginal and Conditional Distributions 16m" [ref=e89] [cursor=pointer]:
+                - /url: /courses/probability/11-marginal-and-conditional
+                - generic [ref=e90]: Marginal and Conditional Distributions
+                - generic [ref=e91]: 16m
+            - listitem [ref=e92]:
+              - link "Covariance and Correlation 18m" [ref=e93] [cursor=pointer]:
+                - /url: /courses/probability/12-covariance-and-correlation
+                - generic [ref=e94]: Covariance and Correlation
+                - generic [ref=e95]: 18m
+            - listitem [ref=e96]:
+              - link "Independence 16m" [ref=e97] [cursor=pointer]:
+                - /url: /courses/probability/13-independence
+                - generic [ref=e98]: Independence
+                - generic [ref=e99]: 16m
+        - generic [ref=e100]:
+          - paragraph [ref=e101]: 5. The Laws That Govern Randomness
+          - list [ref=e102]:
+            - listitem [ref=e103]:
+              - link "Concentration Inequalities 16m" [ref=e104] [cursor=pointer]:
+                - /url: /courses/probability/14-concentration-inequalities
+                - generic [ref=e105]: Concentration Inequalities
+                - generic [ref=e106]: 16m
+            - listitem [ref=e107]:
+              - link "Law of Large Numbers 18m" [ref=e108] [cursor=pointer]:
+                - /url: /courses/probability/15-law-of-large-numbers
+                - generic [ref=e109]: Law of Large Numbers
+                - generic [ref=e110]: 18m
+            - listitem [ref=e111]:
+              - link "Central Limit Theorem 20m" [ref=e112] [cursor=pointer]:
+                - /url: /courses/probability/16-central-limit-theorem
+                - generic [ref=e113]: Central Limit Theorem
+                - generic [ref=e114]: 20m
+        - generic [ref=e115]:
+          - paragraph [ref=e116]: 6. From Data to Inference
+          - list [ref=e117]:
+            - listitem [ref=e118]:
+              - link "Sampling and Point Estimation 18m" [ref=e119] [cursor=pointer]:
+                - /url: /courses/probability/17-sampling-and-point-estimation
+                - generic [ref=e120]: Sampling and Point Estimation
+                - generic [ref=e121]: 18m
+            - listitem [ref=e122]:
+              - link "Maximum Likelihood Estimation 20m" [ref=e123] [cursor=pointer]:
+                - /url: /courses/probability/18-maximum-likelihood-estimation
+                - generic [ref=e124]: Maximum Likelihood Estimation
+                - generic [ref=e125]: 20m
+            - listitem [ref=e126]:
+              - link "Confidence Intervals 18m" [ref=e127] [cursor=pointer]:
+                - /url: /courses/probability/19-confidence-intervals
+                - generic [ref=e128]: Confidence Intervals
+                - generic [ref=e129]: 18m
+            - listitem [ref=e130]:
+              - link "Hypothesis Testing 20m" [ref=e131] [cursor=pointer]:
+                - /url: /courses/probability/20-hypothesis-testing
+                - generic [ref=e132]: Hypothesis Testing
+                - generic [ref=e133]: 20m
+        - generic [ref=e134]:
+          - paragraph [ref=e135]: 7. Bayesian Thinking
+          - list [ref=e136]:
+            - listitem [ref=e137]:
+              - link "Two Schools of Thought 14m" [ref=e138] [cursor=pointer]:
+                - /url: /courses/probability/21-two-schools-of-thought
+                - generic [ref=e139]: Two Schools of Thought
+                - generic [ref=e140]: 14m
+            - listitem [ref=e141]:
+              - link "Prior, Likelihood, Posterior 18m" [ref=e142] [cursor=pointer]:
+                - /url: /courses/probability/22-prior-likelihood-posterior
+                - generic [ref=e143]: Prior, Likelihood, Posterior
+                - generic [ref=e144]: 18m
+            - listitem [ref=e145]:
+              - link "Bayesian Inference in Practice 20m" [ref=e146] [cursor=pointer]:
+                - /url: /courses/probability/23-bayesian-inference-in-practice
+                - generic [ref=e147]: Bayesian Inference in Practice
+                - generic [ref=e148]: 20m
+        - generic [ref=e149]:
+          - paragraph [ref=e150]: 8. Stochastic Processes
+          - list [ref=e151]:
+            - listitem [ref=e152]:
+              - link "Random Walks 16m" [ref=e153] [cursor=pointer]:
+                - /url: /courses/probability/24-random-walks
+                - generic [ref=e154]: Random Walks
+                - generic [ref=e155]: 16m
+            - listitem [ref=e156]:
+              - link "Markov Chains 18m" [ref=e157] [cursor=pointer]:
+                - /url: /courses/probability/25-markov-chains
+                - generic [ref=e158]: Markov Chains
+                - generic [ref=e159]: 18m
+            - listitem [ref=e160]:
+              - link "Poisson Processes 16m" [ref=e161] [cursor=pointer]:
+                - /url: /courses/probability/26-poisson-processes
+                - generic [ref=e162]: Poisson Processes
+                - generic [ref=e163]: 16m
+        - generic [ref=e164]:
+          - paragraph [ref=e165]: 9. Coda
+          - list [ref=e166]:
+            - listitem [ref=e167]:
+              - link "Where Probability Meets the World 16m" [ref=e168] [cursor=pointer]:
+                - /url: /courses/probability/27-where-probability-meets-the-world
+                - generic [ref=e169]: Where Probability Meets the World
+                - generic [ref=e170]: 16m
+    - main [ref=e171]:
+      - generic [ref=e172]:
+        - paragraph [ref=e173]: "You hold a six-sided die in your hand. Before you roll, the outcome is uncertain — it could land on any of 1 through 6. After you roll, the outcome is fixed. Probability lives in the space between those two moments: the grey zone before the die lands, where the outcome exists only as a possibility."
+        - paragraph [ref=e174]: That grey zone is what this entire course is about. Probability gives you a precise language for talking about events that have not happened yet, or that you simply do not know about. It does not predict the future — it measures the shape of uncertainty.
+        - heading "The sample space as a physical place" [level=2] [ref=e175]
+        - paragraph [ref=e176]: Imagine a floor tiled with six squares, each the same size, labeled 1 through 6. Rolling the die is like being blindfolded and dropped randomly onto one of these tiles. Every tile is equally likely to be the one you land on.
+        - paragraph [ref=e177]:
+          - text: This tiled floor is your
+          - strong [ref=e178]: sample space
+          - text: "— the set of all possible outcomes. For a fair die, the sample space has six equally sized tiles, so the probability of landing on any particular one is:"
+        - paragraph [ref=e179]:
+          - generic [ref=e180]:
+            - math [ref=e182]:
+              - generic [ref=e184]:
+                - generic [ref=e185]: <
+                - generic [ref=e186]: M
+                - generic [ref=e187]: a
+                - generic [ref=e188]: t
+                - generic [ref=e189]: h
+                - generic [ref=e190]: I
+                - generic [ref=e191]: "n"
+                - generic [ref=e192]: l
+                - generic [ref=e193]: i
+                - generic [ref=e194]: "n"
+                - generic [ref=e195]: e
+                - generic [ref=e196]: e
+                - generic [ref=e197]: x
+                - generic [ref=e198]: p
+                - generic [ref=e199]: r
+                - generic [ref=e200]: e
+                - generic [ref=e201]: s
+                - generic [ref=e202]: s
+                - generic [ref=e203]: i
+                - generic [ref=e204]: o
+                - generic [ref=e205]: "n"
+                - generic [ref=e206]: =
+                - generic [ref=e207]:
+                  - generic [ref=e208]: "\""
+                  - generic [ref=e209]: P
+                  - generic [ref=e210]: (
+                  - generic [ref=e211]: t
+                  - generic [ref=e212]: e
+                  - generic [ref=e213]: x
+                  - generic [ref=e214]: t
+                  - generic [ref=e215]:
+                    - generic [ref=e216]: l
+                    - generic [ref=e217]: a
+                    - generic [ref=e218]: "n"
+                    - generic [ref=e219]: d
+                    - generic [ref=e220]: i
+                    - generic [ref=e221]: "n"
+                    - generic [ref=e222]: g
+                    - generic [ref=e223]: o
+                    - generic [ref=e224]: "n"
+                    - generic [ref=e225]: t
+                    - generic [ref=e226]: i
+                    - generic [ref=e227]: l
+                    - generic [ref=e228]: e
+                  - generic [ref=e229]: k
+                  - generic [ref=e230]: )
+                  - generic [ref=e231]: =
+                  - generic [ref=e232]: f
+                  - generic [ref=e233]: r
+                  - generic [ref=e234]: a
+                  - generic [ref=e235]: c
+                  - generic [ref=e236]: "16"
+                  - generic [ref=e237]: "\""
+                - generic [ref=e238]: /
+                - generic [ref=e239]: ">"
+            - generic [ref=e240]:
+              - generic [ref=e241]: <
+              - generic [ref=e242]: MathInlineexpression =
+              - generic [ref=e243]:
+                - generic [ref=e244]:
+                  - text: "\"P( text"
+                  - generic [ref=e245]: landingontile
+                  - text: k) = frac
+                  - generic [ref=e246]: "1"
+                  - generic [ref=e247]: "6"
+                  - text: "\""
+                - text: / >
+        - paragraph [ref=e248]: "The “P” stands for probability. The statement says: one favorable tile out of six total tiles. That fraction — one sixth — is the probability."
+        - paragraph [ref=e249]: "This tile picture is the foundation. Every concept in probability can be understood as something happening on this floor: regions of tiles, overlaps between regions, parts of the floor painted different colors. Keep the floor in mind and the formulas will never feel abstract."
+        - heading "Three ways to read the tiles" [level=2] [ref=e250]
+        - paragraph [ref=e251]: "Probability has three major interpretations. All three produce the same numbers, but they mean different things. Here is how each one reads the die:"
+        - 'heading "Classical: counting favorable tiles" [level=3] [ref=e252]'
+        - paragraph [ref=e253]: You count the favorable tiles and divide by the total number of tiles. The probability of rolling an even number? Tiles 2, 4, and 6 are favorable — three out of six.
+        - paragraph [ref=e254]:
+          - generic [ref=e255]:
+            - math [ref=e257]:
+              - generic [ref=e259]:
+                - generic [ref=e260]: <
+                - generic [ref=e261]: M
+                - generic [ref=e262]: a
+                - generic [ref=e263]: t
+                - generic [ref=e264]: h
+                - generic [ref=e265]: I
+                - generic [ref=e266]: "n"
+                - generic [ref=e267]: l
+                - generic [ref=e268]: i
+                - generic [ref=e269]: "n"
+                - generic [ref=e270]: e
+                - generic [ref=e271]: e
+                - generic [ref=e272]: x
+                - generic [ref=e273]: p
+                - generic [ref=e274]: r
+                - generic [ref=e275]: e
+                - generic [ref=e276]: s
+                - generic [ref=e277]: s
+                - generic [ref=e278]: i
+                - generic [ref=e279]: o
+                - generic [ref=e280]: "n"
+                - generic [ref=e281]: =
+                - generic [ref=e282]:
+                  - generic [ref=e283]: "\""
+                  - generic [ref=e284]: P
+                  - generic [ref=e285]: (
+                  - generic [ref=e286]: t
+                  - generic [ref=e287]: e
+                  - generic [ref=e288]: x
+                  - generic [ref=e289]: t
+                  - generic [ref=e290]:
+                    - generic [ref=e291]: e
+                    - generic [ref=e292]: v
+                    - generic [ref=e293]: e
+                    - generic [ref=e294]: "n"
+                  - generic [ref=e295]: )
+                  - generic [ref=e296]: =
+                  - generic [ref=e297]: f
+                  - generic [ref=e298]: r
+                  - generic [ref=e299]: a
+                  - generic [ref=e300]: c
+                  - generic [ref=e301]: "36"
+                  - generic [ref=e302]: =
+                  - generic [ref=e303]: f
+                  - generic [ref=e304]: r
+                  - generic [ref=e305]: a
+                  - generic [ref=e306]: c
+                  - generic [ref=e307]: "12"
+                  - generic [ref=e308]: "\""
+                - generic [ref=e309]: /
+                - generic [ref=e310]: ">"
+            - generic [ref=e311]:
+              - generic [ref=e312]: <
+              - generic [ref=e313]: MathInlineexpression =
+              - generic [ref=e314]:
+                - generic [ref=e315]:
+                  - text: "\"P( text"
+                  - generic [ref=e316]: even
+                  - text: ) = frac
+                  - generic [ref=e317]: "3"
+                  - generic [ref=e318]: "6"
+                  - text: = frac
+                  - generic [ref=e319]: "1"
+                  - generic [ref=e320]: "2"
+                  - text: "\""
+                - text: / >
+        - paragraph [ref=e321]: This works when every tile is equally likely. Fair coins, fair dice, well-shuffled decks — the classical view handles these cleanly. It is the oldest interpretation, dating back to the gambling problems that launched the field in the 1600s.
+        - 'heading "Frequentist: rolling over and over" [level=3] [ref=e322]'
+        - paragraph [ref=e323]: "Imagine rolling that die 10,000 times. You build a histogram — one bar per face. After 10 rolls, the bars are jagged and uneven. After 1,000 rolls, they start to even out. After 10,000 rolls, every bar has grown to roughly the same height: about 1,667 out of 10,000, which is close to 1/6."
+        - paragraph [ref=e324]:
+          - generic [ref=e325]:
+            - math [ref=e327]:
+              - generic [ref=e329]:
+                - generic [ref=e330]: <
+                - generic [ref=e331]: M
+                - generic [ref=e332]: a
+                - generic [ref=e333]: t
+                - generic [ref=e334]: h
+                - generic [ref=e335]: I
+                - generic [ref=e336]: "n"
+                - generic [ref=e337]: l
+                - generic [ref=e338]: i
+                - generic [ref=e339]: "n"
+                - generic [ref=e340]: e
+                - generic [ref=e341]: e
+                - generic [ref=e342]: x
+                - generic [ref=e343]: p
+                - generic [ref=e344]: r
+                - generic [ref=e345]: e
+                - generic [ref=e346]: s
+                - generic [ref=e347]: s
+                - generic [ref=e348]: i
+                - generic [ref=e349]: o
+                - generic [ref=e350]: "n"
+                - generic [ref=e351]: =
+                - generic [ref=e352]:
+                  - generic [ref=e353]: "\""
+                  - generic [ref=e354]: P
+                  - generic [ref=e355]: (
+                  - generic [ref=e356]: A
+                  - generic [ref=e357]: )
+                  - generic [ref=e358]: =
+                  - generic [ref=e359]: l
+                  - generic [ref=e360]: i
+                  - generic [ref=e361]:
+                    - generic [ref=e362]: m
+                    - generic [ref=e363]:
+                      - generic [ref=e364]: "n"
+                      - generic [ref=e365]: t
+                      - generic [ref=e366]: o
+                      - generic [ref=e367]: i
+                      - generic [ref=e368]: "n"
+                      - generic [ref=e369]: f
+                      - generic [ref=e370]: t
+                      - generic [ref=e371]: "y"
+                  - generic [ref=e372]: f
+                  - generic [ref=e373]: r
+                  - generic [ref=e374]: a
+                  - generic [ref=e375]: c
+                  - generic [ref=e376]:
+                    - generic [ref=e377]: t
+                    - generic [ref=e378]: e
+                    - generic [ref=e379]: x
+                    - generic [ref=e380]: t
+                    - generic [ref=e381]:
+                      - generic [ref=e382]: "n"
+                      - generic [ref=e383]: u
+                      - generic [ref=e384]: m
+                      - generic [ref=e385]: b
+                      - generic [ref=e386]: e
+                      - generic [ref=e387]: r
+                      - generic [ref=e388]: o
+                      - generic [ref=e389]: f
+                      - generic [ref=e390]: t
+                      - generic [ref=e391]: i
+                      - generic [ref=e392]: m
+                      - generic [ref=e393]: e
+                      - generic [ref=e394]: s
+                    - generic [ref=e395]: A
+                    - generic [ref=e396]: t
+                    - generic [ref=e397]: e
+                    - generic [ref=e398]: x
+                    - generic [ref=e399]: t
+                    - generic [ref=e400]:
+                      - generic [ref=e401]: o
+                      - generic [ref=e402]: c
+                      - generic [ref=e403]: c
+                      - generic [ref=e404]: u
+                      - generic [ref=e405]: r
+                      - generic [ref=e406]: s
+                  - generic [ref=e407]: "n"
+                  - generic [ref=e408]: "\""
+                - generic [ref=e409]: /
+                - generic [ref=e410]: ">"
+            - generic [ref=e411]:
+              - generic [ref=e412]: <
+              - generic [ref=e413]: MathInlineexpression =
+              - generic [ref=e414]:
+                - generic [ref=e415]:
+                  - text: "\"P(A) = li"
+                  - generic [ref=e416]:
+                    - text: m
+                    - generic [ref=e422]: n to infty
+                  - text: frac
+                  - generic [ref=e426]:
+                    - text: text
+                    - generic [ref=e427]: numberoftimes
+                    - text: A text
+                    - generic [ref=e428]: occurs
+                  - generic [ref=e429]: "n"
+                  - text: "\""
+                - text: / >
+        - paragraph [ref=e430]:
+          - text: "The frequentist view says: probability is the long-run frequency. If you could repeat the experiment infinitely many times under identical conditions, the fraction of times event"
+          - generic [ref=e431]:
+            - math [ref=e433]:
+              - generic [ref=e436]: A
+            - generic [ref=e438]: A
+          - text: occurs converges to
+          - generic [ref=e439]:
+            - math [ref=e441]:
+              - generic [ref=e443]:
+                - generic [ref=e444]: P
+                - generic [ref=e445]: (
+                - generic [ref=e446]: A
+                - generic [ref=e447]: )
+            - generic [ref=e449]: P(A)
+          - text: . No die is truly fair — but over enough rolls, the histogram reveals the truth.
+        - 'heading "Subjective: your degree of belief" [level=3] [ref=e450]'
+        - paragraph [ref=e451]: Before the die lands, how confident are you that the result will be even? That confidence — your degree of belief — is also a probability.
+        - paragraph [ref=e452]:
+          - text: The subjective view treats probability as a
+          - emphasis [ref=e453]: quantified opinion
+          - text: . Two people can have different probabilities for the same event if they have different information. A weather forecaster says “30% chance of rain” — that number encodes their belief based on all available data, not a long-run frequency of identical Tuesdays.
+        - paragraph [ref=e454]: This interpretation is the foundation of Bayesian statistics, which you will encounter later in this course.
+        - heading "Which interpretation is “right”?" [level=3] [ref=e455]
+        - paragraph [ref=e456]: All three. They are three lenses on the same mathematical structure. The classical view is cleanest for fair games; the frequentist view dominates scientific experiments and hypothesis testing (lessons 19–20); the subjective view powers Bayesian inference (lessons 21–23). The axioms below are interpretation-agnostic — they work regardless of which lens you adopt.
+        - heading "Four rules as geometric constraints" [level=2] [ref=e457]
+        - paragraph [ref=e458]: "All three interpretations share the same mathematical structure. Here are the four axioms, translated into the language of the tiled floor:"
+        - paragraph [ref=e459]:
+          - strong [ref=e460]: Rule 1. No tile has negative area.
+        - paragraph [ref=e461]:
+          - generic [ref=e462]:
+            - math [ref=e464]:
+              - generic [ref=e466]:
+                - generic [ref=e467]: P
+                - generic [ref=e468]: (
+                - generic [ref=e469]: A
+                - generic [ref=e470]: )
+                - generic [ref=e471]: ≥
+                - generic [ref=e472]: "0"
+            - generic [ref=e473]:
+              - generic [ref=e474]: P(A) ≥
+              - generic [ref=e475]: "0"
+        - paragraph [ref=e476]: A probability is never negative. You cannot have “minus three percent chance.” On the floor, this means every region you shade in has non-negative area.
+        - paragraph [ref=e477]:
+          - strong [ref=e478]: Rule 2. The total floor area is 1.
+        - paragraph [ref=e479]:
+          - generic [ref=e480]:
+            - math [ref=e482]:
+              - generic [ref=e484]:
+                - generic [ref=e485]: P
+                - generic [ref=e486]: (
+                - generic [ref=e487]: Ω
+                - generic [ref=e488]: )
+                - generic [ref=e489]: =
+                - generic [ref=e490]: "1"
+            - generic [ref=e491]:
+              - generic [ref=e492]: P(Ω) =
+              - generic [ref=e493]: "1"
+        - paragraph [ref=e494]: Something must happen. The total probability across all possible outcomes is exactly 1. On the floor, all six tiles together cover 100% of the surface.
+        - paragraph [ref=e495]:
+          - strong [ref=e496]: "Rule 3. Overlapping regions: add areas, then subtract the overlap."
+        - paragraph [ref=e497]:
+          - generic [ref=e498]:
+            - math [ref=e500]:
+              - generic [ref=e502]:
+                - generic [ref=e503]: P
+                - generic [ref=e504]: (
+                - generic [ref=e505]: A
+                - generic [ref=e506]: ∪
+                - generic [ref=e507]: B
+                - generic [ref=e508]: )
+                - generic [ref=e509]: =
+                - generic [ref=e510]: P
+                - generic [ref=e511]: (
+                - generic [ref=e512]: A
+                - generic [ref=e513]: )
+                - generic [ref=e514]: +
+                - generic [ref=e515]: P
+                - generic [ref=e516]: (
+                - generic [ref=e517]: B
+                - generic [ref=e518]: )
+                - generic [ref=e519]: −
+                - generic [ref=e520]: P
+                - generic [ref=e521]: (
+                - generic [ref=e522]: A
+                - generic [ref=e523]: ∩
+                - generic [ref=e524]: B
+                - generic [ref=e525]: )
+            - generic [ref=e526]:
+              - generic [ref=e527]: P(A ∪
+              - generic [ref=e528]: B) =
+              - generic [ref=e529]: P(A) +
+              - generic [ref=e530]: P(B) −
+              - generic [ref=e531]: P(A ∩
+              - generic [ref=e532]: B)
+        - paragraph [ref=e533]:
+          - text: If region
+          - generic [ref=e534]:
+            - math [ref=e536]:
+              - generic [ref=e539]: A
+            - generic [ref=e541]: A
+          - text: and region
+          - generic [ref=e542]:
+            - math [ref=e544]:
+              - generic [ref=e547]: B
+            - generic [ref=e549]: B
+          - text: "overlap, simply adding their areas double-counts the overlap. Subtract it once to get the correct total. On the die:"
+          - text: ","
+          - text: ", but"
+          - text: ", not"
+          - generic [ref=e550]:
+            - math [ref=e552]:
+              - generic [ref=e554]:
+                - generic [ref=e555]: "6"
+                - generic [ref=e556]: /
+                - generic [ref=e557]: "6"
+            - generic [ref=e559]: 6/6
+          - text: . The overlap — tile 4 and tile 6 — would be double-counted without the subtraction.
+        - paragraph [ref=e560]:
+          - strong [ref=e561]: Rule 4. “Not A” is the floor with region A removed.
+        - paragraph [ref=e562]:
+          - generic [ref=e563]:
+            - math [ref=e565]:
+              - generic [ref=e567]:
+                - generic [ref=e568]: P
+                - generic [ref=e569]: (
+                - generic [ref=e570]:
+                  - generic [ref=e571]: A
+                  - generic [ref=e572]: c
+                - generic [ref=e573]: )
+                - generic [ref=e574]: =
+                - generic [ref=e575]: "1"
+                - generic [ref=e576]: −
+                - generic [ref=e577]: P
+                - generic [ref=e578]: (
+                - generic [ref=e579]: A
+                - generic [ref=e580]: )
+            - generic [ref=e581]:
+              - generic [ref=e582]:
+                - text: P(
+                - generic [ref=e583]:
+                  - text: A
+                  - generic [ref=e588]: c
+                - text: ) =
+              - generic [ref=e589]: 1 −
+              - generic [ref=e590]: P(A)
+        - paragraph [ref=e591]:
+          - text: The complement of
+          - generic [ref=e592]:
+            - math [ref=e594]:
+              - generic [ref=e597]: A
+            - generic [ref=e599]: A
+          - text: ", written"
+          - generic [ref=e600]:
+            - math [ref=e602]:
+              - generic [ref=e605]:
+                - generic [ref=e606]: A
+                - generic [ref=e607]: c
+            - generic [ref=e610]:
+              - text: A
+              - generic [ref=e615]: c
+          - text: ", is everything outside"
+          - generic [ref=e616]:
+            - math [ref=e618]:
+              - generic [ref=e621]: A
+            - generic [ref=e623]: A
+          - text: ". On the die:"
+          - text: . You just take the whole floor (area 1) and cut out the shaded region.
+        - paragraph [ref=e624]: These four rules are surprisingly powerful. From them you can derive everything from Bayes’ theorem to the law of large numbers. They are the grammar of the language of chance.
+        - heading "A measure-theoretic aside" [level=3] [ref=e625]
+        - paragraph [ref=e626]:
+          - text: The rigorous mathematical foundation of probability (Kolmogorov, 1933) defines probability as a
+          - strong [ref=e627]: measure
+          - text: — a function that assigns “sizes” to subsets of a sample space, subject to exactly the four axioms above. The collection of subsets that can be measured is called a
+          - strong [ref=e628]: σ-algebra
+          - text: — think of it as “the set of all events you are allowed to ask about.” This formality matters when the sample space is uncountable (like all real numbers), where naïve “area” reasoning can produce paradoxes. We will not need measure theory in this course, but it lurks beneath every formula — ensuring that “probability” is always well-defined.
+        - generic [ref=e629]:
+          - generic [ref=e631]: 概率公理 (1–3)
+          - generic [ref=e633]: 补事件
+          - generic [ref=e635]: 古典概率
+        - heading "Three perspectives on probability" [level=2] [ref=e636]
+        - list [ref=e637]:
+          - listitem [ref=e638]:
+            - strong [ref=e639]: "Geometric:"
+            - text: probability is the fraction of the tiled floor your event covers — area of region
+            - generic [ref=e640]:
+              - math [ref=e642]:
+                - generic [ref=e645]: A
+              - generic [ref=e647]: A
+            - text: divided by total floor area.
+          - listitem [ref=e648]:
+            - strong [ref=e649]: "Combinatorial:"
+            - text: probability is favorable outcomes divided by total outcomes — counting, when all outcomes are equally likely.
+          - listitem [ref=e650]:
+            - strong [ref=e651]: "Axiomatic:"
+            - text: probability is any function
+            - generic [ref=e652]:
+              - math [ref=e654]:
+                - generic [ref=e657]: P
+              - generic [ref=e659]: P
+            - text: satisfying the four Kolmogorov axioms — a measure of size that is non-negative, normalized, and additive.
+        - paragraph [ref=e660]: All three give the same answers for simple problems. The axiomatic view is the most general — it works even when outcomes are not equally likely or when the sample space is uncountable. The geometric view builds intuition; the combinatorial view computes answers; the axiomatic view guarantees everything is well-defined.
+        - complementary [ref=e661]:
+          - paragraph [ref=e662]: Key insight
+          - paragraph
+          - paragraph [ref=e663]: "Probability does not tell you what will happen — it tells you what is likely to happen, and by how much. Think of it as measuring regions on a tiled floor: every tile is a possible outcome, and probability is the fraction of floor your event covers. Three interpretations (classical, frequentist, subjective) share one set of axioms."
+          - paragraph
+        - heading "Connections" [level=2] [ref=e664]
+        - paragraph [ref=e665]:
+          - text: This lesson establishes the
+          - strong [ref=e666]: sample space
+          - text: and the
+          - strong [ref=e667]: four axioms
+          - text: — the vocabulary and grammar that every subsequent lesson uses. The inclusion-exclusion rule (Rule 3) generalizes to the
+          - strong [ref=e668]: inclusion-exclusion principle
+          - text: for many events, which underlies counting arguments in
+          - link "lesson 02" [ref=e669] [cursor=pointer]:
+            - /url: /courses/probability/02-counting-enumeration
+          - text: . The complement rule (Rule 4) is the secret weapon for computing “at least one” probabilities — it’s often easier to compute “none” and subtract from 1.
+        - paragraph [ref=e670]:
+          - text: The frequentist interpretation connects forward to the
+          - strong [ref=e671]: law of large numbers
+          - text: (lesson 15) and
+          - strong [ref=e672]: central limit theorem
+          - text: (lesson 16), which formalize why histograms converge. The subjective interpretation seeds the entire
+          - strong [ref=e673]: Bayesian
+          - text: half of the course (lessons 21–23), where probability is updated belief rather than long-run frequency. The axiomatic/measure-theoretic view is the silent foundation beneath continuous distributions (lesson 08), where the “tiled floor” becomes a smooth density curve and “area” becomes an integral.
+        - heading "Practice" [level=2] [ref=e674]
+        - generic [ref=e675]:
+          - generic [ref=e677]: Exercise 1
+          - generic [ref=e678]: A fair six-sided die is rolled. What is the probability that the result is either a multiple of 3 (i.e., 3 or 6) or greater than 4 (i.e., 5 or 6)? Use Rule 3 to account for overlap.
+          - generic [ref=e679]:
+            - button "Show hint" [ref=e680]
+            - button "Show answer" [ref=e681]
+        - generic [ref=e682]:
+          - generic [ref=e684]: Exercise 2
+          - generic [ref=e685]: A bag contains 4 red marbles and 6 blue marbles. You draw one marble at random. What is P(not red)? Which rule gives you this directly?
+          - generic [ref=e686]:
+            - button "Show hint" [ref=e687]
+            - button "Show answer" [ref=e688]
+        - generic [ref=e689]:
+          - generic [ref=e691]: Exercise 3
+          - generic [ref=e692]: On the tile floor for a 20-sided die (d20), shade the tiles for the event 'the roll is at most 5.' What fraction of the floor did you shade? Now use Rule 4 to find P(roll is greater than 5) without counting tiles.
+          - generic [ref=e693]:
+            - button "Show hint" [ref=e694]
+            - button "Show answer" [ref=e695]
+        - generic [ref=e696]:
+          - generic [ref=e698]: Exercise 4
+          - generic [ref=e699]: A card is drawn from a standard 52-card deck. What is P(the card is a king OR a heart)? Account for the overlap.
+          - generic [ref=e700]:
+            - button "Show hint" [ref=e701]
+            - button "Show answer" [ref=e702]
+        - generic [ref=e703]:
+          - generic [ref=e705]: Exercise 5
+          - generic [ref=e706]:
+            - text: Explain in your own words why the classical, frequentist, and subjective interpretations can give different
+            - emphasis [ref=e707]: meanings
+            - text: to the same probability number. Give an example where they disagree about meaning, not about the number.
+          - generic [ref=e708]:
+            - button "Show hint" [ref=e709]
+            - button "Show answer" [ref=e710]
+        - generic [ref=e711]:
+          - generic [ref=e713]: Exercise 6
+          - generic [ref=e714]: "Prove the inclusion-exclusion rule for three events: P(A ∪ B ∪ C) = P(A) + P(B) + P(C) − P(A∩B) − P(A∩C) − P(B∩C) + P(A∩B∩C). Hint: apply Rule 3 with (A ∪ B) and C."
+          - generic [ref=e715]:
+            - button "Show hint" [ref=e716]
+            - button "Show answer" [ref=e717]
+        - generic [ref=e718]:
+          - generic [ref=e720]: Exercise 7
+          - generic [ref=e721]: "The 'birthday problem': in a room of 23 people, what is P(at least two share a birthday)? Use the complement rule — compute P(all different) first. (Ignore leap years; assume 365 equally likely birthdays.)"
+          - generic [ref=e722]:
+            - button "Show hint" [ref=e723]
+            - button "Show answer" [ref=e724]
+        - separator [ref=e725]
+        - paragraph [ref=e726]:
+          - strong [ref=e727]: "Up next:"
+          - link "Counting and enumeration →" [ref=e728] [cursor=pointer]:
+            - /url: /courses/probability/02-counting-enumeration
+      - generic [ref=e729]:
+        - link "← Probability Notation Reference" [ref=e730] [cursor=pointer]:
+          - /url: /courses/probability/00-notation
+        - 'link "Counting: The Art of Enumeration →" [ref=e731] [cursor=pointer]':
+          - /url: /courses/probability/02-counting-enumeration
+  - contentinfo [ref=e732]:
+    - generic [ref=e733]:
+      - paragraph [ref=e734]: MathViz · An open-source platform for learning math through interactive animation.
+      - navigation [ref=e735]:
+        - link "Linear Algebra" [ref=e736] [cursor=pointer]:
+          - /url: /courses/linear-algebra
+        - link "Calculus" [ref=e737] [cursor=pointer]:
+          - /url: /courses/calculus
+        - link "Probability" [ref=e738] [cursor=pointer]:
+          - /url: /courses/probability
+      - paragraph [ref=e739]: © 2026 · MIT
+  - generic [ref=e742]:
+    - button "Menu" [ref=e743]:
+      - img [ref=e745]
+      - generic: Menu
+    - button "Inspect" [ref=e749]:
+      - img [ref=e751]
+      - generic: Inspect
+    - button "Audit" [ref=e753]:
+      - img [ref=e755]
+      - generic: Audit
+    - button "Settings" [ref=e758]:
+      - img [ref=e760]
+      - generic: Settings

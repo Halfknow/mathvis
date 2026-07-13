@@ -18,24 +18,34 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { LimitExplorer } from '../../../components/interactive/calculus/LimitExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
+
 import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
+import { MathBlock, MathInline } from '../../../components/math/Math';
 
-You're evaluating a limit and you get $\frac{0}{0}$ or $\frac{\infty}{\infty}$. Both numerator and denominator are collapsing at the same time. Who wins? **Whoever is collapsing faster loses** — and the derivative measures the speed of collapse.
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
 
-## The rule
+You're evaluating a limit and you get <MathInline expression={"\\frac{0}{0}"} /> or <MathInline expression={"\\frac{\\infty}{\\infty}"} />. Both numerator and denominator are collapsing at the same time. Who wins? **Whoever is collapsing faster loses** — and the derivative measures the speed of collapse. L'Hôpital's rule is the surgical tool for exactly these indeterminate forms.
 
-If $\lim_{x \to a} \frac{f(x)}{g(x)}$ produces $\frac{0}{0}$ or $\frac{\pm\infty}{\pm\infty}$, then:
+## Theorem: L'Hôpital's Rule
+
+Suppose $f$ and $g$ are differentiable near $a$ (except possibly at $a$), with $g'(x) \neq 0$ near $a$, and:
+
+<MathBlock expression={"\\lim_{x \\to a} f(x) = \\lim_{x \\to a} g(x) = 0 \\quad \\text{or} \\quad \\lim_{x \\to a} f(x) = \\lim_{x \\to a} g(x) = \\pm\\infty"} />
+
+That is, the limit is an **indeterminate form** of type <MathInline expression={"\\frac{0}{0}"} /> or <MathInline expression={"\\frac{\\infty}{\\infty}"} />. Then:
 
 <MathBlock expression={"\\lim_{x \\to a} \\frac{f(x)}{g(x)} = \\lim_{x \\to a} \\frac{f'(x)}{g'(x)}"} />
 
-provided the right-hand limit exists. You replace the functions with their derivatives and try again.
+provided the limit on the right exists (or is $\pm\infty$). You replace the functions with their derivatives and try again.
+
+The hypothesis is the whole game: **L'Hôpital's rule applies ONLY to indeterminate forms $0/0$ or $\infty/\infty$.** Check this condition first, every single time.
 
 ## Why it works
 
-Near $x = a$, both $f(x)$ and $g(x)$ are close to zero. Think of them as lines passing through the origin:
+Near $x = a$, both $f(x)$ and $g(x)$ are close to zero. Think of them as lines passing through the point $(a, 0)$ — that is, zoom in far enough and each function looks like its tangent line:
 
 <MathBlock expression={"f(x) \\approx f'(a)(x-a), \\quad g(x) \\approx g'(a)(x-a)"} />
 
@@ -43,11 +53,11 @@ So the ratio simplifies:
 
 <MathBlock expression={"\\frac{f(x)}{g(x)} \\approx \\frac{f'(a)(x-a)}{g'(a)(x-a)} = \\frac{f'(a)}{g'(a)}"} />
 
-The $(x-a)$ factors cancel. The limit depends on the **slopes**, not the values.
+The $(x-a)$ factors cancel. The limit depends on the **slopes**, not the values. Geometrically: when both curves crash into zero at the same point, the one with the steeper slope gets there "faster," and the ratio of their heights is just the ratio of their slopes.
 
 ## Visualize the cancellation
 
-Return to the Limit Explorer and select $f(x) = \frac{x^2 - 1}{x - 1}$ at $x = 1$. This is a 0/0 form, but the limit exists and equals 2:
+Return to the Limit Explorer and select <MathInline expression={"f(x) = \\frac{x^2 - 1}{x - 1}"} /> at $x = 1$. This is a $0/0$ form, but the limit exists and equals 2:
 
 <InteractiveCanvas
   title="L'Hopital's Limit Explorer"
@@ -57,46 +67,105 @@ Return to the Limit Explorer and select $f(x) = \frac{x^2 - 1}{x - 1}$ at $x = 1
   <LimitExplorer client:visible />
 </InteractiveCanvas>
 
+<FormulaReadout formulas={[
+  { label: "洛必达法则", expression: "\\lim \\frac{f}{g} = \\lim \\frac{f'}{g'} \\quad (0/0 \\text{ 或 } \\infty/\\infty)" },
+  { label: "线性近似（证明核心）", expression: "\\frac{f(x)}{g(x)} \\approx \\frac{f'(a)}{g'(a)}" },
+  { label: "可重复使用", expression: "\\lim \\frac{f''}{g''} \\text{ 若 } \\frac{f'}{g'} \\text{ 仍不定}" },
+  { label: "其他不定式重写", expression: "0 \\cdot \\infty,\\; \\infty - \\infty,\\; 1^\\infty,\\; 0^0 \\to \\frac{0}{0} \\text{ 或 } \\frac{\\infty}{\\infty}" },
+]} />
+
 ## Three examples
 
-**Example 1**: $\lim_{x \to 0} \frac{\sin x}{x} = \frac{0}{0}$. Apply L'Hopital: $\frac{\cos x}{1} \to \frac{1}{1} = 1$.
+**Example 1**: <MathInline expression={"\\lim_{x \\to 0} \\frac{\\sin x}{x} = \\frac{0}{0}"} />. Apply L'Hôpital: <MathInline expression={"\\frac{\\cos x}{1} \\to \\frac{1}{1} = 1"} />.
 
-**Example 2**: $\lim_{x \to \infty} \frac{e^x}{x^2} = \frac{\infty}{\infty}$. Apply once: $\frac{e^x}{2x} = \frac{\infty}{\infty}$. Apply again: $\frac{e^x}{2} = \infty$. Exponential growth always wins.
+**Example 2**: <MathInline expression={"\\lim_{x \\to \\infty} \\frac{e^x}{x^2} = \\frac{\\infty}{\\infty}"} />. Apply once: <MathInline expression={"\\frac{e^x}{2x} = \\frac{\\infty}{\\infty}"} /> still. Apply again: <MathInline expression={"\\frac{e^x}{2} = \\infty"} />. Exponential growth always wins — the rule can be applied repeatedly until the form resolves.
 
-**Example 3**: $\lim_{x \to 0^+} x \ln x = 0 \cdot (-\infty)$. Rewrite as $\frac{\ln x}{1/x}$, then apply L'Hopital: $\frac{1/x}{-1/x^2} = -x \to 0$.
+**Example 3**: <MathInline expression={"\\lim_{x \\to 0^+} x \\ln x = 0 \\cdot (-\\infty)"} />. This is not $0/0$ or $\infty/\infty$ — it's the $0 \cdot \infty$ form. Rewrite as <MathInline expression={"\\frac{\\ln x}{1/x}"} /> (now <MathInline expression={"\\frac{-\\infty}{\\infty}"} />), then apply L'Hôpital: <MathInline expression={"\\frac{1/x}{-1/x^2} = -x \\to 0"} />.
 
-## When NOT to use L'Hopital
+## When NOT to use L'Hôpital
 
-L'Hopital only works for indeterminate forms ($0/0$ or $\infty/\infty$). If the limit is $\frac{3}{0}$, it's not indeterminate — the limit is $\pm\infty$ (or doesn't exist). Don't differentiate blindly; check the form first.
+L'Hôpital only works for indeterminate forms ($0/0$ or $\infty/\infty$). Applying it to anything else gives **wrong answers**. If the limit is <MathInline expression={"\\frac{3}{0}"} />, it's not indeterminate — the limit is $\pm\infty$ (or doesn't exist). Don't differentiate blindly; check the form first.
 
-More subtly: **if the limit exists without L'Hopital, don't use it.** For example, $\lim_{x \to 2} \frac{x^2 - 4}{x + 1}$ is just $\frac{0}{3} = 0$ — no need for derivatives. Also beware of **circular reasoning**: if you use L'Hopital to evaluate $\lim_{x \to 0} \frac{\sin x}{x}$ by differentiating to get $\cos x$, you're implicitly assuming you already know the derivative of $\sin x$ — which itself depends on knowing this limit. The logic can eat its own tail.
+More subtly: **if the limit exists without L'Hôpital, don't use it.** For example, <MathInline expression={"\\lim_{x \\to 2} \\frac{x^2 - 4}{x + 1}"} /> is just <MathInline expression={"\\frac{0}{3} = 0"} /> — no need for derivatives. Applying L'Hôpital here would give <MathInline expression={"\\frac{2x}{1}\\big|_{x=2} = 4"} />, which is completely wrong, because the hypotheses were never satisfied.
+
+## The sin(x)/x trap: circular reasoning
+
+There is a famous pitfall. If you use L'Hôpital to evaluate <MathInline expression={"\\lim_{x \\to 0} \\frac{\\sin x}{x}"} /> by differentiating to get $\cos x \to 1$, you have a logical problem: the standard proof that <MathInline expression={"\\frac{d}{dx}\\sin x = \\cos x"} /> *itself depends on knowing* <MathInline expression={"\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1"} />. So using L'Hôpital here is circular — you're using a conclusion to prove one of its own premises.
+
+The honest resolution is the **Squeeze Theorem**, covered in [limits and continuity](/courses/calculus/02-limits-and-continuity): for $x$ near $0$, <MathInline expression={"\\cos x \\le \\frac{\\sin x}{x} \\le 1"} />, and since both bounds approach 1, the Squeeze Theorem forces the limit to be 1 — no derivatives required. This is the *foundation* on which the derivative of $\sin x$ is built. The lesson: L'Hôpital is powerful, but it sits on top of more basic limit arguments, and you must know which facts depend on which.
+
+## Other indeterminate forms
+
+Beyond $0/0$ and $\infty/\infty$, there are five more indeterminate forms. The strategy for each is to **algebraically rewrite** it as a $0/0$ or $\infty/\infty$ quotient, then apply L'Hôpital:
+
+| Form | Example | Rewrite as |
+|---|---|---|
+| $0 \cdot \infty$ | $x \ln x$ as $x \to 0^+$ | <MathInline expression={"\\frac{\\ln x}{1/x}"} /> → $\infty/\infty$ |
+| $\infty - \infty$ | <MathInline expression={"\\frac{1}{x} - \\frac{1}{\\sin x}"} /> | combine fractions → $0/0$ |
+| $1^\infty$ | $(1 + 1/x)^x$ | use <MathInline expression={"e^{\\ln(\\cdot)}"} />, get $\infty \cdot 0$ → $0/0$ |
+| $0^0$ | $x^x$ as $x \to 0^+$ | use <MathInline expression={"e^{\\ln(\\cdot)}"} />, get $0 \cdot (-\infty)$ → $\infty/\infty$ |
+| $\infty^0$ | <MathInline expression={"x^{1/x}"} /> as $x \to \infty$ | use <MathInline expression={"e^{\\ln(\\cdot)}"} />, get $0 \cdot \infty$ → $0/0$ |
+
+For the power forms, the universal trick is <MathInline expression={"f(x)^{g(x)} = e^{g(x) \\ln f(x)}"} />, which converts the base-and-exponent problem into a multiplication problem inside the exponential.
 
 ## A historical note
 
-Guillaume de l'Hopital published this rule in 1696, in what is considered the first textbook on differential calculus, *Analyse des Infiniment Petits pour l'Intelligence des Lignes Courbes*. But the rule was actually discovered by his teacher, **Johann Bernoulli**, as part of a contractual arrangement in which l'Hopital paid Bernoulli for mathematical discoveries and published them under his own name. Bernoulli's priority was only widely recognized in the 20th century.
+Guillaume de l'Hôpital published this rule in 1696, in what is considered the first textbook on differential calculus, *Analyse des Infiniment Petits pour l'Intelligence des Lignes Courbes*. But the rule was actually discovered by his teacher, **Johann Bernoulli**, as part of a contractual arrangement in which l'Hôpital paid Bernoulli for mathematical discoveries and published them under his own name. Bernoulli's priority was only widely recognized in the 20th century.
 
 <KeyInsight>
-When 0/0 or ∞/∞ makes a limit indeterminate, L'Hopital's rule says: replace numerator and denominator with their derivatives. The slopes resolve the tie — whoever is collapsing faster loses.
+When $0/0$ or $\infty/\infty$ makes a limit indeterminate, L'Hôpital's rule says: replace numerator and denominator with their derivatives. The slopes resolve the tie — whoever is collapsing faster loses. But the rule applies ONLY to indeterminate forms, and the classic $\sin(x)/x$ limit must be settled by the Squeeze Theorem to avoid circular reasoning.
 </KeyInsight>
+
+## Connections
+
+L'Hôpital's rule refines the [limit techniques](/courses/calculus/02-limits-and-continuity) from earlier — it is a power tool for the stubborn cases that direct substitution and algebra cannot resolve. The Squeeze Theorem remains the more fundamental result: it settles $\sin(x)/x$ without circularity, and it underwrites many of the derivative computations that L'Hôpital takes for granted.
+
+Looking forward, L'Hôpital's rule is a shadow of **Taylor series**, which we meet later. If $f$ and $g$ both vanish at $a$, then <MathInline expression={"f(x) = f'(a)(x-a) + \\frac{1}{2}f''(a)(x-a)^2 + \\cdots"} /> and similarly for $g$ — the ratio of these expansions is exactly what L'Hôpital computes, term by term. When L'Hôpital must be applied repeatedly, you are really just reading off successive Taylor coefficients. The rule is, in disguise, the first step of a Taylor expansion.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Evaluate lim(x→0) tan(x) / x using L'Hopital's rule."
-  hint="Check: is this 0/0? tan(0) = 0 and 0 = 0. Yes. Now differentiate numerator and denominator."
-  answer="d/dx tan(x) = sec²(x) = 1/cos²(x). d/dx x = 1. So the limit is 1/cos²(0) = 1/1 = 1."
+  prompt="Evaluate lim(x→0) tan(x) / x using L'Hôpital's rule. First verify the hypotheses are satisfied."
+  hint="Check: is this 0/0? tan(0) = 0 and x → 0, so yes. Now differentiate numerator and denominator separately."
+  answer="The form is 0/0 (tan(0) = 0, denominator 0), so L'Hôpital applies. d/dx tan(x) = sec²(x) = 1/cos²(x). d/dx x = 1. So the limit is 1/cos²(0) = 1/1 = 1. This mirrors the classic sin(x)/x = 1 result."
 />
 
 <ExerciseBlock number={2}
   prompt="Evaluate lim(x→∞) (ln x) / x. What does this tell you about the growth rate of ln x compared to x?"
-  hint="This is ∞/∞. Apply L'Hopital."
-  answer="d/dx ln(x) = 1/x. d/dx x = 1. So the limit is (1/x)/1 = 1/x → 0. The logarithm grows, but infinitely slower than x."
+  hint="This is ∞/∞. Apply L'Hôpital."
+  answer="The form is ∞/∞ (both ln x and x grow without bound), so L'Hôpital applies. d/dx ln(x) = 1/x. d/dx x = 1. So the limit is (1/x)/1 = 1/x → 0. The logarithm grows, but infinitely slower than any positive power of x — it is eventually dwarfed by x. This is why log-likelihoods and log-scales are so useful: they tame fast-growing quantities."
 />
 
 <ExerciseBlock number={3}
-  prompt="Can you use L'Hopital to evaluate lim(x→0) sin(x) / (x + 1)? Why or why not?"
-  hint="Check if the limit is an indeterminate form."
-  answer="No. sin(0)/(0+1) = 0/1 = 0. The limit is not indeterminate — the denominator doesn't approach zero. L'Hopital's rule doesn't apply, and the answer is simply 0."
+  prompt="Can you use L'Hôpital to evaluate lim(x→0) sin(x) / (x + 1)? Why or why not? What is the actual limit?"
+  hint="Check if the limit is an indeterminate form. Evaluate numerator and denominator at x = 0 separately."
+  answer="No. sin(0)/(0+1) = 0/1 = 0. The denominator does not approach zero, so this is NOT an indeterminate form — L'Hôpital's hypotheses are not satisfied. Applying it would wrongly give cos(0)/1 = 1. The correct answer is simply 0, obtained by direct substitution."
 />
 
-[Next Lesson →](/courses/calculus/09-accumulation-and-area)
+<ExerciseBlock number={4}
+  prompt="Evaluate lim(x→0⁺) x ln x. (Hint: this is a 0·(−∞) form. Rewrite it as a quotient first.)"
+  hint="Rewrite x ln x as ln(x) / (1/x), which is now a −∞/∞ form. Then apply L'Hôpital."
+  answer="Rewrite: x ln x = ln(x) / (1/x), an ∞/∞ form as x → 0⁺. Apply L'Hôpital: numerator's derivative is 1/x, denominator's derivative is −1/x². So the ratio is (1/x)/(−1/x²) = −x²/x = −x → 0 as x → 0⁺. The limit is 0. The logarithm diverges to −∞, but x shrinks to zero fast enough to win the tug-of-war."
+/>
+
+<ExerciseBlock number={5}
+  prompt="Evaluate lim(x→∞) (1 + 1/x)^x. (This is the famous 1^∞ form that defines e.)"
+  hint="Use the trick f(x)^g(x) = e^(g(x)·ln f(x)). First find lim(x→∞) x·ln(1 + 1/x) by rewriting it as a 0/0 quotient."
+  answer="Let L = lim(x→∞) x·ln(1 + 1/x). Rewrite as ln(1 + 1/x) / (1/x), a 0/0 form. Apply L'Hôpital: numerator's derivative is (−1/x²)/(1 + 1/x) = −1/(x² + x); denominator's derivative is −1/x². Ratio: [−1/(x²+x)] / [−1/x²] = x²/(x²+x) = x/(x+1) → 1. So L = 1, and the original limit is e^L = e¹ = e. This is the deep reason e ≈ 2.718 shows up everywhere in calculus — it is the limit of (1 + 1/n)^n."
+/>
+
+<ExerciseBlock number={6}
+  prompt="A student evaluates lim(x→1) (x² − 1)/(x − 1) by applying L'Hôpital to get (2x)/1 = 2 at x = 1. Another student factors to get (x−1)(x+1)/(x−1) = x + 1 → 2. Both get 2. Is L'Hôpital's use valid here? Explain."
+  hint="Check the hypotheses: is the form 0/0 at x = 1? Then yes. But also consider whether L'Hôpital was necessary."
+  answer="L'Hôpital's use IS valid here: at x = 1, both numerator (1² − 1 = 0) and denominator (1 − 1 = 0) approach 0, so it is a genuine 0/0 form. So L'Hôpital correctly gives 2x/1 → 2. However, factoring is simpler and more illuminating — it reveals that the function is just x + 1 with a removable hole at x = 1. Both methods agree, but factoring shows the *structure* (the hole), while L'Hôpital just computes the value. Use the simplest tool that works."
+/>
+
+<ExerciseBlock number={7}
+  prompt="Explain why using L'Hôpital to prove lim(x→0) sin(x)/x = 1 is circular reasoning. What is the non-circular proof, and where does it appear in this course?"
+  hint="The derivative of sin(x) depends on this very limit. Trace the dependency. What limit-free method proves sin(x)/x → 1?"
+  answer="To apply L'Hôpital to sin(x)/x, you differentiate sin(x) to get cos(x). But the standard proof that d/dx sin(x) = cos(x) uses the identity sin(x+h) = sin x cos h + cos x sin h and requires knowing lim(h→0) sin(h)/h = 1 and lim(h→0)(cos h − 1)/h = 0. So proving sin(x)/x → 1 via L'Hôpital assumes the derivative of sin, which itself assumes sin(x)/x → 1 — the argument eats its own tail. The non-circular proof uses the Squeeze Theorem (covered in lesson 02 on limits and continuity): for 0 < x < π/2, geometrically cos x ≤ sin x / x ≤ 1, and since cos x → 1 as x → 0, the Squeeze Theorem forces sin(x)/x → 1. The Squeeze Theorem proof is foundational; L'Hôpital is built on top of it."
+/>
+
+---
+
+**Up next:** [Accumulation and Area](/courses/calculus/09-accumulation-and-area)

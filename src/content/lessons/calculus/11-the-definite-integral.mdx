@@ -18,20 +18,24 @@ publishedAt: 2026-05-26
 ---
 
 import { InteractiveCanvas } from '../../../components/animation/InteractiveCanvas';
+
 import { RiemannSumExplorer } from '../../../components/interactive/calculus/RiemannSumExplorer';
 import { KeyInsight } from '../../../components/learning/KeyInsight';
-import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
-import { MathBlock } from '../../../components/math/Math';
 
-We've seen that slicing the area into rectangles and adding them up gives an approximation. Now we take the limit and arrive at the **definite integral**.
+import { ExerciseBlock } from '../../../components/learning/ExerciseBlock';
+import { MathBlock, MathInline } from '../../../components/math/Math';
+
+import { FormulaReadout } from '../../../components/interactive/FormulaReadout';
+
+We've seen that slicing the area into rectangles and adding them up gives an approximation. Now we take the limit and arrive at the **definite integral** — a single number that captures the exact signed area. The integral comes armed with a set of algebraic properties (linearity, additivity, order preservation) that make it a workhorse, and it extends beautifully to unbounded domains and unbounded functions through **improper integrals** — the gateway to infinite sums, probability, and much of modern analysis.
 
 ## The definition
 
 The definite integral of $f$ from $a$ to $b$ is:
 
-<MathBlock expression={"\\int_{a}^{b} f(x)\\, dx = \\lim_{n \\to \\infty} \\sum_{i=1}^{n} f(x_i^*) \\Delta x"} />
+<MathBlock expression={"\\int_{a}^{b} f(x)\\, dx = \\lim_{n \\to \\infty} \\sum_{i=1}^{n} f(x_i^{*})\\, \\Delta x"} />
 
-where $\Delta x = (b - a) / n$ and $x_i^*$ is any sample point in the $i$-th sub-interval. As $n$ grows, the Riemann sum approaches a single number: the signed area under $f$ from $a$ to $b$.
+where $\Delta x = (b - a) / n$ and <MathInline expression={"x_i^{*}"} /> is any sample point in the $i$-th sub-interval. As $n$ grows, the Riemann sum approaches a single number: the signed area under $f$ from $a$ to $b$. The continuity of $f$ guarantees this limit exists and is independent of the sample points.
 
 ## Watch the limit in action
 
@@ -52,56 +56,151 @@ For $f(x) = x^2$ on $[0, 1]$:
 
 The convergence is relentless. More rectangles → thinner slices → smaller error.
 
-## Properties of the definite integral
+## Theorem: Properties of the definite integral
 
-The integral inherits properties from the Riemann sum:
+Suppose $f$ and $g$ are integrable on the relevant intervals, and $c$ is a constant. Then the definite integral satisfies:
 
-**Linearity**: constants pull out, sums split apart.
+**Linearity** — constants pull out, and the integral of a sum is the sum of the integrals:
 
-<MathBlock expression={"\\int_a^b [cf(x) + g(x)]\\,dx = c\\int_a^b f(x)\\,dx + \\int_a^b g(x)\\,dx"} />
+<MathBlock expression={"\\int_a^b \\bigl[\\alpha f(x) + \\beta g(x)\\bigr]\\, dx = \\alpha \\int_a^b f(x)\\, dx + \\beta \\int_a^b g(x)\\, dx"} />
 
-Geometrically, linearity means you can stretch the height of a region by a factor $c$ (which stretches the area by $c$), or place two regions side by side and add their areas — both give the same result as integrating the combined function.
+Geometrically, linearity means you can stretch the height of a region by a factor $\alpha$ (which stretches the area by $\alpha$), or place two regions on top of each other and add their areas — both give the same result as integrating the combined function. Linearity is what lets us integrate polynomials term by term.
 
-**Additivity over intervals**: you can split the integral at any point.
+**Additivity over intervals** — you can split the integral at any point:
 
-<MathBlock expression={"\\int_a^c f(x)\\,dx = \\int_a^b f(x)\\,dx + \\int_b^c f(x)\\,dx"} />
+<MathBlock expression={"\\int_a^c f(x)\\, dx = \\int_a^b f(x)\\, dx + \\int_b^c f(x)\\, dx"} />
 
-Additivity means you can cut the region into pieces and add them up. If you know the area from $a$ to $b$ and from $b$ to $c$, the total is just the sum — just like cutting a physical shape into two parts and weighing them separately.
+Additivity means you can cut the region into pieces and add them up. If you know the area from $a$ to $b$ and from $b$ to $c$, the total is just the sum — just like cutting a physical shape into two parts and weighing them separately. This also gives the reversal rule $\int_b^a f = -\int_a^b f$ as a special case.
 
-**Reversal**: flipping the bounds negates the integral.
+**Order preservation** — if $f(x) \le g(x)$ for all $x$ in $[a, b]$, then:
 
-<MathBlock expression={"\\int_b^a f(x)\\,dx = -\\int_a^b f(x)\\,dx"} />
+<MathBlock expression={"f(x) \\le g(x) \\;\\Longrightarrow\\; \\int_a^b f(x)\\, dx \\le \\int_a^b g(x)\\, dx"} />
 
-Think of this as traversing the region backwards — the "accumulation direction" reverses, so the sign flips.
+If one curve is everywhere above another, its area is bigger. Two important consequences: if $f \ge 0$ then $\int f \ge 0$ (non-negativity); and the **bound** $\left|\int_a^b f\, dx\right| \le \int_a^b |f|\, dx$, which says the net area is at most the total area. Order preservation is the tool you use to *estimate* integrals you cannot compute exactly — trap an integral between two simpler ones.
 
 ## When does the integral exist?
 
 If $f$ is **continuous** on $[a, b]$, then the definite integral exists. This is a powerful guarantee — continuity is enough. The Riemann sums will converge regardless of which sample points you choose.
 
-Discontinuous functions may or may not be integrable. A function with a finite number of jump discontinuities is still integrable. But a function like the Dirichlet function ($f(x) = 1$ if $x$ is rational, $0$ if irrational) is not Riemann integrable.
+Discontinuous functions may or may not be integrable. A function with a finite number of jump discontinuities is still integrable (cut the interval at the jumps and add the pieces). But a function like the Dirichlet function ($f(x) = 1$ if $x$ is rational, $0$ if irrational) is **not** Riemann integrable: every upper Darboux sum is $1 \cdot (b-a)$ and every lower sum is $0$, so they never squeeze together.
+
+<FormulaReadout formulas={[
+  { label: "线性性", expression: "\\int_a^b (\\alpha f + \\beta g) = \\alpha \\int_a^b f + \\beta \\int_a^b g" },
+  { label: "区间可加性", expression: "\\int_a^c f = \\int_a^b f + \\int_b^c f" },
+  { label: "保序性", expression: "f \\le g \\;\\Longrightarrow\\; \\int_a^b f \\le \\int_a^b g" },
+  { label: "积分存在性", expression: "f \\text{ 连续} \\Rightarrow \\int_a^b f \\text{ 存在}" },
+]} />
+
+## Improper integrals: integrating the infinite
+
+Everything so far assumes a *finite* interval $[a, b]$ and a *bounded* function. But many of the most important integrals in science stretch to infinity or blow up at a point. These are **improper integrals**, and they are defined by a limit. There are two types.
+
+### Type I: infinite limits
+
+When the interval is unbounded, we cut it at a finite point and let the cut run away to infinity:
+
+<MathBlock expression={"\\int_{a}^{\\infty} f(x)\\, dx = \\lim_{t \\to \\infty} \\int_{a}^{t} f(x)\\, dx"} />
+
+The improper integral **converges** if this limit is a finite number, and **diverges** otherwise (including diverging to $\pm\infty$). The integral over $(-\infty, b]$ is defined the same way, and over $(-\infty, \infty)$ you split at any finite point and require *both* halves to converge.
+
+**Example:** <MathInline expression={"\\int_1^{\\infty} \\frac{1}{x^2}\\, dx"} />. Compute the finite piece: <MathInline expression={"\\int_1^t x^{-2}\\, dx = \\left[-x^{-1}\\right]_1^t = 1 - \\tfrac{1}{t}"} />. Then let $t \to \infty$: the limit is $1 - 0 = 1$. So the integral **converges** to $1$.
+
+**Example:** <MathInline expression={"\\int_1^{\\infty} \\frac{1}{x}\\, dx"} />. The finite piece is $\ln t$, which grows without bound as $t \to \infty$. So the integral **diverges** to $+\infty$.
+
+Notice the knife edge: $1/x^2$ has finite area, but the barely-larger $1/x$ has infinite area. The exponent is everything.
+
+### Theorem: The p-test for integrals
+
+The integral
+
+<MathBlock expression={"\\int_{1}^{\\infty} \\frac{1}{x^{p}}\\, dx"} />
+
+**converges if and only if $p > 1$.** When it converges, its value is <MathInline expression={"\\tfrac{1}{p-1}"} />.
+
+The intuition: $p > 1$ makes the function shrink fast enough that the accumulated area stays finite; $p \le 1$ leaves it shrinking too slowly, so the area piles up without bound. The borderline case $p = 1$ is the harmonic integral <MathInline expression={"\\int_1^\\infty \\frac{dx}{x} = \\infty"} />. This single test resolves a huge fraction of convergence questions, and it has an exact parallel for infinite series (the p-series test) — same threshold, same reason.
+
+### Type II: vertical asymptotes (unbounded integrand)
+
+When $f$ blows up at an endpoint or interior point, we approach the singularity by a limit:
+
+<MathBlock expression={"\\int_{0}^{1} \\frac{1}{\\sqrt{x}}\\, dx = \\lim_{t \\to 0^{+}} \\int_{t}^{1} x^{-1/2}\\, dx = \\lim_{t \\to 0^{+}} \\bigl[2\\sqrt{x}\\bigr]_{t}^{1} = 2 - 0 = 2"} />
+
+This integral **converges** to $2$, even though the integrand runs off to infinity at $x = 0$. The spike is tall but narrow enough that its area is finite. Contrast with <MathInline expression={"\\int_0^1 \\frac{1}{x}\\, dx = \\lim_{t \\to 0^+} [\\ln x]_t^1 = 0 - \\ln t = +\\infty"} />, which **diverges** — the singularity is too severe.
+
+There is a Type II p-test too: <MathInline expression={"\\int_0^1 \\frac{1}{x^p}\\, dx"} /> **converges if and only if $p < 1$.** Notice the threshold is *reversed* compared to Type I: near a singularity, smaller $p$ (gentler blow-up) converges; at infinity, larger $p$ (faster decay) converges. Same underlying reason — the question is always "does the area under the tail or spike stay finite?"
+
+### Comparison: the practical convergence test
+
+Often you cannot compute an improper integral exactly, but you can still decide convergence by **comparing** it to a p-integral you understand. If <MathInline expression={"0 \\le f(x) \\le \\tfrac{1}{x^p}"} /> and $p > 1$, then $\int_1^\infty f$ converges (a bigger convergent integral squeezes it). If <MathInline expression={"f(x) \\ge \\tfrac{1}{x}"} /> and $f \ge 0$, then $\int_1^\infty f$ diverges (a smaller divergent integral drags it along). This comparison principle is the workhorse of convergence analysis.
+
+## The many faces of the integral
+
+- **Probability (the biggest application):** a continuous random variable is defined by a density $p(x)$ with <MathInline expression={"\\int_{-\\infty}^{\\infty} p(x)\\, dx = 1"} /> — a convergent improper integral over the whole real line. Probabilities and expectations are integrals: $P(a \le X \le b) = \int_a^b p(x)\, dx$. The Gaussian (normal) density integrates to 1 over $(-\infty, \infty)$; verifying this is a classic improper-integral computation.
+- **Physics:** escape velocity and gravitational/electrostatic potentials involve <MathInline expression={"\\int_r^\\infty \\frac{1}{x^2}\\, dx"} />-type integrals; total energy of a distribution is an integral over all space.
+- **Statistics and ML:** the variance, entropy, KL divergence, and marginal likelihood are all improper-integral-flavored quantities over possibly unbounded domains. The normalizing constant of a probability distribution is found by an (often improper) integral.
+
+## Modern applications
+
+In **probability and statistics**, every continuous distribution rests on an improper integral: the density must integrate to 1 over an unbounded domain. The Gaussian integral <MathInline expression={"\\int_{-\\infty}^{\\infty} e^{-x^2/2}\\, dx = \\sqrt{2\\pi}"} /> is the reason <MathInline expression={"\\sqrt{2\\pi}"} /> appears in the normal distribution — and that single fact underwrites most of classical statistics and much of machine learning.
+
+In **machine learning**, the evidence (marginal likelihood) used in Bayesian model comparison is an integral over the entire parameter space, often unbounded. Variational inference approximates these integrals because they cannot be computed exactly.
+
+In **physics**, the total energy stored in a field, the total mass of an unbounded distribution, and the self-energy of a point charge are all improper integrals — and their convergence (or divergence) is physically meaningful. The divergence of certain integrals is what triggered **renormalization** in quantum field theory.
 
 <KeyInsight>
-The definite integral is the limit of Riemann sums as the slices thin to zero width. It yields a single number — the exact signed area — and it exists for any continuous function. The definite integral turns an infinite problem (adding up infinitely many infinitely thin rectangles) into a finite number: the area.
+The definite integral is the limit of Riemann sums, yielding a single signed-area number for any continuous function. It is linear, additive over intervals, and order-preserving — three properties that make it a flexible computational tool. Improper integrals extend the definition to infinite domains and unbounded functions via limits: the p-test says ∫₁^∞ 1/xᵖ converges iff p > 1 (and ∫₀¹ 1/xᵖ converges iff p < 1). Convergence is the question that turns calculus into the foundation of probability, statistics, and modern physics.
 </KeyInsight>
+
+## Connections
+
+This lesson adopts the [Riemann sum limit](/courses/calculus/10-riemann-sums) as the official definition of the integral and equips it with algebraic properties (linearity, additivity, order) plus the powerful extension to improper integrals. The next lesson, [the Fundamental Theorem](/courses/calculus/12-the-fundamental-theorem), will reveal that these integrals — defined by painful limits of sums — can almost always be computed exactly with a single antiderivative, collapsing the work to subtraction. The p-test for integrals foreshadows the **p-series test** for infinite series later in the course; the two are the same convergence idea in continuous and discrete clothing.
+
+Across disciplines, the definite integral is the language of totals: probabilities and expectations in statistics, work and energy in physics, expected loss in machine learning. The improper-integral convergence question — "does the accumulated total stay finite?" — is the same question that defines whether a probability distribution is valid, whether a physical quantity is observable, and whether an algorithm is stable.
 
 ## Practice
 
 <ExerciseBlock number={1}
-  prompt="Compute the definite integral of f(x) = 3 from x = 1 to x = 5 using the geometric picture."
-  hint="What shape does the area under a constant function form?"
-  answer="The region is a rectangle with width 4 and height 3. Area = 4 × 3 = 12. So ∫₁⁵ 3 dx = 12."
+  prompt="Compute the definite integral of f(x) = 3 from x = 1 to x = 5 using the geometric picture, then verify using linearity and the fact that ∫₁⁵ 1 dx = 4."
+  hint="What shape does the area under a constant function form? Then use linearity: 3 is a constant pulled out front."
+  answer="The region is a rectangle with width 4 and height 3. Area = 4 × 3 = 12. By linearity, ∫₁⁵ 3 dx = 3·∫₁⁵ 1 dx = 3·4 = 12. Both methods agree, as they must."
 />
 
 <ExerciseBlock number={2}
-  prompt="Given that ∫₀² f(x) dx = 5 and ∫₂⁵ f(x) dx = 3, find ∫₀⁵ f(x) dx."
-  hint="Use the additivity property: split the integral at x = 2."
-  answer="∫₀⁵ f(x) dx = ∫₀² f(x) dx + ∫₂⁵ f(x) dx = 5 + 3 = 8."
+  prompt="Given that ∫₀² f(x) dx = 5 and ∫₂⁵ f(x) dx = 3, find ∫₀⁵ f(x) dx using the additivity property. Then suppose g(x) ≥ f(x) everywhere on [0,5]; what can you say about ∫₀⁵ g(x) dx?"
+  hint="Use additivity: split the integral at x = 2. Then use order preservation to compare ∫g with ∫f."
+  answer="By additivity, ∫₀⁵ f(x) dx = ∫₀² f(x) dx + ∫₂⁵ f(x) dx = 5 + 3 = 8. By order preservation, since g ≥ f on [0,5], we have ∫₀⁵ g(x) dx ≥ ∫₀⁵ f(x) dx = 8. The integral of the larger function is at least 8."
 />
 
 <ExerciseBlock number={3}
-  prompt="In the interactive, set f(x) = eˣ on [0,1]. The exact integral is e − 1 ≈ 1.7183. How many rectangles (midpoint rule) do you need for the error to drop below 0.001?"
-  hint="Start with n = 50 and increase gradually. Watch the error readout."
-  answer="At approximately n ≈ 50, the midpoint rule error drops below 0.001. The midpoint rule converges as O(1/n²), so doubling n reduces the error by roughly 4×."
+  prompt="Determine whether the improper integral ∫₁^∞ (1/x³) dx converges or diverges. If it converges, find its value."
+  hint="This is a p-integral with p = 3. Apply the p-test. To find the value, compute ∫₁^t x⁻³ dx and let t → ∞."
+  answer="p = 3 > 1, so by the p-test the integral converges. To find the value: ∫₁^t x⁻³ dx = [−½ x⁻²]₁^t = −1/(2t²) + 1/2. As t → ∞, −1/(2t²) → 0, so the integral converges to 1/2. (This matches the p-test formula 1/(p−1) = 1/2.)"
 />
 
-[Next Lesson →](/courses/calculus/12-the-fundamental-theorem)
+<ExerciseBlock number={4}
+  prompt="Determine whether ∫₀¹ (1/x^(1/3)) dx converges or diverges, and find its value if it converges. This integrand blows up at x = 0, so it is a Type II improper integral."
+  hint="Rewrite as x^(−1/3). Compute ∫_t^1 x^(−1/3) dx = [ (3/2) x^(2/3) ]_t^1 and let t → 0⁺. Apply the Type II p-test: ∫₀¹ 1/xᵖ converges iff p < 1."
+  answer="Here p = 1/3 < 1, so by the Type II p-test the integral converges. Compute: ∫_t^1 x^(−1/3) dx = [(3/2)x^(2/3)]_t^1 = 3/2 − (3/2)t^(2/3). As t → 0⁺, t^(2/3) → 0, so the integral converges to 3/2. The singularity is real but integrable — a tall, narrow spike with finite area."
+/>
+
+<ExerciseBlock number={5}
+  prompt="For which values of p does ∫₁^∞ (1/x^p) dx converge? State the p-test, and explain the intuition for why p = 1 is the dividing line."
+  hint="Compute ∫₁^t x^(−p) dx for p ≠ 1 and examine the limit as t → ∞. What happens when p > 1 vs p < 1 vs p = 1?"
+  answer="The p-test: ∫₁^∞ 1/xᵖ dx converges if and only if p > 1, with value 1/(p−1). Proof: for p ≠ 1, ∫₁^t x^(−p) dx = [x^(1−p)/(1−p)]₁^t = (t^(1−p) − 1)/(1−p). As t → ∞: if p > 1 then 1−p < 0 so t^(1−p) → 0 and the integral → 1/(p−1) (converges). If p < 1 then 1−p > 0 so t^(1−p) → ∞ (diverges). The borderline p = 1 gives ∫₁^t 1/x dx = ln t → ∞ (diverges). Intuition: p > 1 makes 1/xᵖ decay fast enough that the tail area stays finite; p ≤ 1 decays too slowly and the tail area piles up to infinity. The harmonic case p = 1 is the knife edge."
+/>
+
+<ExerciseBlock number={6}
+  prompt="Use a comparison to determine whether ∫₁^∞ (1/(x² + x)) dx converges or diverges. Do not compute the exact value."
+  hint="Find a simple bound: for x ≥ 1, how does 1/(x² + x) compare to 1/x²? Then use the p-test."
+  answer="For x ≥ 1 we have x² + x ≥ x², so 1/(x² + x) ≤ 1/x². The integrand is non-negative, and 1/x² has a convergent p-integral (p = 2 > 1). By the comparison test, 0 ≤ ∫₁^∞ 1/(x²+x) dx ≤ ∫₁^∞ 1/x² dx = 1, so the integral converges. (In fact its exact value is 1 − ln 2, but the point of comparison is that we never had to compute it.) Comparison is the practical tool: bound your integrand between p-integrals whose convergence you already know."
+/>
+
+<ExerciseBlock number={7}
+  prompt="A continuous random variable has density p(x) = c·e^(−x) for x ≥ 0 (and 0 otherwise). Find the constant c that makes p a valid density, and compute P(X ≥ 1), the probability that X is at least 1."
+  hint="A valid density must integrate to 1 over its whole domain: ∫₀^∞ c·e^(−x) dx = 1. This is an improper integral. Solve for c. Then P(X ≥ 1) = ∫₁^∞ p(x) dx."
+  answer="First normalize: ∫₀^∞ c·e^(−x) dx = c·lim_{t→∞} [−e^(−x)]₀^t = c·lim_{t→∞}(−e^(−t) + 1) = c·1 = c. For this to equal 1, we need c = 1. (This is the exponential distribution with rate 1.) Then P(X ≥ 1) = ∫₁^∞ e^(−x) dx = lim_{t→∞}[−e^(−x)]₁^t = 0 − (−e^(−1)) = e^(−1) ≈ 0.368. This is a concrete payoff of improper integrals: normalization constants and tail probabilities — the backbone of continuous probability — are all improper integrals in disguise."
+/>
+
+---
+
+**Up next:** [The Fundamental Theorem of Calculus](/courses/calculus/12-the-fundamental-theorem)

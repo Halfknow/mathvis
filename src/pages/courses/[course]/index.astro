@@ -48,7 +48,7 @@ const lessonSlug = (l: { slug: string }) => l.slug.split('/').slice(1).join('/')
           {meta[lang].description}
         </p>
         <div class="mt-6 flex items-center gap-3">
-          <Badge variant="neutral" client:load>Beginner</Badge>
+          <Badge variant="neutral">Beginner</Badge>
           <span class="font-mono text-sm text-ink-faint">
             {totalLessons} lessons · ~{estimatedHours}h
           </span>
@@ -56,7 +56,7 @@ const lessonSlug = (l: { slug: string }) => l.slug.split('/').slice(1).join('/')
       </div>
     </header>
 
-    <section class="mt-16 space-y-12">
+    <section class="mt-12 space-y-12">
       {modules.map(([, modLessons], mIdx) => {
         const modTitle = modLessons[0].data.module;
         return (
@@ -73,7 +73,7 @@ const lessonSlug = (l: { slug: string }) => l.slug.split('/').slice(1).join('/')
               </span>
             </header>
 
-            <ol class="mt-4 divide-y divide-rule">
+            <ol class="divide-y divide-rule">
               {modLessons.map((lesson, lIdx) => (
                 <li>
                   <a

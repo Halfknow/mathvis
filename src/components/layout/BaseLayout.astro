@@ -25,6 +25,16 @@ const htmlLang = locale === 'zh' ? 'zh-CN' : 'en';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description ?? t('site.description')} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" href="/fonts/source-serif-4/SourceSerif4-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/source-serif-4/SourceSerif4-SemiBold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/source-serif-4/SourceSerif4-Italic.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter/Inter-Medium.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter/Inter-SemiBold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono/JetBrainsMono-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/katex/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/katex/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/katex/KaTeX_Size1-Regular.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="alternate" hreflang={alt.lang === 'en' ? 'en' : 'zh'} href={Astro.site + alt.path.replace(/^\//, '')} />
     <title>{title} · MathViz</title>
     <script is:inline>

@@ -57,7 +57,7 @@ export function FormulaReadout({ formulas }: FormulaReadoutProps) {
           {f.value && (
             <div style={{
               fontSize: '0.8rem',
-              fontFamily: 'monospace',
+              fontFamily: 'var(--font-mono)',
               color: f.highlight === 'critical' ? 'var(--color-vector-red)'
                 : f.highlight === 'warning' ? 'var(--color-vector-yellow)'
                 : 'var(--color-accent)',

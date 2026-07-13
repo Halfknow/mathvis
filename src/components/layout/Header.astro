@@ -27,8 +27,10 @@ const searchHref = getLocalizedPath('/search', locale);
   <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 md:px-6">
     <!-- Logo / wordmark -->
     <a href={getLocalizedPath('/', locale)} class="group flex items-center gap-2 no-underline">
-      <span class="grid h-7 w-7 place-items-center rounded-md bg-ink text-paper-elevated transition-colors duration-base ease-smooth group-hover:bg-accent">
-        <span class="font-serif text-base font-semibold leading-none">∫</span>
+      <span class="grid h-9 w-9 place-items-center rounded-md bg-ink text-paper-elevated transition-colors duration-base ease-smooth group-hover:bg-accent">
+        <svg width="27" height="27" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M 4 22 C 11 22, 13 6, 16 6 C 19 6, 21 22, 28 22" />
+        </svg>
       </span>
       <span class="font-serif text-lg font-semibold tracking-tight text-ink">
         MathViz

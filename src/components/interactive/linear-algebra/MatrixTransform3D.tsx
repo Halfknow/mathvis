@@ -306,7 +306,7 @@ export function MatrixTransform3D({ initialM }: MatrixTransform3DProps) {
                     color: 'var(--color-text)',
                     fontSize: '0.85rem',
                     textAlign: 'center',
-                    fontFamily: 'monospace',
+                    fontFamily: 'var(--font-mono)',
                   }}
                 />
               ))

@@ -246,7 +246,7 @@ export function CrossProductVis({}: CrossProductVisProps) {
                   width: '100%', padding: '0.3rem',
                   background: 'var(--color-surface)', border: '1px solid var(--color-border)',
                   borderRadius: '4px', color: 'var(--color-text)', fontSize: '0.85rem',
-                  textAlign: 'center', fontFamily: 'monospace',
+                  textAlign: 'center', fontFamily: 'var(--font-mono)',
                 }}
               />
             ))}
@@ -264,7 +264,7 @@ export function CrossProductVis({}: CrossProductVisProps) {
                   width: '100%', padding: '0.3rem',
                   background: 'var(--color-surface)', border: '1px solid var(--color-border)',
                   borderRadius: '4px', color: 'var(--color-text)', fontSize: '0.85rem',
-                  textAlign: 'center', fontFamily: 'monospace',
+                  textAlign: 'center', fontFamily: 'var(--font-mono)',
                 }}
               />
             ))}

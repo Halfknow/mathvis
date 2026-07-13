@@ -41,7 +41,7 @@ const uniqueModules = [...new Set(courseLessons.map((l) => l.data.module))];
   <div class="mx-auto flex max-w-7xl">
     <!-- Sidebar (desktop: sticky, mobile: hidden) -->
     <aside class="hidden w-[260px] shrink-0 border-r border-rule bg-surface-1 lg:sticky lg:top-14 lg:block lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto">
-      <div class="px-6 pt-8 pb-4">
+      <div class="px-6 pt-6 pb-3">
         <p class="font-mono text-[10px] uppercase tracking-widest text-ink-faint">Course</p>
         <a href={`/courses/${course}`} class="font-serif text-h3 font-semibold text-ink no-underline hover:text-accent">
           {courseTitle}
@@ -51,8 +51,8 @@ const uniqueModules = [...new Set(courseLessons.map((l) => l.data.module))];
         {uniqueModules.map((modTitle, modIdx) => {
           const modLessons = courseLessons.filter((l) => l.data.module === modTitle);
           return (
-            <div class="mb-5">
-              <p class="px-3 font-sans text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+            <div class="mb-3">
+              <p class="px-3 font-sans text-[10px] font-semibold uppercase tracking-wider text-ink-faint">
                 {modIdx + 1}. {modTitle}
               </p>
               <ul class="mt-1 space-y-0.5">
@@ -61,7 +61,7 @@ const uniqueModules = [...new Set(courseLessons.map((l) => l.data.module))];
                     <a
                       href={`/courses/${course}/${lessonSlug(l)}`}
                       class:list={[
-                        'flex items-center justify-between gap-2 rounded-md px-3 py-1.5 font-sans text-[13px] no-underline transition-colors duration-fast',
+                        'flex items-center justify-between gap-2 rounded-md px-3 py-1 font-sans text-[12px] no-underline transition-colors duration-fast',
                         lessonSlug(l) === slug
                           ? 'bg-accent-soft text-ink font-medium'
                           : 'text-ink-muted hover:text-ink',
